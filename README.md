@@ -2,6 +2,8 @@
 
 Static training courses published to GitHub Pages. Each course is a self-contained, human-assessed course built from a shared teaching doctrine.
 
+**Live site:** https://kdreally.github.io/training/
+
 ## Courses
 
 | Course | Who it is for |
@@ -45,4 +47,6 @@ style.css            # shared styles
 
 - [x] Shared doctrine (`AGENTS.md`)
 - [x] Course scaffolds + curriculum maps (both courses)
-- [ ] Course units (generated one by one from each course's `AGENTS.md`)
+- [x] Docker course units **U00–U35** (36 units)
+- [x] React course units **U00–U34** (35 units)
+- [x] Published via GitHub Pages (`docs/`)
