@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U25 — Compose lifecycle | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U25</div>
+    <h1>Compose lifecycle</h1>
+    <span class="phase-badge ph5">Phase 5 — Docker Compose</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U25 — Compose lifecycle</h1>
+<p><strong>Phase 5 — Docker Compose</strong></p>
+<h2>Where you are</h2>
+<p>You can define a two-service app (U23) and keep its settings in a <code>.env</code> file (U24). Now you will learn the day-to-day commands that a real developer types dozens of times: starting in the background, reading logs, checking status, running a command inside a container, rebuilding, and cleaning up. You will also learn the difference between <strong>restarting</strong> and <strong>rebuilding</strong>, which is where most confusion lives.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Start a project in the background with <code>docker compose up -d</code>.</li>
+<li>Inspect a project with <code>docker compose ps</code> and <code>docker compose logs</code>.</li>
+<li>Run a command inside a running service with <code>docker compose exec</code>.</li>
+<li>Rebuild images with <code>docker compose build</code> and understand when a rebuild is needed.</li>
+<li>Stop and remove with <code>docker compose down</code>, and know what <code>down -v</code> destroys.</li>
+<li>Decode port-in-use, stale-volume, and configuration errors.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U22</strong> — <code>docker compose up</code> / <code>down</code>, services, ports, environment.</li>
+<li><strong>U23</strong> — a two-service app with a named volume.</li>
+<li><strong>U24</strong> — <code>.env</code> interpolation and <code>docker compose config</code>.</li>
+<li><strong>U10</strong> — the container lifecycle ideas (<code>logs</code>, <code>exec</code>, <code>rm</code>) these commands generalize.</li>
+</ul>
+<p>Docker must be running.</p>
+<h2>Time and energy</h2>
+<p>About <strong>80–120 minutes</strong>. You will run several commands and read real output. Keep the U23/U24 project handy; open a second terminal for <code>exec</code>.</p>
+<h2>Why this exists</h2>
+<p>Knowing how to <em>describe</em> an app is half the skill. The other half is operating it while you build: watching logs, restarting one service, rebuilding after a code change, and cleaning up without losing data by accident. These commands are the difference between "I wrote a Compose file once" and "I can work in a Compose project all day."</p>
+<h2>Plain-language teaching</h2>
+<h3>Foreground vs detached</h3>
+<p><code>docker compose up</code> runs in the <strong>foreground</strong>: logs pour into your terminal and <code>Ctrl+C</code> stops everything. That is perfect for watching a first start.</p>
+<p><code>docker compose up -d</code> runs <strong>detached</strong> (the <code>-d</code> means "detach"): the containers keep running while your terminal is free for other commands. This is what you use after the first few runs.</p>
+<h3>"Restart" and "rebuild" are not the same</h3>
+<p>This is the single most important distinction in the unit.</p>
+<table>
+<thead>
+<tr>
+<th>You changed…</th>
+<th>What is needed</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nothing</td>
+<td><code>docker compose restart</code></td>
+<td>Just stops and starts the same containers. Fast.</td>
+</tr>
+<tr>
+<td>A setting like <code>environment:</code> or <code>ports:</code> in <code>compose.yaml</code> (or <code>.env</code>)</td>
+<td><code>docker compose up -d</code></td>
+<td>Compose recreates the container with the new setting.</td>
+</tr>
+<tr>
+<td>A file that is <strong>copied into the image</strong> (<code>COPY</code> in the Dockerfile, e.g. <code>app.py</code>)</td>
+<td><code>docker compose up -d --build</code>, or <code>docker compose build</code> then <code>up -d</code></td>
+<td>The old image still contains the old file. Only a rebuild makes a new image.</td>
+</tr>
+<tr>
+<td>A file that is <strong>bind-mounted</strong> from your machine into the container</td>
+<td>Often nothing</td>
+<td>The container reads the file from your disk.</td>
+</tr>
+</tbody>
+</table>
+<p>A <code>restart</code> reuses the existing image and settings. A <strong>rebuild</strong> produces a new image. Recreating a container happens automatically when Compose notices the definition changed.</p>
+<h3>What <code>down</code> and <code>down -v</code> remove</h3>
+<ul>
+<li><code>docker compose down</code> removes the project's <strong>containers</strong> and its <strong>network</strong>. It <strong>keeps named volumes</strong> by default, so your database data survives.</li>
+<li><code>docker compose down -v</code> (the <code>-v</code> means "volumes") <strong>also removes named volumes</strong>. Your database data is destroyed. That is sometimes what you want — for example, to start clean after changing a database password — and sometimes exactly what you must not do.</li>
+</ul>
+<p>Read the <code>-v</code> before you press Enter. It is the one flag in this unit that can delete work.</p>
+<h3>Running a command inside a service</h3>
+<p><code>docker compose exec</code> runs a command <em>inside an already-running container</em> for a service. This is how you open a database client or a shell without installing anything on your machine (U10). It is the safe, modern cousin of "SSH into the box."</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detached (<code>-d</code>)</td>
+<td>Run containers in the background</td>
+<td>Not "disconnected from logs forever"; use <code>logs</code> to see them</td>
+</tr>
+<tr>
+<td><code>ps</code></td>
+<td>List this project's containers and status</td>
+<td>Not the operating system's process list</td>
+</tr>
+<tr>
+<td><code>logs</code></td>
+<td>Print a service's output</td>
+<td>Not stored forever; tied to containers</td>
+</tr>
+<tr>
+<td><code>exec</code></td>
+<td>Run a command in a running container</td>
+<td>Fails if the container is not running</td>
+</tr>
+<tr>
+<td><code>build</code></td>
+<td>Build/rebuild images from Dockerfiles</td>
+<td>Does not start containers by itself</td>
+</tr>
+<tr>
+<td>Rebuild</td>
+<td>Produce a new image from changed source</td>
+<td>Not the same as restart</td>
+</tr>
+<tr>
+<td>Restart</td>
+<td>Stop and start the same containers</td>
+<td>Does not pick up new images or settings</td>
+</tr>
+<tr>
+<td><code>down</code></td>
+<td>Remove containers and network</td>
+<td>Keeps named volumes by default</td>
+</tr>
+<tr>
+<td><code>down -v</code></td>
+<td>Remove containers, network, <strong>and volumes</strong></td>
+<td>Deletes database data</td>
+</tr>
+<tr>
+<td>Stale volume</td>
+<td>A volume holding old data from a previous setup</td>
+<td>Can preserve an old password or schema</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Use the two-service project from U23/U24 (the <code>web</code> + <code>db</code> app with a <code>db-data</code> volume). Open a terminal in that project folder. We will walk through the commands in the order a developer actually uses them.</p>
+<p>All example outputs below are abbreviated; counts and container names vary with your project name.</p>
+<h3>1. <code>docker compose up -d</code></h3>
+<p><strong>What it does:</strong> builds and starts everything, then returns your terminal to you.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">[+] Running 3/3
+ ✔ Network u25_default    Created
+ ✔ Container u25-db-1     Started
+ ✔ Container u25-web-1    Started
+</code></pre>
+<p><strong>A typical failure, decoded:</strong></p>
+<pre><code class="language-text">Error response from daemon: ... Bind for 0.0.0.0:8080 failed: port is already allocated
+</code></pre>
+<p><strong>What it means:</strong> host port 8080 is already taken (another container or program). <strong>Fix:</strong> <code>docker compose ps</code> here, or <code>docker ps</code> globally (U10), to find the owner; or change the host port in <code>compose.yaml</code>/<code>.env</code>.</p>
+<h3>2. <code>docker compose ps</code></h3>
+<p><strong>What it does:</strong> lists only this project's containers with their status and published ports.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">NAME          IMAGE                COMMAND              SERVICE   STATUS         PORTS
+u25-db-1      postgres:16-alpine   &quot;docker-entrypoint…&quot;  db        Up 2 minutes   5432/tcp
+u25-web-1     u25-web              &quot;python app.py&quot;       web       Up 2 minutes   0.0.0.0:8080-&gt;8000/tcp
+</code></pre>
+<p><strong>A typical "failure," decoded:</strong> the output is just a header with no rows:</p>
+<pre><code class="language-text">NAME                IMAGE               COMMAND             SERVICE             CREATED             STATUS              PORTS
+</code></pre>
+<p><strong>What it means:</strong> no containers for this project are running (or exist). It is not an error; it means "nothing is up." <strong>Fix:</strong> check you are in the right folder (the one with <code>compose.yaml</code>), then <code>docker compose up -d</code>.</p>
+<h3>3. <code>docker compose logs</code></h3>
+<p><strong>What it does:</strong> prints the combined logs of the project's services.</p>
+<p>Useful variations (all the same command, different views):</p>
+<pre><code class="language-text">docker compose logs            # everything, from the start
+docker compose logs -f         # follow live output, like `tail -f`
+docker compose logs db         # only the db service
+docker compose logs --tail=50 web   # last 50 lines from web
+</code></pre>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">db-1   | database system is ready to accept connections
+web-1  | 172.18.0.1 - - &quot;GET / HTTP/1.1&quot; 200 -
+</code></pre>
+<p><strong>A typical failure, decoded:</strong></p>
+<pre><code class="language-text">no container found for service &quot;web&quot;
+</code></pre>
+<p><strong>What it means:</strong> that service has no container yet (it was never started, or it was removed). <strong>Fix:</strong> start it with <code>docker compose up -d</code>, then try again. Note that logs disappear when containers are removed; <code>down</code> deletes the logs with the container.</p>
+<h3>4. <code>docker compose exec</code></h3>
+<p><strong>What it does:</strong> runs a command inside a running service. You name the service, then the command.</p>
+<p><strong>Example 1 — a shell inside the web container:</strong></p>
+<pre><code class="language-text">docker compose exec web sh
+</code></pre>
+<p>On the Python slim image there is a shell, <code>sh</code>. You will get a prompt inside the container. Type <code>exit</code> to leave. This is how you look around without installing anything on your machine.</p>
+<p><strong>Example 2 — open the database client:</strong></p>
+<pre><code class="language-text">docker compose exec db psql -U appuser -d appdb
+</code></pre>
+<p>You get a <code>psql</code> prompt connected to your database. Try <code>\dt</code> to list tables (there may be none), then <code>\q</code> to quit. This works because the database is reachable <strong>by service name</strong> inside the project network (U20) — you did not publish port 5432, and you did not need to.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">psql (16.x)
+Type &quot;help&quot; for help.
+
+appdb=#
+</code></pre>
+<p><strong>A typical failure, decoded:</strong></p>
+<pre><code class="language-text">service &quot;db&quot; is not running
+</code></pre>
+<p><strong>What it means:</strong> <code>exec</code> only works on a running container. <strong>Fix:</strong> <code>docker compose up -d</code> first. If the service keeps exiting, look at <code>docker compose logs db</code> — the container may be crashing, which is a different problem to solve.</p>
+<h3>5. <code>docker compose build</code></h3>
+<p><strong>What it does:</strong> builds (or rebuilds) the images for services that have a <code>build:</code> key, without starting anything.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">[+] Building 5.2s (8/8) FINISHED
+ =&gt; [web] ...
+</code></pre>
+<p><strong>A typical failure, decoded:</strong></p>
+<pre><code class="language-text">ERROR: failed to solve: failed to compute cache key: &quot;/app.py&quot;: not found
+</code></pre>
+<p>(Your exact wording may differ.) </p>
+<p><strong>What it means:</strong> the Dockerfile tried to <code>COPY</code> a file that is not in the build context (U13). Often the file is missing, misspelled, or excluded by <code>.dockerignore</code>. <strong>Fix:</strong> confirm <code>app.py</code> exists next to the Dockerfile and is not ignored.</p>
+<p>To build and then run in one step, use:</p>
+<pre><code class="language-text">docker compose up -d --build
+</code></pre>
+<h3>6. <code>docker compose down</code></h3>
+<p><strong>What it does:</strong> stops and removes this project's containers and network. Named volumes are kept.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">[+] Running 3/3
+ ✔ Container u25-web-1  Removed
+ ✔ Container u25-db-1   Removed
+ ✔ Network u25_default  Removed
+</code></pre>
+<p>Notice the volume is not listed. Your database data is still on disk.</p>
+<h3>7. <code>docker compose down -v</code></h3>
+<p><strong>What it does:</strong> the same as <code>down</code>, and additionally removes the project's named volumes.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">[+] Running 4/4
+ ✔ Container u25-web-1  Removed
+ ✔ Container u25-db-1   Removed
+ ✔ Volume u25_db-data   Removed
+ ✔ Network u25_default  Removed
+</code></pre>
+<p><strong>A typical consequence, decoded:</strong> the next <code>docker compose up -d</code> starts with an <strong>empty</strong> database. That is expected — you removed the data. Use this deliberately, for example to clear a stale database. Never use it casually on data you care about.</p>
+<h3>Putting it together: a normal edit cycle</h3>
+<p>You change <code>app.py</code>, which the Dockerfile <code>COPY</code>s into the image.</p>
+<pre><code class="language-text">docker compose up -d --build     # rebuild the image and recreate the container
+docker compose logs -f web       # watch it start
+</code></pre>
+<p>You change only an environment value in <code>.env</code>:</p>
+<pre><code class="language-text">docker compose up -d             # Compose recreates the affected container
+</code></pre>
+<p>You change nothing and just want a clean restart:</p>
+<pre><code class="language-text">docker compose restart
+</code></pre>
+<h3>A note on operating systems</h3>
+<ul>
+<li>All commands are identical on Windows (PowerShell), macOS, and Linux.</li>
+<li><code>docker compose exec web sh</code> works on Linux-based images, which all images here are. (A <code>bash</code> shell may not exist in slim images; <code>sh</code> does.)</li>
+<li>Ensure Docker Desktop (Windows/macOS) is running before any command.</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: Port already in use</h3>
+<p><strong>What you see:</strong> <code>Bind for 0.0.0.0:8080 failed: port is already allocated</code>.</p>
+<p><strong>What it means:</strong> another container or program owns host port 8080. Common cause: you started the project twice from two different folders (two projects, same host port).</p>
+<p><strong>Fix:</strong> run <code>docker compose ps</code> in each suspected project folder, or <code>docker ps</code> globally (U10), and <code>down</code> or stop the other holder; or change the host port.</p>
+<h3>Error: Stale volume keeps an old password</h3>
+<p><strong>What you see:</strong> you change <code>POSTGRES_PASSWORD</code> in <code>.env</code>, run <code>docker compose up -d</code>, and the app still fails to authenticate — or the old password still works.</p>
+<p><strong>What it means:</strong> the Postgres image applies <code>POSTGRES_PASSWORD</code> only when it <strong>initializes a fresh data directory</strong>. Your <code>db-data</code> volume already contains an initialized database, so the new password is ignored.</p>
+<p><strong>Fix:</strong> if the data does not matter, <code>docker compose down -v</code> then <code>docker compose up -d</code> to re-initialize. If the data matters, do not wipe it; instead change the password inside the database with <code>docker compose exec db psql -U &lt;user&gt; -d &lt;db&gt;</code> and an <code>ALTER USER</code> statement. Choose consciously.</p>
+<h3>Error: Configuration error</h3>
+<p><strong>What you see:</strong></p>
+<pre><code class="language-text">yaml: line 6: did not find expected key
+</code></pre>
+<p>or</p>
+<pre><code class="language-text">services.web additional properties 'port' not allowed
+</code></pre>
+<p><strong>What it means:</strong> a YAML mistake (bad indentation, tabs) or a misspelled key (<code>port</code> instead of <code>ports</code>).</p>
+<p><strong>Fix:</strong> run <code>docker compose config --quiet</code> to get a fast validation pass (U24), fix the line, and try again. Read the line number Compose gives you; it is usually close to the truth.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is the difference between <code>docker compose restart</code> and <code>docker compose up -d --build</code>?</li>
+<li>What does <code>docker compose down -v</code> remove that <code>docker compose down</code> keeps?</li>
+<li>When you edit an environment value in <code>.env</code>, which command applies it?</li>
+</ol>
+<p>If those are clear, you are ready.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Background and logs</h3>
+<p>Start the project with <code>docker compose up -d</code>. Run <code>docker compose ps</code>, then <code>docker compose logs db</code>. Write one line from the database log that proves it started.</p>
+<h3>P2 — Change one value</h3>
+<p>Change <code>WEB_HOST_PORT</code> in <code>.env</code> to a new free port. Run <code>docker compose up -d</code>, then <code>docker compose ps</code>, and confirm the new host port appears. Visit the new URL.</p>
+<h3>P3 — Rebuild vs restart</h3>
+<p>Change the greeting or status text inside <code>app.py</code>. First run <code>docker compose restart</code> and note whether the page changed. Then run <code>docker compose up -d --build</code> and check again. Explain the difference in two lines.</p>
+<h3>P4 — Inside the database</h3>
+<p>With the project running, run <code>docker compose exec db psql -U appuser -d appdb</code>. List tables with <code>\dt</code>, then quit with <code>\q</code>. Write the two commands you used.</p>
+<h3>P5 — Fix a broken config</h3>
+<p>This <code>compose.yaml</code> fails to start. Run <code>docker compose config --quiet</code>, fix the error, and explain it in one sentence.</p>
+<pre><code class="language-yaml">services:
+  web:
+    build: .
+    port:
+      - &quot;8080:8000&quot;
+</code></pre>
+<h3>P6 — Deliberate cleanup</h3>
+<p>State the exact command that would remove the project <strong>and</strong> its database data. Then state one situation where you would use it and one where you would not. (Do not run it if the data matters.)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No registries, pushing, or pulling your own images (Phase 6).</li>
+<li>No CI automation (Phase 6).</li>
+<li>No health checks or readiness gating between services.</li>
+<li>No production deployment or orchestration (Phase 7).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U26 — Registries</strong> (images beyond your laptop, and why <code>docker push</code> is not magic).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U25 Assignment — Compose lifecycle</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U25-YourName</code></p>
+<h2>What to build and observe</h2>
+<p>Use your two-service project from U23/U24. You will run it in the background, inspect it, rebuild it, and clean up deliberately. Put your project files in a subfolder named <code>project/</code>.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>project/compose.yaml</code>, <code>project/.env</code>, <code>project/app.py</code>, <code>project/Dockerfile</code></h3>
+<p>Your project, carried over. When you edit <code>app.py</code> for Part B, submit the edited version.</p>
+<h3>2. <code>evidence.txt</code></h3>
+<p>Paste exactly what you did and saw, in this order. Label each part.</p>
+<p><strong>Part A — background start and inspection</strong></p>
+<ul>
+<li>The command that started the project detached, and the creation/start lines.</li>
+<li>The output of <code>docker compose ps</code>.</li>
+<li>The output of <code>docker compose logs db</code> (or a few key lines showing startup).</li>
+</ul>
+<p><strong>Part B — rebuild vs restart</strong></p>
+<ul>
+<li>The change you made to <code>app.py</code>.</li>
+<li>The command and result after <code>docker compose restart</code> (did the page change?).</li>
+<li>The command and result after <code>docker compose up -d --build</code> (did the page change now?).</li>
+</ul>
+<p><strong>Part C — inside the database</strong></p>
+<ul>
+<li>The <code>docker compose exec db psql ...</code> command and the <code>\dt</code> output.</li>
+<li>The command you used to quit.</li>
+</ul>
+<p><strong>Part D — cleanup</strong></p>
+<ul>
+<li>The output of <code>docker compose down</code>.</li>
+<li>A one-line statement of whether the database volume still existed after <code>down</code>.</li>
+</ul>
+<p>Do not run <code>down -v</code> on data you need. If you do run it to observe the effect, say so and one line about what happened.</p>
+<h3>3. <code>answers.md</code></h3>
+<ol>
+<li><strong>Restart vs rebuild.</strong> In your own words, explain the difference between <code>docker compose restart</code> and <code>docker compose up -d --build</code>. Give one change that needs each.</li>
+<li><strong><code>ps</code> and <code>logs</code>.</strong> What does each command show that the other does not? One or two sentences each.</li>
+<li><strong><code>exec</code>.</strong> Why does <code>docker compose exec db psql ...</code> work even though the database port is not published? Reference the project network.</li>
+<li><strong><code>down</code> vs <code>down -v</code>.</strong> State exactly what each removes. Which one keeps your database data?</li>
+<li><strong>Stale volume.</strong> You change <code>POSTGRES_PASSWORD</code> in <code>.env</code> and restart, but the old password still works. Explain why, and give two different fixes depending on whether the data matters.</li>
+<li><strong>Fix a broken config.</strong> This file fails. Explain the error and give the corrected key.</li>
+</ol>
+<p><code>yaml
+   services:
+     web:
+       build: .
+       port:
+         - "8080:8000"</code></p>
+<ol start="7">
+<li><strong>Predict then run.</strong> You run <code>docker compose down</code> (without <code>-v</code>) and then <code>docker compose up -d</code>. Will the data you inserted into the database still be there? Predict, then run it if you can and report the result.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy and complete:</p>
+<pre><code class="language-markdown">- [ ] I read the U25 README fully (not only the assignment).
+- [ ] I started the project detached with `docker compose up -d`.
+- [ ] I read logs for at least one service.
+- [ ] I opened the database with `docker compose exec`.
+- [ ] I saw the difference between restart and `up -d --build`.
+- [ ] I understand what `down -v` destroys.
+- [ ] I read the U25 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>project/</code> contains the project files, named as in U23/U24.</li>
+<li><code>evidence.txt</code> has all four labeled parts with real output.</li>
+<li><code>answers.md</code> is in your own words; Q5 and Q6 are answered concretely.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+</ul>
+<h2>Submission format</h2>
+<p>One folder or zip named <code>U25-YourName</code> containing <code>project/</code>, <code>evidence.txt</code>, <code>answers.md</code>, and <code>checklist.md</code>, with names exactly as written.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U25 Rubric</h1>
+<p>Visible to learners. Total <strong>25 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project started detached; <code>ps</code> shows running containers</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>evidence.txt</code> Part A</td>
+</tr>
+<tr>
+<td>Logs for at least one service shown</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>evidence.txt</code> Part A</td>
+</tr>
+<tr>
+<td>Restart vs rebuild demonstrated and correctly explained</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>evidence.txt</code> Part B; <code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td><code>exec</code> into the database works; commands shown</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>evidence.txt</code> Part C</td>
+</tr>
+<tr>
+<td><code>down</code> run and volume-retention stated correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>evidence.txt</code> Part D; <code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td><code>ps</code> vs <code>logs</code> roles distinguished</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td><code>exec</code> + service name + network reasoning correct</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Stale-volume cause and two fixes explained</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Broken config correctly fixed with explanation</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6, P5</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Part B (5 pts): award full credit only if the learner shows that <code>restart</code> did <strong>not</strong> pick up the code change and <code>--build</code> did. Award 2 if they ran both but did not observe or explain the difference.</li>
+<li>Q5 (3 pts): award 3 for both the initialization-only cause and two sensible fixes (wipe with <code>down -v</code> if data is disposable; <code>ALTER USER</code> inside the database if it is not). Award 1 for "delete the volume" only.</li>
+<li>Q6/P5: the key is <code>port</code> → <code>ports</code>; award 2 for the corrected key, 1 if they identified the typo but did not show the fix.</li>
+<li>Q4: award full credit only if they state that plain <code>down</code> keeps named volumes and <code>down -v</code> removes them.</li>
+<li>Part C: accept any working <code>exec</code> command that reaches Postgres; the <code>psql</code> client is installed in the Postgres image.</li>
+<li>Do not penalize if the learner chose not to run <code>down -v</code> on real data — that restraint is correct.</li>
+</ul>
+<h2>Evidence the assessor should look for</h2>
+<ul>
+<li><code>docker compose up -d</code> returns the terminal with <code>Started</code> lines.</li>
+<li><code>ps</code> shows <code>Up</code> status and the published host port.</li>
+<li>Part B clearly contrasts two outcomes (unchanged then changed).</li>
+<li><code>exec db psql ...</code> reaches a prompt and lists tables (empty is fine).</li>
+<li><code>down</code> output does not list a volume being removed, and the learner says the data survived.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U24-env-vars-and-dotenv/index.html">U24 Environment variables and .env files</a>
+    <a class="next" href="../U26-registries/index.html">U26 Registries</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

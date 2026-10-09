@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U07 — Your first container | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U07</div>
+    <h1>Your first container</h1>
+    <span class="phase-badge ph2">Phase 2 — Docker basics</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U07 — Your first container</h1>
+<p><strong>Phase 2 — Docker basics</strong></p>
+<h2>Where you are</h2>
+<p>Docker is installed and verified (U06). Now you run your first real containers and watch what happens. This unit is about <strong>seeing the steps</strong>, not memorizing flags.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what <code>docker run hello-world</code> does step by step (pull, create, start).</li>
+<li>Run an interactive container with <code>docker run -it ubuntu</code> and explain <code>-i</code>, <code>-t</code>, <code>--name</code>.</li>
+<li>Know when you are "inside" a container vs on your host terminal.</li>
+<li>Exit cleanly with <code>exit</code> and see container state.</li>
+<li>Decode a typical <code>docker run</code> failure (name conflict) before trying to fix it.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>U00–U05 (course + why containers)</li>
+<li>U06 (install verified)</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>30–60 minutes</strong>. Slow is fine; observe output carefully.</p>
+<h2>Why this exists</h2>
+<p>Running commands without seeing steps breeds guesswork. You need to see the pull/create/start sequence so future errors make sense.</p>
+<h2>Plain-language teaching</h2>
+<h3>What <code>docker run</code> does (in order)</h3>
+<p><code>docker run</code> is the command that asks Docker to start a container from an image. Roughly:<br />
+1. <strong>Find image</strong> locally; if not, <strong>pull</strong> (download) from registry.<br />
+2. <strong>Create</strong> a container from that image (a new writable instance).<br />
+3. <strong>Start</strong> the container (run its main process).</p>
+<p>With <code>hello-world</code>, these steps produce the friendly message. With <code>ubuntu</code>, you get a shell inside a tiny Linux environment.</p>
+<h3>Interactive vs non-interactive</h3>
+<ul>
+<li><strong>Non-interactive</strong> (hello-world): runs once and exits; prints output to your terminal.</li>
+<li><strong>Interactive</strong> (<code>-it</code>): keeps your terminal connected so you can type commands inside the container.</li>
+</ul>
+<p>Flags explained:<br />
+- <code>-i</code> (interactive): keep STDIN open so you can type.<br />
+- <code>-t</code> (tty/terminal): give you a pseudo-terminal so typing looks normal.<br />
+- <code>--name &lt;name&gt;</code>: give a friendly name to the container (easier to refer later; see U10).</p>
+<h3>Host vs container</h3>
+<p>When you run <code>docker run -it ubuntu</code>, your prompt may change to look like <code>root@&lt;id&gt;:/#</code> or similar. That means <strong>you are inside the container</strong> — a different filesystem/process space. Commands you run there affect the container, not (usually) your host files unless you mounted them (mounts come later).</p>
+<h3>Exit</h3>
+<p>Typing <code>exit</code> inside an interactive container ends the main process and the container stops (exits). You return to your host terminal prompt.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pull</td>
+<td>Download an image from a registry (if missing)</td>
+<td>"Pull" is network action; not running yet</td>
+</tr>
+<tr>
+<td>create</td>
+<td>Make a new container object from an image</td>
+<td>Creating is not starting</td>
+</tr>
+<tr>
+<td>start</td>
+<td>Begin running the container's main process</td>
+<td>Start after create</td>
+</tr>
+<tr>
+<td>interactive (<code>-i</code>)</td>
+<td>Your keystrokes go into the container</td>
+<td>Easy to forget; then typing does nothing obvious</td>
+</tr>
+<tr>
+<td>tty (<code>-t</code>)</td>
+<td>Allocates a terminal for readable input/output</td>
+<td>Without -t, output can be hard to read</td>
+</tr>
+<tr>
+<td>inside/outside</td>
+<td>Container shell vs host shell</td>
+<td>Thinking "cd" in container affects host</td>
+</tr>
+<tr>
+<td>name conflict</td>
+<td>Trying to create container with name that exists</td>
+<td>Different from image name</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<h3>Example 1: <code>docker run hello-world</code> (observe steps)</h3>
+<p><strong>What it does:</strong> Pull (if needed), create, start; print message; exit.<br />
+- Windows (PowerShell): <code>docker run hello-world</code><br />
+- macOS (Terminal): <code>docker run hello-world</code><br />
+- Linux (Terminal): <code>docker run hello-world</code></p>
+<p><strong>Expected success output (key parts):</strong><br />
+<code>Unable to find image 'hello-world:latest' locally</code> (only first time)<br />
+<code>latest: Pulling from library/hello-world</code> (only first time)<br />
+<code>Hello from Docker!</code><br />
+<code>...installation appears to be working correctly.</code></p>
+<p><strong>Typical failure decoded:</strong> <code>Cannot connect to the Docker daemon...</code> → daemon not running (see U06). Another: network issues (rare in this unit) — but focus on daemon/name later.</p>
+<h3>Example 2: Interactive Ubuntu shell</h3>
+<p><strong>What it does:</strong> Start an interactive shell inside an Ubuntu container.<br />
+- Windows (PowerShell): <code>docker run -it --name myfirst-ubuntu ubuntu</code><br />
+- macOS (Terminal): <code>docker run -it --name myfirst-ubuntu ubuntu</code><br />
+- Linux (Terminal): <code>docker run -it --name myfirst-ubuntu ubuntu</code></p>
+<p><strong>Expected success (when inside):</strong> prompt changes, e.g.<br />
+<code>root@&lt;short-id&gt;:/#</code></p>
+<p>Now you are <strong>inside</strong> the container. Try a tiny read-only check:<br />
+<code>cat /etc/os-release | head -n 1</code><br />
+(Expected: something like <code>PRETTY_NAME="Ubuntu ..."</code>)</p>
+<p>Exit back to host:<br />
+<code>exit</code><br />
+(You return to your host prompt.)</p>
+<p><strong>Typical failure decoded (before trying):</strong><br />
+<code>docker: Error response from daemon: Conflict. The container name "/myfirst-ubuntu" is already in use by container ...</code><br />
+→ You already created a container with that exact name. Use a different name, or remove the old one (see U10). Do not reuse names.</p>
+<h2>Common errors</h2>
+<h3>CE1 — Name conflict</h3>
+<p><strong>Symptom:</strong> "container name ... is already in use".<br />
+<strong>Why:</strong> Names must be unique per container on this daemon.<br />
+<strong>Fix:</strong> Pick new name, or remove existing container (U10 covers <code>docker rm</code>). For now, just note it.</p>
+<h3>CE2 — Forgot <code>-it</code> and got stuck-looking behavior</h3>
+<p><strong>Symptom:</strong> Container runs and exits immediately, or you cannot type.<br />
+<strong>Why:</strong> No interactive terminal attached.<br />
+<strong>Fix:</strong> Use <code>-it</code> for shells/interactive tools.</p>
+<h3>CE3 — Thought changes inside affect host</h3>
+<p><strong>Symptom:</strong> Created file in <code>/tmp</code> inside container; not visible on host Desktop.<br />
+<strong>Why:</strong> Filesystem is isolated by default. (Mounts later.)</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>List the three steps <code>docker run</code> does (pull, create, start) in your own words.</li>
+<li>What do <code>-i</code> and <code>-t</code> do together?</li>
+<li>When you type <code>exit</code> inside <code>docker run -it ubuntu</code>, where are you and what happened to the container?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Predict then read</h3>
+<p>Before running, predict: will <code>hello-world</code> stay running or exit? Write your guess, then run and observe.</p>
+<h3>P2 — Name it</h3>
+<p>Run <code>docker run -it --name practice-ubuntu ubuntu</code>, run <code>pwd</code> and <code>ls /</code>, then <code>exit</code>. (Observe prompt changes.)</p>
+<h3>P3 — Name conflict (intentional)</h3>
+<p>If you still have <code>practice-ubuntu</code>, try to create another with same name: observe the exact error. (Only do if safe; or just read CE1.) — Ungraded.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Listing/managing containers beyond observing (U10)</li>
+<li>Images list (U08)</li>
+<li>Ports/volumes (U18/U17)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U08 — Images vs containers</strong> (recipe vs running instance, and how to see both).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U07 Assignment — Your first container</h1>
+<p>Submit in folder/zip named: <code>U07-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>first-container.md</code></h3>
+<ol>
+<li><strong>Steps.</strong> Explain <code>docker run hello-world</code> in your own words: what happens at pull/create/start? (3–5 lines)</li>
+<li><strong>Flags.</strong> What do <code>-i</code>, <code>-t</code>, and <code>--name</code> each do? Give one reason to use each.</li>
+<li><strong>Proof.</strong> Paste key lines from <code>hello-world</code> run (at least the "Hello from Docker!" line). Then show: (a) the prompt you saw when inside Ubuntu, (b) output of one command you ran inside (<code>cat /etc/os-release | head -n 1</code> or <code>pwd</code>), (c) that you exited back to host.</li>
+<li><strong>Host vs container.</strong> In your own words: when inside the container, are you changing your host files? Why or why not (by default)?</li>
+<li><strong>Name conflict.</strong> What does "container name ... is already in use" mean? How would you fix it (conceptually) without guessing? (Refer to U10 idea if desired.)</li>
+<li><strong>Explain in your own words.</strong> Why does <code>docker run</code> sometimes pull an image first?</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I ran `docker run hello-world` and observed output.
+- [ ] I ran `docker run -it --name myfirst-ubuntu ubuntu`, executed a command inside, then `exit`.
+- [ ] I can explain pull/create/start.
+- [ ] I can explain `-i`, `-t`, `--name`.
+- [ ] I read U07 rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present.</li>
+<li>Answers in your own words.</li>
+<li>Proof from your actual runs (or clearly labeled if blocked).</li>
+<li>Checklist honest.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><p><em>No rubric file found.</em></p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U06-installing-docker/index.html">U06 Installing Docker safely</a>
+    <a class="next" href="../U08-images-vs-containers/index.html">U08 Images vs containers</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

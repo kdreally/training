@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U02 — What a web page is made of | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U02</div>
+    <h1>What a web page is made of</h1>
+    <span class="phase-badge ph1">Phase 1 — Foundations</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U02 — What a web page is made of</h1>
+<p><strong>Phase 1 — Foundations</strong></p>
+<h2>Where you are</h2>
+<p>U00 gave you the rules and U01 explained where we are going. Now we start the foundation: <strong>what is actually inside a web page?</strong></p>
+<p>This unit is about <strong>looking, not building</strong>. You will not write a single line of code here. Instead you will learn that every page is made of two layers — structure and presentation — and that the browser turns those into a live, structured model called the <strong>DOM</strong>. You will learn to open two windows that let you <em>see</em> all of it. Writing your own page starts in U03.</p>
+<p>If you have ever opened a page, right-clicked, and immediately closed the scary wall of text that appeared: this unit reopens that wall and hands you a torch.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain, in plain words, the difference between a page's <strong>structure</strong> (HTML) and its <strong>presentation</strong> (CSS).</li>
+<li>Explain what the <strong>DOM</strong> is and why it is a <em>tree</em>.</li>
+<li>Use <strong>View Source</strong> and the browser's <strong>DevTools</strong> to look at a page you did not build.</li>
+<li>Point at a piece of a page and say which layer made it look or behave that way.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong></li>
+<li><strong>U01 — What React is, and why a designer should care.</strong></li>
+</ul>
+<p>That is all. No terminal, no installation, no coding.</p>
+<h2>Time and energy</h2>
+<p>About <strong>50–80 minutes</strong>. Most of it is looking at real pages with a guide. If your eyes glaze over the first time you open DevTools, that is normal — DevTools is dense by design. You are learning to <em>find one thing</em>, not to read the whole panel.</p>
+<h2>Why this exists</h2>
+<p>React does not float in the air. When React builds something, what the browser actually shows is HTML and CSS. If those words are fog, React will always feel like memorizing spells. If those words are clear, React becomes "a way to produce HTML and CSS from reusable parts" — and that is a completely different, learnable thing.</p>
+<p>This unit is also where "the browser is a black box" stops being true. Designers are visual learners; you are about to <em>see</em> the structure of a page with your own eyes.</p>
+<h2>Plain-language teaching</h2>
+<h3>Every page is two layers</h3>
+<p>A web page is built from two kinds of instructions that arrive together:</p>
+<ol>
+<li>
+<p><strong>Structure (HTML)</strong> — <em>what</em> is on the page: a heading, a paragraph, a list, an image, a button. HTML stands for <strong>HyperText Markup Language</strong>. Ignore the hyper-capitalized name; the useful part is <strong>Markup Language</strong>: a way of labeling content so the browser knows what each piece <em>is</em>.</p>
+</li>
+<li>
+<p><strong>Presentation (CSS)</strong> — <em>how</em> it looks: size, color, spacing, font, position. CSS stands for <strong>Cascading Style Sheets</strong>. Again, ignore the grand name; the useful part is <strong>Style Sheets</strong>: sheets of styling rules applied to the structure.</p>
+</li>
+</ol>
+<p>The useful mental model: <strong>HTML is the skeleton; CSS is the skin and clothes.</strong> The same skeleton can wear a formal suit or gym clothes, which is exactly why separating them is useful.</p>
+<p>Most design tools hide the skeleton from you — you draw a rectangle, and the tool decides what markup to generate. In this course you will see and, from U03, write the skeleton yourself.</p>
+<h3>Structure, seen as tags</h3>
+<p>HTML labels content using <strong>tags</strong>. A tag is written with angle brackets, like this:</p>
+<pre><code class="language-html">&lt;h1&gt;Good morning&lt;/h1&gt;
+</code></pre>
+<p>Read it like a label with an opening and a closing:</p>
+<ul>
+<li><code>&lt;h1&gt;</code> opens the label: "the following content is a level-1 heading."</li>
+<li><code>Good morning</code> is the content.</li>
+<li><code>&lt;/h1&gt;</code> closes it. The slash means "close."</li>
+</ul>
+<p>An <strong>element</strong> is the whole thing, open tag + content + close tag. (You will write these yourself in U03. Here, we only need to <em>recognize</em> them.)</p>
+<p>Some pieces of content are tagged in pairs like the heading above. Others stand alone and have no closing tag — an image, for example, is a single tag. You will see both shapes in the worked example.</p>
+<h3>Presentation, seen as rules</h3>
+<p>CSS does not sit inside the structure; it is a set of <strong>rules</strong> that <em>select</em> parts of the structure and describe how they should look. A rule names a target and then gives it properties:</p>
+<pre><code class="language-text">heading  →  color: dark red;  size: large
+</code></pre>
+<p>The real syntax looks stranger than that, but the idea is exactly this: <strong>pick a target, describe its look.</strong> You will write real rules in U04.</p>
+<h3>The browser builds a tree: the DOM</h3>
+<p>This is the big idea of the unit, so take it slowly.</p>
+<p>When a browser loads a page, it reads the HTML and builds a live, in-memory model of it. That model is called the <strong>DOM</strong> — the <strong>Document Object Model</strong>. In plain words: <em>the browser's structured map of everything on the page.</em></p>
+<p>It is a <strong>tree</strong> because HTML nests. Look at the shape:</p>
+<pre><code class="language-text">page (the document)
+ └─ main content
+     ├─ heading
+     ├─ paragraph
+     │   └─ a link
+     └─ image
+</code></pre>
+<p>Each item in the tree is called a <strong>node</strong>. The heading and the paragraph are children of the main content, which is their <strong>parent</strong>. The heading and paragraph are <strong>siblings</strong> to each other. That is the entire vocabulary — parent, child, sibling — and it comes straight from your design-tool world of frames inside frames inside layers.</p>
+<p>Why does the DOM matter? Two reasons:</p>
+<ol>
+<li>It is what you will actually <em>see</em> when you inspect a page.</li>
+<li>Later, JavaScript and React do not edit the HTML text file directly. They edit this live tree. When React "updates the page," it is updating the DOM.</li>
+</ol>
+<p>That is the whole point of this unit in one line: <strong>the browser turns HTML + CSS into a live tree (the DOM), and that tree is what the user sees.</strong></p>
+<h3>Two windows for looking</h3>
+<p>You need two observation tools. Neither writes anything; both only look.</p>
+<p><strong>View Source</strong> shows you the raw HTML <em>text</em> that was sent to the browser. It is like opening the original sketch file: the instructions, not the rendered result.</p>
+<p><strong>DevTools</strong> (Developer Tools) is a panel built into your browser that shows the <em>live</em> page and lets you inspect it. The <strong>Elements</strong> panel shows the browser's current DOM tree — which, importantly, can differ from the raw source because the browser has already processed it.</p>
+<p>Here is the distinction that trips up almost everyone:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>View Source</th>
+<th>DevTools → Elements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shows</td>
+<td>The original HTML text sent by the server</td>
+<td>The browser's live, current DOM tree</td>
+</tr>
+<tr>
+<td>Can the browser have changed it?</td>
+<td>No — it is the raw input</td>
+<td>Yes — it is the processed result</td>
+</tr>
+<tr>
+<td>Analogy</td>
+<td>The original design file</td>
+<td>The rendered frame, with everything applied</td>
+</tr>
+</tbody>
+</table>
+<p>For a static page these often look similar. As soon as code starts changing the page, they diverge — and the DOM is the one that reflects reality.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browser</td>
+<td>The program that reads HTML/CSS and displays a page (Chrome, Firefox, Safari, Edge)</td>
+<td>Not the internet itself</td>
+</tr>
+<tr>
+<td>HTML</td>
+<td>The language that labels the <em>structure</em> of a page</td>
+<td>Not a programming language; not the look</td>
+</tr>
+<tr>
+<td>CSS</td>
+<td>The language of <em>presentation</em> — size, color, spacing, font</td>
+<td>Not the structure; not behavior</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>A label written with angle brackets, e.g. <code>&lt;h1&gt;</code></td>
+<td>Often used loosely to mean the whole element</td>
+</tr>
+<tr>
+<td>Element</td>
+<td>Open tag + content + close tag, as one unit</td>
+<td>Not the same as just one tag</td>
+</tr>
+<tr>
+<td>Nesting</td>
+<td>Putting elements inside other elements</td>
+<td>Not "stacking in a design tool" visually — it means belonging</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>The browser's live, structured map (tree) of the page</td>
+<td>Not the HTML file; the browser builds it <em>from</em> the file</td>
+</tr>
+<tr>
+<td>Tree</td>
+<td>The parent/child/sibling shape of nested elements</td>
+<td>Not a literal picture; a way of describing relationships</td>
+</tr>
+<tr>
+<td>Node</td>
+<td>One item in the DOM tree</td>
+<td>Not a "node" in a diagramming app</td>
+</tr>
+<tr>
+<td>Parent / child / sibling</td>
+<td>Element relationships in the tree</td>
+<td>Same idea as frames/layers inside frames</td>
+</tr>
+<tr>
+<td>Render</td>
+<td>The browser turning structure + presentation into pixels</td>
+<td>Not "download"</td>
+</tr>
+<tr>
+<td>View Source</td>
+<td>A view of the raw HTML text the browser received</td>
+<td>Not the processed DOM</td>
+</tr>
+<tr>
+<td>DevTools</td>
+<td>Browser tool panel; <strong>Elements</strong> shows the live DOM</td>
+<td>Not a code editor; it only looks unless you edit deliberately</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Below is a tiny, complete page. <strong>Do not type it</strong> — read it, then match it to the tree beneath it. Every line is explained after.</p>
+<pre><code class="language-html">&lt;main&gt;
+  &lt;h1&gt;Morning routine&lt;/h1&gt;
+  &lt;p&gt;Three things I do before coffee.&lt;/p&gt;
+  &lt;img src=&quot;coffee.jpg&quot; alt=&quot;A cup of coffee&quot;&gt;
+&lt;/main&gt;
+</code></pre>
+<p><strong>Line by line:</strong></p>
+<ul>
+<li><code>&lt;main&gt;</code> — opens the label "this is the main content of the page." It will be closed at the bottom.</li>
+<li><code>&lt;h1&gt;Morning routine&lt;/h1&gt;</code> — a level-1 heading. Open tag, content, close tag. This is an <strong>element</strong>.</li>
+<li><code>&lt;p&gt;Three things I do before coffee.&lt;/p&gt;</code> — a paragraph element.</li>
+<li><code>&lt;img src="coffee.jpg" alt="A cup of coffee"&gt;</code> — an image element. It is a <strong>single tag</strong> (no closing tag) because an image has no inner content. The <code>src="..."</code> is extra information telling the browser <em>which file</em> to show, and <code>alt="..."</code> is the text description shown if the image cannot load. Those extra words are called <strong>attributes</strong> — settings written inside the opening tag. (You will use attributes properly in U03.)</li>
+<li><code>&lt;/main&gt;</code> — closes the main content.</li>
+</ul>
+<p><strong>The DOM tree the browser builds:</strong></p>
+<pre><code class="language-text">main
+ ├─ h1  →  &quot;Morning routine&quot;
+ ├─ p   →  &quot;Three things I do before coffee.&quot;
+ └─ img →  (an image; the alt text describes the coffee cup)
+</code></pre>
+<p>The <code>main</code> element is the <strong>parent</strong>; the <code>h1</code>, <code>p</code>, and <code>img</code> are its <strong>children</strong> and are <strong>siblings</strong> to each other. That is the whole tree.</p>
+<h3>Observing a real page (your first use of the tools)</h3>
+<p>These are <strong>steps, not terminal commands</strong>. Do this on any website you already trust and use — your email, a news page, a portfolio. Do not use a banking or government site; many of them deliberately block right-clicking.</p>
+<p><strong>Task A — View Source:</strong></p>
+<ol>
+<li>Right-click anywhere on the page.</li>
+<li>Choose <strong>View Page Source</strong> (wording varies slightly by browser).</li>
+<li>A new tab opens showing raw HTML text, often colorful.</li>
+</ol>
+<p><em>Success looks like:</em> a wall of angle-bracket text — the actual HTML the browser received.</p>
+<p><em>Decoded failure:</em> if instead you get a normal-looking page, or a "Save As" dialog, you clicked the wrong menu item. Close it and pick <strong>View Page Source</strong> specifically. If a shortcut does nothing (Windows/Linux: usually <strong>Ctrl+U</strong>; macOS Safari: <strong>Cmd+Option+U</strong>), fall back to the right-click menu.</p>
+<p><strong>Task B — DevTools Elements:</strong></p>
+<ol>
+<li>Right-click a heading or a button on the page.</li>
+<li>Choose <strong>Inspect</strong> (or <strong>Inspect Element</strong>).</li>
+<li>A panel opens, usually on the right or bottom. The <strong>Elements</strong> tab is selected, and one line is highlighted.</li>
+</ol>
+<p><em>Success looks like:</em> a nested list of tags, and the tag corresponding to the thing you right-clicked is highlighted. You are looking at the live DOM.</p>
+<p><em>Decoded failure:</em> if the panel is empty or on a different tab, click the <strong>Elements</strong> tab. If right-click did nothing at all, the site blocked it — open DevTools with the menu (<strong>More tools → Developer tools</strong>) or the shortcut (Windows/Linux: <strong>Ctrl+Shift+I</strong> or <strong>F12</strong>; macOS: <strong>Cmd+Option+I</strong>), then use the little arrow-in-a-box icon at the top-left of the panel to click an element on the page.</p>
+<p><strong>Task C — Compare:</strong> scroll through the View Source tab and the Elements panel side by side. For a simple page they look similar. That similarity is the point: the DOM was built from that HTML.</p>
+<h2>Common errors</h2>
+<h3>Error: "The HTML I saw in View Source and the structure in DevTools don't match."</h3>
+<p><strong>What happens:</strong> Confusion — which one is "real"?</p>
+<p><strong>Fix:</strong> Both are real, for different things. View Source is the raw input the browser received. DevTools shows the live DOM the browser currently has. Once code changes the page, they differ, and the DOM is what the user sees. For now, expect them to be close; later, expect differences and trust the DOM.</p>
+<h3>Error: "DevTools is too complicated, I must be doing it wrong."</h3>
+<p><strong>What happens:</strong> You open a dense panel full of tabs and close it in defeat.</p>
+<p><strong>Fix:</strong> You are not meant to read the whole panel. In this unit you only need the <strong>Elements</strong> tab and one highlighted line. Ignore everything else. Complexity is not a sign you are behind.</p>
+<h3>Error: "CSS is inside the HTML tags."</h3>
+<p><strong>What happens:</strong> You look for styling in the middle of the structure and get lost.</p>
+<p><strong>Fix:</strong> Structure (HTML) and presentation (CSS) are separate layers that the browser combines. CSS usually lives in its own place and <em>targets</em> the structure. Mixing them up is like looking for a garment's color inside its skeleton.</p>
+<h3>Error: Reading <code>&lt;img ...&gt;</code> and looking for <code>&lt;/img&gt;</code>.</h3>
+<p><strong>What happens:</strong> You assume every tag must close, can't find the closing image tag, and conclude the page is broken.</p>
+<p><strong>Fix:</strong> Some elements have no inner content, so they have no closing tag. An image, a line break, and an input are common examples. In U03 you will learn which is which.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words. If you can, you are ready for the assignment:</p>
+<ol>
+<li>What are the two layers of every page, and what does each one decide?</li>
+<li>What is the DOM, in one sentence, for a person who has never heard the term?</li>
+<li>Why is the DOM called a <em>tree</em>? Name the three relationship words.</li>
+<li>What is the difference between View Source and the Elements panel?</li>
+<li>What does a CSS rule do, at the level of "pick a target, describe its look"?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded; done by looking, not building.</p>
+<h3>P1 — Layer spotting</h3>
+<p>Open any page you use. Without inspecting, look at one heading, one image, and one button. For each, write one sentence: "Its structure is <strong><em>_</em>_; its presentation (color/size/spacing) makes it look </strong>____."</p>
+<h3>P2 — Draw the tree</h3>
+<p>Open one of your own design files (or sketch on paper). Pick a small frame with three or four layers inside it. Draw the same shape as a DOM tree — one parent with children, using the format from the worked example. Notice how little changes between "layers" and "nodes."</p>
+<h3>P3 — Inspect and name</h3>
+<p>Using DevTools → Elements on a real page, click three different elements. For each, write down the tag name (the word inside the angle brackets) and whether it can have children or stands alone.</p>
+<h3>P4 — Source vs DOM</h3>
+<p>Find a page you know updates itself (a feed, a mail inbox). Open View Source and the Elements panel together. Write one sentence about whether they look the same or different, and why.</p>
+<h3>P5 — Decode this error note</h3>
+<p>A learner wrote: <em>"I right-clicked, chose 'Save as', and got a file. I thought I was viewing source but nothing looks like HTML."</em> In two sentences, explain what they did wrong and what to choose instead.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is visible on purpose — read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No writing HTML or CSS (that begins in U03 and U04).</li>
+<li>No JavaScript.</li>
+<li>No React, components, or installing anything.</li>
+<li>No expectation that you understand every tab in DevTools.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U03 — HTML as structure.</strong> You stop observing and start writing: tags, nesting, semantic sections, links, images, and the difference between a button and a generic box.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U02 Assignment — Reading the layers of a page</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U02-YourName</code> (use your real name or student id as they prefer)</p>
+<p>You will need a browser. No coding, no terminal, no installation.</p>
+<h2>Choose a page first</h2>
+<p>Pick <strong>one</strong> ordinary website you already use (a news page, a portfolio, an online shop, a hobby site). Do <strong>not</strong> pick a banking, government, or login screen — those often block right-clicking and can log you out. Write the site's name at the top of <code>answers.md</code> and use the same page for every task.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Two layers.</strong> In 3–5 lines, explain the difference between HTML and CSS using a metaphor from your own work (not the "skeleton and skin" one already in the lesson). Say what each layer decides.</li>
+<li><strong>The DOM, plainly.</strong> Define the DOM in your own words as if explaining it to a designer who has never coded. One to three sentences.</li>
+<li><strong>Why a tree.</strong> Explain why the DOM is shaped like a tree, and correctly use the words <em>parent</em>, <em>child</em>, and <em>sibling</em> in your explanation.</li>
+<li><strong>Source vs DOM.</strong> In your own words, what is the difference between <strong>View Source</strong> and the <strong>Elements</strong> panel? Give one reason they can differ.</li>
+<li><strong>A CSS rule.</strong> Describe, in plain language, what a CSS rule does. Use the pattern "pick a target → describe its look."</li>
+<li><strong>Predict then inspect.</strong> Pick one element on your chosen page (say, a container holding several items). Before inspecting, write a prediction: "This element is a parent of ___ children named ___." Then open DevTools → Elements and write what you actually found. If your prediction was wrong, that is fine — say what surprised you.</li>
+<li><strong>Decode the failure.</strong> A learner says: <em>"I right-clicked, chose 'Save as', got a file, and it doesn't look like HTML. View Source must be broken."</em> Explain what actually happened and what they should have chosen.</li>
+</ol>
+<h3>2. <code>tree.md</code></h3>
+<p>Draw the DOM tree for <strong>one small section</strong> of your chosen page — a card, a list, a header, anything with a few nested parts. Use the text-tree format from the lesson, for example:</p>
+<pre><code class="language-text">main
+ ├─ h1  →  heading text
+ ├─ p   →  paragraph text
+ └─ img →  (image; describe it)
+</code></pre>
+<p>Rules for your tree:</p>
+<ul>
+<li>It must show <strong>at least one parent with three or more children</strong>.</li>
+<li>It must include <strong>at least one element that has children of its own</strong> (a grandchild relationship).</li>
+<li>Under the tree, list the tag names you found and mark each as <strong>"can hold content"</strong> or <strong>"stands alone."</strong></li>
+<li>Add one sentence: which relationship word (parent / child / sibling) describes your deepest pair of elements.</li>
+</ul>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U02 README fully (not only the assignment).
+- [ ] I opened View Source on a real page.
+- [ ] I opened DevTools → Elements on the same page.
+- [ ] I used the words parent, child, and sibling correctly.
+- [ ] My tree.md is drawn from a real inspected page, not invented.
+- [ ] I read the U02 rubric before writing my answers.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the exact names above.</li>
+<li>You used <strong>one</strong> real page throughout, named at the top of <code>answers.md</code>.</li>
+<li><code>tree.md</code> shows a parent with three or more children <strong>and</strong> at least one grandchild relationship.</li>
+<li>The tag names in <code>tree.md</code> are real ones you actually saw (not imagined).</li>
+<li>The checklist is completed honestly.</li>
+</ul>
+<p>If right-clicking is blocked on the page you picked, choose a different ordinary site rather than fighting it. If you get stuck, use the U00 stuck protocol and write down what you tried.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U02 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explains HTML vs CSS with an original metaphor; each layer's job correct</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Defines the DOM accurately in their own words</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains the tree shape and uses parent/child/sibling correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Distinguishes View Source vs Elements, with one valid reason they differ</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>CSS rule described as "target → look" without claiming CSS is structure</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Predict-then-inspect recorded honestly, with a reflection if wrong</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Correctly decodes the "Save as" failure and names View Source</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td><code>tree.md</code> valid: parent with ≥3 children and ≥1 grandchild, real page</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>tree.md</code></td>
+</tr>
+<tr>
+<td>Tag names classified (holds content vs stands alone) correctly</td>
+<td>1</td>
+<td>No</td>
+<td><code>tree.md</code></td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder/zip structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit guidance</h3>
+<ul>
+<li><strong>Q1:</strong> 1.5/3 if either layer's job is wrong or the metaphor is copied from the lesson. A correct but generic metaphor ("like a document") earns partial.</li>
+<li><strong>Q2:</strong> full only if it captures "browser builds it from the HTML / it is the live structure the user sees." Copying "Document Object Model" with no plain meaning earns 1/3.</li>
+<li><strong>Q3:</strong> 1/3 per correct relationship word in context, plus 1 for the nesting reason (reword). If the words are used backwards, award 0 for the words.</li>
+<li><strong>Q4:</strong> 2/3 if the contrast is right but no reason is given; 0 if they insist the two are identical.</li>
+<li><strong>Q5:</strong> accept any accurate "choose something, describe how it looks." Deduct if they claim CSS writes the structure/content.</li>
+<li><strong>Q6:</strong> full for an honest prediction + observed result, even if the prediction was wrong. 0 if the learner clearly did not inspect (answers contradict a real DOM) or skipped the reflection.</li>
+<li><strong><code>tree.md</code>:</strong> 1 point for the parent-with-3+ shape, 1 point for the grandchild relationship. Deduct 1 (floor 0) if the tag names are invented (e.g., <code>&lt;box&gt;</code>, <code>&lt;card&gt;</code>, <code>&lt;text&gt;</code> — not HTML tags).</li>
+<li><strong>Tag classification:</strong> 0.5 per correctly labeled element, capped at 1. <code>img</code>, <code>br</code>, and <code>input</code> stand alone; <code>div</code>, <code>p</code>, <code>h1</code>, <code>ul</code>, <code>li</code> hold content.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li><strong>Must-have (unit fails without these):</strong> Q1, Q2, Q3, Q4, Q5, and a valid <code>tree.md</code>.</li>
+<li><strong>Nice-to-have (points only):</strong> Q6, Q7, the tag classification, checklist.</li>
+</ul>
+<p>Do not penalize the choice of website, imperfect English, or a prediction that turned out wrong — honesty is the assessable skill in Q6.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U01-what-react-is/index.html">U01 What React is, and why a designer should care</a>
+    <a class="next" href="../U03-html-as-structure/index.html">U03 HTML as structure</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

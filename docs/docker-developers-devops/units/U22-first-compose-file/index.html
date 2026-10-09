@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U22 — Your first compose file | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U22</div>
+    <h1>Your first compose file</h1>
+    <span class="phase-badge ph5">Phase 5 — Docker Compose</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U22 — Your first compose file</h1>
+<p><strong>Phase 5 — Docker Compose</strong></p>
+<h2>Where you are</h2>
+<p>In U21 you learned <em>why</em> Compose exists: one declarative file instead of several long <code>docker run</code> commands. Now you will write that file, read every line of it aloud in plain words, and start your app with <strong>two</strong> commands. This is the smallest honest Compose file: one service. Two services come in U23.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write a minimal <code>compose.yaml</code> for one service.</li>
+<li>Explain what <code>services</code>, <code>build</code>, <code>image</code>, <code>ports</code>, <code>volumes</code>, and <code>environment</code> mean.</li>
+<li>Start the app with <code>docker compose up</code> and stop it with <code>docker compose down</code>.</li>
+<li>Recognize and decode a YAML indentation error and a "port already allocated" error.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11–U16</strong> — building an image from a Dockerfile.</li>
+<li><strong>U17</strong> — volumes.</li>
+<li><strong>U18</strong> — ports (<code>-p 8080:8000</code> means host 8080 → container 8000).</li>
+<li><strong>U21</strong> — what Compose is and why.</li>
+</ul>
+<p>Docker Desktop (Windows/macOS) or Docker Engine with the Compose v2 plugin (Linux) must be running (U06).</p>
+<h2>Time and energy</h2>
+<p>About <strong>75–110 minutes</strong>, because you will type files and run them. Breaks are fine. The first time you watch <code>docker compose up</code> start a real service and print logs, it is worth sitting with for a moment.</p>
+<h2>Why this exists</h2>
+<p>A <code>docker run</code> command is a sentence you say once and forget. A Compose file is a written recipe your project keeps. Writing it forces you to name each decision — which image, which port, which folder for data, which settings — in a place a teammate can read. This unit is where that habit begins.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a "service" is</h3>
+<p>A <strong>service</strong> is one container's worth of instructions inside the Compose file. It has a name you choose (for example <code>web</code>) and a set of keys describing how to create its container. A service is a <em>description</em> until you run <code>docker compose up</code>; after that, a container exists for it.</p>
+<h3>The keys, in plain words before any code</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Plain meaning</th>
+<th>What it replaces from <code>docker run</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image:</code></td>
+<td>Use this existing image (built earlier or pulled).</td>
+<td>the image name at the end of <code>docker run</code></td>
+</tr>
+<tr>
+<td><code>build:</code></td>
+<td>Build the image now, from a Dockerfile in this folder.</td>
+<td>running <code>docker build</code> yourself</td>
+</tr>
+<tr>
+<td><code>ports:</code></td>
+<td>Publish a container port to your machine.</td>
+<td><code>-p 8080:8000</code></td>
+</tr>
+<tr>
+<td><code>volumes:</code></td>
+<td>Mount storage into the container.</td>
+<td><code>-v mydata:/data</code></td>
+</tr>
+<tr>
+<td><code>environment:</code></td>
+<td>Set environment variables inside the container.</td>
+<td><code>-e KEY=value</code></td>
+</tr>
+</tbody>
+</table>
+<p>You will not use every key every time. A service needs <em>either</em> <code>image:</code> <em>or</em> <code>build:</code> (or both, where <code>build</code> also tags the result), plus whatever else the container needs.</p>
+<h3>How Compose knows it worked</h3>
+<p>Two ideas you will see in the output:</p>
+<ul>
+<li><strong>Project name.</strong> Compose groups services into a <strong>project</strong>. By default the project is named after the folder containing the Compose file. So a folder named <code>u22</code> produces objects like <code>u22-web-1</code>.</li>
+<li><strong>Default network.</strong> Compose creates a private network for the project automatically, so services in the same file can reach each other by name (U20). You no longer type <code>docker network create</code>.</li>
+</ul>
+<h3>YAML in one minute</h3>
+<p>The Compose file is written in <strong>YAML</strong>: text where <strong>indentation defines structure</strong>. Two rules save you most pain:</p>
+<ol>
+<li>Use spaces, not tabs. Pick 2 spaces and be consistent.</li>
+<li>Colons separate a key from its value; a dash marks a list item.</li>
+</ol>
+<p>We explain the exact lines below, so you are not guessing.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Service</td>
+<td>One container's description inside the Compose file</td>
+<td>Not a running container until you start it</td>
+</tr>
+<tr>
+<td><code>compose.yaml</code></td>
+<td>The file Compose reads from your current folder</td>
+<td>Not a script you execute</td>
+</tr>
+<tr>
+<td><code>build:</code></td>
+<td>Tells Compose to build an image from a local Dockerfile</td>
+<td>Not a command you type</td>
+</tr>
+<tr>
+<td><code>image:</code></td>
+<td>Tells Compose which image to run</td>
+<td>Not automatically a local build</td>
+</tr>
+<tr>
+<td><code>ports:</code></td>
+<td>Host-to-container port mapping</td>
+<td>The two numbers are host first, container second</td>
+</tr>
+<tr>
+<td><code>volumes:</code></td>
+<td>Storage mounted into the container</td>
+<td>Not the same as <code>COPY</code> at build time (U12)</td>
+</tr>
+<tr>
+<td><code>environment:</code></td>
+<td>Key/value settings passed into the container</td>
+<td>Values are strings in YAML; quote them when in doubt</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>The named group Compose creates</td>
+<td>Defaults to the folder name</td>
+</tr>
+<tr>
+<td><code>docker compose up</code></td>
+<td>Build/pull, create, and start all services</td>
+<td>Not the same as <code>docker run</code></td>
+</tr>
+<tr>
+<td><code>docker compose down</code></td>
+<td>Stop and remove this project's containers and network</td>
+<td>By default it keeps named volumes (U25)</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a tiny web service that needs <strong>no extra dependencies</strong>: it uses only Python's standard library. Create a new empty folder, for example <code>u22</code>, and put three files in it.</p>
+<h3>File 1: <code>app.py</code></h3>
+<pre><code class="language-python">import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+GREETING = os.environ.get(&quot;GREETING&quot;, &quot;Hello from Compose&quot;)
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = f&quot;&lt;h1&gt;{GREETING}&lt;/h1&gt;\n&quot;.encode(&quot;utf-8&quot;)
+        self.send_response(200)
+        self.send_header(&quot;Content-Type&quot;, &quot;text/html; charset=utf-8&quot;)
+        self.send_header(&quot;Content-Length&quot;, str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+if __name__ == &quot;__main__&quot;:
+    HTTPServer((&quot;0.0.0.0&quot;, 8000), Handler).serve_forever()
+</code></pre>
+<p>Why this file: it reads one environment variable (<code>GREETING</code>) and answers every web request with it. That lets us <em>see</em> <code>environment:</code> working. It listens on port 8000 inside its container.</p>
+<h3>File 2: <code>Dockerfile</code></h3>
+<pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+COPY app.py .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>Line by line: <code>FROM</code> starts from a small official Python image (U12); <code>WORKDIR</code> sets the working folder inside the image; <code>COPY</code> brings our script in; <code>CMD</code> is the default command when the container runs. There is no <code>RUN pip install</code> because the app has no dependencies.</p>
+<h3>File 3: <code>compose.yaml</code></h3>
+<pre><code class="language-yaml">services:
+  web:
+    build: .
+    ports:
+      - &quot;8080:8000&quot;
+    environment:
+      GREETING: &quot;Hello from a Compose service&quot;
+</code></pre>
+<p>Line-by-line, matching the indentation exactly:</p>
+<ul>
+<li><code>services:</code> — top-level key. Everything indented under it is a service. There is exactly one here.</li>
+<li><code>web:</code> — the service name. You chose it. It appears in logs and container names (<code>u22-web-1</code>).</li>
+<li><code>build: .</code> — build an image using the Dockerfile in the current folder (<code>.</code> means "this folder"). This is where U11–U16 pay off.</li>
+<li><code>ports:</code> — start a list.</li>
+<li><code>- "8080:8000"</code> — publish host port 8080 to container port 8000 (U18). The quotes are optional here but harmless.</li>
+<li><code>environment:</code> — start a map of settings.</li>
+<li><code>GREETING: "Hello from a Compose service"</code> — set the <code>GREETING</code> variable inside the container.</li>
+</ul>
+<p>That is the whole file. No network to create, no <code>--name</code> to remember.</p>
+<h3>Running it</h3>
+<p><strong>Command 1:</strong></p>
+<pre><code class="language-text">docker compose up
+</code></pre>
+<p><strong>What it does:</strong> reads <code>compose.yaml</code> in the current folder, builds the <code>web</code> service image from the Dockerfile, creates a project network, creates and starts the container, and attaches to the logs so you see them live. It runs in the <strong>foreground</strong> until you stop it.</p>
+<p><strong>Success looks like this</strong> (versions and build step counts vary):</p>
+<pre><code class="language-text">[+] Building 4.1s (8/8) FINISHED
+ =&gt; [web internal] load build definition from Dockerfile
+ =&gt; [web] resolving provenance for metadata file
+[+] Running 2/2
+ ✔ Network u22_default  Created
+ ✔ Container u22-web-1  Created
+Attaching to web-1
+web-1  | 172.18.0.1 - - [..] &quot;GET / HTTP/1.1&quot; 200 -
+</code></pre>
+<p><strong>Now reach it.</strong> Open <code>http://localhost:8080</code> in a browser, or in a second terminal run <code>curl http://localhost:8080</code>. You should see the greeting text. That proves the port mapping and the environment variable both worked.</p>
+<p><strong>To stop:</strong> press <code>Ctrl+C</code> in the terminal running <code>up</code>. This stops the containers but leaves them defined. To clean up fully, use the next command.</p>
+<p><strong>Command 2:</strong></p>
+<pre><code class="language-text">docker compose down
+</code></pre>
+<p><strong>What it does:</strong> stops and removes the containers and the network for this project. It does <strong>not</strong> remove named volumes unless you add <code>-v</code> (that is U25).</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">[+] Running 2/2
+ ✔ Container u22-web-1  Removed
+ ✔ Network u22_default  Removed
+</code></pre>
+<h3>A note on operating systems</h3>
+<ul>
+<li>The Compose and Docker commands are identical on Windows (PowerShell), macOS, and Linux.</li>
+<li>On Windows, Docker Desktop must be running. If <code>docker compose up</code> cannot find the Docker engine, start Docker Desktop first.</li>
+<li>If you later add a bind mount (a folder from your machine mapped into the container), Windows paths work best with a relative path like <code>./site</code> or forward slashes. We do not need one in this unit.</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: YAML indentation or tab characters</h3>
+<p><strong>What you see:</strong></p>
+<pre><code class="language-text">yaml: line 4: mapping values are not allowed in this context
+</code></pre>
+<p><strong>What it means:</strong> YAML cares about indentation, and it does not allow tab characters. A line is indented one space too many, or a tab sneaked in from an editor.</p>
+<p><strong>Fix:</strong> Show whitespace in your editor, replace tabs with spaces, and make every child line consistently deeper than its parent. Compare against the exact file above.</p>
+<h3>Error: Port already in use</h3>
+<p><strong>What you see:</strong></p>
+<pre><code class="language-text">Error response from daemon: driver failed programming external connectivity ...
+Bind for 0.0.0.0:8080 failed: port is already allocated
+</code></pre>
+<p><strong>What it means:</strong> something already owns host port 8080 — an earlier container you left running, or another program. The <code>8080</code> here is the <strong>host</strong> side of <code>"8080:8000"</code>.</p>
+<p><strong>Fix:</strong> stop the other container (<code>docker compose down</code> in its folder, or <code>docker ps</code> to find it per U10), or change the host side to a free port such as <code>"8081:8000"</code> and open <code>http://localhost:8081</code>.</p>
+<h3>Error: No configuration file found</h3>
+<p><strong>What you see:</strong></p>
+<pre><code class="language-text">no configuration file provided: not found
+</code></pre>
+<p><strong>What it means:</strong> you ran the command from a folder that has no <code>compose.yaml</code> or <code>docker-compose.yml</code>.</p>
+<p><strong>Fix:</strong> change into the folder that contains your file (<code>cd</code>) and run the command there (U03).</p>
+<h2>Checkpoints</h2>
+<p>Answer before starting the assignment:</p>
+<ol>
+<li>Which key would you use to run an image you pulled from Docker Hub, and which to build one locally?</li>
+<li>In <code>"8080:8000"</code>, which number is on your machine and which is inside the container?</li>
+<li>After <code>docker compose down</code>, does the project network still exist?</li>
+</ol>
+<p>If those are clear, you are ready.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Change one value</h3>
+<p>Change the host port to <code>"8090:8000"</code>. Predict which URL you will open, then run <code>docker compose up</code> and confirm. Stop with <code>Ctrl+C</code>, then <code>docker compose down</code>.</p>
+<h3>P2 — Environment feedback loop</h3>
+<p>Change the <code>GREETING</code> value to include your name (for example <code>"Hello, Amara"</code>). Predict what the browser will show <em>before</em> you rebuild. Then run <code>docker compose up</code> again and check. Did you need to rebuild the image, or only restart the container? Write the answer and why.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>You want the service to be named <code>website</code> instead of <code>web</code>. Write only the changed lines of <code>compose.yaml</code>. (Hint: only the service name changes; the URL stays the same.)</p>
+<h3>P4 — Write from a specification</h3>
+<p>Write a minimal <code>compose.yaml</code> that runs the official <code>nginx:alpine</code> image (no build), publishes host port 8080 to container port 80, and sets an environment variable <code>NGINX_HOST=example.local</code>. Do not run it yet; we will use it in the assignment.</p>
+<h3>P5 — Fix a broken example</h3>
+<p>This file fails to start. Find and fix the error, then explain it in one sentence.</p>
+<pre><code class="language-yaml">services:
+web:
+    image: nginx:alpine
+  ports:
+    - &quot;8080:80&quot;
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No multiple services or databases (U23).</li>
+<li>No <code>.env</code> files or <code>${VAR}</code> interpolation (U24).</li>
+<li>No lifecycle commands such as <code>up -d</code>, <code>logs</code>, <code>exec</code>, <code>ps</code>, or <code>build</code> (U25).</li>
+<li>No orchestration or deployment (Phase 6–7).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U23 — A two-service app</strong> (app + database, <code>depends_on</code>, connection settings, and why data needs a volume).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U22 Assignment — Your first compose file</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U22-YourName</code></p>
+<h2>What to build</h2>
+<p>A single-service Compose project based on the worked example, started and verified. Put your project files in a subfolder named <code>project/</code>.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>project/app.py</code></h3>
+<p>The Python web app from the README, with one change: the default greeting must include your name (for example <code>"Hello from Amina's Compose service"</code>).</p>
+<h3>2. <code>project/Dockerfile</code></h3>
+<p>The Dockerfile from the README (unchanged is fine).</p>
+<h3>3. <code>project/compose.yaml</code></h3>
+<p>A Compose file that:</p>
+<ul>
+<li>names the service <code>web</code>,</li>
+<li>builds from the local Dockerfile,</li>
+<li>publishes host port <strong>8081</strong> to container port <strong>8000</strong>,</li>
+<li>sets the environment variable <code>GREETING</code> to <code>Hello from &lt;your name&gt;</code>.</li>
+</ul>
+<h3>4. <code>evidence.txt</code></h3>
+<p>Paste exactly what you did and saw, in this order:</p>
+<ul>
+<li>The command you ran to start the project.</li>
+<li>The <code>docker compose up</code> output lines that show the network/container being created.</li>
+<li>The command you used to reach the site (for example <code>curl http://localhost:8081</code>).</li>
+<li>The output that proves the site responded.</li>
+<li>The command and output for stopping and cleaning up.</li>
+</ul>
+<p>A screenshot may be included as <code>evidence.png</code> <strong>in addition to</strong> the text, but the text is required.</p>
+<h3>5. <code>answers.md</code></h3>
+<ol>
+<li><strong>Line by line.</strong> Explain in your own words what each of these keys does: <code>services</code>, <code>build</code>, <code>ports</code>, <code>environment</code>. One or two sentences each.</li>
+<li><strong>Ports.</strong> In your mapping, which number is on your machine and which is inside the container? How would you reach the site from your browser?</li>
+<li><strong>Image vs build.</strong> Explain the difference between <code>image:</code> and <code>build:</code> as if to a teammate who has only ever used <code>docker run</code>.</li>
+<li><strong>Predict then explain.</strong> You change only the <code>GREETING</code> value and run <code>docker compose up</code> again. Will Docker need to rebuild the image? Justify your answer in 2–3 lines.</li>
+<li><strong>Debug this.</strong> The following <code>compose.yaml</code> fails to start. Explain what is wrong and give the corrected file.</li>
+</ol>
+<p><code>yaml
+   services:
+   web:
+       image: nginx:alpine
+     ports:
+       - "8080:80"</code></p>
+<ol start="6">
+<li><strong>Explain in your own words.</strong> Why does the project get a default network without you creating one?</li>
+</ol>
+<h3>6. <code>checklist.md</code></h3>
+<p>Copy and complete:</p>
+<pre><code class="language-markdown">- [ ] I read the U22 README fully (not only the assignment).
+- [ ] `docker compose up` created a container and a network for my project.
+- [ ] I reached the site in a browser or with `curl`.
+- [ ] I stopped the project cleanly with `docker compose down`.
+- [ ] I read the U22 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>project/</code> contains <code>app.py</code>, <code>Dockerfile</code>, and <code>compose.yaml</code> as specified.</li>
+<li>The site was actually reached (evidence shows a response), not only started.</li>
+<li><code>answers.md</code> is in your own words; Q5 fixes the broken file correctly.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+</ul>
+<h2>Submission format</h2>
+<p>One folder or zip named <code>U22-YourName</code> containing <code>project/</code>, <code>evidence.txt</code>, <code>answers.md</code>, and <code>checklist.md</code>. Keep the names exactly as written so your trainer can find everything.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U22 Rubric</h1>
+<p>Visible to learners. Total <strong>25 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compose.yaml</code> is valid YAML with correct indentation and required keys</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td>Service is built from the local Dockerfile and named <code>web</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td>Port mapping is host 8081 → container 8000</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>GREETING</code> environment variable set to include the learner's name</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code>, <code>project/app.py</code></td>
+</tr>
+<tr>
+<td>Project actually starts and the site is reached (evidence)</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>evidence.txt</code> (and optional <code>evidence.png</code>)</td>
+</tr>
+<tr>
+<td>Accurate line-by-line explanation of the four keys</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correct host/container port direction and browser URL</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Clear distinction between <code>image:</code> and <code>build:</code></td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Debug task correctly identifies indentation/placement and fixes it</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Explains why the default network exists</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Evidence: award 3/5 if the project clearly started but reaching the site is not shown; award 0 if there is no sign it was run at all. Do not accept a README screenshot as evidence.</li>
+<li>Q4: the key insight is that <code>environment</code> is applied when the <strong>container</strong> is created/recreated, not baked into the image, so no rebuild is needed. Award 1/2 for "no rebuild" without reasoning.</li>
+<li>Q5: the core bug is that the service name <code>web</code> is not indented under <code>services:</code>, and <code>ports</code> is misaligned. A fix that runs earns 2/2; a fix that solves only one of the two errors earns 1/2.</li>
+<li>Q1: award 2/3 if two keys are vague; 0 if definitions are copied verbatim from the lesson with no personal phrasing.</li>
+</ul>
+<h2>Evidence the assessor should look for</h2>
+<ul>
+<li><code>evidence.txt</code> should show a <code>docker compose up</code> creation line (<code>Network ... Created</code>, <code>Container ... Created</code>) and a real HTTP response (a line of HTML or the greeting text from <code>curl</code>).</li>
+<li>The <code>GREETING</code> value in <code>compose.yaml</code> or <code>app.py</code> must be personalized, not the lesson default.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U21-why-compose-exists/index.html">U21 Why Compose exists</a>
+    <a class="next" href="../U23-two-service-app/index.html">U23 A two-service app</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

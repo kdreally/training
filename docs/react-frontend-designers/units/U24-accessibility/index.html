@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U24 — Accessibility | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U24</div>
+    <h1>Accessibility</h1>
+    <span class="phase-badge ph4">Phase 4 — Styling and design</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U24 — Accessibility</h1>
+<p><strong>Phase 4 — Styling and design</strong></p>
+<h2>Where you are</h2>
+<p>You can build components, style them, tokenise their values, and make them adapt to screen size. All of that assumes someone can <em>use</em> the result. Accessibility is the practice of making sure they can — including people using keyboards, screen readers, screen magnification, or lower-contrast settings.</p>
+<p>For a designer, this is not extra credit. It is part of the brief, and the good news is that it is largely a set of decisions you already make (hierarchy, contrast, labels, states) expressed in code.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why accessibility matters to real users and to your work.</li>
+<li>Choose semantic HTML elements before reaching for generic containers.</li>
+<li>Associate a label with an input correctly.</li>
+<li>Write useful <code>alt</code> text, and know when it should be empty.</li>
+<li>Use a <code>&lt;button&gt;</code> for actions instead of a clickable <code>&lt;div&gt;</code>.</li>
+<li>Recognize and preserve visible keyboard focus.</li>
+<li>Check basic color contrast and state why it matters.</li>
+<li>Use <code>aria-label</code> only when no visible text is available, and say what ARIA is <em>not</em> for.</li>
+<li>Run a quick accessibility inspection in the browser.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U02 — What a web page is made of</strong>: the DOM is the tree the browser builds from your markup.</li>
+<li><strong>U03 — HTML as structure</strong>: elements carry meaning (heading, paragraph, list).</li>
+<li><strong>U18 — Forms and controlled inputs</strong>: inputs and their values.</li>
+<li><strong>U21 — Component-scoped CSS</strong>: styling components, and the class naming habit.</li>
+<li><strong>U22 — Design tokens as props</strong> (helpful): tokens make contrast easier to manage globally.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>. Much of it is checking your existing work against a short list. Accessibility can feel overwhelming because it is broad; we deliberately keep this unit to a handful of high-impact basics.</p>
+<h2>Why this exists</h2>
+<p>A surprising amount of the web is unusable to people with disabilities — not because building it well is hard, but because it is easy to build a visually correct thing that only works with a mouse and only makes sense if you can see it.</p>
+<p>Concretely:</p>
+<ul>
+<li>A screen-reader user navigates by <strong>semantics</strong> (is this a button? a heading? a labelled field?). A <code>&lt;div&gt;</code> that <em>looks</em> like a button is announced as nothing.</li>
+<li>A keyboard-only user (many people, not only disabled users) needs to reach every control with the Tab key and see where focus is.</li>
+<li>Low-vision users need enough contrast; and about 1 in 12 men has some color-vision deficiency, so color alone must not carry meaning.</li>
+</ul>
+<p>Beyond ethics, there is a legal dimension: many organisations are required to meet accessibility standards. And the same decisions (clear labels, real buttons, visible focus) make an interface easier for <em>everyone</em>, including people on phones in bright sunlight.</p>
+<p>Accessibility is a design craft, not a compliance chore. The rest of this unit gives you the small set of moves that carry most of the weight.</p>
+<h2>Plain-language teaching</h2>
+<h3>Principle 1: semantic HTML first</h3>
+<p>The browser gives every HTML element a <strong>role</strong> — a meaning it reports to assistive technology. <code>&lt;button&gt;</code> announces "button." <code>&lt;h1&gt;</code> announces "heading level 1." <code>&lt;nav&gt;</code> announces "navigation."</p>
+<p>When you use a generic <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> for everything, you strip those roles away. Screen readers stop being able to help.</p>
+<p>Our rule: <strong>reach for the meaningful element before the generic one.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Design intent</th>
+<th>Use this</th>
+<th>Not this</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A clickable action</td>
+<td><code>&lt;button&gt;</code></td>
+<td><code>&lt;div onClick&gt;</code></td>
+</tr>
+<tr>
+<td>A link to another page</td>
+<td><code>&lt;a href="..."&gt;</code></td>
+<td><code>&lt;span onClick&gt;</code></td>
+</tr>
+<tr>
+<td>A field with a label</td>
+<td><code>&lt;label&gt;</code> + <code>&lt;input&gt;</code></td>
+<td>bare <code>&lt;input&gt;</code></td>
+</tr>
+<tr>
+<td>A heading</td>
+<td><code>&lt;h1&gt;</code>…<code>&lt;h6&gt;</code></td>
+<td>styled <code>&lt;div&gt;</code></td>
+</tr>
+<tr>
+<td>A list of things</td>
+<td><code>&lt;ul&gt;</code> / <code>&lt;ol&gt;</code> + <code>&lt;li&gt;</code></td>
+<td>stacked <code>&lt;div&gt;</code>s</td>
+</tr>
+<tr>
+<td>A grouping of navigation</td>
+<td><code>&lt;nav&gt;</code></td>
+<td><code>&lt;div class="nav"&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>What it does:</strong> gives each part a meaning that assistive tech can announce.</li>
+<li><strong>Success looks like:</strong> in the browser's accessibility inspector, a button reads as a button.</li>
+<li><strong>One decoded failure:</strong> a <code>&lt;div onClick&gt;</code> is not focusable by keyboard and announces nothing. Keyboard users cannot reach it, and screen-reader users do not know it is interactive. Swapping it for <code>&lt;button&gt;</code> fixes both at once.</li>
+</ul>
+<h3>Principle 2: every input needs a label</h3>
+<p>A <strong>label</strong> is the text that tells a user what a field is for. It must be <em>programmatically associated</em> with the input, not merely sitting nearby visually.</p>
+<p>The reliable way: give the input an <code>id</code>, and point the <code>&lt;label&gt;</code> at it with <code>htmlFor</code> (React's spelling of HTML's <code>for</code>).</p>
+<pre><code class="language-jsx">&lt;label htmlFor=&quot;email&quot;&gt;Email address&lt;/label&gt;
+&lt;input id=&quot;email&quot; type=&quot;email&quot; name=&quot;email&quot; /&gt;
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> connects the label to the field so screen readers announce "Email address, edit text" when focus lands.</li>
+<li><strong>Success looks like:</strong> clicking the label text focuses the input, and the accessibility inspector shows the label name.</li>
+<li><strong>One decoded failure:</strong> if <code>htmlFor</code> and <code>id</code> do not match, the label is decoration. The screen reader announces an unlabelled edit field and the user has to guess. React also warns in the console: <em>"A form field element should have an <code>id</code> or <code>name</code> attribute"</em> when it cannot associate reliably. The fix is to make the two strings identical.</li>
+</ul>
+<p>Do not use placeholder text as a label. <strong>Placeholder</strong> text disappears once the user types, and it often fails contrast. It is a hint, not a label.</p>
+<h3>Principle 3: <code>alt</code> text on images</h3>
+<p>An <code>&lt;img&gt;</code> needs an <code>alt</code> attribute. It serves two jobs: a description for screen readers, and a fallback if the image fails to load.</p>
+<pre><code class="language-jsx">&lt;img src=&quot;/team-lead.jpg&quot; alt=&quot;Amara Osei smiling in front of a whiteboard&quot; /&gt;
+</code></pre>
+<p>Rules of thumb:</p>
+<ul>
+<li>If the image carries information, describe it plainly and briefly.</li>
+<li>If the image is purely decorative (<code>alt=""</code>, empty), screen readers skip it. The empty string is deliberate, not laziness.</li>
+<li>Do not start with "Image of…"; the screen reader already announces that it is an image.</li>
+<li>Do not cram a keyword list; write what a sighted colleague would say.</li>
+</ul>
+<h3>Principle 4: use <code>&lt;button&gt;</code> for actions</h3>
+<p>This is the most common single accessibility bug on the web. A clickable <code>&lt;div&gt;</code> can be styled to look perfect and still be invisible to the keyboard.</p>
+<pre><code class="language-jsx">{/* Works for mouse users only */}
+&lt;div className=&quot;btn&quot; onClick={handleSave}&gt;Save&lt;/div&gt;
+
+{/* Works for everyone */}
+&lt;button className=&quot;btn&quot; onClick={handleSave}&gt;Save&lt;/button&gt;
+</code></pre>
+<p>A real <code>&lt;button&gt;</code> is focusable with Tab, activates with Enter and Space, and is announced as a button — for free. That is why our button styling in Phase 4 targets <code>.btn</code> regardless of the element: put the styles on a real <code>&lt;button&gt;</code>.</p>
+<h3>Principle 5: never remove focus, make it clearer</h3>
+<p>When you Tab through a page, the browser draws a <strong>focus indicator</strong> (often a thin outline) around the focused element. It is common for designers to write <code>outline: none</code> because they dislike it. That removes the only cue a keyboard user has about where they are.</p>
+<p>Instead, style it deliberately:</p>
+<pre><code class="language-css">.btn:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
+}
+</code></pre>
+<ul>
+<li><code>:focus-visible</code> matches keyboard focus specifically, so mouse clicks do not always show the ring.</li>
+<li><code>outline-offset</code> keeps the ring from touching the element's edge.</li>
+</ul>
+<p>This is a design decision: pick a focus style that fits your brand and is clearly visible. Make it part of your system, not an accident.</p>
+<h3>Principle 6: color contrast basics</h3>
+<p>Text must stand out from its background. The widely used <strong>WCAG</strong> guidelines (Web Content Accessibility Guidelines) set minimum contrast <strong>ratios</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Text type</th>
+<th>Minimum ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal body text</td>
+<td>4.5 : 1</td>
+</tr>
+<tr>
+<td>Large text (roughly 18pt / 24px, or 14pt+bold)</td>
+<td>3 : 1</td>
+</tr>
+<tr>
+<td>UI components and focus rings</td>
+<td>3 : 1</td>
+</tr>
+</tbody>
+</table>
+<p>You do not need to compute ratios by hand. Free tools do it: browser Developer Tools can show a contrast ratio next to a color, and online contrast checkers are free too.</p>
+<ul>
+<li><strong>What it does:</strong> ensures text remains readable for low-vision users.</li>
+<li><strong>Success looks like:</strong> a color picker in DevTools shows a passing ratio (a green check or "AA" label).</li>
+<li><strong>One decoded failure:</strong> light gray placeholder text on white frequently fails — often around 2:1. It looks "subtle" in a mockup and is unreadable in practice. Darken it or treat it as non-essential.</li>
+</ul>
+<p>Also: do not rely on color <strong>alone</strong> to convey meaning. An error state shown only as red text is invisible to some color-blind users. Add an icon or words ("Error: …").</p>
+<h3>Principle 7: <code>aria-label</code> — when and when not</h3>
+<p><strong>ARIA</strong> (Accessible Rich Internet Applications) is a set of attributes that can add roles and names to markup. The single most important rule is: <strong>ARIA is a last resort, not a first choice.</strong></p>
+<p>Most of the time, a native element solves the problem. Only when an element has no visible text but still needs a name should you add <code>aria-label</code>. Classic example: an icon-only close button.</p>
+<pre><code class="language-jsx">&lt;button aria-label=&quot;Close dialog&quot;&gt;
+  &lt;CloseIcon /&gt;
+&lt;/button&gt;
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> gives the button an accessible name even though it shows only an icon.</li>
+<li><strong>Success looks like:</strong> the accessibility inspector reports the button's name as "Close dialog."</li>
+<li><strong>One decoded failure:</strong> adding <code>aria-label</code> to a <code>&lt;div&gt;</code> does not make it a button or focusable. ARIA changes what is <em>announced</em>, not what <em>works</em>. A <code>&lt;div aria-label="Close"&gt;</code> is still not a button. And visible text plus <code>aria-label</code> can conflict confusingly. Prefer real elements; add ARIA only to fill a genuine gap.</li>
+</ul>
+<h3>Design bridge: accessibility annotations</h3>
+<p>In Figma, many teams now use accessibility annotations — labels like "button," "heading level 2," "alt: product photo," "focus order 1-2-3," "contrast AA." These annotations are exactly what the code needs to be accessible.</p>
+<p>When you annotate a design, you are writing the requirements for the HTML. Your annotations map directly:</p>
+<table>
+<thead>
+<tr>
+<th>Annotation</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Button: Save"</td>
+<td><code>&lt;button&gt;Save&lt;/button&gt;</code></td>
+</tr>
+<tr>
+<td>"Heading 2: Pricing"</td>
+<td><code>&lt;h2&gt;Pricing&lt;/h2&gt;</code></td>
+</tr>
+<tr>
+<td>"Input: Email, required"</td>
+<td><code>&lt;label htmlFor&gt;</code> + <code>&lt;input required&gt;</code></td>
+</tr>
+<tr>
+<td>"Alt: bar chart showing Q3 growth"</td>
+<td><code>alt="bar chart showing Q3 growth"</code></td>
+</tr>
+<tr>
+<td>"Focus order: logo → nav → search"</td>
+<td>sensible DOM order (top to bottom)</td>
+</tr>
+<tr>
+<td>"Contrast: text 4.5:1"</td>
+<td>token values chosen to pass</td>
+</tr>
+</tbody>
+</table>
+<p>If you annotate these as you design, the developer (or future you) does not have to guess. That is accessibility done at the source, where you have the most leverage.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accessibility (a11y)</td>
+<td>Making interfaces usable by people with disabilities</td>
+<td>Not just "screen readers"; also keyboard, low vision, motor</td>
+</tr>
+<tr>
+<td>Semantics</td>
+<td>The meaning an element carries (button, heading)</td>
+<td>Style is separate; a "button" look is not a button role</td>
+</tr>
+<tr>
+<td>Assistive technology</td>
+<td>Software like a screen reader that helps a user navigate</td>
+<td>The DOM's roles and labels is what it relies on</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>What an element is announced as</td>
+<td>Generic <code>div</code>/<code>span</code> have no useful role</td>
+</tr>
+<tr>
+<td>Label</td>
+<td>Text associated with an input</td>
+<td>Visual proximity is not enough; must be programmatically linked</td>
+</tr>
+<tr>
+<td><code>htmlFor</code> / <code>id</code></td>
+<td>React's label attribute and the input's matching identifier</td>
+<td>They must be the <em>same</em> string</td>
+</tr>
+<tr>
+<td>Placeholder</td>
+<td>Hint text inside an input</td>
+<td>Disappears on typing; never a substitute for a label</td>
+</tr>
+<tr>
+<td><code>alt</code> text</td>
+<td>Description for an image</td>
+<td>Empty <code>alt=""</code> is correct for decorative images</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>The element the keyboard currently targets</td>
+<td>Do not remove the indicator; make it clearer</td>
+</tr>
+<tr>
+<td><code>aria-label</code></td>
+<td>An accessible name for an element with no visible text</td>
+<td>Does not add behavior; not a fix for a non-button element</td>
+</tr>
+<tr>
+<td>ARIA</td>
+<td>Attributes that add roles/names to markup</td>
+<td>"First rule of ARIA: don't use ARIA" when HTML suffices</td>
+</tr>
+<tr>
+<td>WCAG</td>
+<td>Web Content Accessibility Guidelines</td>
+<td>Guidelines, not a tool; ratios are the practical part</td>
+</tr>
+<tr>
+<td>Contrast ratio</td>
+<td>Measure of text-vs-background difference</td>
+<td>4.5:1 body, 3:1 large text/UI</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A small sign-up form, built accessibly, contrasted with the common broken version.</p>
+<h3>The broken version (study the failures)</h3>
+<pre><code class="language-jsx">export default function SignupBroken() {
+  return (
+    &lt;div className=&quot;panel&quot;&gt;
+      &lt;div className=&quot;heading&quot;&gt;Sign up&lt;/div&gt;
+      &lt;input className=&quot;field&quot; placeholder=&quot;Email&quot; /&gt;
+      &lt;div className=&quot;btn&quot; onClick={() =&gt; alert(&quot;Sent&quot;)}&gt;
+        Send
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>Failures, decoded:</p>
+<ol>
+<li><code>.heading</code> is a <code>&lt;div&gt;</code>; screen readers do not announce it as a heading. Screen-reader users cannot jump to it.</li>
+<li>The <code>&lt;input&gt;</code> has no label; placeholder text vanishes on typing and may fail contrast. The field is effectively unlabelled.</li>
+<li>The "button" is a <code>&lt;div&gt;</code>. It is not focusable by keyboard, does not activate on Enter or Space, and is announced as plain text.</li>
+<li>No focus styles exist anywhere, so even if something were focusable, the user could not see where they are.</li>
+</ol>
+<h3>The accessible version</h3>
+<pre><code class="language-jsx">export default function Signup() {
+  function handleSubmit(event) {
+    event.preventDefault();
+    alert(&quot;Sent&quot;);
+  }
+
+  return (
+    &lt;form className=&quot;panel&quot; onSubmit={handleSubmit}&gt;
+      &lt;h2 className=&quot;panel__title&quot;&gt;Sign up&lt;/h2&gt;
+
+      &lt;label className=&quot;field&quot;&gt;
+        &lt;span className=&quot;field__label&quot;&gt;Email address&lt;/span&gt;
+        &lt;input className=&quot;field__input&quot; type=&quot;email&quot; name=&quot;email&quot; required /&gt;
+      &lt;/label&gt;
+
+      &lt;button className=&quot;btn&quot; type=&quot;submit&quot;&gt;
+        Send
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+</code></pre>
+<p>Line-by-line, and <em>why</em>:</p>
+<ul>
+<li><code>&lt;form ... onSubmit={handleSubmit}&gt;</code> — a form element, and the submit handler. Submitting a form also works when the user presses Enter in a field.</li>
+<li><code>event.preventDefault();</code> — stops the browser's default page reload. A recurring pattern with forms (U18).</li>
+<li><code>&lt;h2&gt;</code> — a real heading, announced and navigable.</li>
+<li><code>&lt;label className="field"&gt;</code> wrapping the input: this <strong>implicitly associates</strong> the label text with the input inside it, so the label is announced. An explicit <code>&lt;label htmlFor="email"&gt;</code> with a matching <code>id</code> is equally valid; both are fine. Wrapping avoids having to keep two strings in sync.</li>
+<li><code>&lt;input type="email" name="email" required /&gt;</code> — <code>type</code> gives the right mobile keyboard and validation; <code>required</code> marks it mandatory; <code>name</code> identifies it on submit.</li>
+<li><code>&lt;button className="btn" type="submit"&gt;</code> — a real button, focusable and keyboard-operable. <code>type="submit"</code> submits the form.</li>
+<li>The visible text "Send" is the button's accessible name, so no <code>aria-label</code> is needed.</li>
+</ul>
+<p>Add the focus style in <code>Signup.css</code>:</p>
+<pre><code class="language-css">.btn:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--color-text);
+}
+
+.field__input {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.field__input:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 1px;
+}
+</code></pre>
+<h3>Quick inspection: how to check any page</h3>
+<ol>
+<li><strong>Keyboard only:</strong> press Tab repeatedly. Can you reach every control? Is it always obvious where focus is? Does Enter/Space activate buttons?</li>
+<li><strong>Zoom:</strong> set the browser zoom to 200% (Ctrl/Cmd and <code>+</code>). Does content stay usable and unclipped?</li>
+<li><strong>Contrast:</strong> in Developer Tools, inspect text and read the contrast ratio shown beside its color.</li>
+<li><strong>Accessibility tree:</strong> in Chrome/Edge DevTools, the <strong>Accessibility</strong> panel or the <strong>Elements → Accessibility</strong> pane shows an element's role and name. Select your button; it should say "button" with the right name.</li>
+<li><strong>Lighthouse (free, built into Chrome/Edge DevTools):</strong> run the <strong>Accessibility</strong> audit for a checklist of issues. Treat it as a prompt, not a verdict — a passing score still needs your judgment.</li>
+</ol>
+<h2>Common errors</h2>
+<h3>Error 1: A clickable <code>&lt;div&gt;</code> instead of a <code>&lt;button&gt;</code></h3>
+<p><strong>What you see:</strong> everything works with a mouse. But pressing Tab skips the control, and a screen reader calls it "text."</p>
+<p><strong>What it means:</strong> <code>&lt;div&gt;</code> has no button role and no keyboard behavior. Only a real <code>&lt;button&gt;</code> (or equivalent) provides them.</p>
+<p><strong>Fix:</strong> change the element to <code>&lt;button&gt;</code> and keep the same classes and <code>onClick</code>.</p>
+<h3>Error 2: Label and input not actually associated</h3>
+<p><strong>What you see:</strong> the form looks labelled, but the screen reader announces "edit text" with no name; clicking the label does not focus the field.</p>
+<p><strong>What it means:</strong> <code>htmlFor</code> and <code>id</code> do not match, or there is no label at all.</p>
+<p><strong>Fix:</strong> either wrap the <code>&lt;input&gt;</code> in the <code>&lt;label&gt;</code> (implicit) or set <code>&lt;label htmlFor="email"&gt;</code> with <code>&lt;input id="email"&gt;</code> (explicit). Make the strings identical.</p>
+<h3>Error 3: <code>outline: none</code> removes focus</h3>
+<p><strong>What you see:</strong> keyboard users cannot tell which element is focused.</p>
+<p><strong>What it means:</strong> the focus indicator was removed for appearance.</p>
+<p><strong>Fix:</strong> remove the <code>outline: none</code>; instead define a visible <code>:focus-visible</code> style with sufficient contrast.</p>
+<h3>Error 4: Decorative image with a keyword-stuffed <code>alt</code></h3>
+<p><strong>What you see (screen reader):</strong> every decorative flourish is read aloud, making content exhausting to navigate.</p>
+<p><strong>What it means:</strong> images that add nothing meaningful were given non-empty <code>alt</code> text.</p>
+<p><strong>Fix:</strong> use <code>alt=""</code> for decorative images so they are skipped; reserve descriptive <code>alt</code> for images that carry information.</p>
+<h3>Error 5: Using <code>aria-label</code> to "fix" a bad element</h3>
+<p><strong>What you see:</strong> adding <code>aria-label</code> to a <code>&lt;div&gt;</code> did not make it focusable or activate on Enter.</p>
+<p><strong>What it means:</strong> ARIA changes what is announced, not how an element behaves. It is not a behavioral patch.</p>
+<p><strong>Fix:</strong> use the correct native element first. Add ARIA only when a native element cannot express the need (for example, an icon-only button).</p>
+<h3>Error 6: Meaning conveyed only by color</h3>
+<p><strong>What you see:</strong> a required field is marked only by a red border; a color-blind user cannot tell which fields are required.</p>
+<p><strong>What it means:</strong> color alone is not a sufficient signal.</p>
+<p><strong>Fix:</strong> add text or an icon ("Required") alongside the color.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why is <code>&lt;button&gt;</code> better than a clickable <code>&lt;div&gt;</code>, and what three things does it give you for free?</li>
+<li>How do you associate a label with an input, and why is placeholder text not enough?</li>
+<li>When should <code>alt</code> be empty?</li>
+<li>Why is <code>outline: none</code> dangerous?</li>
+<li>Name the minimum contrast ratio for body text and for large text.</li>
+<li>When is <code>aria-label</code> appropriate, and when is it the wrong tool?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Look at the broken <code>SignupBroken</code> example. Before reading the accessible version, list every accessibility problem you can find. Then compare.</p>
+<h3>P2 — Change one element</h3>
+<p>Change <code>&lt;h2 className="panel__title"&gt;</code> to a <code>&lt;div className="panel__title"&gt;</code> and inspect the accessibility tree. Describe how the reported role changes.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete this labelled field using the wrapping approach:</p>
+<pre><code class="language-jsx">&lt;label className=&quot;field&quot;&gt;
+  &lt;span className=&quot;field____&quot;&gt;Postal code&lt;/span&gt;
+  &lt;input className=&quot;field__input&quot; type=&quot;text&quot; name=&quot;postal&quot; /&gt;
+&lt;/label&gt;
+</code></pre>
+<h3>P4 — Debug this broken snippet</h3>
+<pre><code class="language-jsx">&lt;div className=&quot;btn&quot; onClick={save} aria-label=&quot;Save&quot;&gt;
+  &lt;img src=&quot;/icons/save.svg&quot; /&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Name at least three problems and write the corrected version.</p>
+<h3>P5 — Inspection practice</h3>
+<p>Open any real website, press <strong>F12</strong>, and inspect a search field. Use the Accessibility pane to find its <strong>role</strong> and <strong>name</strong>. Write one sentence: did the label come from a <code>&lt;label&gt;</code>, an <code>aria-label</code>, or something else? If it has none, note that too.</p>
+<h3>P6 — Contrast check</h3>
+<p>In Developer Tools, inspect some body text on a site you like. Find the contrast ratio shown next to its color. State whether it passes 4.5:1. If it does not, suggest a darker or lighter value that would.</p>
+<h3>P7 — Design bridge</h3>
+<p>Take a screen from one of your design files. Add accessibility annotations: for each interactive element, note the role, the accessible name, and the intended focus order. You will submit this in the assignment.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No exhaustive WCAG conformance (we cover the high-impact basics).</li>
+<li>No advanced ARIA patterns (menus, tabs, comboboxes) — those come with practice and, often, a component library.</li>
+<li>No automated testing setup or audit tooling beyond the free built-in DevTools.</li>
+<li>No screen-reader software installation required; the accessibility tree inspection is a fair proxy.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U25 — Assets: images, icons, fonts</strong>: we bring real images, icons, and typefaces into the components, without hurting performance.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U24 Assignment — Accessibility audit and fix</h1>
+<p>Submit to your trainer in <strong>one folder or zip</strong> named <code>U24-YourName</code>.</p>
+<p>You will audit an interface against the unit's checklist, fix the issues you find, and explain your reasoning. Use any of your own components from U21–U23, or the lesson's sign-up form.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>before.md</code></h3>
+<ul>
+<li>Paste (or screenshot-and-describe) the <strong>broken</strong> version of your chosen interface.</li>
+<li>List <strong>every</strong> accessibility problem you can find, grouped by category: semantics, labels, keyboard/focus, images/alt, contrast, ARIA.</li>
+<li>For each problem, write one line on the impact: who is affected and how.</li>
+</ul>
+<h3>2. <code>after/</code></h3>
+<p>The corrected version as code:</p>
+<pre><code class="language-text">after/
+  YourComponent.jsx
+  YourComponent.css
+</code></pre>
+<ul>
+<li>Semantic elements used correctly.</li>
+<li>Every input labelled (implicit wrap or explicit <code>htmlFor</code>/<code>id</code>).</li>
+<li>A real <code>&lt;button&gt;</code> for actions.</li>
+<li>A visible <code>:focus-visible</code> style.</li>
+<li>Color contrast considered; note any token changes.</li>
+<li>No <code>aria-label</code> unless an element genuinely has no visible text.</li>
+</ul>
+<h3>3. <code>annotations.md</code></h3>
+<p>Accessibility annotations for the interface, in the spirit of design annotations:</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Role</th>
+<th>Accessible name</th>
+<th>Notes / focus order</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>…</td>
+<td>button / heading / text field / …</td>
+<td>the name announced</td>
+<td>e.g. "focus 2nd", "decorative"</td>
+</tr>
+</tbody>
+</table>
+<p>Add the intended keyboard focus order as a numbered list.</p>
+<h3>4. <code>answers.md</code></h3>
+<ol>
+<li><strong>Why it matters.</strong> In your own words, explain why accessibility matters to the people who use your design — name at least three user situations (not just "disability").</li>
+<li><strong>Semantics first.</strong> Why is semantic HTML the first tool rather than ARIA? Give one example where a native element already solves the problem.</li>
+<li><strong>Label association.</strong> Explain how your label is connected to its input, and why placeholder text is not a substitute.</li>
+<li><strong>Buttons vs divs.</strong> Explain, to a designer, the three things a real <code>&lt;button&gt;</code> provides that a styled <code>&lt;div&gt;</code> does not. Include the keyboard detail.</li>
+<li><strong>Focus.</strong> Why is <code>outline: none</code> a problem, and what did you do instead?</li>
+<li><strong>Contrast.</strong> Report one contrast ratio you checked (text and background), and say whether it passed the relevant minimum.</li>
+<li><strong>ARIA.</strong> Describe one place you deliberately did <strong>not</strong> use ARIA, and why.</li>
+<li><strong>Inspection.</strong> Describe what you saw in the browser's accessibility pane for one element (its role and name). This proves you inspected, not just remembered.</li>
+</ol>
+<h3>5. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I used semantic elements (heading, button, form, label).
+- [ ] Every input has an associated label.
+- [ ] I used &lt;button&gt; for actions, not a clickable div.
+- [ ] Focus is visible via :focus-visible (no outline: none).
+- [ ] Images have appropriate alt text (empty for decorative).
+- [ ] I checked at least one contrast ratio.
+- [ ] I used aria-label only where no visible text existed.
+- [ ] I inspected the accessibility tree in Developer Tools.
+- [ ] I read the U24 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>before.md</code> lists real problems with impacts.</li>
+<li><code>after/</code> fixes those problems in code.</li>
+<li><code>annotations.md</code> covers every interactive element.</li>
+<li><code>answers.md</code> answers all eight prompts in your own words.</li>
+<li>At least one finding came from inspecting in the browser.</li>
+</ul>
+<h2>Predict-then-run requirement</h2>
+<p>Before fixing, write in <code>answers.md</code> which single fix you expect to have the largest impact, and why. After fixing, say whether that turned out to be true.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U24 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Semantic elements used (headings, forms, buttons, labels)</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>after/</code></td>
+</tr>
+<tr>
+<td>Every input has an associated label</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>after/</code></td>
+</tr>
+<tr>
+<td>Real <code>&lt;button&gt;</code> for actions</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>after/</code></td>
+</tr>
+<tr>
+<td>Visible focus style via <code>:focus-visible</code> (no <code>outline: none</code>)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>after/*.css</code></td>
+</tr>
+<tr>
+<td>Image <code>alt</code> handling is correct (empty for decorative)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>after/</code> or notes</td>
+</tr>
+<tr>
+<td>Contrast checked and reported</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td><code>before.md</code> lists real problems with impacts</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>before.md</code></td>
+</tr>
+<tr>
+<td>Annotations cover all interactive elements + focus order</td>
+<td>2</td>
+<td>No</td>
+<td><code>annotations.md</code></td>
+</tr>
+<tr>
+<td>ARIA used sparingly and only where justified</td>
+<td>3</td>
+<td>No</td>
+<td><code>after/</code> + <code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Inspection evidence (role/name reported)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<h2>What the assessor should look for</h2>
+<ul>
+<li><strong>Semantics (5):</strong> real headings (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>), not styled divs; a <code>&lt;form&gt;</code> where appropriate. Deduct for a heading-as-div or a nav as a plain div.</li>
+<li><strong>Labels (4):</strong> either implicit (input wrapped in label) or explicit (<code>htmlFor</code>/<code>id</code> matching). A visible text label that is not associated does <strong>not</strong> count.</li>
+<li><strong>Buttons (4):</strong> any interactive action is a <code>&lt;button&gt;</code>. Clickable divs, spans, or links-as-buttons lose this row.</li>
+<li><strong>Focus (3):</strong> a defined <code>:focus-visible</code> (or <code>:focus</code>) rule; no <code>outline: none</code> without a replacement. If they removed the outline entirely, this row is 0.</li>
+<li><strong><code>before.md</code> (3):</strong> problems must be specific to their interface. Generic lists copied from the lesson score partial.</li>
+<li><strong>Q8 (2):</strong> must describe an actual observation (role and name seen in the pane). A generic statement fails.</li>
+<li><strong>ARIA (3):</strong> full when ARIA is absent where HTML suffices and present only for a genuine gap (e.g. icon-only button). Using <code>aria-label</code> on a div to "fix" it loses this row.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>If the interface works with a keyboard but focus is only a default browser ring (not custom), award 1–2 on the focus row; a default ring is better than none.</li>
+<li>If labels are visually present but unassociated, award 1/4 and explain that visual proximity is not programmatic association.</li>
+<li>If they list five problems but fix three, <code>before.md</code> can score fully while <code>after/</code> rows reflect what was fixed. Note the gap.</li>
+<li>If decorative images have descriptive (non-empty) alt, award 0–1 on images with a note; this is the most common over-correction.</li>
+<li>Do not require a specific contrast value; require that they <em>checked</em> and reported one honestly.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Copying the lesson's "broken" list instead of auditing their own interface.</li>
+<li>Using <code>aria-label</code> everywhere "to be safe."</li>
+<li>Removing the focus outline because it "looked ugly."</li>
+<li>Adding a visible label but not associating it.</li>
+<li>Claiming contrast was fine without reporting a ratio or using a tool.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U23-responsive-layouts/index.html">U23 Responsive layouts in React</a>
+    <a class="next" href="../U25-assets-images-icons-fonts/index.html">U25 Assets: images, icons, fonts</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

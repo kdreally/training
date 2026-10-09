@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U29 — Simple transitions and animation | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U29</div>
+    <h1>Simple transitions and animation</h1>
+    <span class="phase-badge ph5">Phase 5 — Interaction and polish</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U29 — Simple transitions and animation</h1>
+<p><strong>Phase 5 — Interaction and polish</strong></p>
+<h2>Where you are</h2>
+<p>You have shipped components with styling, design tokens, responsive layouts, and accessible markup. Now you add the final layer of polish that designers care about most: <strong>motion</strong>. Motion shows the user that something changed and where it came from. This unit teaches you where motion belongs in a React app, and how to add it without it becoming a maintenance problem.</p>
+<p>The headline: <strong>most motion lives in CSS, not JavaScript.</strong> React decides <em>what</em> is on screen; CSS decides <em>how</em> it gets there.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain the difference between a <strong>transition</strong> and a <strong>keyframe animation</strong>.</li>
+<li>Use the <code>transition</code> property to animate a hover state and an open/closed state.</li>
+<li>Use <code>transform</code> and <code>opacity</code> for smooth, cheap motion.</li>
+<li>Explain why some CSS properties animate smoothly and others do not.</li>
+<li>Decide, with reasons, whether motion belongs in CSS or JavaScript.</li>
+<li>Respect <code>prefers-reduced-motion</code> so motion never causes discomfort.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U04</strong> — CSS as presentation, the box model, flexbox.</li>
+<li><strong>U20</strong> — styling options in a React app.</li>
+<li><strong>U21</strong> — component-scoped CSS (classes on components).</li>
+<li><strong>U24</strong> — accessibility (why respecting user preferences matters).</li>
+<li><strong>U16</strong> — conditional rendering (show/hide by rule), which you will pair with classes here.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. This unit is visual and satisfying. The one non-obvious idea — properties that animate versus properties that jump — deserves a slow read near the end.</p>
+<h2>Why this exists</h2>
+<p>Without motion, an interface changes instantly and the eye can miss it. A menu that appears instantly feels like a glitch; the same menu fading in over 150 milliseconds feels intentional. Motion is not decoration. It is feedback.</p>
+<p>The human problem: <strong>sudden change is hard to follow, and animation done badly is either jarring or inaccessible.</strong> Done well, it is quiet, fast, and optional for people who ask for less of it.</p>
+<p>There is also a maintenance problem. If you drive every animation with JavaScript timers, you own every edge case — interruptions, cleanup, and performance. CSS handles those for free. So we reach for CSS first.</p>
+<h2>Plain-language teaching</h2>
+<h3>Transition vs keyframe animation</h3>
+<ul>
+<li>A <strong>transition</strong> animates a value <strong>from its old value to its new value</strong> when that value changes. You do not describe the steps; you describe how long it takes and how it eases. Think: "whenever <code>background</code> changes, take 200ms to move there."</li>
+<li>A <strong>keyframe animation</strong> describes a sequence of steps and can run on its own — once, or repeated forever. You name the steps with <code>@keyframes</code>. Think: "go from transparent, to visible, to transparent, in a loop."</li>
+</ul>
+<p>For small interface polish, transitions are usually the right tool. They are shorter to write and respond naturally to user actions. We focus on transitions here and show one tiny keyframe example.</p>
+<h3>What a transition looks like</h3>
+<pre><code class="language-css">.card {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+</code></pre>
+<p>Read the <code>transition</code> line as a list: "animate <code>transform</code> over 200ms with an <code>ease</code> curve, and animate <code>box-shadow</code> the same way." When the card is hovered, the new values apply, and instead of jumping, the browser interpolates over 200ms.</p>
+<h3>The parts of a transition, one at a time</h3>
+<ul>
+<li><strong>Property</strong> — what changes (<code>transform</code>, <code>opacity</code>, <code>background-color</code>).</li>
+<li><strong>Duration</strong> — how long, usually <code>150ms</code> to <code>300ms</code> for interface motion. Anything slower than ~400ms starts to feel sluggish.</li>
+<li><strong>Easing</strong> — the speed curve. <code>ease</code> starts quickly and settles; <code>ease-in-out</code> is gentle at both ends; <code>linear</code> is mechanical and rarely right for UI.</li>
+<li><strong>Delay</strong> — optional; how long to wait before starting. Omit it unless there is a reason.</li>
+</ul>
+<p>Shorthand order is flexible, but the common form is <code>property duration easing delay</code>.</p>
+<h3>Transform and why it is special</h3>
+<p><code>transform</code> moves, rotates, or scales an element <strong>without changing the space it occupies in the layout</strong>. <code>translateY(-4px)</code> lifts it visually while its neighbors stay put.</p>
+<p>Transforms are also cheap to animate: the browser can often handle them on its own, without recalculating layout on every frame. This is why designers are taught to animate <code>transform</code> and <code>opacity</code> instead of properties like <code>top</code>, <code>left</code>, <code>width</code>, or <code>height</code>.</p>
+<h3>Which properties animate smoothly, and which jump</h3>
+<p>Not everything animates. Properties that take a continuous value — <code>opacity</code>, colors, <code>transform</code>, <code>filter</code> — interpolate smoothly. Properties that are structural or take keywords often jump:</p>
+<ul>
+<li><code>display: none</code> → <code>block</code> cannot tween. The value is a keyword, not a number. This is why "animate a menu open" is easier if the element stays in the DOM and you animate <code>opacity</code> and <code>transform</code>, rather than switching <code>display</code>.</li>
+<li><code>visibility</code> jumps between <code>hidden</code> and <code>visible</code> (though it can be delayed).</li>
+</ul>
+<p>The practical rule: <strong>animate <code>opacity</code> and <code>transform</code>; leave layout properties alone unless you have a specific reason.</strong></p>
+<h3>Where motion belongs: CSS or JavaScript</h3>
+<p>Use <strong>CSS</strong> when:</p>
+<ul>
+<li>The motion responds to a state you already express in the DOM (hover, focus, a class toggled by React).</li>
+<li>You want smooth, interruptible animation with no timers to manage.</li>
+<li>The motion is decorative or a simple show/hide.</li>
+</ul>
+<p>Use <strong>JavaScript</strong> when:</p>
+<ul>
+<li>The motion depends on values only JavaScript knows at runtime (a measured element size, drag position, scroll).</li>
+<li>You need to coordinate animation with logic — for example, waiting until an exit animation finishes before removing an element from React state.</li>
+<li>You are animating many elements in a coordinated sequence that CSS cannot express cleanly.</li>
+</ul>
+<p>For this course, CSS covers almost everything you need. When React toggles a class, CSS does the moving.</p>
+<h3>Pairing React state with a CSS class</h3>
+<p>React's job is small: add or remove a class based on state. CSS does the rest.</p>
+<pre><code class="language-jsx">&lt;article className={`card ${isOpen ? &quot;card--open&quot; : &quot;&quot;}`}&gt;…&lt;/article&gt;
+</code></pre>
+<p>Then in CSS:</p>
+<pre><code class="language-css">.card {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.card--open {
+  opacity: 1;
+  transform: translateY(0);
+}
+</code></pre>
+<p>The class changes; the transition runs. No JavaScript timer is involved.</p>
+<h3>Respecting <code>prefers-reduced-motion</code></h3>
+<p>Some people experience motion sickness, dizziness, or distraction from animation. Browsers expose the user's operating-system preference through a media query called <code>prefers-reduced-motion</code>. When the user has asked for less motion, we honor it.</p>
+<pre><code class="language-css">@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card--open {
+    transition: none;
+  }
+}
+</code></pre>
+<p>This sets the transition duration to nothing, so state changes still happen instantly and the interface remains fully usable. Note: we remove the <em>animation</em>, not the change. Hiding content is never the goal.</p>
+<p>A common, slightly gentler approach is to shorten rather than remove:</p>
+<pre><code class="language-css">@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</code></pre>
+<p>Either approach is acceptable in this course. Removing or shortening motion is the important part.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transition</td>
+<td>Animates a property from its old value to its new value</td>
+<td>Not a sequence of steps; that is a keyframe animation</td>
+</tr>
+<tr>
+<td>Keyframe animation</td>
+<td>A named sequence of steps that can loop</td>
+<td>Not needed for simple hover/open effects</td>
+</tr>
+<tr>
+<td><code>transform</code></td>
+<td>Moves, rotates, or scales without affecting layout</td>
+<td>Not a layout change; neighbors do not move</td>
+</tr>
+<tr>
+<td><code>translateY(-4px)</code></td>
+<td>Moves an element up by 4 pixels</td>
+<td>Negative Y is up, because the Y axis points down</td>
+</tr>
+<tr>
+<td><code>opacity</code></td>
+<td>How see-through an element is, from <code>0</code> to <code>1</code></td>
+<td><code>0</code> is invisible but still present in the layout</td>
+</tr>
+<tr>
+<td>Easing</td>
+<td>The speed curve of the motion</td>
+<td>Not "how long"; that is duration</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>How long the transition takes</td>
+<td>Keep UI motion roughly 150–300ms</td>
+</tr>
+<tr>
+<td><code>prefers-reduced-motion</code></td>
+<td>A user/OS setting that asks for less animation</td>
+<td>Not a failure of the design; honor it</td>
+</tr>
+<tr>
+<td>Interruptible</td>
+<td>A new change can start before the last finishes</td>
+<td>CSS transitions handle this; JS timers often do not</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A "details" panel that fades and slides open when a button is clicked. React toggles one class; CSS animates.</p>
+<p><strong>File:</strong> <code>src/DetailsPanel.jsx</code></p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+import &quot;./DetailsPanel.css&quot;;
+
+export default function DetailsPanel() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; setIsOpen((open) =&gt; !open)}&gt;
+        {isOpen ? &quot;Hide details&quot; : &quot;Show details&quot;}
+      &lt;/button&gt;
+
+      &lt;div className={`panel ${isOpen ? &quot;panel--open&quot; : &quot;&quot;}`}&gt;
+        &lt;p&gt;Shipping is free on orders over $40.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/DetailsPanel.css</code></p>
+<pre><code class="language-css">.panel {
+  opacity: 0;
+  transform: translateY(-8px);
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 200ms ease, transform 200ms ease, max-height 200ms ease;
+}
+
+.panel--open {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 120px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+}
+</code></pre>
+<p><strong>How to run it:</strong> start the dev server with <code>npm run dev</code> in your project folder and open the printed address. The same command works on Windows, macOS, and Linux.</p>
+<h3>Why every line is where it is</h3>
+<ul>
+<li><code>const [isOpen, setIsOpen] = useState(false)</code> — React holds only the open/closed state. It does not know about pixels or milliseconds.</li>
+<li><code>setIsOpen((open) =&gt; !open)</code> — the function form flips the current value safely, as taught in U17 and U28.</li>
+<li><code>className={`panel ${isOpen ? "panel--open" : ""}`}</code> — a template literal builds the class string. When <code>isOpen</code> is true, the class becomes <code>"panel panel--open"</code>; otherwise <code>"panel"</code>. This is the bridge between state and CSS.</li>
+<li>In <code>.panel</code>, <code>opacity: 0</code> and <code>transform: translateY(-8px)</code> are the <strong>closed</strong> look. <code>max-height: 0</code> plus <code>overflow: hidden</code> is a simple way to collapse the box. (Collapsing height is genuinely hard; <code>max-height</code> is an honest, imperfect trick. <code>grid-template-rows</code> and the newer <code>interpolate-size</code> are alternatives outside this unit's scope.)</li>
+<li><code>transition</code> lists the three properties to animate with the same 200ms ease.</li>
+<li>In <code>.panel--open</code>, the values return to normal, so the browser animates between the closed and open sets.</li>
+<li>The reduced-motion block removes the transition. The panel still opens and closes; it just does so instantly.</li>
+</ul>
+<p><strong>What success looks like:</strong> clicking "Show details" makes the sentence fade in while sliding down the last 8 pixels, over about a fifth of a second. The button label swaps to "Hide details." With reduced motion enabled at the OS level, the text appears instantly with no slide.</p>
+<h2>Common errors</h2>
+<h3>Error: The panel appears but does not animate, and there is no error</h3>
+<p><strong>When it happens:</strong> the class is applied, but the element has no starting values to animate <em>from</em>, or the transition is on the wrong selector.</p>
+<p><strong>Decoded:</strong> a transition needs two states: the resting value and the changed value. If both states have the same value (for example, you forgot to set the closed <code>opacity: 0</code>), there is nothing to interpolate.</p>
+<p><strong>Fix:</strong> confirm the closed state has different values from the open state, and that the <code>transition</code> is written on the <strong>base</strong> class (<code>.panel</code>), not only on <code>.panel--open</code>. Writing <code>transition</code> on the open state makes the opening animate but the closing snap shut — a classic "one-way animation" bug.</p>
+<h3>Error: <code>Failed to load resource ... DetailsPanel.css</code> (404)</h3>
+<p><strong>When it happens:</strong> the import path in the component does not match the file's location, or the file name differs in case.</p>
+<p><strong>Decoded:</strong> the browser could not find the stylesheet, so no styles — and no animation — load.</p>
+<p><strong>Fix:</strong> check the <code>import "./DetailsPanel.css";</code> path and the filename character-for-character. On Windows and macOS, filenames may be treated case-insensitively in some tools and case-sensitively in others; match the case exactly.</p>
+<h3>Error: The button label changes but the panel never appears</h3>
+<p><strong>When it happens:</strong> <code>max-height</code> is already <code>0</code>, and the open class sets a value that is still too small, or an unrelated rule overrides it.</p>
+<p><strong>Decoded:</strong> the panel is technically open but has no room to show its content.</p>
+<p><strong>Fix:</strong> make sure <code>.panel--open</code> sets a <code>max-height</code> large enough for the content, and that no later rule sets <code>max-height: 0</code> with higher specificity.</p>
+<h3>Error: The whole layout jumps when the panel opens</h3>
+<p><strong>When it happens:</strong> you animate <code>height</code> directly, or the panel pushes sibling content around.</p>
+<p><strong>Decoded:</strong> height and other layout properties force the browser to reflow on every frame, which both costs performance and repositions neighbors.</p>
+<p><strong>Fix:</strong> for this pattern, <code>max-height</code> with <code>overflow: hidden</code> avoids content being visible outside the box; for overlays, animate <code>opacity</code> and <code>transform</code> and take the element out of the normal flow.</p>
+<h2>Checkpoints</h2>
+<p>Answer before the assignment. Four clear answers means you are ready.</p>
+<ol>
+<li>What is the difference between a transition and a keyframe animation?</li>
+<li>Why do designers prefer to animate <code>transform</code> and <code>opacity</code> rather than <code>width</code> or <code>top</code>?</li>
+<li>Name one case where a transition cannot do the job and JavaScript is the better tool.</li>
+<li>What does <code>prefers-reduced-motion</code> ask for, and what should we do about it?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>In the worked example, predict what happens visually if you move the <code>transition</code> line from <code>.panel</code> to <code>.panel--open</code> only. Then try it and describe the difference between opening and closing.</p>
+<h3>P2 — Change one value</h3>
+<p>Change the duration from <code>200ms</code> to <code>800ms</code>. Run it and describe how it feels. Then set it to <code>80ms</code> and compare. Write one sentence about which felt right for a small panel.</p>
+<h3>P3 — Fill in the blank</h3>
+<pre><code class="language-css">.button {
+  transition: __________ 150ms ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Create a button that, on hover, smoothly changes its <code>background-color</code> from a token color to a slightly darker one over 150ms, and lifts 2px. Use one of the design tokens from U22 if you have one. Include a reduced-motion rule.</p>
+<h3>P5 — Fix a broken example</h3>
+<pre><code class="language-css">.tooltip {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.tooltip:hover {
+  display: block;
+  opacity: 1;
+}
+</code></pre>
+<p>The tooltip never fades in. Explain why <code>display</code> is the problem, and rewrite the example so it can animate. (Hint: keep the element in the layout and use <code>visibility</code> with a transition, or animate <code>opacity</code> alone.)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is visible; read it before you build.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No animation libraries (Framer Motion, GSAP, and similar). This course does not require them.</li>
+<li>No scroll-driven animation, parallax, or drag interactions.</li>
+<li>No spring physics, orchestration timelines, or exit-animation choreography beyond simple class toggling.</li>
+<li>No animating layout properties as a general technique. We teach the cheap, safe properties.</li>
+<li>No React <code>useEffect</code>-driven animation timers. If you find yourself writing <code>setTimeout</code> for motion, pause and re-read the CSS-vs-JavaScript section.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U30 — Building a small page, end to end</strong> — where every skill from U01–U29 comes together in one small, finished page.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U29 Assignment — Simple transitions and animation</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U29-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>What you are building</h2>
+<p>A small interface with <strong>three pieces of motion</strong>, all driven by CSS:</p>
+<ol>
+<li>A <strong>hover transition</strong> on an interactive element (a button, card, or link) using <code>transform</code> and/or <code>background-color</code>.</li>
+<li>An <strong>open/close transition</strong> controlled by a React boolean state (like the details panel in the lesson, or your own variation).</li>
+<li>A <strong>reduced-motion rule</strong> that removes or shortens the motion when the user asks for less.</li>
+</ol>
+<p>You may reuse an existing component from earlier units and add motion to it, or build fresh small components. Keep the motion subtle: roughly 150–300ms.</p>
+<h2>Files to submit</h2>
+<h3>1. Your project files</h3>
+<p>Include:</p>
+<ul>
+<li>The component file(s) that toggle a class based on state.</li>
+<li>The CSS file(s) containing your transitions and media query.</li>
+<li>Any other files you changed.</li>
+</ul>
+<p>If your project has many files, include only the ones you touched and say so in <code>answers.md</code>.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Do not paste lesson text back unchanged.</p>
+<ol>
+<li><strong>Transition vs keyframe.</strong> In 3–5 sentences, explain the difference to another designer, and say which one you used for your open/close effect and why.</li>
+<li><strong>React's role.</strong> Describe exactly what React does in your open/close animation and what CSS does. Name the line in your code where React's job ends and CSS's begins.</li>
+<li><strong>Transform and opacity.</strong> Explain, in your own words, why <code>transform</code> and <code>opacity</code> are preferred over <code>top</code> or <code>width</code> for smooth motion.</li>
+<li><strong>Predict then run.</strong> Before running, predict the difference between opening and closing your panel if the <code>transition</code> is written only on the open class. Then test it and record what actually happened.</li>
+<li><strong>Which properties jump.</strong> Give one property that cannot be smoothly transitioned and explain why in one or two sentences.</li>
+<li><strong>Error reading.</strong> Copy one real error or browser warning you saw while building this assignment (a missing stylesheet, a 404 in the Network tab, a specificity issue), or reproduce one on purpose. Decode it: what did it mean, and what was the fix?</li>
+<li><strong>Reduced motion.</strong> Show your <code>prefers-reduced-motion</code> block. Explain what changes for the user and confirm the interface still works without the animation.</li>
+<li><strong>Design bridge.</strong> In design tools there is a distinction between a "smart animate" prototype and a real interaction. In two or three sentences, connect that distinction to the difference between how motion <em>looks</em> in a prototype and how it is <em>built</em> in CSS driven by state.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I have a hover transition using `transform` and/or a color.
+- [ ] I have an open/close transition driven by a React boolean state.
+- [ ] My `transition` is written on the base class, so closing animates too.
+- [ ] I animate `transform`/`opacity` (not `top`, `left`, `width`, or `height`).
+- [ ] I have a `prefers-reduced-motion: reduce` rule that removes or shortens motion.
+- [ ] The interface is fully usable with motion removed.
+- [ ] `answers.md` is in my own words.
+- [ ] I read the U29 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Three pieces of motion present and working: hover, open/close, reduced-motion rule.</li>
+<li>Motion durations are in the 150–300ms range for interface effects.</li>
+<li>The interface works completely when reduced motion is enabled (nothing disappears).</li>
+<li><code>answers.md</code> present and in your own words.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+<li>No errors in the browser console while the page is open.</li>
+</ul>
+<h2>Submission format</h2>
+<p>Put everything inside one folder named <code>U29-YourName</code>. Compress it only if your trainer asks. If your file names differ from the suggestions, list them at the top of <code>answers.md</code>.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U29 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hover transition using <code>transform</code> and/or color, duration roughly 150–300ms</td>
+<td>4</td>
+<td>Yes</td>
+<td>CSS + live behavior</td>
+</tr>
+<tr>
+<td>Open/close transition driven by a React boolean state</td>
+<td>5</td>
+<td>Yes</td>
+<td>component + CSS</td>
+</tr>
+<tr>
+<td><code>transition</code> written on the base class so both opening and closing animate</td>
+<td>3</td>
+<td>Yes</td>
+<td>CSS</td>
+</tr>
+<tr>
+<td>Only cheap properties animated (<code>transform</code>, <code>opacity</code>, color); no <code>width</code>/<code>top</code>/<code>height</code> motion</td>
+<td>4</td>
+<td>Yes</td>
+<td>CSS</td>
+</tr>
+<tr>
+<td>Reduced-motion rule present and interface fully usable without motion</td>
+<td>4</td>
+<td>Yes</td>
+<td>CSS + <code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Explains transition vs keyframe in own words and states which was used and why</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains React's role vs CSS's role concretely</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Predict-then-run is concrete and compares prediction to reality</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Error-reading: a real error/warning quoted and decoded</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Design bridge connects smart-animate prototype to state-driven CSS</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>The transition-on-open-only bug is the most common. If the learner wrote <code>transition</code> only on the open class, award points for the working opening motion but note the one-way bug and consider it against the "base class" criterion (partial).</li>
+<li>Reduced motion: the test is that the interface still works with motion removed. If the panel relies on animation to become visible and disappears under reduced motion, treat this as a real accessibility defect, not a stylistic one.</li>
+<li>Animating <code>width</code>, <code>height</code>, <code>top</code>, or <code>left</code> is a real conceptual miss even if it looks smooth in a simple case. Note it clearly; the reason is performance and layout reflow.</li>
+<li>Q5: any correct example with a sensible reason: <code>display</code> (keyword), <code>visibility</code> (keyword), or layout properties forcing reflow.</li>
+<li>Q6: accept missing stylesheet (404), specificity override, or a silent no-animation case, as long as it is decoded.</li>
+<li>Do not penalize imperfect English. Do penalize copied lesson text with no personalization on Q1, Q2, and Q8.</li>
+</ul>
+<h3>What to look for (assessor pointer)</h3>
+<p>The core takeaways are: (1) React decides what, CSS decides how, and (2) motion is optional and honored. A submission with beautiful motion but no reduced-motion handling is incomplete for this unit.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U28-custom-hooks/index.html">U28 Custom hooks</a>
+    <a class="next" href="../U30-building-a-small-page/index.html">U30 Building a small page, end to end</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

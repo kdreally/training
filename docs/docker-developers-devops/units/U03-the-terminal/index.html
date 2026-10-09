@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U03 — The terminal, deliberately | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U03</div>
+    <h1>The terminal, deliberately</h1>
+    <span class="phase-badge ph1">Phase 1 — Why containers exist</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U03 — The terminal, deliberately</h1>
+<p><strong>Phase 1 — Why containers exist</strong></p>
+<h2>Where you are</h2>
+<p>Docker does not have a graphical window you click. You drive it by typing <strong>commands</strong> into a <strong>terminal</strong>. Before we install or run anything, this unit makes sure the terminal is a place you understand, not a place you fear. We go slowly and name every part.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a terminal and a shell are, and why programmers use them.</li>
+<li>Find out where you are (<code>pwd</code>), list what is there (<code>ls</code> or <code>dir</code>), and move between folders (<code>cd</code>).</li>
+<li>Run a simple command and read its output.</li>
+<li>Read the two most common terminal errors and decode them.</li>
+<li>Tell which commands differ on Windows, macOS, and Linux.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong> The stuck protocol matters here.</li>
+<li><strong>U01 — What we are building toward.</strong></li>
+<li><strong>U02 — The works-on-my-machine problem.</strong> You only need the idea that machines have environments.</li>
+</ul>
+<p>You do <strong>not</strong> need Docker installed for this unit. If you do have it installed already, that is fine; we still do not use it here.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>, most of it hands-on at your own keyboard. If a command confuses you, that is normal and expected. Slow is correct. Reading terminal output fluently takes a few sessions, not one.</p>
+<h2>Why this exists</h2>
+<p>The terminal looks hostile to newcomers: black screen, blinking cursor, no buttons. But it is only a place to type commands as text. Programmers use it because it is precise, scriptable, and available on every server — including the servers that will run your containers. Learning three commands now saves you from guessing later.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a terminal and a shell are</h3>
+<p>A <strong>terminal</strong> is the window or app where you type text commands. Inside it runs a <strong>shell</strong>: the program that actually reads what you type, runs it, and shows you the result.</p>
+<ul>
+<li>On Windows, the common shells are <strong>PowerShell</strong> and the older <strong>Command Prompt</strong> (<code>cmd.exe</code>).</li>
+<li>On macOS and Linux, the common shell is <strong>bash</strong> (or a close relative such as <code>zsh</code>). We will say "bash" to mean all of them.</li>
+</ul>
+<p>The terminal is the window; the shell is the brain inside it. For learning purposes you can use the words interchangeably, and many people do. We will use <strong>terminal</strong> for the window and <strong>shell</strong> when the difference matters.</p>
+<h3>The prompt</h3>
+<p>When the shell is ready for you to type, it shows a <strong>prompt</strong>: a short line of text ending in a symbol such as <code>&gt;</code> (PowerShell), <code>$</code> (bash), or <code>C:\&gt;</code> (cmd). The prompt is the shell saying "I am listening."</p>
+<pre><code class="language-text">PS C:\Users\yourname&gt;        &lt;- a PowerShell prompt
+$                            &lt;- a bash prompt
+C:\Users\yourname&gt;           &lt;- a cmd.exe prompt
+</code></pre>
+<p>The prompt is <strong>not</strong> something you type. It is shown to you.</p>
+<h3>Your working directory</h3>
+<p>At any moment the shell is "standing" inside one folder. That folder is your <strong>working directory</strong> — the place all your commands act on by default. When you open a new terminal, you usually start in your <strong>home</strong> folder.</p>
+<p>A <strong>directory</strong> is the proper name for a folder. Both words mean the same thing.</p>
+<h3>Finding where you are: <code>pwd</code></h3>
+<p><code>pwd</code> stands for "print working directory." It prints the full path of the folder you are currently in.</p>
+<pre><code class="language-text">$ pwd
+/home/yourname
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> reports your current folder as a full path.</li>
+<li><strong>What "worked" looks like:</strong> you see a path. On Windows it looks like <code>C:\Users\yourname</code>; on macOS/Linux like <code>/home/yourname</code>.</li>
+<li><strong>Typical failure decoded:</strong> <code>pwd : The term 'pwd' is not recognized</code>. This means you are in the old Windows <strong>Command Prompt</strong>, which does not have <code>pwd</code>. Use <code>cd</code> with no argument instead (it prints the current folder), or open PowerShell.</li>
+</ul>
+<h3>Listing what is here: <code>ls</code> (and <code>dir</code>)</h3>
+<p><code>ls</code> stands for "list." It shows the files and folders in your working directory.</p>
+<pre><code class="language-text">$ ls
+Desktop    Documents    Downloads    notes.txt
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> lists the contents of the current folder.</li>
+<li><strong>What "worked" looks like:</strong> you see names of files and folders. <strong>Your list will differ from the example.</strong> That is expected — it reflects your machine.</li>
+<li><strong>Platform difference:</strong> in <strong>PowerShell</strong> on Windows, <code>ls</code> works (it is a shortcut to the same idea). In the old <strong>Command Prompt</strong>, <code>ls</code> is not available; type <code>dir</code> instead. In <strong>bash</strong>, <code>ls</code> is the standard command.</li>
+<li><strong>Typical failure decoded:</strong> <code>ls : The term 'ls' is not recognized as the name of a cmdlet...</code>. This means you are in <code>cmd.exe</code>, not PowerShell. Either open PowerShell or use <code>dir</code>.</li>
+</ul>
+<h3>Moving between folders: <code>cd</code></h3>
+<p><code>cd</code> stands for "change directory." It moves your working directory to another folder.</p>
+<pre><code class="language-text">$ cd Desktop
+$ pwd
+/home/yourname/Desktop
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> changes which folder you are standing in.</li>
+<li><strong>What "worked" looks like:</strong> your prompt often changes, and <code>pwd</code> now shows the new folder. Some systems show no obvious change — so verify with <code>pwd</code>.</li>
+<li><strong>Typical failure decoded:</strong> <code>cd: no such file or directory: Desktp</code> (bash) or <code>Set-Location : Cannot find path '...' because it does not exist.</code> (PowerShell). The folder name was misspelled or the folder is not inside the current one. Check the spelling with <code>ls</code> first.</li>
+</ul>
+<h3>Paths: absolute and relative</h3>
+<p>A <strong>path</strong> is the address of a file or folder.</p>
+<ul>
+<li>An <strong>absolute path</strong> starts from the very top of the filesystem. On Windows it looks like <code>C:\Users\yourname\Desktop</code>. On macOS/Linux it starts with <code>/</code>, like <code>/home/yourname/Desktop</code>.</li>
+<li>A <strong>relative path</strong> starts from where you are now. <code>cd Desktop</code> means "the Desktop folder inside my current folder."</li>
+</ul>
+<p>Two special shortcuts:</p>
+<ul>
+<li><code>..</code> means <strong>the parent</strong> — the folder one level up. <code>cd ..</code> moves you up one level.</li>
+<li><code>~</code> means your <strong>home</strong> folder. <code>cd ~</code> goes straight home (bash; PowerShell also accepts <code>~</code>).</li>
+</ul>
+<p>The <strong>separator</strong> differs by system: Windows traditionally uses a backslash <code>\</code>, macOS and Linux use a forward slash <code>/</code>. PowerShell accepts either in most cases.</p>
+<h3>Running a command: <code>echo</code></h3>
+<p>To practice <em>executing</em> something, use <code>echo</code>, which prints back whatever you give it. The text you give it is called an <strong>argument</strong> — extra information attached to a command.</p>
+<pre><code class="language-text">$ echo hello terminal
+hello terminal
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> prints its arguments back to you.</li>
+<li><strong>What "worked" looks like:</strong> the words you typed appear again on the next line.</li>
+<li><strong>Typical failure decoded:</strong> <code>echo: command not found</code> or <code>The term 'echo' is not recognized</code>. This almost always means a typo, such as <code>ecoh</code>. Re-read what you typed character by character.</li>
+</ul>
+<h3>Creating a folder: <code>mkdir</code></h3>
+<p><code>mkdir</code> stands for "make directory." It creates a new, empty folder with the name you give it. You will need it for the assignment, so we meet it here.</p>
+<pre><code class="language-text">$ mkdir terminal-practice
+$ ls
+Desktop    Documents    Downloads    terminal-practice
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> creates one new folder in your current directory.</li>
+<li><strong>What "worked" looks like:</strong> the command prints nothing at all, and the new folder appears when you run <code>ls</code> (or <code>dir</code>). Silence is success here.</li>
+<li><strong>Typical failure decoded:</strong> <code>mkdir: cannot create directory 'terminal-practice': File exists</code> (bash) or <code>An item with the specified name ... already exists.</code> (PowerShell). The folder is already there. That is harmless — move on and use the existing folder.</li>
+</ul>
+<h3>Reading output</h3>
+<p>Every command produces <strong>output</strong>. There are two kinds you should start to notice:</p>
+<ul>
+<li><strong>Normal output:</strong> the result you asked for (a path, a list, a printed word).</li>
+<li><strong>Error output:</strong> a message explaining that something did not match expectations. Errors are written to a separate channel and often appear after the normal output.</li>
+</ul>
+<p>An error is information, not an insult. It usually names the thing it could not find. Read it as: "I looked for X and did not find it."</p>
+<h3>Windows / macOS / Linux cheat sheet</h3>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>PowerShell (Windows)</th>
+<th>Command Prompt (Windows)</th>
+<th>bash (macOS/Linux)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where am I</td>
+<td><code>pwd</code></td>
+<td><code>cd</code> (no argument)</td>
+<td><code>pwd</code></td>
+</tr>
+<tr>
+<td>List files</td>
+<td><code>ls</code></td>
+<td><code>dir</code></td>
+<td><code>ls</code></td>
+</tr>
+<tr>
+<td>Change folder</td>
+<td><code>cd Desktop</code></td>
+<td><code>cd Desktop</code></td>
+<td><code>cd Desktop</code></td>
+</tr>
+<tr>
+<td>Go up one</td>
+<td><code>cd ..</code></td>
+<td><code>cd ..</code></td>
+<td><code>cd ..</code></td>
+</tr>
+<tr>
+<td>Go home</td>
+<td><code>cd ~</code></td>
+<td><code>cd %USERPROFILE%</code></td>
+<td><code>cd ~</code></td>
+</tr>
+<tr>
+<td>Make a folder</td>
+<td><code>mkdir name</code></td>
+<td><code>mkdir name</code></td>
+<td><code>mkdir name</code></td>
+</tr>
+<tr>
+<td>Print text</td>
+<td><code>echo hello</code></td>
+<td><code>echo hello</code></td>
+<td><code>echo hello</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Terminal</td>
+<td>The window/app where you type commands</td>
+<td>Not the same as the shell program inside it</td>
+</tr>
+<tr>
+<td>Shell</td>
+<td>The program that reads and runs your commands</td>
+<td>"Terminal" is often used to mean this too</td>
+</tr>
+<tr>
+<td>Prompt</td>
+<td>The text shown when the shell is ready for input</td>
+<td>People try to type it; you do not</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>A single instruction you type and run</td>
+<td>Not a whole script</td>
+</tr>
+<tr>
+<td>Argument</td>
+<td>Extra info attached to a command (e.g. <code>Desktop</code> in <code>cd Desktop</code>)</td>
+<td>Not the same as a flag</td>
+</tr>
+<tr>
+<td>Flag / option</td>
+<td>An argument starting with <code>-</code> or <code>--</code> that changes behaviour</td>
+<td>Called "switches" on Windows sometimes</td>
+</tr>
+<tr>
+<td>Working directory</td>
+<td>The folder commands act on right now</td>
+<td>Not the whole disk</td>
+</tr>
+<tr>
+<td>Directory</td>
+<td>Another word for folder</td>
+<td>Same thing, no difference</td>
+</tr>
+<tr>
+<td>Path</td>
+<td>The address of a file or folder</td>
+<td>Absolute vs relative confuses everyone at first</td>
+</tr>
+<tr>
+<td>Absolute path</td>
+<td>A path from the very top of the filesystem</td>
+<td>Not "the correct path"</td>
+</tr>
+<tr>
+<td>Relative path</td>
+<td>A path from your current folder</td>
+<td>Depends on where you are standing</td>
+</tr>
+<tr>
+<td>Parent directory</td>
+<td>The folder one level up (<code>..</code>)</td>
+<td>Two dots, not one</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>What a command produces</td>
+<td>Errors are output too, on a separate channel</td>
+</tr>
+<tr>
+<td>Alias</td>
+<td>A second name for a command (e.g. <code>ls</code> for <code>Get-ChildItem</code>)</td>
+<td>Aliases are why <code>ls</code> works in PowerShell</td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td>The command that creates a new folder</td>
+<td>Not the same as entering one; use <code>cd</code> for that</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Open your terminal. Below are two complete sessions, one for Windows PowerShell and one for macOS/Linux bash. Type the commands in your own terminal, but expect <strong>your</strong> filenames and paths to differ. That is normal.</p>
+<h3>Windows (PowerShell)</h3>
+<pre><code class="language-text">PS C:\Users\yourname&gt; pwd
+
+Path
+----
+C:\Users\yourname
+
+PS C:\Users\yourname&gt; ls
+
+    Directory: C:\Users\yourname
+
+Mode                 LastWriteTime         Name
+----                 -------------         ----
+d-----         ...                          Desktop
+d-----         ...                          Documents
+d-----         ...                          Downloads
+
+PS C:\Users\yourname&gt; cd Desktop
+PS C:\Users\yourname\Desktop&gt; pwd
+
+Path
+----
+C:\Users\yourname\Desktop
+
+PS C:\Users\yourname\Desktop&gt; cd ..
+PS C:\Users\yourname&gt; echo hello terminal
+hello terminal
+</code></pre>
+<h3>macOS / Linux (bash)</h3>
+<pre><code class="language-text">$ pwd
+/home/yourname
+
+$ ls
+Desktop    Documents    Downloads
+
+$ cd Desktop
+$ pwd
+/home/yourname/Desktop
+
+$ cd ..
+$ echo hello terminal
+hello terminal
+</code></pre>
+<p>Every line is justified:</p>
+<ul>
+<li><code>pwd</code> confirms the starting point before we change anything.</li>
+<li><code>ls</code> shows what exists, so we know <code>Desktop</code> is really there.</li>
+<li><code>cd Desktop</code> moves into it using a <strong>relative</strong> path.</li>
+<li><code>pwd</code> proves the move worked (prompts are not always reliable proof).</li>
+<li><code>cd ..</code> uses the parent shortcut to move back up.</li>
+<li><code>echo hello terminal</code> demonstrates running a command with an argument.</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: <code>cd</code> cannot find the folder</h3>
+<pre><code class="language-text">$ cd Desctop
+cd: no such file or directory: Desctop
+</code></pre>
+<p><strong>What happened:</strong> a typo. The shell looked for a folder literally named <code>Desctop</code> and found none.</p>
+<p><strong>Fix:</strong> run <code>ls</code> to see the real names, then retype carefully. Terminal commands are case-sensitive on macOS and Linux, so <code>Desktop</code> and <code>desktop</code> are different.</p>
+<h3>Error: <code>ls</code> is not recognized (Windows)</h3>
+<pre><code class="language-text">PS&gt; ls : The term 'ls' is not recognized as the name of a cmdlet...
+</code></pre>
+<p><strong>Wait, it says PowerShell but fails?</strong> The most common cause is that you are actually in the old <strong>Command Prompt</strong> window, which does not know <code>ls</code>. Look at the prompt: <code>C:\Users\yourname&gt;</code> (no <code>PS</code> at the front) means Command Prompt.</p>
+<p><strong>Fix:</strong> either type <code>dir</code> (the Command Prompt equivalent) or open PowerShell, where <code>ls</code> works.</p>
+<h3>Error: a path with spaces</h3>
+<pre><code class="language-text">$ cd My Documents
+cd: too many arguments
+</code></pre>
+<p><strong>What happened:</strong> the shell treats a space as "here ends one argument." It saw two arguments: <code>My</code> and <code>Documents</code>.</p>
+<p><strong>Fix:</strong> wrap the path in quotes: <code>cd "My Documents"</code>. This works in every shell here.</p>
+<h2>Checkpoints</h2>
+<p>Answer before the assignment:</p>
+<ol>
+<li>What is the difference between the terminal and the shell?</li>
+<li>What does <code>pwd</code> show, and why check it after <code>cd</code>?</li>
+<li>Name the Command Prompt equivalent of <code>ls</code>, and one reason it differs.</li>
+</ol>
+<p>If you can answer these while your terminal is open, you are ready.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded, increasing difficulty.</p>
+<h3>P1 — Read and predict</h3>
+<p><strong>Without running anything</strong>, predict the output of this short session:</p>
+<pre><code class="language-text">$ pwd
+/home/sam
+$ cd Projects
+$ pwd
+$ cd ..
+$ pwd
+</code></pre>
+<p>Write your prediction, then run it in your own terminal (create a <code>Projects</code> folder first if needed) and compare.</p>
+<h3>P2 — Change one value</h3>
+<p>Run <code>echo hello</code>. Now run <code>echo hello world</code>. Then run <code>echo "hello world"</code>. Write down how the output changed and why the quotes mattered.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete a session that starts in the home folder, enters <code>Documents</code>, then returns home, using only the commands from this unit.</p>
+<pre><code class="language-text">$ pwd
+____
+$ ____ Documents
+$ cd ____
+$ pwd
+____
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Write the exact commands to: (a) show your current folder, (b) list the files, (c) move into a folder called <code>Downloads</code>, (d) confirm you moved, (e) move back up one level.</p>
+<h3>P5 — Fix the broken commands</h3>
+<p>Each line below is wrong. Write the corrected version and a one-line reason.</p>
+<pre><code class="language-text">cd My Downloads
+pwd Documents
+ls / oops
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No Docker installed or used.</li>
+<li>No file editing or creating beyond what practice needs.</li>
+<li>No scripting, loops, pipes, or <code>sudo</code>/administrator commands.</li>
+<li>No package managers, networks, or servers.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U04 — Apps and their environments</strong> (what a program actually needs in order to run).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U03 Assignment — A terminal transcript</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U03-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>terminal-transcript.md</code></h3>
+<p>Open your terminal and perform the tasks below. Copy the <strong>actual output</strong> you see and paste it into this file under each task. Your paths and file names will differ from any example — that is expected and correct. Do not invent output. If a command fails, keep the failure and add one sentence explaining what you did about it.</p>
+<pre><code class="language-text">Task 1  Show your current folder.
+Task 2  List the files and folders there.
+Task 3  Create a folder named exactly  terminal-practice  in your current folder.
+        (Hint: the command is  mkdir terminal-practice )
+Task 4  Move into  terminal-practice.
+Task 5  Show your current folder again, so the transcript proves you moved.
+Task 6  Print the text  docker starts here  using the echo command.
+Task 7  Move back up to the folder you started in.
+</code></pre>
+<p>For each task, include the command you typed <strong>and</strong> the output, in a fenced block, like this:</p>
+<pre><code class="language-text">$ echo hello
+hello
+</code></pre>
+<p>(On Windows PowerShell the command may still be <code>echo</code>; use <code>dir</code> instead of <code>ls</code> if you are in Command Prompt.)</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Terminal vs shell.</strong> What is the difference, in two or three sentences?</li>
+<li><strong>The prompt.</strong> Why do you not type the prompt yourself?</li>
+<li><strong>Paths.</strong> Explain the difference between an absolute path and a relative path, using a real example from your own transcript.</li>
+<li><strong><code>cd ..</code>.</strong> What exactly does the <code>..</code> mean, and what happens if you run <code>cd ..</code> when you are already at the top of your filesystem?</li>
+<li><strong>Explain in your own words.</strong> Describe what <code>pwd</code>, <code>ls</code>/<code>dir</code>, and <code>cd</code> each do, as if to a friend who has never seen a terminal.</li>
+<li><strong>Reading an error.</strong> Paste one error you saw (or one from the lesson) and decode it: what did the shell look for, and why did it fail?</li>
+</ol>
+<h3>3. <code>broken-commands.md</code></h3>
+<p>Each command below is wrong. For each, write the corrected command and a one-line reason.</p>
+<pre><code class="language-text">cd My Downloads
+pwd Documents
+cd ..Desktop
+ls -1  (run in old Command Prompt)
+</code></pre>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the whole U03 README, not only the assignment.
+- [ ] I ran every task myself and pasted real output.
+- [ ] I can explain pwd, ls/dir, and cd without notes.
+- [ ] I know the difference between Command Prompt and PowerShell.
+- [ ] I read the U03 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All four files present with the exact names above.</li>
+<li>The transcript is real output from your own machine, not copied from the lesson.</li>
+<li><code>answers.md</code> covers all six prompts in your own words.</li>
+<li><code>broken-commands.md</code> fixes all four broken commands with reasons.</li>
+<li>The checklist is completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U03 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transcript shows real output for all seven tasks, with commands included</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>terminal-transcript.md</code></td>
+</tr>
+<tr>
+<td><code>cd</code> task and the <code>pwd</code> proof both present</td>
+<td>3</td>
+<td>Yes</td>
+<td>Tasks 4–5</td>
+</tr>
+<tr>
+<td>Terminal vs shell explained correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Absolute vs relative paths explained with a real example</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td><code>..</code> correctly explained, including the top-of-filesystem case</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td><code>pwd</code>, <code>ls</code>/<code>dir</code>, <code>cd</code> described accurately in plain words</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>One error decoded (looked-for vs found)</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>All four broken commands fixed with sensible reasons</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>broken-commands.md</code></td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>0 (gate)</td>
+<td>Yes</td>
+<td>folder / zip structure</td>
+</tr>
+</tbody>
+</table>
+<p>The last row is a <strong>gate</strong>, not points. Flag missing or misnamed files to the learner without reducing the total out of 24.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Transcript: award full marks for a transcript that is clearly from the learner's own machine, even if their folder names differ greatly from any example. Deduct 1 point for each task whose output is missing; award 0 if the output is copied word-for-word from the lesson.</li>
+<li>A failed task that is <strong>kept and explained</strong> counts as complete (award full for that task). We reward honesty, not a perfect run.</li>
+<li><code>answers.md</code> Q4: the top-of-filesystem case differs by system (bash stops at <code>/</code>; Windows at <code>C:\</code>). Any accurate description earns full marks.</li>
+<li><code>broken-commands.md</code>: accepting any correct fix. <code>ls -1</code> in Command Prompt should become <code>dir</code> (or opening PowerShell). <code>cd ..Desktop</code> should become <code>cd ../Desktop</code> or <code>cd ..\Desktop</code> — accept either separator.</li>
+<li>Do not penalize imperfect English. Penalize invented output or pasted lesson text.</li>
+</ul>
+<h3>Note on platform</h3>
+<p>Assess the learner on <strong>their</strong> platform. Do not mark Windows learners down for using <code>dir</code> or PowerShell learners down for <code>ls</code>. The criterion is correct behaviour, not one specific spelling.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U02-works-on-my-machine/index.html">U02 The works-on-my-machine problem</a>
+    <a class="next" href="../U04-apps-and-their-environments/index.html">U04 Apps and their environments</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

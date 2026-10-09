@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U03 — HTML as structure | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U03</div>
+    <h1>HTML as structure</h1>
+    <span class="phase-badge ph1">Phase 1 — Foundations</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U03 — HTML as structure</h1>
+<p><strong>Phase 1 — Foundations</strong></p>
+<h2>Where you are</h2>
+<p>U02 taught you to <em>read</em> a page: structure (HTML), presentation (CSS), and the DOM tree the browser builds. This unit is where you start <strong>writing</strong> the structure with your own hands.</p>
+<p>You will create your first file — a small, complete web page — and open it in a browser. No installation, no terminal. Just a text file and a browser you already have.</p>
+<p>This is a big step, and it is normal to feel a small flutter of "what if I break it?" Good news: HTML is the most forgiving language in this course. Nothing you write here can damage your computer. The worst case is a page that looks wrong, and "looks wrong" is fixable.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create and save a file named <code>index.html</code> and open it in a browser.</li>
+<li>Write tags and elements: headings, paragraphs, lists, links, images, and buttons.</li>
+<li>Use <strong>attributes</strong> such as <code>href</code>, <code>src</code>, and <code>alt</code> correctly.</li>
+<li>Nest elements so they form a sensible DOM tree.</li>
+<li>Use <strong>semantic</strong> tags — <code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>footer</code> — instead of guessing with generic boxes.</li>
+<li>Explain when to use a <code>&lt;button&gt;</code> and when a <code>&lt;div&gt;</code> is the right tool.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong></li>
+<li><strong>U01 — What React is, and why a designer should care.</strong></li>
+<li><strong>U02 — What a web page is made of.</strong> You need its ideas: tags, nesting, the DOM, and how to inspect a page.</li>
+</ul>
+<p>No terminal and no installation are needed for this unit.</p>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>, including practice. This is the first unit where you build something. Take breaks between sections — your brain needs the pauses to let syntax settle. It is completely fine to make a mess in practice; that is what practice is for.</p>
+<h2>Why this exists</h2>
+<p>You cannot design a good page if you do not know what a page is made of underneath. Design tools generate markup for you, and that works — until something looks wrong and the tool gives you no way to see <em>why</em>. Knowing HTML means you can look at any page and understand its skeleton, fix your own, and eventually read the HTML that React writes for you.</p>
+<p>HTML is also <strong>where meaning lives</strong>. A heading is not just "big text"; it is a claim that this text is a heading. A button is not just "a clickable box"; it is a claim that this thing performs an action. Browsers, screen readers, search engines, and other developers all rely on that meaning. Designers care about meaning — this is your accessibility and handoff skills showing up as code.</p>
+<h2>Plain-language teaching</h2>
+<h3>A web page is a text file</h3>
+<p>The simplest true statement about HTML: <strong>a web page is a plain text file</strong>. That's it. You write words in a file, save it with a special ending, and the browser reads it.</p>
+<p>The special ending is the <strong>file extension</strong> — the part after the dot in the filename. For web pages, it is <code>.html</code>. A file named <code>index.html</code> is a text file the browser knows to read as HTML.</p>
+<p><strong><code>index.html</code> is a convention.</strong> Web servers and browsers treat a file named <code>index.html</code> as the page to show first. We will use that name now so the habit is correct later when we host pages. Do not worry about servers yet; just use the name.</p>
+<h3>Creating your first file (no terminal)</h3>
+<p>You need a plain text editor — any one will do. Some options you may already have:</p>
+<ul>
+<li><strong>Windows:</strong> Notepad (built in), or Notepad++/VS Code if installed.</li>
+<li><strong>macOS:</strong> TextEdit (built in), or VS Code if installed.</li>
+<li><strong>Linux:</strong> gedit, Kate, or VS Code.</li>
+</ul>
+<p>One important warning before you start, because it bites almost every beginner:</p>
+<p><strong>Notepad and TextEdit like to add an ending of their own.</strong> If you type <code>index.html</code> and Notepad saves it as <code>index.html.txt</code>, the browser will not read it as HTML. You must either:</p>
+<ul>
+<li>In Notepad, choose <strong>File → Save as</strong>, set <strong>Save as type</strong> to <strong>All Files (<em>.</em>)</strong>, then type <code>index.html</code>; or</li>
+<li>In TextEdit, choose <strong>Format → Make Plain Text</strong> first, then save with the <strong>.html</strong> extension and uncheck "If no extension is provided, use .txt."</li>
+</ul>
+<p><em>Success looks like:</em> your file is named exactly <code>index.html</code>, and when you view the folder it does <strong>not</strong> show something like <code>index.html.txt</code>.</p>
+<p><em>Decoded failure:</em> if the browser shows your code as plain text instead of a page, or your file is called <code>index.html.txt</code>, you saved with the wrong type. Rename the file so it ends in exactly <code>.html</code>.</p>
+<p>Put this file in a new folder you can find easily, for example a folder called <code>practice-html</code> on your Desktop.</p>
+<h3>The smallest real page</h3>
+<p>This is the smallest page that browsers accept as a proper document. <strong>Read it first; you will type your own in the worked example.</strong></p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;My first page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>&lt;!DOCTYPE html&gt;</code> — a declaration, not a tag with content. It tells the browser "this is a modern HTML document." It always goes first. It does not close.</li>
+<li><code>&lt;html lang="en"&gt;</code> — wraps the whole document. <code>lang="en"</code> is an <strong>attribute</strong> saying the page's language is English; screen readers use it to choose a voice. Closed at the very bottom.</li>
+<li><code>&lt;head&gt;</code> — information <em>about</em> the page that is not shown in the page body (like its title).</li>
+<li><code>&lt;meta charset="utf-8"&gt;</code> — says which character set to use so accents and symbols show correctly. Stands alone.</li>
+<li><code>&lt;title&gt;My first page&lt;/title&gt;</code> — the text shown in the browser tab. Not shown on the page itself.</li>
+<li><code>&lt;/head&gt;</code> — closes the head.</li>
+<li><code>&lt;body&gt;</code> — everything the visitor actually sees goes inside here.</li>
+<li><code>&lt;h1&gt;Hello&lt;/h1&gt;</code> — a level-1 heading.</li>
+<li><code>&lt;/body&gt;</code>, <code>&lt;/html&gt;</code> — close body and document.</li>
+</ul>
+<p>If some of this feels like boilerplate you'll copy for a while: it is, and that is expected. You are <strong>not</strong> expected to invent the document skeleton from memory on day one.</p>
+<h3>Tags, elements, attributes, nesting</h3>
+<p>You met these in U02. Here is the precise version for writing.</p>
+<ul>
+<li><strong>Tag:</strong> the label in angle brackets, e.g. <code>&lt;h1&gt;</code> or <code>&lt;/h1&gt;</code>.</li>
+<li><strong>Element:</strong> open tag + content + close tag, as one unit.</li>
+<li><strong>Attribute:</strong> extra information inside the opening tag, written as <code>name="value"</code>. Example: <code>&lt;html lang="en"&gt;</code> has the attribute <code>lang</code> with value <code>en</code>.</li>
+<li><strong>Nesting:</strong> putting elements inside other elements. The <strong>rule</strong> is "last opened, first closed" — like nested boxes. This is correct:</li>
+</ul>
+<pre><code class="language-html">&lt;section&gt;
+  &lt;p&gt;This is inside the section.&lt;/p&gt;
+&lt;/section&gt;
+</code></pre>
+<p>This is broken (<code>&lt;p&gt;</code> and <code>&lt;section&gt;</code> overlap):</p>
+<pre><code class="language-html">&lt;section&gt;
+  &lt;p&gt;This is inside the section.
+&lt;/section&gt;
+&lt;/p&gt;
+</code></pre>
+<p>The browser will try to <em>guess</em> a fix, which is exactly why broken nesting is dangerous: it often "works" but produces a different tree than you intended.</p>
+<p><strong>Void elements</strong> (also called self-closing) have no content and no closing tag. The important ones here: <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code> (a line break), and <code>&lt;input&gt;</code> (a form field). You saw <code>&lt;img&gt;</code> in U02.</p>
+<h3>Semantic tags: structure with meaning</h3>
+<p>In a design tool you group layers with boring generic frames. In HTML you have better options. <strong>Semantic tags</strong> are elements whose names say what the content <em>is</em>, not just that it's a box.</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>What it means</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;header&gt;</code></td>
+<td>Introductory area</td>
+<td>A page or section heading, logo, tagline</td>
+</tr>
+<tr>
+<td><code>&lt;nav&gt;</code></td>
+<td>Navigation</td>
+<td>A group of links to move around</td>
+</tr>
+<tr>
+<td><code>&lt;main&gt;</code></td>
+<td>The main content</td>
+<td>The one primary content area of the page</td>
+</tr>
+<tr>
+<td><code>&lt;section&gt;</code></td>
+<td>A thematic chunk</td>
+<td>A distinct part of the main content (e.g. "About")</td>
+</tr>
+<tr>
+<td><code>&lt;footer&gt;</code></td>
+<td>Closing area</td>
+<td>Copyright, contact, small print</td>
+</tr>
+</tbody>
+</table>
+<p>Why not just use generic boxes for everything? Because semantics are how the meaning travels:</p>
+<ul>
+<li><strong>Screen readers</strong> let users jump to <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, or headings. Generic boxes give them nothing to jump to.</li>
+<li><strong>Search engines</strong> understand the page better.</li>
+<li><strong>Future you and your teammates</strong> can read the structure at a glance.</li>
+</ul>
+<p>This is one place where a designer's accessibility instincts and a programmer's structure instincts are the <em>same skill</em>.</p>
+<h3>Headings, lists, links, images, buttons</h3>
+<p><strong>Headings</strong> go from <code>&lt;h1&gt;</code> (most important) to <code>&lt;h6&gt;</code> (least). Choose them for <strong>hierarchy and meaning</strong>, never for size — size is CSS's job (U04). Use one <code>&lt;h1&gt;</code> that describes the page, then <code>&lt;h2&gt;</code> for major sections, <code>&lt;h3&gt;</code> for sub-parts. Skipping levels (h1 then h3) confuses assistive tools.</p>
+<p><strong>Lists</strong> come in two types:</p>
+<ul>
+<li><code>&lt;ul&gt;</code> — unordered list (bullet points). Each item is an <code>&lt;li&gt;</code>.</li>
+<li><code>&lt;ol&gt;</code> — ordered list (numbered). Each item is an <code>&lt;li&gt;</code>.</li>
+</ul>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;Bread&lt;/li&gt;
+  &lt;li&gt;Milk&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+<p><strong>Links</strong> use <code>&lt;a&gt;</code>, with an <code>href</code> attribute saying where they go:</p>
+<pre><code class="language-html">&lt;a href=&quot;https://example.com&quot;&gt;Visit example&lt;/a&gt;
+</code></pre>
+<p><code>href</code> stands for "hypertext reference." The text between the tags is what the user clicks.</p>
+<p><strong>Images</strong> use <code>&lt;img&gt;</code>, a void element, with two attributes that matter:</p>
+<pre><code class="language-html">&lt;img src=&quot;photo.jpg&quot; alt=&quot;A cat asleep on a keyboard&quot;&gt;
+</code></pre>
+<ul>
+<li><code>src</code> — the file to show. It can be a file next to your HTML file (just its name) or a full web address.</li>
+<li><code>alt</code> — a text description, shown if the image fails to load and read aloud by screen readers. <strong>Always write a meaningful <code>alt</code>.</strong> This is accessibility, not decoration.</li>
+</ul>
+<p><strong>Buttons vs divs — a rule you will use constantly.</strong></p>
+<ul>
+<li><code>&lt;button&gt;</code> is a real, interactive element. Browsers make it clickable, focusable by keyboard, and announced as a button by screen readers.</li>
+<li><code>&lt;div&gt;</code> is a <strong>generic container</strong> — a box with no meaning. Use it for grouping, layout, and styling, never for something a user is meant to <em>activate</em>.</li>
+</ul>
+<pre><code class="language-html">&lt;button&gt;Save&lt;/button&gt;     &lt;!-- right: performs an action --&gt;
+&lt;div&gt;Save&lt;/div&gt;           &lt;!-- wrong: looks like a button, behaves like nothing --&gt;
+</code></pre>
+<p>If a thing does something when activated, it is a <code>&lt;button&gt;</code>. If it groups other things, it is a <code>&lt;div&gt;</code> (or a better semantic tag). We are not making it clickable yet — that is JavaScript, much later — but choosing the right element now is what makes it <em>become</em> interactive correctly later, and accessible in the meantime.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTML file</td>
+<td>A plain text file saved with a <code>.html</code> ending</td>
+<td>Not a special format you need special software to make</td>
+</tr>
+<tr>
+<td>File extension</td>
+<td>The part after the dot: <code>.html</code>, <code>.txt</code></td>
+<td>Hidden on some systems; can hide a <code>.txt</code> mistake</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>The angle-bracket label, e.g. <code>&lt;p&gt;</code></td>
+<td>Often used loosely to mean the whole element</td>
+</tr>
+<tr>
+<td>Element</td>
+<td>Open tag + content + close tag</td>
+<td>Not just the opening tag</td>
+</tr>
+<tr>
+<td>Attribute</td>
+<td>A <code>name="value"</code> setting inside an opening tag</td>
+<td>Not the content between tags</td>
+</tr>
+<tr>
+<td>Nesting</td>
+<td>Elements inside elements; last opened, first closed</td>
+<td>Not visual stacking; it means containment</td>
+</tr>
+<tr>
+<td>Void element</td>
+<td>A tag with no content and no closing tag (<code>img</code>, <code>br</code>, <code>input</code>)</td>
+<td>People look for a closing <code>&lt;/img&gt;</code> and get stuck</td>
+</tr>
+<tr>
+<td>Semantic tag</td>
+<td>A tag whose name states the content's meaning (<code>nav</code>, <code>main</code>)</td>
+<td>Not "a tag with special powers"</td>
+</tr>
+<tr>
+<td><code>header</code>/<code>nav</code>/<code>main</code>/<code>section</code>/<code>footer</code></td>
+<td>Named regions of a page</td>
+<td>Not the same as the literal top/bottom of the screen</td>
+</tr>
+<tr>
+<td>Heading</td>
+<td><code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>, ranked by importance</td>
+<td>Not chosen by font size — that's CSS</td>
+</tr>
+<tr>
+<td><code>href</code></td>
+<td>The destination of a link</td>
+<td>Not the link text</td>
+</tr>
+<tr>
+<td><code>src</code></td>
+<td>The file an image points to</td>
+<td>Not the description of the image</td>
+</tr>
+<tr>
+<td><code>alt</code></td>
+<td>A text description of an image</td>
+<td>Not optional decoration; it is accessibility</td>
+</tr>
+<tr>
+<td><code>&lt;div&gt;</code></td>
+<td>A generic container with no meaning</td>
+<td>Not a button; not fulfilled by making it look clickable</td>
+</tr>
+<tr>
+<td><code>&lt;button&gt;</code></td>
+<td>A real interactive element</td>
+<td>Not "just a styled div"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>This is a complete page you <strong>can</strong> type into your <code>index.html</code>. It is small but uses every element from this unit. Read the explanation after each part.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;Nadia's Tea Log&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;header&gt;
+      &lt;h1&gt;Nadia's Tea Log&lt;/h1&gt;
+      &lt;p&gt;One cup, one note, every day.&lt;/p&gt;
+    &lt;/header&gt;
+
+    &lt;nav&gt;
+      &lt;a href=&quot;https://example.com/teas&quot;&gt;Tea index&lt;/a&gt;
+    &lt;/nav&gt;
+
+    &lt;main&gt;
+      &lt;section&gt;
+        &lt;h2&gt;Today's cup&lt;/h2&gt;
+        &lt;p&gt;Jasmine green tea, brewed at 80&amp;deg;C.&lt;/p&gt;
+        &lt;img src=&quot;cup.jpg&quot; alt=&quot;A glass cup of jasmine tea&quot;&gt;
+        &lt;ul&gt;
+          &lt;li&gt;Leaves: 3 g&lt;/li&gt;
+          &lt;li&gt;Water: 250 ml&lt;/li&gt;
+          &lt;li&gt;Time: 2 minutes&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/section&gt;
+
+      &lt;section&gt;
+        &lt;h2&gt;Add a note&lt;/h2&gt;
+        &lt;p&gt;Keep a short record of how it tasted.&lt;/p&gt;
+        &lt;button&gt;Save note&lt;/button&gt;
+      &lt;/section&gt;
+    &lt;/main&gt;
+
+    &lt;footer&gt;
+      &lt;p&gt;Tea Log, a personal project.&lt;/p&gt;
+    &lt;/footer&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p><strong>Why each part exists:</strong></p>
+<ul>
+<li>The document head is the required boilerplate from earlier; only the <code>&lt;title&gt;</code> changed.</li>
+<li><code>&lt;header&gt;</code> holds the page's intro: the <code>&lt;h1&gt;</code> name and a one-line description.</li>
+<li><code>&lt;nav&gt;</code> holds a link to move elsewhere. <code>href</code> is the destination; the text is what's clickable.</li>
+<li><code>&lt;main&gt;</code> is the one primary area. Inside it are two <code>&lt;section&gt;</code>s, each introduced by an <code>&lt;h2&gt;</code>.</li>
+<li>The <code>&lt;img&gt;</code> stands alone, with <code>src</code> (the filename next to this HTML file) and <code>alt</code> (a description).</li>
+<li>The <code>&lt;ul&gt;</code> holds three <code>&lt;li&gt;</code> items — a bullet list. Notice it nests inside <code>&lt;section&gt;</code>, which nests inside <code>&lt;main&gt;</code>.</li>
+<li>The <code>&lt;button&gt;</code> is the correct choice for "Save note" — it performs an action, so it is not a <code>&lt;div&gt;</code>.</li>
+<li><code>&lt;footer&gt;</code> closes the page with small print.</li>
+<li><code>&amp;deg;</code> is a <strong>character reference</strong> for the degree symbol (°). It exists because some symbols need a safe spelling in HTML. You can also type the ° character directly; both work.</li>
+</ul>
+<p><strong>The DOM tree this produces</strong> (compare to U02):</p>
+<pre><code class="language-text">body
+ ├─ header
+ │   ├─ h1 → &quot;Nadia's Tea Log&quot;
+ │   └─ p  → &quot;One cup, one note, every day.&quot;
+ ├─ nav
+ │   └─ a → &quot;Tea index&quot;
+ ├─ main
+ │   ├─ section
+ │   │   ├─ h2 → &quot;Today's cup&quot;
+ │   │   ├─ p  → &quot;Jasmine green tea...&quot;
+ │   │   ├─ img → (cup photo)
+ │   │   └─ ul
+ │   │       ├─ li → &quot;Leaves: 3 g&quot;
+ │   │       ├─ li → &quot;Water: 250 ml&quot;
+ │   │       └─ li → &quot;Time: 2 minutes&quot;
+ │   └─ section
+ │       ├─ h2 → &quot;Add a note&quot;
+ │       ├─ p  → &quot;Keep a short record...&quot;
+ │       └─ button → &quot;Save note&quot;
+ └─ footer
+     └─ p → &quot;Tea Log, a personal project.&quot;
+</code></pre>
+<p>Notice how the tree mirrors the indentation of your code. Good indentation is not vanity — it is how you keep the tree readable to yourself.</p>
+<h3>Opening your page in the browser (no terminal)</h3>
+<ol>
+<li>Save your file as <code>index.html</code> (remember the extension warning).</li>
+<li>Find the file in your file manager.</li>
+<li><strong>Windows:</strong> double-click it, or right-click → <strong>Open with</strong> → your browser.<br />
+<strong>macOS:</strong> double-click it; if it opens in an editor, right-click → <strong>Open With</strong> → your browser.<br />
+<strong>Linux:</strong> double-click it, or right-click → <strong>Open With</strong>.</li>
+</ol>
+<p><em>Success looks like:</em> the browser shows your heading, paragraph, link, image area, list, and button — laid out plainly with the browser's default styling.</p>
+<p><em>Decoded failure:</em> if you see your HTML code as plain text, the file is probably named <code>index.html.txt</code>. Rename so it ends in exactly <code>.html</code>. If the image area shows only a broken-image icon and your <code>alt</code> text, the browser could not find <code>cup.jpg</code> — see the errors section.</p>
+<p>You can leave the file open and re-save after edits, then refresh the browser (Windows/Linux: <strong>F5</strong> or <strong>Ctrl+R</strong>; macOS: <strong>Cmd+R</strong>) to see changes.</p>
+<h2>Common errors</h2>
+<h3>Error: The image shows a broken icon and the alt text.</h3>
+<p><strong>What happens:</strong> You wrote <code>&lt;img src="cup.jpg" ...&gt;</code> but the browser cannot find a file named <code>cup.jpg</code> next to your HTML file.</p>
+<p><strong>Fix:</strong> Either put the image file in the same folder as <code>index.html</code> with exactly the same name and extension (<code>cup.jpg</code> is not <code>cup.jpeg</code>), or update <code>src</code> to the correct name/path. The <code>alt</code> text appearing is the browser doing its job correctly — it is telling you what the image was <em>meant</em> to be.</p>
+<h3>Error: HTML looks unforgiving, so mistakes will "error."</h3>
+<p><strong>What happens:</strong> You expect the browser to shout at you like a terminal. It usually doesn't. It quietly guesses.</p>
+<p><strong>Fix:</strong> Understand that HTML is <strong>forgiving by design</strong>, which is a trap as much as a kindness. To see how the browser <em>actually</em> interpreted your file, open DevTools → <strong>Elements</strong> (U02) and compare the tree to your code. If a heading swallowed the next paragraph, your tags probably overlapped. The DOM is the truth.</p>
+<h3>Error: Using <code>&lt;div&gt;</code> for a button (or for everything).</h3>
+<p><strong>What happens:</strong> The "button" looks right after CSS but cannot be reached by keyboard, is not announced as a button by screen readers, and will not behave like a button when we add interactivity.</p>
+<p><strong>Fix:</strong> If it does something, use <code>&lt;button&gt;</code>. If it groups things, use <code>&lt;div&gt;</code> or a semantic tag. Looks are CSS's job; behavior and meaning are the element's job.</p>
+<h3>Error: Choosing headings by how big they look.</h3>
+<p><strong>What happens:</strong> You use <code>&lt;h3&gt;</code> because it's "the size you wanted," producing a broken hierarchy that confuses assistive tools and future styling.</p>
+<p><strong>Fix:</strong> Choose the heading level by <strong>importance</strong>: one <code>&lt;h1&gt;</code>, then <code>&lt;h2&gt;</code> for main sections, <code>&lt;h3&gt;</code> for their sub-parts. Size is adjusted later with CSS. Never skip a level just to get a look.</p>
+<h3>Error: Overlapping tags instead of truly nesting.</h3>
+<p><strong>What happens:</strong> You write <code>&lt;section&gt;&lt;p&gt;text&lt;/section&gt;&lt;/p&gt;</code>. The browser guesses a repair, and the DOM is not what you pictured.</p>
+<p><strong>Fix:</strong> "Last opened, first closed." Indent so the shape is visible. Check the Elements panel if unsure.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words. If you can, you are ready for the assignment:</p>
+<ol>
+<li>What is the difference between a tag and an element?</li>
+<li>What does the <code>alt</code> attribute do, and what happens when it is used?</li>
+<li>Name three semantic tags and what each is for.</li>
+<li>When do you use <code>&lt;button&gt;</code>, and when is <code>&lt;div&gt;</code> correct?</li>
+<li>What is a void element? Name two.</li>
+<li>Why should you choose a heading level by meaning rather than by its default size?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do them in your <code>practice-html</code> folder. The difficulty increases on purpose.</p>
+<h3>P1 — Read and predict</h3>
+<p>Before running anything, look at this snippet and write down the DOM tree you expect (parent, children, and any grandchildren).</p>
+<pre><code class="language-html">&lt;main&gt;
+  &lt;h2&gt;Garden&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Basil&lt;/li&gt;
+    &lt;li&gt;Mint&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/main&gt;
+</code></pre>
+<p>Then type it into your file, open it, and confirm with DevTools → Elements. A wrong prediction is useful — note what differed.</p>
+<h3>P2 — Change one value</h3>
+<p>In the worked example, change the <code>&lt;h1&gt;</code> text to your own name and the <code>&lt;title&gt;</code> to something else. Save and refresh. Confirm that the browser tab and the on-page heading changed, and nothing else did.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete this so it renders an ordered list of three steps and a link to <code>https://example.com/steps</code>:</p>
+<pre><code class="language-html">&lt;main&gt;
+  &lt;h2&gt;Steps&lt;/h2&gt;
+  &lt;!-- your list here --&gt;
+  &lt;!-- your link here --&gt;
+&lt;/main&gt;
+</code></pre>
+<h3>P4 — Write a section from a specification</h3>
+<p>Add a <code>&lt;section&gt;</code> to the worked example called "Ratings" that contains an <code>&lt;h2&gt;</code>, a paragraph, and a <code>&lt;button&gt;</code> labelled "Add rating." Save and verify in the browser and in DevTools → Elements.</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This snippet has <strong>three</strong> problems. Find them, explain each, and write the corrected version.</p>
+<pre><code class="language-html">&lt;section&gt;
+  &lt;h2&gt;Supplies&lt;h2&gt;
+  &lt;p&gt;Paper and pens.
+&lt;/section&gt;
+&lt;div&gt;Buy more&lt;/div&gt;
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is visible so there are no surprises.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No CSS or styling (that is U04).</li>
+<li>No JavaScript, no interactivity, no "making the button do something."</li>
+<li>No terminal and no installation — those arrive in U08–U09.</li>
+<li>No React, components, or JSX.</li>
+<li>No forms beyond seeing a <code>&lt;button&gt;</code> and <code>&lt;input&gt;</code> named; full forms come much later.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U04 — CSS as presentation.</strong> You keep your U03 page and give it a look: selectors, the box model, colors, fonts, and flexbox — all from a stylesheet you write by hand.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U03 Assignment — Build a small static page</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U03-YourName</code> (use your real name or student id as they prefer)</p>
+<p>This is your first built artifact. It does <strong>not</strong> need to look beautiful — styling is U04. It needs to be <strong>structurally correct</strong>: real tags, sensible nesting, meaning in the right places.</p>
+<h2>Choose your page</h2>
+<p>Pick <strong>one</strong> of these (or invent a similar small one — clear it with your trainer if unsure):</p>
+<ul>
+<li>A recipe page (one recipe, with ingredients and steps).</li>
+<li>A personal reading list (a few books and a short opinion on each).</li>
+<li>A small portfolio "About me" page (your intro, a few skill areas, a contact link).</li>
+</ul>
+<p>Keep it small. One page, a handful of sections. You are practising structure, not content volume.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>index.html</code></h3>
+<p>A single, complete HTML file that includes <strong>all</strong> of the following:</p>
+<ul>
+<li>[ ] The document skeleton: <code>&lt;!DOCTYPE html&gt;</code>, <code>&lt;html lang="en"&gt;</code>, a <code>&lt;head&gt;</code> with <code>&lt;meta charset="utf-8"&gt;</code> and a <code>&lt;title&gt;</code>, and a <code>&lt;body&gt;</code>.</li>
+<li>[ ] A <code>&lt;header&gt;</code> containing an <code>&lt;h1&gt;</code> and one <code>&lt;p&gt;</code>.</li>
+<li>[ ] A <code>&lt;nav&gt;</code> containing at least one <code>&lt;a&gt;</code> with a real <code>href</code>.</li>
+<li>[ ] A <code>&lt;main&gt;</code> containing <strong>at least two</strong> <code>&lt;section&gt;</code> elements, each opened by an <code>&lt;h2&gt;</code>.</li>
+<li>[ ] One list (<code>&lt;ul&gt;</code> or <code>&lt;ol&gt;</code>) with <strong>at least three</strong> <code>&lt;li&gt;</code> items.</li>
+<li>[ ] One <code>&lt;img&gt;</code> with a working <code>src</code> and a meaningful <code>alt</code> text. (Use any image file you own or that is free to use. If you cannot supply an image file, that is fine — keep the <code>&lt;img&gt;</code> and write a meaningful <code>alt</code>, and note this in <code>answers.md</code>. The broken-image icon is acceptable evidence here.)</li>
+<li>[ ] One <code>&lt;button&gt;</code> with a clear action label (e.g. "Save", "Add", "Subscribe").</li>
+<li>[ ] A <code>&lt;footer&gt;</code> with one short paragraph.</li>
+</ul>
+<p>Indent your code so the nesting is readable. Do not add CSS or JavaScript.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li><strong>Semantic vs generic.</strong> In 3–5 lines, explain why you used semantic tags (<code>header</code>, <code>nav</code>, <code>main</code>, <code>section</code>, <code>footer</code>) instead of <code>&lt;div&gt;</code> for those areas. Give one concrete benefit.</li>
+<li><strong>Button vs div.</strong> Explain, in your own words, why your action element is a <code>&lt;button&gt;</code> and not a <code>&lt;div&gt;</code>. Mention at least one thing a <code>&lt;div&gt;</code> cannot do.</li>
+<li><strong>The alt text.</strong> Paste your exact <code>&lt;img&gt;</code> line and explain what your <code>alt</code> text describes and who benefits from it.</li>
+<li><strong>Tree.</strong> Draw the DOM tree of your own <code>index.html</code> (same text-tree format as the lesson). It must show at least one grandchild relationship.</li>
+<li><strong>Predict then run.</strong> Before opening your page in the browser, write what you expected the default (unstyled) page to look like. Then open it and write what you actually saw. Note any difference.</li>
+<li><strong>Debug this broken snippet.</strong> The snippet below has <strong>three</strong> problems. For each: quote the problem, name the rule it breaks, and give the corrected line.</li>
+</ol>
+<p>```html<br />
+<br />
+<section>
+     <h2>Supplies<h2>
+     <p>Tape and labels.
+   </section></p>
+<div>Save list</div>
+<p>```</p>
+<h3>3. <code>page.png</code> (or <code>page.jpg</code>)</h3>
+<p>A screenshot of your page open in a browser, so your trainer can see it rendered.</p>
+<ul>
+<li><strong>Windows:</strong> press <strong>Win + Shift + S</strong>, drag over your page, then save the capture.</li>
+<li><strong>macOS:</strong> press <strong>Cmd + Shift + 4</strong>, drag over your page; the image is saved to your Desktop.</li>
+<li><strong>Linux:</strong> use your screenshot tool (often the <strong>PrtSc</strong> key or an app like Screenshot/GNOME Screenshot).</li>
+</ul>
+<p>Name it <code>page.png</code> or <code>page.jpg</code> (either is fine).</p>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U03 README fully (not only the assignment).
+- [ ] My file is named exactly index.html (not index.html.txt).
+- [ ] Every element I opened is properly closed (void tags excepted).
+- [ ] I used at least two &lt;section&gt;s and one &lt;ul&gt; or &lt;ol&gt;.
+- [ ] My alt text is meaningful (not &quot;image&quot; or empty).
+- [ ] My &quot;Save&quot;-type action uses &lt;button&gt;, not &lt;div&gt;.
+- [ ] I took a screenshot and named it page.png or page.jpg.
+- [ ] I read the U03 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All four items present with the exact names above.</li>
+<li><code>index.html</code> opens in a browser and shows the expected regions (header, nav, main with sections, footer).</li>
+<li>The structure is genuinely nested — no overlapping tags.</li>
+<li><code>answers.md</code> includes the tree, the predict-then-run note, and the corrected broken snippet.</li>
+<li>The checklist is completed honestly.</li>
+</ul>
+<p>If something does not render, use the U00 stuck protocol and the decoded failures in the lesson (especially the <code>.txt</code> trap and the wrong image path) before asking for help.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U03 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complete document skeleton (doctype, html+lang, head+charset+title, body)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>&lt;header&gt;</code> with <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>&lt;nav&gt;</code> with a real link (<code>&lt;a href&gt;</code>)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>&lt;main&gt;</code> with ≥2 <code>&lt;section&gt;</code>s, each led by an <code>&lt;h2&gt;</code></td>
+<td>4</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td>List with ≥3 <code>&lt;li&gt;</code> items</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>&lt;img&gt;</code> with <code>src</code> and meaningful <code>alt</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>&lt;button&gt;</code> used for the action (not <code>&lt;div&gt;</code>)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>&lt;footer&gt;</code> with a paragraph</td>
+<td>1</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td>Correct nesting (no overlapping tags); readable indentation</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td>Explains semantic-vs-generic choice with a real benefit</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains button-vs-div correctly (keyboard/meaning)</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Own DOM tree is accurate and shows a grandchild relationship</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Predict-then-run recorded honestly</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Debug task: all three problems found, named, and fixed</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Screenshot + checklist present; correct filenames</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder/zip structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit guidance</h3>
+<ul>
+<li><strong>Skeleton (4):</strong> 1 per correct part (doctype, <code>&lt;html lang&gt;</code>, head with charset+title, body). Missing <code>lang</code> or charset = lose that point.</li>
+<li><strong>Sections (4):</strong> 2 per valid <code>&lt;section&gt;</code> led by an <code>&lt;h2&gt;</code>. A section with no heading earns 1.</li>
+<li><strong>Image (3):</strong> 1 for a valid <code>&lt;img&gt;</code> tag, 1 for a plausible <code>src</code>/placeholder note, 1 for genuinely descriptive <code>alt</code>. <code>alt="image"</code>, <code>alt=""</code>, or <code>alt="photo"</code> loses the alt point.</li>
+<li><strong>Button (3):</strong> full only for a real <code>&lt;button&gt;</code> with an action label. Using <code>&lt;div&gt;Save list&lt;/div&gt;</code> earns 0 — this is a core teaching point.</li>
+<li><strong>Nesting (3):</strong> 1 if minor issues exist but the tree is mostly sound; 0 if overlapping tags produce wrong nesting throughout.</li>
+<li><strong>Debug task (3, one per problem):</strong><br />
+  1. <code>&lt;/h2&gt;</code> was mistyped as <code>&lt;h2&gt;</code> (unclosed/reopened heading).<br />
+  2. <code>&lt;p&gt;</code> is never closed.<br />
+  3. <code>&lt;div&gt;Save list&lt;/div&gt;</code> should be <code>&lt;button&gt;Save list&lt;/button&gt;</code>.<br />
+  Award 1 point per problem correctly named <strong>and</strong> fixed. Finding a problem but giving no fix earns 0.5.</li>
+<li><strong>Tree (2):</strong> 1 for structure, 1 for the grandchild relationship. If the tree does not match the submitted HTML, cap at 1.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li><strong>Must-have (unit fails without these):</strong> all structural items, correct nesting, the DOM tree, the debug task, and the files/screenshot.</li>
+<li><strong>Nice-to-have (points only):</strong> Q1, Q2, Q5.</li>
+</ul>
+<p>Do not penalize cosmetic ugliness, content choice, or a missing real image file if the note in <code>answers.md</code> explains it. Penalize <code>div</code>-for-button and invented/nonexistent structure.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U02-what-a-web-page-is-made-of/index.html">U02 What a web page is made of</a>
+    <a class="next" href="../U04-css-as-presentation/index.html">U04 CSS as presentation</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

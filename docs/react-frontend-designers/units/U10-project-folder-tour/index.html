@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U10 — The project folder tour | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U10</div>
+    <h1>The project folder tour</h1>
+    <span class="phase-badge ph2">Phase 2 — Running React</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U10 — The project folder tour</h1>
+<p><strong>Phase 2 — Running React</strong></p>
+<h2>Where you are</h2>
+<p>In U09 you scaffolded a Vite + React project and got it running at a <code>localhost</code> URL. You have not looked inside the folder yet.</p>
+<p>This unit is a guided tour. We will open every file and folder that matters, say plainly what it is for, and mark clearly which ones you will edit in this course and which you should leave alone. You will not write React code yet — you will learn the geography so that U11 feels like walking into a room whose layout you already know.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Name every top-level file and folder in a Vite React project and say what it does.</li>
+<li>Distinguish files you edit from files you leave alone, and explain why.</li>
+<li>Read <code>package.json</code> and find the <code>scripts</code> and <code>dependencies</code> sections.</li>
+<li>Trace how the browser gets from <code>index.html</code> to your app's JavaScript.</li>
+<li>Recognize the <code>public/</code> versus <code>src/</code> distinction (served as-is vs bundled).</li>
+<li>Read a <code>README.md</code> and use it as a starting map.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U09</strong> — a working Vite + React project on your machine, and the ability to start it with <code>npm run dev</code>.</li>
+<li><strong>U08</strong> — <code>cd</code> and listing files.</li>
+<li><strong>U02–U04</strong> — a web page is HTML structure styled by CSS.</li>
+<li><strong>U07</strong> — you have seen an <code>import</code> line even if you have not written one from scratch.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. Most of it is reading files and cross-checking. Keep your project open in a text editor as you go.</p>
+<h2>Why this exists</h2>
+<p>Opening a generated project for the first time is disorienting. There are <code>node_modules</code>, a <code>vite.config.js</code>, files with <code>.jsx</code> endings you have not seen before, and a <code>public</code> folder that seems to duplicate <code>src</code>. Without a map, people either freeze, or worse, start deleting things to see what happens.</p>
+<p>The map matters because <strong>most of these files are not yours to edit</strong>. Knowing which few files are yours is the difference between confident editing and accidental breakage.</p>
+<p><strong>Design bridge:</strong> a generated project is like a design file template you downloaded — it comes with a page structure, a styles layer, and some locked shared assets. You edit the artboards; you leave the system styles and linked components alone until you know why. This unit tells you which is which.</p>
+<h2>Plain-language teaching</h2>
+<h3>The two big ideas: source versus generated</h3>
+<p>Inside a React project there are two categories of files:</p>
+<ol>
+<li><strong>Source files</strong> — written by a human (you), meaningful and editable. These live mostly in <code>src/</code>.</li>
+<li><strong>Generated or managed files</strong> — created by tools, enormous or fragile, and managed for you. The clearest example is <code>node_modules/</code>.</li>
+</ol>
+<p>If you remember nothing else: <strong>you edit <code>src/</code>. You do not edit <code>node_modules/</code>.</strong> The rest of this tour fills in the details.</p>
+<h3>The file tree we are touring</h3>
+<p>A freshly scaffolded Vite + React + JavaScript project looks like this (the order is alphabetical for clarity):</p>
+<pre><code class="language-text">my-first-react-app/
+├── node_modules/          (generated — do not touch)
+├── public/                (assets served as-is)
+│   └── vite.svg
+├── src/                   (your source — this is yours)
+│   ├── assets/
+│   │   └── react.svg
+│   ├── App.css
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .gitignore             (which files version control ignores)
+├── eslint.config.js       (code-quality rules)
+├── index.html             (the page entry in the browser)
+├── package.json           (recipe card: scripts + dependencies)
+├── package-lock.json      (exact installed versions — do not edit)
+├── README.md              (project notes)
+└── vite.config.js         (build tool settings)
+</code></pre>
+<p>Your tree may differ slightly by Vite version. The ideas below still apply.</p>
+<h3>The files, one at a time</h3>
+<h4><code>package.json</code> — the recipe card</h4>
+<p>This is a small JSON text file. It is safe to read and it is the single most useful file to understand. It contains:</p>
+<ul>
+<li><strong><code>name</code></strong> — the project's name.</li>
+<li><strong><code>scripts</code></strong> — named shortcuts npm can run. This is where <code>dev</code> comes from in <code>npm run dev</code>.</li>
+<li><strong><code>dependencies</code></strong> — packages your app needs to run (React lives here).</li>
+<li><strong><code>devDependencies</code></strong> — packages needed only during development (Vite lives here).</li>
+</ul>
+<p><em>What editing it does:</em> adding a dependency line here and running <code>npm install</code> is how packages are declared. In this course you will rarely edit it by hand — npm does it for you when you install a package.</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;my-first-react-app&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite&quot;,
+    &quot;build&quot;: &quot;vite build&quot;,
+    &quot;preview&quot;: &quot;vite preview&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;react&quot;: &quot;^18.3.1&quot;,
+    &quot;react-dom&quot;: &quot;^18.3.1&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;vite&quot;: &quot;^5.4.0&quot;
+  }
+}
+</code></pre>
+<p>The <code>^</code> before a version means "this version or a compatible newer one." You do not need to change these today.</p>
+<h4><code>package-lock.json</code> — the exact-versions receipt</h4>
+<p>This records the precise version of every package that was actually installed. It exists so the same install can be reproduced on another machine.</p>
+<ul>
+<li><strong>Do not edit this by hand. Ever.</strong></li>
+<li>It is managed entirely by npm. If it and <code>package.json</code> disagree, npm fixes it during <code>npm install</code>.</li>
+</ul>
+<p><em>Why it is separate from <code>package.json</code>:</em> <code>package.json</code> says "I want React around 18." The lock file says "I got exactly 18.3.1, and here is the exact version of every helper it pulled in too."</p>
+<h4><code>node_modules/</code> — the downloaded packages</h4>
+<p>This is where npm unpacked every package. It can contain <strong>tens of thousands of files</strong>.</p>
+<ul>
+<li><strong>Never edit anything in here.</strong></li>
+<li><strong>Never commit it to version control</strong> (the <code>.gitignore</code> file handles this).</li>
+<li>If it gets corrupted, the fix is to delete the whole folder and run <code>npm install</code> again — it is fully regenerated.</li>
+</ul>
+<p><em>Why it is so big:</em> every package can depend on other packages, which depend on others. npm fetches the whole family tree.</p>
+<h4><code>index.html</code> — the actual page the browser loads</h4>
+<p>This is a real HTML file, like the ones from U03. It is the <strong>entry point</strong> the browser requests. Inside it you will find a line like:</p>
+<pre><code class="language-html">&lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+&lt;script type=&quot;module&quot; src=&quot;/src/main.jsx&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>Two important things:</p>
+<ul>
+<li>The empty <code>&lt;div id="root"&gt;&lt;/div&gt;</code> is the <strong>mount point</strong>. React will insert your entire interface inside this div.</li>
+<li>The <code>&lt;script&gt;</code> line loads <code>src/main.jsx</code>, which is where the React app begins.</li>
+</ul>
+<p><em>Do you edit it?</em> Rarely in this course. You may one day change the page <code>&lt;title&gt;</code> here. For now, read it to understand how everything connects.</p>
+<h4><code>src/</code> — your working folder</h4>
+<p>Everything you author lives here. Inside you will find:</p>
+<ul>
+<li><strong><code>main.jsx</code></strong> — the JavaScript <strong>entry file</strong>. It imports React, imports your top-level <code>App</code> component, and tells React to render <code>App</code> into the <code>root</code> div from <code>index.html</code>.</li>
+<li><strong><code>App.jsx</code></strong> — your <strong>top-level component</strong>. This is the file you will edit first in U11.</li>
+<li><strong><code>App.css</code></strong> — styles used by <code>App</code>.</li>
+<li><strong><code>index.css</code></strong> — global styles for the whole app.</li>
+<li><strong><code>assets/</code></strong> — images and other files that get bundled with your code (Vite processes and optimizes them).</li>
+</ul>
+<p><em>Rule of thumb:</em> if it is in <code>src/</code>, you may edit it. That does not mean edit it carelessly — but it is yours.</p>
+<h4><code>main.jsx</code> — a first careful read</h4>
+<p>You are not expected to write this yet. Read it to see the shape:</p>
+<pre><code class="language-jsx">import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;,
+)
+</code></pre>
+<p>Notice three things, in plain words:</p>
+<ol>
+<li><code>import</code> lines bring in outside code (from U07).</li>
+<li><code>document.getElementById('root')</code> finds the <code>&lt;div id="root"&gt;</code> from <code>index.html</code>.</li>
+<li><code>&lt;App /&gt;</code> is your top-level component, and <code>.render(...)</code> puts it on the page.</li>
+</ol>
+<p><code>StrictMode</code> is a React helper that double-checks your code during development. It is normal and you can ignore it for now.</p>
+<h4><code>App.jsx</code> — the file you will live in</h4>
+<p>The scaffold creates a starter component with a logo, a heading, and a counter button. Reproduced without styling here:</p>
+<pre><code class="language-jsx">import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    &lt;&gt;
+      &lt;div&gt;
+        &lt;a href=&quot;https://vite.dev&quot; target=&quot;_blank&quot;&gt;
+          &lt;img src={viteLogo} className=&quot;logo&quot; alt=&quot;Vite logo&quot; /&gt;
+        &lt;/a&gt;
+        &lt;a href=&quot;https://react.dev&quot; target=&quot;_blank&quot;&gt;
+          &lt;img src={reactLogo} className=&quot;logo react&quot; alt=&quot;React logo&quot; /&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+      &lt;h1&gt;Vite + React&lt;/h1&gt;
+      &lt;div className=&quot;card&quot;&gt;
+        &lt;button onClick={() =&gt; setCount((count) =&gt; count + 1)}&gt;
+          count is {count}
+        &lt;/button&gt;
+        &lt;p&gt;
+          Edit &lt;code&gt;src/App.jsx&lt;/code&gt; and save to test HMR
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/&gt;
+  )
+}
+
+export default App
+</code></pre>
+<p>Do you need to understand all of this now? No. Two lines matter for orientation:</p>
+<ul>
+<li><code>function App() { ... }</code> defines the component.</li>
+<li><code>export default App</code> makes it available to <code>main.jsx</code> through the <code>import App from './App.jsx'</code> line.</li>
+</ul>
+<p>In U11 you will replace this content with your own. In U12 you will understand the markup-looking part.</p>
+<h4><code>public/</code> — files served exactly as they are</h4>
+<p>Anything in <code>public/</code> is copied to the finished site <strong>without processing</strong>. A file <code>public/logo.png</code> is reachable at the URL <code>/logo.png</code>.</p>
+<ul>
+<li>Put here: favicons, robots files, images you want to reference by a plain URL.</li>
+<li>Do not put here: your React code or anything that needs bundling.</li>
+</ul>
+<p><em>The key difference:</em> <code>src/assets/</code> files are <strong>processed</strong> by the build tool (renamed, optimized, and imported in code). <code>public/</code> files are <strong>served as-is</strong>. A common beginner confusion is putting an image in the wrong one and wondering why the import fails. If in doubt: import it from <code>src/assets/</code> when your code refers to it; use <code>public/</code> when you just need a stable URL.</p>
+<h4><code>vite.config.js</code> — the build tool's settings</h4>
+<p>This configures Vite: which plugin compiles React, the dev-server settings, and so on. It looks like:</p>
+<pre><code class="language-js">import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+})
+</code></pre>
+<p><em>Do you edit it?</em> Not in Phase 2. Later units may touch it. It is here so you recognize it and know it is configuration, not app code.</p>
+<h4><code>eslint.config.js</code> — the code-quality rules</h4>
+<p><strong>ESLint</strong> checks your JavaScript for likely mistakes and style issues. This file defines the rules. Your editor may underline problems based on it.</p>
+<p><em>Do you edit it?</em> No, not in this course. Know that it exists and that its warnings are guidance, not a broken app.</p>
+<h4><code>.gitignore</code> — what version control ignores</h4>
+<p>A list of files and folders that version control should <strong>not</strong> track. It almost always contains <code>node_modules</code> and build output.</p>
+<p><em>Why it matters:</em> it is the reason you never commit the huge <code>node_modules</code> folder. If you later use Git, this file protects you from that mistake.</p>
+<p><em>Do you edit it?</em> Rarely. Possibly if you add a secrets file that must never be committed — an advanced topic for much later.</p>
+<h4><code>README.md</code> — the project's own notes</h4>
+<p>The scaffold writes a short README. It usually explains how to run the project. Reading a project's README is always the first move when you open an unfamiliar project.</p>
+<p><em>Do you edit it?</em> Yes, freely. It is your project's notes to future-you.</p>
+<h3>What to edit vs what to leave alone</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Edit it?</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/App.jsx</code></td>
+<td><strong>Yes</strong> — often</td>
+<td>Your top-level component (U11)</td>
+</tr>
+<tr>
+<td><code>src/App.css</code>, <code>src/index.css</code></td>
+<td><strong>Yes</strong> — later</td>
+<td>Your styles</td>
+</tr>
+<tr>
+<td><code>src/main.jsx</code></td>
+<td>Read; edit rarely</td>
+<td>The entry point; usually stable</td>
+</tr>
+<tr>
+<td><code>src/assets/</code></td>
+<td>Yes — add files</td>
+<td>Bundled images/assets</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td>Yes — add files</td>
+<td>Served-as-is assets</td>
+</tr>
+<tr>
+<td><code>index.html</code></td>
+<td>Rarely (e.g. title)</td>
+<td>The page shell</td>
+</tr>
+<tr>
+<td><code>README.md</code></td>
+<td>Yes</td>
+<td>Project notes</td>
+</tr>
+<tr>
+<td><code>package.json</code></td>
+<td>Rarely by hand</td>
+<td>npm manages it</td>
+</tr>
+<tr>
+<td><code>vite.config.js</code></td>
+<td>No (Phase 2)</td>
+<td>Build settings</td>
+</tr>
+<tr>
+<td><code>eslint.config.js</code></td>
+<td>No</td>
+<td>Lint rules</td>
+</tr>
+<tr>
+<td><code>.gitignore</code></td>
+<td>Rarely</td>
+<td>Version-control ignores</td>
+</tr>
+<tr>
+<td><code>package-lock.json</code></td>
+<td><strong>No</strong></td>
+<td>Generated receipt</td>
+</tr>
+<tr>
+<td><code>node_modules/</code></td>
+<td><strong>No</strong></td>
+<td>Generated packages</td>
+</tr>
+</tbody>
+</table>
+<h3>How the page is assembled (the whole chain)</h3>
+<pre><code class="language-text">browser requests index.html
+  → index.html loads src/main.jsx (a &lt;script&gt; tag)
+    → main.jsx imports App from App.jsx
+      → React renders &lt;App /&gt; into &lt;div id=&quot;root&quot;&gt;
+        → the dev server keeps watching; saving a file updates the page
+</code></pre>
+<p>Six lines, but they explain every file you just met. If the page is blank, this chain is the first thing to re-read: a break at any link stops the rest.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>package.json</code></td>
+<td>Recipe card: scripts + dependencies</td>
+<td>Not the list of installed files (<code>package-lock.json</code> is)</td>
+</tr>
+<tr>
+<td><code>package-lock.json</code></td>
+<td>Exact versions actually installed</td>
+<td>Not meant for hand-editing</td>
+</tr>
+<tr>
+<td><code>node_modules/</code></td>
+<td>Where packages are unpacked</td>
+<td>Not your code; never edit or commit</td>
+</tr>
+<tr>
+<td><code>index.html</code></td>
+<td>The page the browser loads</td>
+<td>Not your React source</td>
+</tr>
+<tr>
+<td><code>main.jsx</code></td>
+<td>The JavaScript entry file</td>
+<td>Not your top-level UI component</td>
+</tr>
+<tr>
+<td><code>App.jsx</code></td>
+<td>Your top-level component</td>
+<td>Not the whole app by itself</td>
+</tr>
+<tr>
+<td><code>src/</code></td>
+<td>Your source folder</td>
+<td>The only place you author most code</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td>Assets served exactly as-is</td>
+<td>Not the same as <code>src/assets/</code></td>
+</tr>
+<tr>
+<td><code>src/assets/</code></td>
+<td>Assets the bundler processes</td>
+<td>Import them in code</td>
+</tr>
+<tr>
+<td><code>vite.config.js</code></td>
+<td>Build tool settings</td>
+<td>Not app code</td>
+</tr>
+<tr>
+<td>Entry point</td>
+<td>The first file that runs</td>
+<td>Here, <code>index.html</code> → <code>main.jsx</code></td>
+</tr>
+<tr>
+<td>Mount point</td>
+<td>The DOM element React fills</td>
+<td>Here, <code>&lt;div id="root"&gt;</code></td>
+</tr>
+<tr>
+<td>Bundle</td>
+<td>Processed output ready for a browser</td>
+<td>Not the same as your source</td>
+</tr>
+<tr>
+<td>HMR</td>
+<td>Hot Module Replacement; auto-update on save</td>
+<td>The U09 "hot reload"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> You want to prove you understand the chain. You will change one safe thing — the page <code>&lt;title&gt;</code> — and confirm it flows to the browser.</p>
+<p><strong>Step 1 — Open the project in your editor.</strong> In VS Code: File → Open Folder → choose <code>my-first-react-app</code>.</p>
+<p><strong>Step 2 — Open <code>index.html</code>.</strong> Find the <code>&lt;title&gt;</code> line:</p>
+<pre><code class="language-html">&lt;title&gt;Vite + React&lt;/title&gt;
+</code></pre>
+<p><strong>Step 3 — Change it.</strong> Replace the text between the tags with your own, for example:</p>
+<pre><code class="language-html">&lt;title&gt;My Design Portfolio — Practice&lt;/title&gt;
+</code></pre>
+<p><strong>Step 4 — Save</strong> (Ctrl + S, or Cmd + S on macOS).</p>
+<p><strong>Step 5 — Look at the browser tab.</strong> If <code>npm run dev</code> is running, the tab title changes. You just changed the page shell, not the React app — and saw it appear.</p>
+<p><strong>What success looks like:</strong> the browser tab shows your new title. The page body still shows the Vite starter content; that is expected, because you only edited the shell, not <code>App.jsx</code>.</p>
+<p><strong>One decoded failure:</strong> nothing changes in the tab. The most likely cause is that the dev server is not running (so nothing is being served) or you edited a <em>different copy</em> of the project than the one being served. Fix: confirm <code>npm run dev</code> is running in the correct folder and re-open the exact <code>localhost</code> URL it prints.</p>
+<h2>Common errors</h2>
+<h3>Error: page goes blank after editing a file</h3>
+<p><strong>What it means:</strong> almost always a broken <code>import</code>/<code>export</code> pair — the file that imports <code>App</code> names something the file does not export. This is U11's headline error; here, the fix is to undo your last edit and re-check the connection.</p>
+<p><strong>Fix:</strong> read the browser console (F12 → Console) or the dev-server terminal for the file name and line; restore the previous content.</p>
+<h3>Error: you deleted <code>node_modules</code> and the app stopped</h3>
+<p><strong>What it means:</strong> you removed the downloaded packages. The app cannot find React.</p>
+<p><strong>Fix:</strong> in the project folder, run <code>npm install</code>. It regenerates <code>node_modules</code> from <code>package.json</code> and <code>package-lock.json</code>. This is the correct, safe recovery — <code>node_modules</code> is disposable.</p>
+<h3>Error: you edited <code>node_modules</code> and things broke</h3>
+<p><strong>What it means:</strong> you changed a shipped package. Updates and reinstall can undo it, and your project now behaves inconsistently.</p>
+<p><strong>Fix:</strong> delete <code>node_modules</code> and run <code>npm install</code> to get a clean copy. Then move your intended change into <code>src/</code> where it belongs. Never edit <code>node_modules</code>.</p>
+<h3>Error: an image import fails</h3>
+<p><strong>What it means:</strong> the file is in <code>public/</code> but your code imports it as if it were in <code>src/</code>, or vice versa.</p>
+<p><strong>Fix:</strong> imports from code come from <code>src/assets/</code> (for example <code>import logo from './assets/logo.png'</code>). Files referenced by a plain URL come from <code>public/</code> (<code>/logo.png</code>). Put it in the right place.</p>
+<h2>Checkpoints</h2>
+<p>Answer these before the assignment.</p>
+<ol>
+<li>Which folder holds your source code, and which holds downloaded packages?</li>
+<li>What is the difference between <code>package.json</code> and <code>package-lock.json</code>?</li>
+<li>What is the difference between <code>public/</code> and <code>src/assets/</code>?</li>
+<li>Trace the chain from <code>index.html</code> to your <code>App</code> component in one or two sentences.</li>
+<li>Name three files you should <em>not</em> edit in this course and why.</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded.</p>
+<h3>P1 — Read a real file</h3>
+<p>Open <code>package.json</code> and list every script name you find and the command each runs.</p>
+<h3>P2 — Trace the chain</h3>
+<p>Starting at <code>index.html</code>, follow the <code>&lt;script&gt;</code> line to <code>main.jsx</code>, then to <code>App.jsx</code>. Write the three file names in order and what each passes to the next.</p>
+<h3>P3 — Change the title</h3>
+<p>Do the worked example: change the page <code>&lt;title&gt;</code>, save, and confirm it appears in the browser tab.</p>
+<h3>P4 — Safe recovery drill</h3>
+<p>Close the dev server. Delete the <code>node_modules</code> folder. Start the server again (you will need <code>npm install</code> first). Confirm the app returns. This proves <code>node_modules</code> is disposable.</p>
+<h3>P5 — Sort the files</h3>
+<p>Make two columns, "I edit" and "I leave alone," and place each of these: <code>App.jsx</code>, <code>node_modules/</code>, <code>main.jsx</code>, <code>package-lock.json</code>, <code>public/vite.svg</code>, <code>vite.config.js</code>, <code>README.md</code>, <code>eslint.config.js</code>.</p>
+<h3>P6 — Deliberate break</h3>
+<p>In <code>main.jsx</code>, temporarily change <code>import App from './App.jsx'</code> to <code>import App from './Wrong.jsx'</code>. Save, read the error in the terminal and browser console, then undo it. Write down the error text.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No writing React components yet (U11).</li>
+<li>No JSX explanation yet (U12).</li>
+<li>No props, state, or events.</li>
+<li>No styling work (Phase 4).</li>
+<li>No Git/version control practice yet.</li>
+<li>No production build or hosting (Phase 6).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U11 — Your first component</strong> (you will edit <code>App.jsx</code> and see your own words on the page).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U10 Assignment — Know the map</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U10-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Two categories.</strong> In your own words, what is the difference between source files and generated/managed files? Give one example of each.</li>
+<li><strong>The chain.</strong> Trace the path from the browser loading <code>index.html</code> to your <code>App</code> component appearing on the page. Name each file in order and what it passes along.</li>
+<li><strong><code>package.json</code> vs <code>package-lock.json</code>.</strong> Explain the difference in one or two sentences, and why you should not hand-edit the lock file.</li>
+<li><strong><code>public/</code> vs <code>src/assets/</code>.</strong> What is the difference? Give a situation where you would use each.</li>
+<li><strong>Edit vs leave alone.</strong> List <strong>four</strong> files/folders you should not edit during this course and give a one-line reason for each.</li>
+<li><strong>Mount point.</strong> What is the "mount point," and where is it in this project?</li>
+<li><strong>Error-reading practice.</strong> Paste the error text you saw in Practice P6 (the deliberately broken <code>import App from './Wrong.jsx'</code>). Explain what the message was telling you.</li>
+</ol>
+<h3>2. <code>file-map.md</code></h3>
+<p>A table with one row for <strong>every</strong> entry in your project's top-level folder (use your own project, not the lesson's). Columns:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>File or folder?</th>
+<th>My job with it (edit / add-only / leave alone)</th>
+<th>One-line purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>How to get the list: in the project folder, run your listing command (<code>Get-ChildItem</code> on Windows, <code>ls</code> on macOS/Linux) and include what it shows, plus entries inside <code>src/</code> separately.</p>
+<h3>3. <code>screenshot.png</code> (or <code>.jpg</code>)</h3>
+<p>One screenshot of your browser showing your running app <strong>with the changed page title visible in the browser tab</strong>. The title change is the proof you completed the worked example.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>Folder named <code>U10-YourName</code> with all three files present.</li>
+<li><code>file-map.md</code> covers every top-level entry in <em>your</em> project, including <code>src/</code> contents.</li>
+<li>The screenshot shows the changed tab title and the app running.</li>
+<li>If something did not work, <code>answers.md</code> includes the exact error text and what you tried.</li>
+</ul>
+<h2>Note on stuck submissions</h2>
+<p>A submission that documents the block, with the real error text, is worth full effort marks. Never submit nothing.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U10 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Distinguishes source vs generated files</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Accurately traces <code>index.html</code> → <code>main.jsx</code> → <code>App.jsx</code></td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Correct <code>package.json</code> vs <code>package-lock.json</code> distinction</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Correct <code>public/</code> vs <code>src/assets/</code> distinction</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Four leave-alone files with sound reasons</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Locates the mount point</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Error-reading practice decoded</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Complete, accurate file map</td>
+<td>0 bonus / part of evidence</td>
+<td>Yes</td>
+<td><code>file-map.md</code>, screenshot</td>
+</tr>
+</tbody>
+</table>
+<p>Note: <code>file-map.md</code> and the screenshot are the <strong>evidence</strong> for Q1 and Q2. If the map is missing or incomplete, cap the source/generated and chain criteria at half.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: full for a clear "you edit vs tool manages" split with a concrete example. "Big vs small" earns 1/3.</li>
+<li>Q2: full only if all three of <code>index.html</code>, <code>main.jsx</code>, <code>App.jsx</code> appear in the right order with what flows between them. Missing any link caps at 2/4. Confusing <code>main.jsx</code> with <code>App.jsx</code> caps at 2/4.</li>
+<li>Q3: full if they convey "declared intention vs exact locked versions." Award 2/3 for "one is auto-generated" without the version idea.</li>
+<li>Q4: full requires the processed-vs-served distinction. "Public is for images" alone earns 1/3.</li>
+<li>Q5: accept any four genuinely-managed files (<code>node_modules</code>, <code>package-lock.json</code>, <code>vite.config.js</code>, <code>eslint.config.js</code>, and often <code>.gitignore</code>). Do <strong>not</strong> accept <code>src/App.jsx</code> or <code>index.html</code> as leave-alone, since later units edit them.</li>
+<li>Q7: any genuine module-not-found error correctly decoded earns full.</li>
+</ul>
+<h3>Common weak submissions</h3>
+<ul>
+<li><code>file-map.md</code> lists only files, omitting <code>node_modules</code> or <code>public/</code>.</li>
+<li>Claims to edit <code>node_modules</code> "to fix a bug."</li>
+<li>Q2 reverses <code>main.jsx</code> and <code>App.jsx</code>.</li>
+<li>No screenshot of the changed title.</li>
+<li>Copy-pasted lesson tree instead of their own project's output.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U09-npm-and-a-vite-project/index.html">U09 npm, a dev server, and a Vite project</a>
+    <a class="next" href="../U11-your-first-component/index.html">U11 Your first component</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

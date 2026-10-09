@@ -1,0 +1,26 @@
+﻿{
+  "slug": "docker-developers-devops",
+  "title": "Docker for Developers & DevOps",
+  "tagline": "From \"works on my machine\" to containerized confidence — images, Dockerfiles, Compose, registries, CI, and calm debugging.",
+  "hero": "Learn containers from first principles: why images exist, how Dockerfiles work, how Compose ties services together, and how Docker fits real developer and DevOps workflows.",
+  "phases": {
+    "0": "Orientation",
+    "1": "Why containers exist",
+    "2": "Docker basics",
+    "3": "Building images",
+    "4": "Data and networking",
+    "5": "Docker Compose",
+    "6": "Registries and automation",
+    "7": "Craft and capstone"
+  },
+  "unitPhase": {
+    "U00": 0, "U01": 0,
+    "U02": 1, "U03": 1, "U04": 1, "U05": 1,
+    "U06": 2, "U07": 2, "U08": 2, "U09": 2, "U10": 2,
+    "U11": 3, "U12": 3, "U13": 3, "U14": 3, "U15": 3, "U16": 3,
+    "U17": 4, "U18": 4, "U19": 4, "U20": 4,
+    "U21": 5, "U22": 5, "U23": 5, "U24": 5, "U25": 5,
+    "U26": 6, "U27": 6, "U28": 6, "U29": 6, "U30": 6,
+    "U31": 7, "U32": 7, "U33": 7, "U34": 7, "U35": 7
+  }
+}

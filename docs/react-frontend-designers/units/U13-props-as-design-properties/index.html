@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U13 — Props as design properties | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U13</div>
+    <h1>Props as design properties</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U13 — Props as design properties</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>You can write a component (U11) and read JSX (U12). But every component you have written so far is frozen: a button always says the same words, every time. In this unit you make a component <strong>configurable</strong>, the same way you give a Figma component properties (a text property, a variant, a boolean toggle). The feature that does this in React is <strong>props</strong>.</p>
+<p>This is the unit where "a component is like a reusable symbol" stops being a metaphor and becomes literal.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Say what a prop is, in plain language, and what problem it solves.</li>
+<li>Pass a prop into a component where you use it.</li>
+<li>Read a prop inside the component that receives it.</li>
+<li>Give a prop a default value so the component still works when the prop is not passed.</li>
+<li>Build a reusable <code>Button</code> that takes a <code>label</code> prop and a <code>variant</code> prop.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11</strong> — Writing your first component (function component, <code>export default</code>, where <code>App.jsx</code> lives).</li>
+<li><strong>U12</strong> — JSX explained (curly braces <code>{ }</code> inside markup mean "put a JavaScript value here").</li>
+<li><strong>U05</strong> — JavaScript values and functions (a function can take inputs).</li>
+<li><strong>U07</strong> — Arrow functions and destructuring. We reuse destructuring here; a short reminder is inside this unit, so re-reading U07 is helpful but not required.</li>
+</ul>
+<p>If any of those words feel slippery, re-read that unit's vocabulary table first. Props build directly on all of them.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. Props are the first idea in this course that makes components feel genuinely powerful, so the "aha" is worth the wait. If it clicks slowly, that is the normal speed. Take a break when your eyes glaze over; nothing here is a race.</p>
+<h2>Why this exists</h2>
+<p>Here is the human problem, and you have felt it in a design tool.</p>
+<p>You make a button. You place it on twelve screens. Now marketing says the corner radius changes. In a file where you copied and pasted twelve separate rectangles, you have twelve edits. In a file where you made <strong>one component</strong> and placed twelve <strong>instances</strong>, you edit once.</p>
+<p>But a component alone is not enough. The twelve buttons are not identical: some say "Save," some say "Cancel," some are solid, some are outlined. A component that can only ever look one way is useless. You need it to be <strong>configurable per instance</strong>.</p>
+<p>Design tools answer this with <strong>component properties</strong> — text, boolean, and variant properties you set on each instance. React answers it with <strong>props</strong>. Same idea, new word. Props are the reason we can build one <code>Button</code> and use it twenty times with twenty different labels and styles.</p>
+<p>Without props, every variation would be a separate hand-made component, and your code would rot exactly like a copied design file full of orphaned layers.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a prop is</h3>
+<p>A <strong>prop</strong> (short for "property") is an input you give a component when you use it. The component receives the input and uses it to decide what to show.</p>
+<p>Compare the two lines:</p>
+<pre><code class="language-jsx">&lt;Greeting /&gt;
+&lt;Greeting name=&quot;Ada&quot; /&gt;
+</code></pre>
+<p>The first places a <code>Greeting</code> with no input. The second places a <code>Greeting</code> and hands it the input <code>name</code> with the value <code>"Ada"</code>. That <code>name="Ada"</code> part is a prop.</p>
+<p>You are not inventing a new kind of thing. You already pass inputs to components in a design tool when you set the text property of an instance, or switch its variant from "Primary" to "Secondary." Props are that exact activity, written in code.</p>
+<h3>A component is a function that takes inputs</h3>
+<p>In U11 you learned a component is a function that returns JSX. A function can take inputs. So a component can take inputs. That is the whole secret:</p>
+<pre><code class="language-jsx">function Greeting(inputs) {
+  return &lt;h1&gt;Hello!&lt;/h1&gt;;
+}
+</code></pre>
+<p>React collects all the props you pass into one object and hands it to your function as the first argument. By strong convention (and so everyone reads each other's code easily), we name that object <code>props</code>:</p>
+<pre><code class="language-jsx">function Greeting(props) {
+  return &lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;;
+}
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>function Greeting(props)</code> — declares a component named <code>Greeting</code> that receives the props object, called <code>props</code>.</li>
+<li><code>props.name</code> — reads the prop named <code>name</code> out of that object.</li>
+<li><code>{props.name}</code> — the curly braces say "put this value into the markup here," exactly as taught in U12.</li>
+<li><code>&lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;</code> — the heading now depends on what was passed in.</li>
+</ul>
+<h3>Passing a prop</h3>
+<p>"Passing a prop" means writing it on the tag when you use the component:</p>
+<pre><code class="language-jsx">&lt;Greeting name=&quot;Ada&quot; /&gt;
+</code></pre>
+<p>Rules that matter:</p>
+<ul>
+<li>The part before the <code>=</code> is the <strong>prop name</strong> (<code>name</code>). It must match the name the component reads (<code>props.name</code>).</li>
+<li>The part inside the quotes is the <strong>prop value</strong> (<code>"Ada"</code>).</li>
+<li>Text values need <strong>quotes</strong>: <code>name="Ada"</code>.</li>
+<li>A non-text value (a number, or a variable from U05) goes inside <strong>curly braces</strong>: <code>count={3}</code> or <code>name={someVariable}</code>.</li>
+</ul>
+<h3>Reading a prop with destructuring (the reminder from U07)</h3>
+<p>Most React code does not write <code>props.name</code> again and again. It <strong>destructures</strong> the props in the function's parameter list. Destructuring means "pull named values out of an object into their own variables." U07 taught this. Here is the same component, destructured:</p>
+<pre><code class="language-jsx">function Greeting({ name }) {
+  return &lt;h1&gt;Hello, {name}!&lt;/h1&gt;;
+}
+</code></pre>
+<p><code>{ name }</code> means "take the <code>name</code> prop out of the props object and give me a variable called <code>name</code>." Inside the function you now write <code>name</code> instead of <code>props.name</code>. Both forms work; destructuring is just shorter and very common, so we use it from here on.</p>
+<h3>Defaults: what if the prop is not passed?</h3>
+<p>If you use <code>&lt;Greeting /&gt;</code> with no <code>name</code>, then <code>name</code> is the special JavaScript value <code>undefined</code>, and the heading reads <code>Hello, !</code>. That is rarely what you want.</p>
+<p>A <strong>default value</strong> is a fallback the component uses when a prop is missing. With destructuring, you write it with a single <code>=</code>:</p>
+<pre><code class="language-jsx">function Greeting({ name = &quot;friend&quot; }) {
+  return &lt;h1&gt;Hello, {name}!&lt;/h1&gt;;
+}
+</code></pre>
+<p>Now <code>&lt;Greeting /&gt;</code> shows <code>Hello, friend!</code> and <code>&lt;Greeting name="Ada" /&gt;</code> shows <code>Hello, Ada!</code>. The default is the design-tool equivalent of a property's starting value when you first drag the component onto the canvas.</p>
+<h3>What a prop is <em>not</em></h3>
+<ul>
+<li>A prop is <strong>not</strong> something the component changes later. It arrives, the component reads it, and it stays put for that render. If you start changing a component's own values over time, that is a different concept called <strong>state</strong>, which arrives in U17.</li>
+<li>A prop is <strong>not</strong> free-form CSS. It is an input you deliberately named. The cleanest props map to the properties you would offer a designer in a design tool.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prop</td>
+<td>An input passed into a component when you use it</td>
+<td>Not the same as a CSS property or a design "layer property," though it plays a similar role</td>
+</tr>
+<tr>
+<td>Props object</td>
+<td>The single object React collects all passed props into</td>
+<td>Not something you create yourself; React makes it</td>
+</tr>
+<tr>
+<td>Prop name</td>
+<td>The label before the <code>=</code>, like <code>name</code> in <code>name="Ada"</code></td>
+<td>Must match what the component reads, exactly (case matters)</td>
+</tr>
+<tr>
+<td>Prop value</td>
+<td>What you pass, like <code>"Ada"</code></td>
+<td>Text needs quotes; numbers/variables need <code>{ }</code></td>
+</tr>
+<tr>
+<td>Passing a prop</td>
+<td>Writing it on the tag: <code>&lt;Greeting name="Ada" /&gt;</code></td>
+<td>Not writing it inside the component's own body</td>
+</tr>
+<tr>
+<td>Destructuring</td>
+<td>Pulling named values out of an object into variables</td>
+<td>Not a React feature; it is plain JavaScript from U07</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>Fallback used when a prop is missing</td>
+<td>Only works with destructuring <code>{ name = "..." }</code>, not with <code>props.name = "..."</code></td>
+</tr>
+<tr>
+<td>Component</td>
+<td>The reusable definition (the symbol)</td>
+<td>Not the same as one use of it</td>
+</tr>
+<tr>
+<td>Instance</td>
+<td>One use of a component, configured by props</td>
+<td>In code there is no <code>instance</code> keyword; it is just <code>&lt;Greeting /&gt;</code> on a line</td>
+</tr>
+<tr>
+<td><code>undefined</code></td>
+<td>JavaScript's "there is no value here" value</td>
+<td>Not an error on its own; it just renders as empty text</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a small configurable Button and use it twice. Use the Vite project from U09 and the <code>src</code> folder from U10.</p>
+<p><strong>Step 1 — create <code>src/Button.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/Button.jsx
+function Button({ label = &quot;Button&quot;, variant = &quot;primary&quot; }) {
+  const className = &quot;button button--&quot; + variant;
+  return &lt;button className={className}&gt;{label}&lt;/button&gt;;
+}
+
+export default Button;
+</code></pre>
+<p>Every line, justified:</p>
+<ul>
+<li><code>// src/Button.jsx</code> — the filename as a comment. This file defines one component.</li>
+<li><code>function Button({ label = "Button", variant = "primary" })</code> — declares the component. It destructures two props: <code>label</code> (default text <code>"Button"</code>) and <code>variant</code> (default <code>"primary"</code>).</li>
+<li><code>const className = "button button--" + variant;</code> — builds a CSS class name as text. <code>+</code> joins strings (U05). If <code>variant</code> is <code>"primary"</code>, <code>className</code> becomes <code>"button button--primary"</code>. The <code>className</code> attribute is how JSX tags an element with a CSS class (the HTML attribute is called <code>class</code> in plain HTML and <code>className</code> in JSX, as noted in U12). Styling components in depth is U20; here we only label it.</li>
+<li><code>return &lt;button className={className}&gt;{label}&lt;/button&gt;;</code> — returns a real <code>&lt;button&gt;</code> element. <code>{className}</code> drops the class string in, and <code>{label}</code> drops the label text in.</li>
+<li><code>export default Button;</code> — makes the component importable elsewhere (U07, U11).</li>
+</ul>
+<p><strong>Step 2 — use it in <code>src/App.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import Button from &quot;./Button.jsx&quot;;
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Button /&gt;
+      &lt;Button label=&quot;Save&quot; /&gt;
+      &lt;Button label=&quot;Cancel&quot; variant=&quot;secondary&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<ul>
+<li><code>import Button from "./Button.jsx";</code> — pulls the component out of the file next to it (U07).</li>
+<li><code>&lt;Button /&gt;</code> — no props, so the defaults apply: it shows "Button" as a primary button.</li>
+<li><code>&lt;Button label="Save" /&gt;</code> — passes <code>label</code>; <code>variant</code> still falls back to <code>"primary"</code>.</li>
+<li><code>&lt;Button label="Cancel" variant="secondary" /&gt;</code> — passes both.</li>
+</ul>
+<p><strong>Step 3 — run it.</strong> In a terminal opened in your project folder:</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>(On all three operating systems the command is identical; the difference is only how you open the terminal — Windows Terminal/PowerShell, macOS Terminal, or a Linux terminal. U09 explains <code>npm run dev</code>.)</p>
+<p><strong>What success looks like:</strong> The browser at the address Vite prints (usually <code>http://localhost:5173</code>) shows three buttons stacked vertically: "Button," "Save," and "Cancel." The first two carry the primary class, the third the secondary class. If you have no CSS yet, they all look like plain browser buttons — that is expected and correct. What matters is the visible text: each button shows a different label from the same single component.</p>
+<p><strong>A design-tool parallel:</strong> you made one <code>Button</code> symbol and placed three instances, setting each instance's text property and one variant. Change the component once, and all instances follow.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Forgetting to pass the prop (it shows nothing)</h3>
+<pre><code class="language-jsx">&lt;Greeting /&gt;
+</code></pre>
+<p>renders <code>Hello, !</code>. The component reads <code>name</code>, but nothing passed it, so <code>name</code> is <code>undefined</code>, and <code>undefined</code> renders as empty text.</p>
+<p><strong>Reading it:</strong> There is no red error — the screen just has a hole where text should be. This is the sneakiest kind of problem, because the code is technically valid.</p>
+<p><strong>Fix:</strong> Either pass the prop (<code>&lt;Greeting name="Ada" /&gt;</code>) or give it a default (<code>{ name = "friend" }</code>). Decide which is right for the component: does it <em>require</em> the input, or is there a sensible fallback?</p>
+<h3>Error 2 — Writing <code>props.name</code> as plain text</h3>
+<pre><code class="language-jsx">return &lt;h1&gt;Hello, props.name!&lt;/h1&gt;;
+</code></pre>
+<p><strong>What happens:</strong> The heading literally reads <code>Hello, props.name!</code>. The curly braces are missing, so JSX treats <code>props.name!</code> as ordinary text, not as a value to compute.</p>
+<p><strong>Fix:</strong> Wrap the value in braces: <code>Hello, {props.name}!</code>. Curly braces are the "put a value here" signal from U12.</p>
+<h3>Error 3 — Passing a variable without curly braces</h3>
+<pre><code class="language-jsx">&lt;Greeting name=Ada /&gt;
+</code></pre>
+<p><strong>What happens:</strong> JSX reads <code>Ada</code> as a JavaScript variable, not the text <code>"Ada"</code>. Since no variable named <code>Ada</code> exists, you get an error in the terminal/browser console mentioning <code>Ada is not defined</code>.</p>
+<p><strong>Decode it:</strong> "is not defined" means "I looked for a name and found nothing with that name." The name it lists is the thing it could not find.</p>
+<p><strong>Fix:</strong> Text gets quotes: <code>name="Ada"</code>. If you truly meant the value of a variable called <code>Ada</code>, it needs braces: <code>name={Ada}</code>.</p>
+<h3>Error 4 — Using <code>=</code> for a default without destructuring</h3>
+<pre><code class="language-jsx">function Button(props) {
+  const label = props.label = &quot;Button&quot;;
+  ...
+}
+</code></pre>
+<p><strong>What happens:</strong> This does not give <code>label</code> a default. It <em>overwrites</em> <code>props.label</code> with <code>"Button"</code>, so every button says "Button" no matter what was passed. Silently wrong.</p>
+<p><strong>Fix:</strong> Defaults belong in the destructured parameter: <code>function Button({ label = "Button" }) { ... }</code>.</p>
+<h2>Checkpoints</h2>
+<p>Answer these before the assignment. If you can answer all four, you are ready.</p>
+<ol>
+<li>In one sentence, what is a prop?</li>
+<li>In <code>name="Ada"</code>, which part is the prop name and which is the prop value?</li>
+<li>How do you give <code>label</code> the default text <code>"Button"</code> when the prop is missing?</li>
+<li>Name one way props are like design-tool component properties, and one way they differ.</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Struggle is information.</p>
+<h3>P1 — Read and predict</h3>
+<p>Look at this component and prediction prompt. Write down what each of these three headings will say <em>before</em> running anything.</p>
+<pre><code class="language-jsx">function Badge({ text, tone = &quot;neutral&quot; }) {
+  return &lt;span className={&quot;badge badge--&quot; + tone}&gt;{text}&lt;/span&gt;;
+}
+
+// predictions for:
+// &lt;Badge text=&quot;New&quot; /&gt;
+// &lt;Badge text=&quot;Sale&quot; tone=&quot;danger&quot; /&gt;
+// &lt;Badge tone=&quot;success&quot; /&gt;
+</code></pre>
+<h3>P2 — Change one value, observe</h3>
+<p>Copy the worked example. Change <code>Button</code>'s default <code>label</code> from <code>"Button"</code> to <code>"Click me"</code>. Save. Watch the browser update. Then remove the <code>label</code> from the second <code>&lt;Button label="Save" /&gt;</code> and observe. Which default shows now?</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Fill the blanks so the component shows <code>Hi, Maria</code>:</p>
+<pre><code class="language-jsx">function Hello({ name }) {
+  return &lt;p&gt;Hi, ____&lt;/p&gt;;
+}
+
+// use it:
+&lt;Hello ____=&quot;Maria&quot; /&gt;
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Create <code>src/Tag.jsx</code>: a component that takes a <code>label</code> prop and a <code>color</code> prop, with defaults <code>"Tag"</code> and <code>"grey"</code>. It returns a <code>&lt;span&gt;</code> whose <code>className</code> is <code>"tag tag--" + color</code> and whose text is <code>label</code>. Import it in <code>App.jsx</code> and use it twice with different labels.</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This component always shows "Button" even when a label is passed. Find and fix the bug, and write one sentence explaining what was wrong.</p>
+<pre><code class="language-jsx">function Button({ label }) {
+  label = &quot;Button&quot;;
+  return &lt;button&gt;{label}&lt;/button&gt;;
+}
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is written for you, not kept secret.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No events, clicks, or <code>onClick</code> — that is U17.</li>
+<li>No state, no <code>useState</code> — components here never change themselves.</li>
+<li>No list rendering with <code>map</code> — that is U15.</li>
+<li>No deep CSS or design-system styling — that is Phase 4.</li>
+<li>No <code>children</code> prop (nesting content between tags) — that arrives with composition in U14.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U14 — Composing components</strong> (taking several small components and assembling them into a page).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U13 Assignment — A reusable Button, configured by props</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U13-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>Button.jsx</code></h3>
+<p>A component file that meets the specification below. You may adapt the worked example, but it must be your own file and it must run.</p>
+<p>Specification:</p>
+<ul>
+<li>The component is named <code>Button</code>.</li>
+<li>It accepts two props: <code>label</code> and <code>variant</code>.</li>
+<li>Both props have sensible defaults (<code>label</code> should default to <code>"Button"</code>; choose a reasonable default for <code>variant</code>).</li>
+<li>The returned <code>&lt;button&gt;</code> uses <code>className</code> built from the <code>variant</code> prop, following the pattern <code>"button button--" + variant</code>.</li>
+<li>The button's visible text is the <code>label</code> prop.</li>
+</ul>
+<h3>2. <code>App.jsx</code></h3>
+<p>A file that imports your <code>Button</code> and renders <strong>three</strong> instances:</p>
+<ul>
+<li>One with no props at all (defaults only).</li>
+<li>One with a <code>label</code> but no <code>variant</code> (so you prove the default variant works).</li>
+<li>One with both <code>label</code> and <code>variant</code>.</li>
+</ul>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs or bullets are fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Explain props.</strong> In 3–5 sentences, explain what a prop is to a person who designs interfaces but has never coded. Use your own analogy if one helps.</li>
+<li><strong>Name and value.</strong> In the line <code>&lt;Button label="Save" variant="secondary" /&gt;</code>, identify the prop names and the prop values.</li>
+<li><strong>Defaults.</strong> Why is a default value useful? Give one prop from your own <code>Button</code> that benefits from a default and say what happens without it.</li>
+<li><strong>Predict then run.</strong> Before running, write what each of these three lines will show. Then run them and record whether you were right.<br />
+<code>jsx
+   &lt;Button /&gt;
+   &lt;Button label="Save" /&gt;
+   &lt;Button variant="ghost" /&gt;</code></li>
+<li><strong>Design bridge.</strong> Describe one component in a design tool you have used and list two properties you could offer on it. Say how those map to props.</li>
+</ol>
+<h3>4. <code>error-reading.md</code></h3>
+<p>Copy this broken snippet, run it (or read it carefully if you prefer), then answer below it:</p>
+<pre><code class="language-jsx">function Price({ amount, currency = &quot;USD&quot; }) {
+  return &lt;p&gt;{currency} amount&lt;/p&gt;;
+}
+</code></pre>
+<p>a. What does the screen show, and why?<br />
+b. Fix the snippet so it shows a real price (pick a number).<br />
+c. Write, in one sentence, the general rule this bug teaches.</p>
+<h2>Definition of done</h2>
+<ul>
+<li><code>Button.jsx</code> and <code>App.jsx</code> exist and the dev server shows three buttons with different labels.</li>
+<li><code>answers.md</code> answers all five prompts in your own words.</li>
+<li><code>error-reading.md</code> includes the fixed snippet and the one-sentence rule.</li>
+<li>Files are named exactly as above.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>The <code>Button</code> genuinely reuses one definition for three variations (not three hand-written buttons).</li>
+<li>Defaults are used and explained, not just copied.</li>
+<li>The predict-then-run section honestly reports any wrong prediction (a wrong prediction you understood is worth more than a "correct" one you cannot explain).</li>
+<li>The design bridge names a real component and real properties.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U13 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Button</code> accepts <code>label</code> and <code>variant</code> and renders using both</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>Button.jsx</code></td>
+</tr>
+<tr>
+<td>Both props have working defaults</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>Button.jsx</code> behavior with <code>&lt;Button /&gt;</code></td>
+</tr>
+<tr>
+<td>Three instances render distinctly (proves reuse, not copy-paste)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>App.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>Explains props in own words, aimed at a non-coder</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correctly names prop names/values and explains defaults</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2–Q3</td>
+</tr>
+<tr>
+<td>Predict-then-run completed, with honest reporting</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Design bridge maps a real component's properties to props</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Error-reading: correct cause + correct fix + general rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>2</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong><code>Button</code> renders but ignores <code>variant</code>:</strong> award 2/4 for the component; the variation must actually appear in the class string.</li>
+<li><strong>Defaults wrong syntax</strong> (e.g. <code>label = "Button"</code> assigned in the body, overwriting props): award 0/3 for defaults but keep component points. This is the U13 Error 4 trap.</li>
+<li><strong>Three buttons that are really three separate components:</strong> award 0/3 for reuse. The point of the unit is one definition, many instances.</li>
+<li><strong>Q1:</strong> Full marks require plain language and no unexplained jargon. A correct but jargon-heavy answer ("props are immutable payloads") caps at 2/4.</li>
+<li><strong>Q4:</strong> There is no penalty for wrong predictions. Penalize only a falsified or empty report.</li>
+<li><strong>Error-reading:</strong> If the learner says "it shows undefined" that is partially right (award 1–2/3); full marks need the <em>why</em> (<code>amount</code> is not wrapped in braces, so it is literal text) and the one-sentence rule (values in JSX need <code>{ }</code>).</li>
+<li>Do not penalize imperfect English. Penalize empty or copied lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U12-jsx-explained/index.html">U12 JSX explained</a>
+    <a class="next" href="../U14-composing-components/index.html">U14 Composing components</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

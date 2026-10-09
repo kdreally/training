@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U17 — Events and state with useState | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U17</div>
+    <h1>Events and state with useState</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U17 — Events and state with useState</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>Everything so far has been fixed: props come in (U13), and the page shows what it shows. Nothing the user does changes it. This unit adds the two ideas that bring a page to life: <strong>events</strong> (reacting to a click or keystroke) and <strong>state</strong> (values a component remembers and changes over time).</p>
+<p>This is the biggest conceptual jump in Phase 3. If it feels like more than one idea at once, that is because it is — but the two ideas genuinely need each other, so we take them together, slowly.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Attach a <strong>handler function</strong> to a JSX element so it runs on a click (<code>onClick</code>).</li>
+<li>Explain what a <strong>state variable</strong> is and why a plain variable will not update the screen.</li>
+<li>Create state with <strong><code>useState</code></strong> and read it in JSX.</li>
+<li>Update state with its setter and understand the <strong>re-render</strong> that follows.</li>
+<li>Build a counter and a toggle.</li>
+<li>Explain the rule: never change state directly; use the setter.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05</strong> — JavaScript values, variables, and functions (state is variables; handlers are functions).</li>
+<li><strong>U12</strong> — JSX and curly braces.</li>
+<li><strong>U13</strong> — Props.</li>
+<li><strong>U14</strong> — Composition.</li>
+<li><strong>U16</strong> — Conditional rendering (a toggle is conditional rendering driven by state).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>, split over two sittings if you like. This unit is longer because it introduces the most important idea in React after components themselves. Re-reading is normal here. If your first counter does not work, you are in excellent company.</p>
+<h2>Why this exists</h2>
+<p>Think about a Figma prototype. You connect a button to a "Change to" interaction so that clicking it flips the design to a different variant. The design documents two looks; the prototype lets a viewer move between them.</p>
+<p>A real interface does this <em>for real</em>, with real data, and remembers the result. When a user clicks "Add to cart," the cart count must go from 2 to 3 and the screen must update. When a user toggles dark mode, the page must remember and show dark.</p>
+<p>The human problem: <strong>an interface must remember things that change while the user uses it, and redraw itself when they do.</strong> Memory that changes = state. React redrawing = re-render. Wiring a user action to a change = an event handler. Those three pieces are this unit.</p>
+<h2>Plain-language teaching</h2>
+<h3>Events and handlers</h3>
+<p>An <strong>event</strong> is something the user does: a click, a key press, moving the mouse, submitting a form. React lets you say "when this event happens on this element, run this function."</p>
+<p>A <strong>handler</strong> (also called an <strong>event handler</strong>) is the function you want to run. You attach it with a special prop whose name starts with <code>on</code>:</p>
+<pre><code class="language-jsx">&lt;button onClick={handleClick}&gt;Add&lt;/button&gt;
+</code></pre>
+<p>Read it as: "on a click of this button, run <code>handleClick</code>."</p>
+<p>Then you define the handler. A handler takes no special arguments for a simple click:</p>
+<pre><code class="language-jsx">function handleClick() {
+  alert(&quot;Clicked!&quot;);
+}
+</code></pre>
+<p>In modern React, handlers are usually arrow functions (U07), often written right on the element:</p>
+<pre><code class="language-jsx">&lt;button onClick={() =&gt; alert(&quot;Clicked!&quot;)}&gt;Add&lt;/button&gt;
+</code></pre>
+<p><strong>Crucial detail:</strong> you pass the function itself, not the result of calling it.</p>
+<ul>
+<li><code>onClick={handleClick}</code> — correct: hands React the function to call later.</li>
+<li><code>onClick={handleClick()}</code> — wrong: calls the function <em>now</em>, during rendering, and hands React <code>undefined</code>. This is one of the most common early React bugs.</li>
+</ul>
+<h3>Why a plain variable fails</h3>
+<p>Suppose you try to store a count in an ordinary variable and change it on click:</p>
+<pre><code class="language-jsx">function Counter() {
+  let count = 0;
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; { count = count + 1; }}&gt;Add&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>This looks right and does nothing. Clicking runs, <code>count</code> becomes <code>1</code>, and then... the screen still says <code>0</code>.</p>
+<p>Why? Because React only redraws a component when something React is <em>tracking</em> changes. A plain variable is invisible to React. Changing it does not tell React "redraw." React rerenders this component only if a prop changed, a state value changed, or a parent re-rendered. A plain <code>let</code> is none of those, so the screen never updates.</p>
+<p>Even worse, on the next render a fresh <code>count = 0</code> runs anyway, wiping your change.</p>
+<h3>Enter <code>useState</code></h3>
+<p><code>useState</code> is a React <strong>hook</strong>. A <strong>hook</strong> is a special function that starts with <code>use</code> and lets a component hold onto React features (like state) across renders. You import it from React:</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+</code></pre>
+<p>Then you call it inside your component:</p>
+<pre><code class="language-jsx">const [count, setCount] = useState(0);
+</code></pre>
+<p>Let's unpack that single line, because it is dense:</p>
+<ul>
+<li><code>useState(0)</code> — create a piece of state, with an <strong>initial value</strong> of <code>0</code>.</li>
+<li>It returns an <strong>array of two things</strong>: the current value and a setter function.</li>
+<li><code>const [count, setCount] = ...</code> — <strong>array destructuring</strong> (U07) pulls those two things into names you choose. <code>count</code> is the current value; <code>setCount</code> is the function you call to change it.</li>
+<li>By convention the setter is named <code>set</code> + the value name: <code>count</code>/<code>setCount</code>, <code>isOpen</code>/<code>setIsOpen</code>, <code>query</code>/<code>setQuery</code>.</li>
+</ul>
+<p>A <strong>state variable</strong> is special: React remembers its value between renders, and when you change it through the setter, React <strong>re-renders</strong> the component — redraws it with the new value.</p>
+<h3>The re-render idea</h3>
+<p>A <strong>re-render</strong> is React running your component function again to produce updated JSX. When you call <code>setCount(1)</code>, React:</p>
+<ol>
+<li>stores the new value,</li>
+<li>re-runs your component function,</li>
+<li>this time <code>count</code> is <code>1</code>, so the JSX contains <code>1</code>,</li>
+<li>updates the screen.</li>
+</ol>
+<p>That is the whole loop. Nothing magical, but it is the engine of every interactive interface you have ever used.</p>
+<h3>The rules of state</h3>
+<ol>
+<li><strong>Never change state directly.</strong> Do not do <code>count = count + 1</code> or <code>items.push(x)</code>. React will not know, and the screen will not update. Instead call the setter: <code>setCount(count + 1)</code>.</li>
+<li><strong>Call the setter, not the value.</strong> <code>setCount(5)</code> replaces the value with 5. <code>setCount(count + 1)</code> replaces it with one more than the current value.</li>
+<li><strong>Do not call hooks conditionally or in loops.</strong> <code>useState</code> must run in the same order every render, so keep it at the top level of your component, never inside an <code>if</code> or a loop. (This is why the early-return pattern from U16 goes <em>after</em> your hooks.)</li>
+<li><strong>State is private to the component.</strong> A parent cannot read a child's state directly. Sharing comes later (U26).</li>
+</ol>
+<h3>A counter and a toggle</h3>
+<p>A <strong>counter</strong> uses a number:</p>
+<pre><code class="language-jsx">const [count, setCount] = useState(0);
+// ...
+&lt;button onClick={() =&gt; setCount(count + 1)}&gt;Add one&lt;/button&gt;
+</code></pre>
+<p>A <strong>toggle</strong> uses a boolean:</p>
+<pre><code class="language-jsx">const [isOn, setIsOn] = useState(false);
+// ...
+&lt;button onClick={() =&gt; setIsOn(!isOn)}&gt;{isOn ? &quot;On&quot; : &quot;Off&quot;}&lt;/button&gt;
+</code></pre>
+<p>The toggle is conditional rendering (U16) fed by state: the label shows "On" or "Off" based on <code>isOn</code>, and the click flips the value, which re-renders with the other label.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Event</td>
+<td>Something the user does (click, type, submit)</td>
+<td>Not an error or an "event log"</td>
+</tr>
+<tr>
+<td>Handler</td>
+<td>The function that runs when an event happens</td>
+<td>Attach the function, do not call it</td>
+</tr>
+<tr>
+<td><code>onClick</code></td>
+<td>The JSX prop for "when clicked"</td>
+<td>The HTML attribute is <code>onclick</code>; in JSX it is camelCase <code>onClick</code></td>
+</tr>
+<tr>
+<td><code>useState</code></td>
+<td>A hook that gives a component remembered, changeable value</td>
+<td>Not a normal function; must be called at the top level</td>
+</tr>
+<tr>
+<td>Hook</td>
+<td>A React function starting with <code>use</code></td>
+<td>Not a CSS class; not a "webhook"</td>
+</tr>
+<tr>
+<td>Initial value</td>
+<td>What the state starts as (e.g. <code>0</code>, <code>false</code>, <code>""</code>)</td>
+<td>Only used on the first render</td>
+</tr>
+<tr>
+<td>State variable</td>
+<td>The current value, remembered across renders</td>
+<td>Not the same as a prop</td>
+</tr>
+<tr>
+<td>Setter</td>
+<td>The function (<code>setCount</code>) used to change state</td>
+<td>Never mutate the value directly</td>
+</tr>
+<tr>
+<td>Re-render</td>
+<td>React running the component again to update the screen</td>
+<td>Not a browser page reload</td>
+</tr>
+<tr>
+<td>Mutate</td>
+<td>Changing a value in place (e.g. <code>arr.push</code>)</td>
+<td>React needs a new value via the setter, not a mutation</td>
+</tr>
+<tr>
+<td>Destructuring</td>
+<td><code>const [a, b] = ...</code> pulls items into names</td>
+<td>Here it pulls value + setter from <code>useState</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a small counter with a toggle-able message.</p>
+<p><strong><code>src/Counter.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/Counter.jsx
+import { useState } from &quot;react&quot;;
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const [isHidden, setIsHidden] = useState(false);
+
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;Counter&lt;/h2&gt;
+
+      {!isHidden &amp;&amp; &lt;p&gt;Count is {count}&lt;/p&gt;}
+
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;Add one&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(count - 1)}&gt;Take one&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(0)}&gt;Reset&lt;/button&gt;
+
+      &lt;button onClick={() =&gt; setIsHidden(!isHidden)}&gt;
+        {isHidden ? &quot;Show count&quot; : &quot;Hide count&quot;}
+      &lt;/button&gt;
+    &lt;/section&gt;
+  );
+}
+
+export default Counter;
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>import { useState } from "react";</code> — pulls the hook in. It must be imported to be used.</li>
+<li><code>const [count, setCount] = useState(0);</code> — state number, starting at <code>0</code>.</li>
+<li><code>const [isHidden, setIsHidden] = useState(false);</code> — state boolean, starting <code>false</code>. Two pieces of state, two hooks, both at the top level.</li>
+<li><code>{!isHidden &amp;&amp; &lt;p&gt;Count is {count}&lt;/p&gt;}</code> — conditional rendering (U16): if the count is not hidden, show it. <code>!isHidden</code> flips the boolean.</li>
+<li><code>onClick={() =&gt; setCount(count + 1)}</code> — the arrow function runs <em>on click</em>, calling the setter with one more than now. Handing React the arrow function (not calling it) is the key.</li>
+<li><code>onClick={() =&gt; setCount(0)}</code> — resets to the initial value.</li>
+<li><code>{isHidden ? "Show count" : "Hide count"}</code> — a ternary (U16) picks the button text from state. Clicking calls <code>setIsHidden(!isHidden)</code>, flipping the value and re-rendering with the opposite label.</li>
+</ul>
+<p><strong><code>src/App.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import Counter from &quot;./Counter.jsx&quot;;
+
+function App() {
+  return &lt;Counter /&gt;;
+}
+
+export default App;
+</code></pre>
+<p><strong>Run it</strong> (U09):</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>Same command on every OS; only the terminal app differs.</p>
+<p><strong>What success looks like:</strong> A heading "Counter," the text "Count is 0," and four buttons. Clicking "Add one" makes the number go up; "Take one" makes it go down; "Reset" returns it to 0; clicking "Hide count"/"Show count" makes the text appear and disappear and the button label switch. Every change is instant, with no page reload.</p>
+<p><strong>A design-tool parallel:</strong> you built a prototype variable (<code>count</code>) and connected buttons to set it, then bound the text layer to that variable. This is exactly that, running live.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Calling the handler instead of passing it</h3>
+<pre><code class="language-jsx">&lt;button onClick={handleClick()}&gt;Add&lt;/button&gt;
+</code></pre>
+<p><strong>What happens:</strong> <code>handleClick()</code> runs immediately, while rendering. Then React receives whatever it returned (usually <code>undefined</code>) as the handler, so clicks do nothing. If the function's job was to change state, you may also get an infinite render loop and an error about too many re-renders.</p>
+<p><strong>Decode it:</strong> If you see:</p>
+<pre><code class="language-text">Too many re-renders. React limits the number of renders to prevent an infinite loop.
+</code></pre>
+<p>that almost always means a function that changes state was called during render — often exactly this <code>onClick={fn()}</code> mistake, or calling a setter directly in the component body.</p>
+<p><strong>Fix:</strong> Pass the function: <code>onClick={handleClick}</code>. If you need to pass arguments, wrap it in an arrow: <code>onClick={() =&gt; handleClick(id)}</code>.</p>
+<h3>Error 2 — Mutating state directly</h3>
+<pre><code class="language-jsx">const [count, setCount] = useState(0);
+// ...
+onClick={() =&gt; { count = count + 1; }}
+</code></pre>
+<p><strong>What happens:</strong> Nothing. The click changes the local variable, but React does not know, so it never re-renders. The screen keeps the old number.</p>
+<p><strong>Decode it:</strong> No error at all — just a dead button. This is the exact "plain variable" trap from earlier, now with state. The fix is not about React being fussy; it is that React must be <em>told</em> to update.</p>
+<p><strong>Fix:</strong> <code>setCount(count + 1)</code>.</p>
+<h3>Error 3 — Changing an array or object in place</h3>
+<pre><code class="language-jsx">const [items, setItems] = useState([]);
+// wrong:
+onClick={() =&gt; { items.push(&quot;New&quot;); }}
+</code></pre>
+<p><strong>What happens:</strong> Same dead screen. <code>push</code> mutates the existing array; React compares values and sees the <em>same</em> array, so it does not re-render.</p>
+<p><strong>Fix:</strong> Create a <strong>new</strong> value and set it:</p>
+<pre><code class="language-jsx">onClick={() =&gt; setItems([...items, &quot;New&quot;])}
+</code></pre>
+<p><code>[...items, "New"]</code> (the spread from U06/U07) makes a new array with a copy of the old items plus the new one. New array, so React notices.</p>
+<h3>Error 4 — Hook inside a condition</h3>
+<pre><code class="language-jsx">if (isSignedIn) {
+  const [count, setCount] = useState(0);
+}
+</code></pre>
+<p><strong>What happens:</strong> React errors with something like:</p>
+<pre><code class="language-text">React has detected a change in the order of Hooks called by ...
+</code></pre>
+<p>Hooks must run in the same order every render. Putting one inside an <code>if</code> means it sometimes runs and sometimes does not, which breaks React's bookkeeping.</p>
+<p><strong>Fix:</strong> Call all hooks at the top level, before any early returns or conditions.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is the difference between <code>onClick={handleClick}</code> and <code>onClick={handleClick()}</code>?</li>
+<li>Why does changing a plain <code>let</code> variable not update the screen?</li>
+<li>What does <code>useState</code> return, and what do we do with each part?</li>
+<li>Why must you call <code>setCount</code> instead of writing <code>count = count + 1</code>?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>For the worked example, predict the screen after: (a) clicking "Add one" three times, (b) clicking "Reset," (c) clicking "Hide count," then "Add one" twice, then "Show count."</p>
+<h3>P2 — Change one value, observe</h3>
+<p>Change the counter's initial value from <code>0</code> to <code>10</code>. Re-run and observe. Then change <code>setCount(count + 1)</code> to <code>setCount(count + 2)</code> and click a few times.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the toggle so the button label flips between "Lights on" and "Lights off":</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function Lights() {
+  const [____, ____] = useState(____);
+
+  return (
+    &lt;button onClick={() =&gt; ____(!isOn)}&gt;
+      {____ ? &quot;Lights on&quot; : &quot;Lights off&quot;}
+    &lt;/button&gt;
+  );
+}
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Create <code>Like.jsx</code>: a button that shows "♡ Like (0)" and, on click, adds one to a <code>likes</code> state and shows "♥ Liked (n)". Keep it to one state variable and explain your choice in a comment-free sentence in <code>answers</code> of the assignment.</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This component is meant to count clicks but the number never changes. Fix it and explain the cause in one sentence.</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function Clicks() {
+  const [n, setN] = useState(0);
+
+  function addOne() {
+    n = n + 1;
+  }
+
+  return &lt;button onClick={addOne}&gt;Clicked {n}&lt;/button&gt;;
+}
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No forms or text inputs bound to state — that is U18.</li>
+<li>No <code>useEffect</code>, timers, or data fetching — that is U19.</li>
+<li>No sharing state between components (lifting state) — that is U26.</li>
+<li>No animation between states — U29.</li>
+<li>No deeper state patterns (reducers, context) — later phases.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U18 — Forms and controlled inputs</strong> (tying state to text inputs so the page reflects what the user types).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U17 Assignment — A counter and a toggle</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U17-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>Counter.jsx</code></h3>
+<p>A component meeting this specification:</p>
+<ul>
+<li>Uses <code>useState</code> for a numeric <code>count</code> state starting at <code>0</code>.</li>
+<li>Renders the current count.</li>
+<li>A button that adds one.</li>
+<li>A button that subtracts one.</li>
+<li>A button that resets to <code>0</code>.</li>
+<li>At least one button whose label or behavior depends on a <strong>second</strong> piece of state (for example, a hide/show toggle, or a step size).</li>
+</ul>
+<h3>2. <code>App.jsx</code></h3>
+<p>Imports and renders your <code>Counter</code>.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Events and handlers.</strong> In 3–5 sentences, explain to a designer what an event handler is, using a prototype interaction as the comparison.</li>
+<li><strong>Why bind state.</strong> Explain why <code>onClick={handleClick}</code> works but <code>onClick={handleClick()}</code> does not. What actually gets passed to React in each case?</li>
+<li><strong>Plain variable.</strong> Explain why an ordinary <code>let count = 0</code> does not update the screen when changed, whereas <code>setCount</code> does.</li>
+<li><strong>Predict then run.</strong> Before running, write the value shown after this exact sequence: start at 0 → add one → add one → subtract one → reset → add one. Then run it and confirm.</li>
+<li><strong>The rule.</strong> State the rule about changing state directly, and give one concrete example (using an array or object would strengthen your answer) of what goes wrong if you break it.</li>
+</ol>
+<h3>4. <code>error-reading.md</code></h3>
+<p>Paste, run, and answer:</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function Timer() {
+  const [seconds, setSeconds] = useState(0);
+
+  return (
+    &lt;button onClick={setSeconds(seconds + 1)}&gt;
+      Seconds: {seconds}
+    &lt;/button&gt;
+  );
+}
+
+export default Timer;
+</code></pre>
+<p>a. Describe what happens when the component first loads (expect an error).<br />
+b. Quote the exact error message from the terminal or browser console.<br />
+c. Explain, in one or two sentences, why this error happens.<br />
+d. Fix the code.<br />
+e. Write the general rule in one sentence.</p>
+<h2>Definition of done</h2>
+<ul>
+<li><code>Counter.jsx</code> changes the displayed number on click and never reloads the page.</li>
+<li>Two or more pieces of state are used.</li>
+<li><code>answers.md</code> answers all five prompts in your own words.</li>
+<li><code>error-reading.md</code> quotes the real error and includes the fix and the rule.</li>
+<li>Files are named exactly as above.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>Handlers are passed correctly (function, not called).</li>
+<li>State is never mutated directly anywhere in the files.</li>
+<li>The "plain variable" answer (Q3) explains re-rendering, not just "React wants it that way."</li>
+<li>The error-reading answer connects the infinite-loop error to calling the setter during render.</li>
+<li>The predict-then-run report is honest about any wrong prediction.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U17 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Counter</code> uses <code>useState</code> and updates the screen on click</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>Counter.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>Add, subtract, and reset all work</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>Counter.jsx</code></td>
+</tr>
+<tr>
+<td>A second piece of state drives a label or behavior</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>Counter.jsx</code></td>
+</tr>
+<tr>
+<td>Handlers are passed as functions, not called</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>Counter.jsx</code></td>
+</tr>
+<tr>
+<td>No direct mutation of state anywhere</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>Counter.jsx</code></td>
+</tr>
+<tr>
+<td>Explains event handlers using a prototype comparison</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1–Q2</td>
+</tr>
+<tr>
+<td>Explains why plain variables do not re-render</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Predict-then-run completed and honest</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>States and demonstrates the no-direct-mutation rule</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Error-reading: quotes error, explains, fixes, states rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong>Onclick wired but number never changes:</strong> check for <code>onClick={fn()}</code> or direct mutation. Award 0/2 for handlers or 0/2 for mutation as appropriate; explain the specific error.</li>
+<li><strong>Counter works but only one state variable used:</strong> award 3/2 for the base counter but 0/2 for the second-state line; nudge them to add a toggle or step.</li>
+<li><strong>Q2:</strong> Full marks require naming what is passed (<code>handleClick</code> → the function; <code>handleClick()</code> → its return value, usually <code>undefined</code>).</li>
+<li><strong>Q3:</strong> Must mention React re-rendering being triggered by tracked state, and/or the fresh <code>let</code> resetting each render. "React needs useState" alone caps at 1/3.</li>
+<li><strong>Error-reading:</strong> The bug is <code>onClick={setSeconds(seconds + 1)}</code> — the setter is called during render, causing an infinite render loop. Vite/React shows: <code>Too many re-renders. React limits the number of renders to prevent an infinite loop.</code> Full marks require quoting that (or close), explaining it as calling the setter during render, and fixing to <code>onClick={() =&gt; setSeconds(seconds + 1)}</code>.</li>
+<li>Do not penalize imperfect English. Penalize copied lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U16-conditional-rendering/index.html">U16 Conditional rendering</a>
+    <a class="next" href="../U18-forms-and-controlled-inputs/index.html">U18 Forms and controlled inputs</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

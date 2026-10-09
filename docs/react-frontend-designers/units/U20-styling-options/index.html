@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U20 — Styling options in a React app | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U20</div>
+    <h1>Styling options in a React app</h1>
+    <span class="phase-badge ph4">Phase 4 — Styling and design</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U20 — Styling options in a React app</h1>
+<p><strong>Phase 4 — Styling and design</strong></p>
+<h2>Where you are</h2>
+<p>You have spent Phase 3 learning how a component receives data through <strong>props</strong>, how to compose components, and how state changes a screen. Not one of those units told you how a component gets its <em>look</em>. This unit is the map of the options for doing that, before we choose one for the rest of the course.</p>
+<p>This is a <strong>tour</strong> unit. You will read and compare, not build. The building starts in U21. Reading first is the point: if we showed you one way with no context, you would not know why it was chosen.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Name four common families of styling a React app in plain language.</li>
+<li>Explain at least one honest strength and one honest cost of each family.</li>
+<li>Say which family this course uses and why, and what that choice commits you to.</li>
+<li>Use <code>className</code> (React's spelling of the HTML <code>class</code> attribute) and recognize an inline <code>style</code> object when you see one.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U03 — HTML as structure</strong>: an element has an opening tag, content, and a closing tag, and can carry attributes.</li>
+<li><strong>U04 — CSS as presentation</strong>: an external stylesheet is a <code>.css</code> file; a <strong>selector</strong> picks elements; the <strong>box model</strong> is content, padding, border, margin; <strong>flexbox</strong> arranges children along an axis.</li>
+<li><strong>U11 — Your first component</strong> and <strong>U12 — JSX explained</strong>: a component is a function that returns JSX, and JSX looks like HTML but is JavaScript.</li>
+<li><strong>U13 — Props as design properties</strong>: a component can be configured from the outside, the way a layer has properties.</li>
+<li><strong>U10 — The project folder tour</strong>: you know <code>src/</code>, <code>public/</code>, <code>App.jsx</code>, and <code>main.jsx</code>, and which files to touch.</li>
+</ul>
+<p>If any term above is fuzzy, re-read its vocabulary table for five minutes before continuing. This unit builds directly on them.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. It is mostly reading and a short written comparison. There is a small amount of code to look at but nothing to install. Take a break after the vocabulary table if you need one.</p>
+<h2>Why this exists</h2>
+<p>In a design tool, "how do I style this" has one answer: you select the layer and change its properties in the inspector. In code there are <strong>several</strong> ways to attach those properties, and tutorials online mix them freely. That is disorienting, and it is not your fault.</p>
+<p>Worse, some tutorials say "use library X, it is the modern way," then another says the opposite. If you do not know what the families <em>are</em>, every new tutorial feels like a contradiction.</p>
+<p>This unit gives you the landscape once, calmly, so that later tutorials stop being confusing. Then it makes a clear recommendation so you can stop deliberating and start making things.</p>
+<h2>Plain-language teaching</h2>
+<h3>The core fact: React has no styling system of its own</h3>
+<p>React builds and updates the page's structure. It does not decide what a color or a gap <em>is</em>. Styling is still done with <strong>CSS</strong> — the same language from U04. All four families below are really just different ways of <em>writing and delivering CSS</em> to your components.</p>
+<p>Remember that and the landscape shrinks. You are not learning four languages. You are learning four delivery systems for one language.</p>
+<h3>Two small React details you must know before we compare</h3>
+<h4>Detail 1: <code>className</code> instead of <code>class</code></h4>
+<p>In plain HTML you write an attribute called <code>class</code>:</p>
+<pre><code class="language-html">&lt;div class=&quot;card&quot;&gt;Hello&lt;/div&gt;
+</code></pre>
+<p>In JSX, <code>class</code> is a reserved word in JavaScript, so React uses <strong><code>className</code></strong>:</p>
+<pre><code class="language-jsx">&lt;div className=&quot;card&quot;&gt;Hello&lt;/div&gt;
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> attaches one or more CSS class names to an element so a stylesheet can target it.</li>
+<li><strong>Success looks like:</strong> the element picks up the styles defined for that class.</li>
+<li><strong>One decoded failure:</strong> if you write <code>class="card"</code>, React prints a warning in the browser console: <em>"Invalid DOM property <code>class</code>. Did you mean <code>className</code>?"</em> The styles do not apply, but the page still renders. The fix is to rename the attribute to <code>className</code>.</li>
+</ul>
+<p>The value uses one class name, or several separated by spaces: <code>className="card card--highlighted"</code>. It is always a <strong>string</strong>, never a list of variables (until a later unit).</p>
+<h4>Detail 2: the inline <code>style</code> prop</h4>
+<p>React also lets you pass style as a JavaScript <strong>object</strong> through a prop named <code>style</code>:</p>
+<pre><code class="language-jsx">&lt;p style={{ color: &quot;red&quot; }}&gt;Careful&lt;/p&gt;
+</code></pre>
+<p>Notice the <strong>double curly braces</strong>. The outer pair means "JavaScript expression here" (from JSX, U12). The inner pair means "this is an object." The property names are camelCase (<code>color</code>, <code>fontSize</code>, <code>backgroundColor</code>) because they are JavaScript object keys, not CSS text.</p>
+<ul>
+<li><strong>What it does:</strong> applies styles directly to that one element.</li>
+<li><strong>Success looks like:</strong> the paragraph turns red without any <code>.css</code> file.</li>
+<li><strong>One decoded failure:</strong> <code>style="color: red"</code> (a string, as in HTML) breaks. React expects an object. The browser shows a runtime error and the component may not render.</li>
+</ul>
+<p>Inline <code>style</code> is useful for one-off, computed values (for example, a progress bar's width). It is <strong>not</strong> how we will style components in this course, because it cannot express hover states, media queries, or reusable design rules. We mention it so that you recognize it and do not build a whole app with it.</p>
+<h3>The four families</h3>
+<p>For each family: what it is, a worked-out strength, and a worked-out cost. You are not expected to write any of these deeply yet.</p>
+<h4>Family 1 — Plain CSS files</h4>
+<p>You write ordinary <code>.css</code> files (the ones you already met in U04) and tell React which classes to use.</p>
+<pre><code class="language-jsx">&lt;button className=&quot;btn btn--primary&quot;&gt;Save&lt;/button&gt;
+</code></pre>
+<pre><code class="language-css">.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+.btn--primary {
+  background: #2563eb;
+  color: white;
+}
+</code></pre>
+<ul>
+<li><strong>Strength:</strong> it is exactly the CSS you already know; nothing new to learn beyond <code>className</code>; tools and tutorials for plain CSS are everywhere and free.</li>
+<li><strong>Cost:</strong> class names are <strong>global</strong>. If two components both define <code>.btn</code> differently, the last one loaded wins and the other silently changes. We will manage this with naming conventions in U21.</li>
+</ul>
+<h4>Family 2 — CSS Modules</h4>
+<p>Same CSS, but the filename ends in <code>.module.css</code>. When you import it, the toolchain <strong>renames</strong> your classes to unique strings automatically, so <code>.btn</code> in <code>Button.module.css</code> cannot collide with <code>.btn</code> elsewhere.</p>
+<pre><code class="language-css">/* Button.module.css */
+.btn { padding: 8px 16px; }
+</code></pre>
+<pre><code class="language-jsx">import styles from &quot;./Button.module.css&quot;;
+&lt;button className={styles.btn}&gt;Save&lt;/button&gt;
+</code></pre>
+<ul>
+<li><strong>Strength:</strong> collisions are removed by the tool; you can reuse natural names like <code>.card</code> and <code>.title</code>.</li>
+<li><strong>Cost:</strong> the class name in JSX is now <code>{styles.btn}</code>, not a quoted string — a small extra bit of syntax to learn — and the generated names are unreadable in the browser's inspector, which can make debugging styles harder for a beginner.</li>
+</ul>
+<h4>Family 3 — Utility frameworks (for example, Tailwind)</h4>
+<p>Instead of naming your own classes, you assemble small single-purpose classes in the markup. Each class does one thing.</p>
+<pre><code class="language-jsx">&lt;button className=&quot;px-4 py-2 rounded-md bg-blue-600 text-white&quot;&gt;Save&lt;/button&gt;
+</code></pre>
+<ul>
+<li><strong>Strength:</strong> you style by composing tokens right where you need them; spacing and color stay numerically consistent across the team.</li>
+<li><strong>Cost:</strong> markup becomes dense and, to a designer's eye, hard to read; you must learn the framework's vocabulary (its scale names) on top of CSS; and the "design" now lives in many small strings instead of one stylesheet you can open and revise. It is a real, popular choice — it is just not the choice that fits <em>this</em> course's goal of connecting your design file to a readable stylesheet.</li>
+</ul>
+<h4>Family 4 — CSS-in-JS (for example, styled-components, Emotion)</h4>
+<p>You write CSS <em>inside</em> a JavaScript file, and it becomes a component.</p>
+<pre><code class="language-jsx">import styled from &quot;styled-components&quot;;
+const Button = styled.button`
+  padding: 8px 16px;
+  border-radius: 6px;
+`;
+&lt;Button&gt;Save&lt;/Button&gt;
+</code></pre>
+<ul>
+<li><strong>Strength:</strong> styles are scoped to the component by construction, and you can change styles based on props naturally.</li>
+<li><strong>Cost:</strong> it adds a dependency and a build consideration; CSS is now generated at runtime, which can affect performance; styles are no longer in a <code>.css</code> file your team's CSS-literate reviewers can read; and it is another full syntax to learn before you have solidified plain CSS. Several teams are moving <em>away</em> from it.</li>
+</ul>
+<h3>Design bridge: you already compare design tools this way</h3>
+<p>You do not tell a junior designer "Figma is the only tool." You explain <em>when</em> one tool fits. This unit does the same job for styling approaches: the goal is judgment, not loyalty.</p>
+<p>Also notice the parallel: utility classes are like applying named text/color styles repeatedly to layers; CSS-in-JS is like a component with styles baked in; plain CSS is like maintaining a tidy style sheet (or style guide page) that everything references. Same instincts, new containers.</p>
+<h3>Our recommendation for this course, and why</h3>
+<p>We use <strong>plain CSS files, one per component, plus one shared token file</strong>.</p>
+<ul>
+<li>One <code>Card.css</code> sits next to <code>Card.jsx</code>.</li>
+<li>One <code>tokens.css</code> holds shared named values (colors, spacing, radius).</li>
+<li>Components use <code>className</code> to opt into their classes.</li>
+</ul>
+<p>Reasons:</p>
+<ol>
+<li><strong>It builds on U04.</strong> You already understand stylesheets. We are not adding a second language on top of a skill you are still consolidating.</li>
+<li><strong>The styling stays inspectable.</strong> You can open one file and read the design, which matches how designers think about a style guide.</li>
+<li><strong>No new dependency.</strong> Nothing to install, nothing paid, nothing that will be renamed or abandoned.</li>
+<li><strong>The design system connection is direct.</strong> In U22 you will map your Figma variables to <code>tokens.css</code> almost line for line. CSS Modules and CSS-in-JS make that mapping more abstract, and utility frameworks hide it inside markup.</li>
+</ol>
+<p>What this choice commits us to: we must be disciplined about <strong>class naming</strong>, because plain CSS is global. That is precisely what U21 teaches. If plain CSS's collision problem worried you, good — you understood the trade-off. We solve it deliberately, not by ignoring it.</p>
+<p><strong>Why we do not teach five at once:</strong> each family has its own mental model, syntax, and failure modes. Learning all five at once means learning none of them well, and it would triple the vocabulary in this one unit. You now know the map. If a future team uses Tailwind or CSS Modules, you will recognize it as "Family 3" or "Family 2" and can learn its specifics then.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stylesheet</td>
+<td>A <code>.css</code> file that describes how elements look</td>
+<td>Not the same as a component; it only <em>describes</em></td>
+</tr>
+<tr>
+<td>Selector</td>
+<td>The part of CSS that picks which elements to style (for example, <code>.card</code>)</td>
+<td>Not a React concept; it is pure CSS from U04</td>
+</tr>
+<tr>
+<td>Class</td>
+<td>A name you put on an element (<code>class</code> in HTML, <code>className</code> in JSX) so CSS can target it</td>
+<td>In JSX it is <code>className</code>, never <code>class</code></td>
+</tr>
+<tr>
+<td>Global namespace</td>
+<td>All class names live in one shared pool, so identical names collide</td>
+<td>"Scoped" in plain CSS means "by our discipline," not enforced by the tool</td>
+</tr>
+<tr>
+<td>CSS Modules</td>
+<td>Plain CSS whose class names are auto-renamed to be unique</td>
+<td>Not a separate language; it is still CSS</td>
+</tr>
+<tr>
+<td>Utility framework</td>
+<td>A set of tiny single-purpose classes composed in the markup</td>
+<td>The design ends up spread across many class strings</td>
+</tr>
+<tr>
+<td>CSS-in-JS</td>
+<td>Writing CSS inside JavaScript, often producing a styled component</td>
+<td>Adds a dependency; not required for React itself</td>
+</tr>
+<tr>
+<td>Inline style</td>
+<td>Styles passed as a JavaScript object via the <code>style</code> prop</td>
+<td>Uses camelCase keys and an <strong>object</strong>, not a CSS string</td>
+</tr>
+<tr>
+<td>Design token</td>
+<td>A named value (color, space, radius) reused everywhere</td>
+<td>Defined properly in U22; here it is just a preview</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Purpose:</strong> see the <em>same</em> button expressed in all four families so the comparison stops being abstract. This is for reading and predicting — copy it anywhere you like, but the graded building starts in U21.</p>
+<p>The design intent (identical in every column): a pill-shaped button, blue background, white label, 32px tall padding, 6px corners.</p>
+<p><strong>Family 1 — Plain CSS</strong></p>
+<pre><code class="language-jsx">/* Button.jsx */
+export default function Button() {
+  return &lt;button className=&quot;btn btn--primary&quot;&gt;Save&lt;/button&gt;;
+}
+</code></pre>
+<pre><code class="language-css">/* Button.css */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+.btn--primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+</code></pre>
+<p><strong>Family 2 — CSS Modules</strong></p>
+<pre><code class="language-jsx">/* Button.jsx */
+import styles from &quot;./Button.module.css&quot;;
+
+export default function Button() {
+  return &lt;button className={styles.btn}&gt;Save&lt;/button&gt;;
+}
+</code></pre>
+<pre><code class="language-css">/* Button.module.css */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+</code></pre>
+<p><strong>Family 3 — Utility classes</strong></p>
+<pre><code class="language-jsx">/* Button.jsx */
+export default function Button() {
+  return (
+    &lt;button className=&quot;px-4 py-2 rounded-md bg-blue-600 text-white border-0 cursor-pointer&quot;&gt;
+      Save
+    &lt;/button&gt;
+  );
+}
+</code></pre>
+<p><strong>Family 4 — CSS-in-JS</strong></p>
+<pre><code class="language-jsx">/* Button.jsx */
+import styled from &quot;styled-components&quot;;
+
+const Button = styled.button`
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+`;
+
+export default function SaveButton() {
+  return &lt;Button&gt;Save&lt;/Button&gt;;
+}
+</code></pre>
+<p><strong>Line-by-line notes (the parts that matter here):</strong></p>
+<ul>
+<li>Every family ends with a clickable button that looks the same. The <strong>design</strong> is identical; only the <em>delivery</em> differs.</li>
+<li>Family 1 attaches class strings (<code>className="btn btn--primary"</code>).</li>
+<li>Family 2 attaches a JavaScript expression (<code>{styles.btn}</code>) instead of a string. That is the single biggest new syntax in the family.</li>
+<li>Family 3 has no <code>.css</code> file visible here; the styles are the class names.</li>
+<li>Family 4 uses a backtick template string and exports a styled button component.</li>
+<li>This course uses <strong>Family 1</strong>, so the rest of Phase 4 looks like the first column.</li>
+</ul>
+<p><strong>Predict before you read on:</strong> in your design tool, which of these four would be hardest to hand to a developer who only reads CSS? Write one sentence. (There is no single right answer; the exercise is to notice you now have an opinion grounded in a trade-off.)</p>
+<h2>Common errors</h2>
+<h3>Error 1: Writing <code>class</code> instead of <code>className</code></h3>
+<p><strong>What you see:</strong> the page looks unstyled, and the browser console (open Developer Tools with <strong>F12</strong> or <strong>Ctrl+Shift+I</strong>; on macOS <strong>Cmd+Option+I</strong>) prints:</p>
+<pre><code class="language-text">Warning: Invalid DOM property `class`. Did you mean `className`?
+</code></pre>
+<p><strong>What it means:</strong> in JSX, React renamed the HTML <code>class</code> attribute to <code>className</code>. Read the console line literally: React even tells you the fix.</p>
+<p><strong>Fix:</strong> change <code>class="card"</code> to <code>className="card"</code> and save. The Vite dev server (from U09) reloads automatically.</p>
+<h3>Error 2: Passing a string to <code>style</code> instead of an object</h3>
+<p><strong>What you see:</strong> an error such as <em>"The <code>style</code> prop expects a mapping from style properties to values, not a string."</em></p>
+<p><strong>What it means:</strong> HTML accepts <code>style="color:red"</code>. React wants an object: <code>style={{ color: "red" }}</code>.</p>
+<p><strong>Fix:</strong> use double braces and camelCase keys: <code>style={{ backgroundColor: "white" }}</code>.</p>
+<h3>Error 3: Assuming the stylesheet is "scoped" because the file is next to the component</h3>
+<p><strong>What you see:</strong> changing <code>Card.css</code> unexpectedly changes a button somewhere else. This is the plain-CSS collision from Family 1.</p>
+<p><strong>What it means:</strong> in plain CSS, <em>placement in a folder does not scope anything</em>. The rule <code>.title { ... }</code> applies to every element with <code>className="title"</code> in the whole app.</p>
+<p><strong>Fix:</strong> adopt a naming convention (U21 teaches this) so <code>Card.css</code> uses names like <code>.card</code>, <code>.card__title</code>, and never bare <code>.title</code>.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before attempting the assignment:</p>
+<ol>
+<li>Name the four families and one honest cost of each.</li>
+<li>Why does React use <code>className</code> instead of <code>class</code>?</li>
+<li>When would inline <code>style</code> be a reasonable choice, and why is it a poor choice for a whole component library?</li>
+<li>In one sentence, why does this course choose plain CSS per component plus a tokens file?</li>
+</ol>
+<p>If you can answer all four, you are ready.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Re-read the worked example. Without scrolling up, write down which family uses <code>className="..."</code> with a quoted string, and which uses <code>className={...}</code> with an expression. Check yourself, then fix any wrong answer.</p>
+<h3>P2 — Change one value</h3>
+<p>In the Family 1 example, change <code>border-radius: 6px</code> to <code>border-radius: 999px</code>. Predict what the button looks like first (pill versus slightly rounded), then apply it if you have a project open. Notice that one line changed the shape everywhere that class is used.</p>
+<h3>P3 — Inspection practice</h3>
+<p>Open a site you like in your browser, press <strong>F12</strong> to open Developer Tools, and use the element picker (the arrow icon) to select a button. In the Styles panel, find whether it is styled by a class or by inline <code>style</code>. Write one sentence on how you can tell the difference.</p>
+<h3>P4 — Debug this broken snippet</h3>
+<pre><code class="language-jsx">export default function Tag() {
+  return &lt;span class=&quot;tag&quot; style=&quot;color: blue&quot;&gt;New&lt;/span&gt;;
+}
+</code></pre>
+<p>Name <strong>two</strong> things wrong and write the corrected line.</p>
+<h3>P5 — Design bridge</h3>
+<p>Pick one family you personally find appealing for your own work. In 3–5 lines, describe a real situation where you would choose it and why. (This is a judgment exercise; it is not graded on which family you prefer.)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. The rubric is visible so there are no surprises.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No building of styled components yet. That is U21 onward.</li>
+<li>No installing a utility framework or CSS-in-JS library.</li>
+<li>No deep dive on CSS Modules syntax.</li>
+<li>No responsive layouts (U23), accessibility rules (U24), or assets (U25).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U21 — Component-scoped CSS</strong>: we take the plain-CSS recommendation and actually attach a stylesheet to a component, with naming rules that prevent collisions.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U20 Assignment — Choosing a styling approach, with reasons</h1>
+<p>Submit to your trainer in <strong>one folder or zip</strong> named <code>U20-YourName</code>.</p>
+<p>This assignment is written and comparative. You are <strong>not</strong> required to build a styled component yet; U21 does that.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words. Short paragraphs are fine. Do not paste the lesson text back unchanged.</p>
+<ol>
+<li><strong>Four families.</strong> List the four styling families. For each, write one sentence describing it and one sentence naming an honest cost.</li>
+<li><strong><code>className</code>.</strong> Explain, to a designer who has never written JSX, why React writes <code>className</code> and not <code>class</code>. Include what a learner sees if they get it wrong.</li>
+<li><strong>Inline <code>style</code>.</strong> In 3–4 lines, explain when inline <code>style</code> is reasonable and one concrete reason it is wrong for styling a full component library.</li>
+<li><strong>Our choice.</strong> State which family this course uses. Give <strong>two</strong> reasons from the lesson and, in your own words, one thing that choice obliges us to be careful about.</li>
+<li><strong>Design bridge.</strong> Name one design-tool decision you make repeatedly (for example, corner radius, spacing scale, button style). Explain how a <em>shared named value</em> (a token) would help, and why duplicating the value by hand causes drift. (Token mechanics are taught in U22; here we only want your reasoning.)</li>
+<li><strong>Your opinion.</strong> If you were joining a team that ships a large design system, would plain CSS still be your first choice? Answer yes or no and give one honest reason either way. There is no wrong preference; empty reasoning is the only failure.</li>
+</ol>
+<h3>2. <code>fix-me.md</code></h3>
+<p>The snippet below is broken. Write the corrected version and name <strong>two</strong> problems.</p>
+<pre><code class="language-jsx">export default function Card() {
+  return &lt;div class=&quot;card&quot; style=&quot;padding: 16px&quot;&gt;Hello&lt;/div&gt;;
+}
+</code></pre>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I can name all four styling families without looking.
+- [ ] I can explain the difference between class and className.
+- [ ] I know this course uses plain CSS per component plus a tokens file.
+- [ ] I understand that &quot;scoped&quot; in plain CSS depends on our naming discipline.
+- [ ] I read the U20 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the exact names above.</li>
+<li><code>answers.md</code> answers all six prompts in your own words.</li>
+<li><code>fix-me.md</code> names two distinct problems, not one problem twice.</li>
+<li>Checklist completed honestly.</li>
+</ul>
+<h2>Notes on submitting</h2>
+<p>If you are on Windows, zip the folder with right-click → <strong>Send to → Compressed (zipped) folder</strong>. On macOS, right-click the folder → <strong>Compress</strong>. On Linux, your file manager's "Compress" option works. If your trainer uses a learning platform, upload the same files there.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U20 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names all four families correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Gives at least one honest cost per family</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains <code>className</code> vs <code>class</code>, including the failure mode</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>States this course's choice with two reasons and one obligation</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td><code>fix-me.md</code> names two distinct problems and fixes them</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>fix-me.md</code></td>
+</tr>
+<tr>
+<td>Design bridge connects a repeated design decision to a shared named value</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Opinion answer is reasoned (not just a preference)</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h2>What the assessor should look for</h2>
+<ul>
+<li><strong>Q1:</strong> the four families are plain CSS, CSS Modules, utility frameworks, and CSS-in-JS. Award full only if each has <em>both</em> a description and a cost. A description with no cost scores at most half for that row.</li>
+<li><strong>Q2:</strong> full credit requires the reserved-word/JSX reason <strong>and</strong> the console warning ("Invalid DOM property <code>class</code> / Did you mean <code>className</code>?") or an equivalent description of "styles do not apply."</li>
+<li><strong>Q4:</strong> two reasons drawn from the lesson (builds on U04 / inspectable / no dependency / direct token mapping) plus the obligation to be disciplined about naming.</li>
+<li><strong>fix-me.md:</strong> the two problems are (a) <code>class</code> should be <code>className</code>, and (b) <code>style</code> must be an object with camelCase keys, not a string. Naming the same problem twice earns partial only.</li>
+<li><strong>Q5:</strong> reward a concrete repeated decision plus a clear explanation of drift. Vague "tokens are good" without a concrete value gets partial.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Q1: 2/4 if families are named but attributed to wrong strengths; 0 if fewer than three families are named.</li>
+<li>Q3 (<code>style</code>): award half if they know it is inline but cannot say when it is reasonable.</li>
+<li>Do not penalize typos or imperfect English. Do penalize copy-pasted lesson text with no personalization, especially on Q5/Q6.</li>
+<li>Deduct 1 point only (not more) if the folder is named incorrectly, and note it so the learner can fix submission habits.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Lists "React CSS" as a family that does not actually exist in the lesson.</li>
+<li>Claims inline <code>style</code> is the easiest way to style everything.</li>
+<li>Q5 describes a one-off value (a single hero height) instead of a <em>repeated</em> design decision.</li>
+<li><code>fix-me.md</code> rewrites the snippet but never names the two problems.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U19-side-effects-with-useeffect/index.html">U19 Side effects with useEffect</a>
+    <a class="next" href="../U21-component-scoped-css/index.html">U21 Component-scoped CSS</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U16 — Conditional rendering | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U16</div>
+    <h1>Conditional rendering</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U16 — Conditional rendering</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>Your components now take props and render lists from data (U13–U15). But everything you have built shows <em>all</em> of its content, always. Real interfaces show different things in different situations: a "Delete" button only when an item is selected, a welcome message only when the user is signed in, a "No results" message only when the list is empty.</p>
+<p>Showing and hiding by rule is called <strong>conditional rendering</strong>, and that is this unit.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what conditional rendering is and where designers already use it.</li>
+<li>Show or hide a piece of JSX with <code>&amp;&amp;</code>.</li>
+<li>Choose between two pieces of JSX with a ternary (<code>condition ? a : b</code>).</li>
+<li>Exit a component early to render a whole different view.</li>
+<li>Design and implement an empty state versus a loaded state.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05</strong> — JavaScript values and truthiness (what counts as "true" or "false").</li>
+<li><strong>U12</strong> — JSX and curly braces.</li>
+<li><strong>U13</strong> — Props.</li>
+<li><strong>U14</strong> — Composition.</li>
+<li><strong>U15</strong> — Lists with <code>map</code> (the empty-state exercise builds directly on it).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. The syntax is short; the judgment is the real work. Deciding <em>what</em> a state should look like is design work you already know how to do. Take a break after the teaching section before the exercises.</p>
+<h2>Why this exists</h2>
+<p>As a designer, you already think in <strong>states and variants</strong>. A button has default, hover, pressed, and disabled states. A table has loading, empty, populated, and error states. A screen has a signed-in and signed-out version. You have designed these differences for years.</p>
+<p>The human problem: a live interface must <em>choose</em> which state to show, at the moment it renders. A static design file shows all your variants side by side. A real app can only show one at a time, based on what is true right now.</p>
+<p>In design tools, you flip between variants manually (or with prototype logic). In React, <strong>JavaScript conditions</strong> make the choice. Conditional rendering is simply: "if this is true, show this; otherwise, show that."</p>
+<h2>Plain-language teaching</h2>
+<h3>A quick reminder: what counts as true or false</h3>
+<p>JavaScript treats some values as <strong>truthy</strong> (behave like true) and some as <strong>falsy</strong> (behave like false) when used in a condition (U05). The falsy values you will meet most:</p>
+<pre><code class="language-text">false, 0, &quot;&quot; (empty text), null, undefined, NaN
+</code></pre>
+<p>Everything else is truthy — including the text <code>"0"</code>, any non-empty string, and any array or object (even an empty array!).</p>
+<p>This matters immediately, because a common bug is showing something when a list is empty. An empty array <code>[]</code> is truthy, so <code>items &amp;&amp; ...</code> would show the content. We handle the empty case with <code>.length</code>.</p>
+<h3>Three tools, three jobs</h3>
+<p><strong>Tool 1 — <code>&amp;&amp;</code> for "show this only if."</strong></p>
+<pre><code class="language-jsx">{isSignedIn &amp;&amp; &lt;p&gt;Welcome back!&lt;/p&gt;}
+</code></pre>
+<p>Read <code>&amp;&amp;</code> as "and": <em>if the left side is truthy, render the right side; otherwise render nothing.</em> If <code>isSignedIn</code> is <code>false</code>, React renders nothing for this spot. This is for showing or hiding a single thing.</p>
+<p><strong>Tool 2 — the ternary for "show one of two."</strong></p>
+<pre><code class="language-jsx">{isSignedIn ? &lt;Dashboard /&gt; : &lt;LoginPrompt /&gt;}
+</code></pre>
+<p>A <strong>ternary</strong> has the shape <code>condition ? valueIfTrue : valueIfFalse</code>. Read it aloud as "if condition, then valueIfTrue, else valueIfFalse." Use it when you must pick between exactly two options.</p>
+<p><strong>Tool 3 — early return for "this component is an entirely different view."</strong></p>
+<pre><code class="language-jsx">function Profile({ user }) {
+  if (!user) {
+    return &lt;p&gt;Please sign in.&lt;/p&gt;;
+  }
+
+  return (
+    &lt;section&gt;
+      &lt;h1&gt;{user.name}&lt;/h1&gt;
+      &lt;p&gt;{user.role}&lt;/p&gt;
+    &lt;/section&gt;
+  );
+}
+</code></pre>
+<p>An <strong>early return</strong> is a <code>return</code> placed before the rest of the function, usually inside an <code>if</code>. When the condition is met, the function returns immediately and skips the rest. Use it when the alternative view is large enough that nesting a ternary would hurt readability.</p>
+<p>You now have three tools. Choosing among them is a readability decision, not a correctness one — all three can often express the same idea.</p>
+<h3>The design bridge: states</h3>
+<p>Think of each condition as choosing a <strong>state</strong> (like a variant) of the interface:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Condition</th>
+<th>What shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Empty</td>
+<td>The list has no items</td>
+<td>A friendly "nothing here yet" message + a call to action</td>
+</tr>
+<tr>
+<td>Loaded</td>
+<td>The list has items</td>
+<td>The items</td>
+</tr>
+<tr>
+<td>Signed out</td>
+<td>No user</td>
+<td>Sign-in prompt</td>
+</tr>
+<tr>
+<td>Signed in</td>
+<td>A user</td>
+<td>Their profile</td>
+</tr>
+</tbody>
+</table>
+<p>A good conditional covers every state a user can be in. The classic mistake is designing the beautiful loaded state and forgetting the empty and error states — then shipping a screen that shows a blank void to a brand-new user. Conditional rendering is where you <em>build</em> the empty state you (hopefully) designed.</p>
+<h3>Combining with <code>.map</code> (the empty-state pattern)</h3>
+<p>From U15 you can render a list. The empty state is a condition on the same data:</p>
+<pre><code class="language-jsx">{products.length === 0 ? (
+  &lt;p&gt;No products yet. Add one to get started.&lt;/p&gt;
+) : (
+  &lt;ul&gt;
+    {products.map((product) =&gt; (
+      &lt;li key={product.id}&gt;{product.name}&lt;/li&gt;
+    ))}
+  &lt;/ul&gt;
+)}
+</code></pre>
+<ul>
+<li><code>products.length === 0</code> — <code>.length</code> counts the items; <code>===</code> checks equality. Both are plain JavaScript (<code>length</code> from U06).</li>
+<li>If the array is empty, render the empty-state message.</li>
+<li>Otherwise, render the mapped list.</li>
+<li>Note we use the <strong>ternary</strong> here, not <code>&amp;&amp;</code>, because we truly need one of two things — the list or the message.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conditional rendering</td>
+<td>Showing different JSX based on a condition</td>
+<td>Not CSS <code>display: none</code>; the element is not created at all</td>
+</tr>
+<tr>
+<td>Condition</td>
+<td>A value that is truthy or falsy</td>
+<td>Not only <code>true</code>/<code>false</code>; see truthy list</td>
+</tr>
+<tr>
+<td>Truthy / falsy</td>
+<td>How JavaScript treats values in conditions</td>
+<td><code>[]</code> and <code>{}</code> are truthy; <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> are falsy</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>"Show the right side only if the left is truthy"</td>
+<td>Renders <code>0</code> if the left is the number <code>0</code> — a classic bug</td>
+</tr>
+<tr>
+<td>Ternary</td>
+<td><code>condition ? a : b</code> — pick one of two</td>
+<td>Nesting many ternaries is hard to read; use early return instead</td>
+</tr>
+<tr>
+<td>Early return</td>
+<td>A <code>return</code> before the rest of the function</td>
+<td>Must be inside a condition to mean anything</td>
+</tr>
+<tr>
+<td>Empty state</td>
+<td>The view shown when there is no data</td>
+<td>Not the same as an error state</td>
+</tr>
+<tr>
+<td>Loaded state</td>
+<td>The view shown when data exists</td>
+<td>The one everyone remembers to design</td>
+</tr>
+<tr>
+<td><code>===</code></td>
+<td>Strict equality (same value and type)</td>
+<td><code>=</code> assigns; <code>==</code> loosens types — prefer <code>===</code></td>
+</tr>
+<tr>
+<td><code>.length</code></td>
+<td>How many items are in an array or characters in a string</td>
+<td>An empty array is truthy, so check <code>.length</code>, not the array itself</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a <code>TaskList</code> that shows one of three states based on props: a signed-out message, an empty state, or the list.</p>
+<p><strong><code>src/TaskList.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/TaskList.jsx
+function TaskList({ isSignedIn, tasks }) {
+  if (!isSignedIn) {
+    return &lt;p&gt;Please sign in to see your tasks.&lt;/p&gt;;
+  }
+
+  return (
+    &lt;section&gt;
+      &lt;h1&gt;Your tasks&lt;/h1&gt;
+      {tasks.length === 0 ? (
+        &lt;p&gt;No tasks yet. Enjoy the calm.&lt;/p&gt;
+      ) : (
+        &lt;ul&gt;
+          {tasks.map((task) =&gt; (
+            &lt;li key={task.id}&gt;{task.title}&lt;/li&gt;
+          ))}
+        &lt;/ul&gt;
+      )}
+    &lt;/section&gt;
+  );
+}
+
+export default TaskList;
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>function TaskList({ isSignedIn, tasks })</code> — two props (U13): a boolean and an array.</li>
+<li><code>if (!isSignedIn) { return ... }</code> — the <strong>early return</strong>. <code>!</code> means "not" (U05). If the user is not signed in, return the sign-in message and skip everything below. This handles a whole different view cleanly.</li>
+<li><code>return ( &lt;section&gt; ... )</code> — the main view, reached only when signed in.</li>
+<li><code>{tasks.length === 0 ? ( ... ) : ( ... )}</code> — the <strong>ternary</strong>. If there are no tasks, show the empty-state paragraph; otherwise show the list.</li>
+<li><code>tasks.map((task) =&gt; &lt;li key={task.id}&gt;{task.title}&lt;/li&gt;)</code> — the U15 list, with a stable <code>key</code>.</li>
+</ul>
+<p><strong><code>src/App.jsx</code> to try all three states:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import TaskList from &quot;./TaskList.jsx&quot;;
+
+const myTasks = [
+  { id: &quot;t1&quot;, title: &quot;Sketch the empty state&quot; },
+  { id: &quot;t2&quot;, title: &quot;Check the contrast&quot; },
+];
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;TaskList isSignedIn={false} tasks={myTasks} /&gt;
+      &lt;TaskList isSignedIn={true} tasks={[]} /&gt;
+      &lt;TaskList isSignedIn={true} tasks={myTasks} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<p><strong>Run it</strong> (U09):</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>Same command on every OS; only the terminal app differs.</p>
+<p><strong>What success looks like:</strong> Three sections stacked: "Please sign in to see your tasks."; "Your tasks" with "No tasks yet. Enjoy the calm."; and "Your tasks" with two list items. One component, three states, driven entirely by its props.</p>
+<p><strong>A design-tool parallel:</strong> you made three variants of one component and switched between them based on a condition, instead of drawing three unrelated screens.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — The accidental zero</h3>
+<pre><code class="language-jsx">{count &amp;&amp; &lt;p&gt;You have {count} messages&lt;/p&gt;}
+</code></pre>
+<p>When <code>count</code> is <code>0</code>, JavaScript evaluates <code>0 &amp;&amp; ...</code> as <code>0</code>, and React renders the number <code>0</code> right there on the page — a stray "0" where the message should be hidden. Truthy/falsy: <code>0</code> is falsy, so <code>&amp;&amp;</code> short-circuits to the left side, which is <code>0</code> itself.</p>
+<p><strong>Decode it:</strong> No error message. Just an unexplained <code>0</code> on screen. This is one of the most common React mistakes and is worth remembering forever.</p>
+<p><strong>Fix:</strong> Make the left side a real boolean:</p>
+<pre><code class="language-jsx">{count &gt; 0 &amp;&amp; &lt;p&gt;You have {count} messages&lt;/p&gt;}
+</code></pre>
+<p><code>count &gt; 0</code> is always <code>true</code> or <code>false</code>, so no stray number appears.</p>
+<h3>Error 2 — Empty array is truthy</h3>
+<pre><code class="language-jsx">{tasks &amp;&amp; tasks.map((t) =&gt; &lt;li key={t.id}&gt;{t.title}&lt;/li&gt;)}
+</code></pre>
+<p>You expect nothing when there are no tasks, but React renders an empty <code>&lt;ul&gt;</code> (or nothing looks right, but the "empty state" never appears). An empty array <code>[]</code> is truthy, so <code>tasks &amp;&amp; ...</code> proceeds.</p>
+<p><strong>Fix:</strong> Check the length or count:</p>
+<pre><code class="language-jsx">{tasks.length &gt; 0 ? ( /* the list */ ) : ( /* empty state */ )}
+</code></pre>
+<h3>Error 3 — Rendering a falsy value by mistake</h3>
+<pre><code class="language-jsx">{user.name &amp;&amp; &lt;span&gt;{user.name}&lt;/span&gt;}
+</code></pre>
+<p>If <code>name</code> is <code>undefined</code> (missing), <code>undefined &amp;&amp; ...</code> is <code>undefined</code>, which React renders as nothing — fine. But if <code>name</code> is <code>""</code> (empty string) you get nothing, and if it is <code>0</code> you get <code>0</code>. The fix is the same: make the left side an explicit boolean (<code>Boolean(user.name)</code> or a <code>.length</code>/comparison check).</p>
+<h3>Error 4 — <code>=</code> instead of <code>===</code> in a condition</h3>
+<pre><code class="language-jsx">{isSignedIn = true ? &lt;Dashboard /&gt; : &lt;Login /&gt;}
+</code></pre>
+<p><code>=</code> assigns; <code>===</code> compares. This accidentally <em>sets</em> <code>isSignedIn</code> to <code>true</code> and always shows the dashboard. Some setups will not even error, making it a silent bug.</p>
+<p><strong>Fix:</strong> Use <code>===</code> for comparison (or just the boolean itself). Watch for this in <code>if</code> statements too.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What are the three tools for conditional rendering in this unit, and when would you use each?</li>
+<li>Why can <code>count &amp;&amp; &lt;p&gt;…&lt;/p&gt;</code> show an unwanted "0"?</li>
+<li>Why is <code>tasks &amp;&amp; ...</code> the wrong check for an empty list?</li>
+<li>Name three states a list on an interface might have. Which is most often forgotten?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Predict what each line shows, then check by putting them in an <code>App</code>:</p>
+<pre><code class="language-jsx">{false &amp;&amp; &lt;p&gt;Hidden&lt;/p&gt;}
+{0 &amp;&amp; &lt;p&gt;Zero trap&lt;/p&gt;}
+{&quot;&quot; || &lt;p&gt;Fallback&lt;/p&gt;}
+{true ? &lt;p&gt;Yes&lt;/p&gt; : &lt;p&gt;No&lt;/p&gt;}
+</code></pre>
+<p>(<code>||</code> means "or": if the left is falsy, use the right. You saw it in U05.)</p>
+<h3>P2 — Change one value, observe</h3>
+<p>In the worked example, flip <code>isSignedIn</code> on the first <code>TaskList</code> from <code>false</code> to <code>true</code> and back. Observe. Then empty <code>myTasks</code> and watch every state change.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Fill the blanks so a badge shows only when there are unread messages:</p>
+<pre><code class="language-jsx">const unread = 3;
+
+{unread ____ 0 &amp;&amp; &lt;span className=&quot;badge&quot;&gt;{unread}&lt;/span&gt;}
+</code></pre>
+<p>Now make it safe when <code>unread</code> is <code>0</code>.</p>
+<h3>P4 — Write from a specification</h3>
+<p>Create <code>Status.jsx</code>:</p>
+<ul>
+<li>If a prop <code>status</code> is <code>"loading"</code>, return <code>&lt;p&gt;Loading…&lt;/p&gt;</code> (<strong>early return</strong>).</li>
+<li>Otherwise, if <code>status</code> is <code>"error"</code>, return <code>&lt;p&gt;Something went wrong.&lt;/p&gt;</code> (another early return).</li>
+<li>Otherwise, return <code>&lt;p&gt;Ready.&lt;/p&gt;</code>.</li>
+</ul>
+<p>Use it in <code>App</code> three times to show all three states.</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This shows a <code>0</code> on the page when there are no notifications. Fix it and explain why in one sentence.</p>
+<pre><code class="language-jsx">function Bell({ notifications }) {
+  const count = notifications.length;
+  return &lt;span&gt;{count &amp;&amp; &lt;b&gt;{count} new&lt;/b&gt;}&lt;/span&gt;;
+}
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No events, clicks, or toggles that change state over time — that is U17.</li>
+<li>No <code>useState</code>; here every condition comes from props or constants.</li>
+<li>No data fetching or loading spinners wired to real requests — that is deferred (U19 mentions effects only lightly).</li>
+<li>No animations between states — U29.</li>
+<li>No CSS-based hiding (<code>display: none</code>); we create or skip elements entirely.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U17 — Events and state with useState</strong> (making the page respond to clicks by remembering values that change over time).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U16 Assignment — Design and build states</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U16-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>MessageList.jsx</code></h3>
+<p>A component that renders three different views based on its props, meeting this specification:</p>
+<ul>
+<li>Props: <code>isSignedIn</code> (a boolean) and <code>messages</code> (an array of objects, each with <code>id</code> and <code>text</code>).</li>
+<li>If <code>isSignedIn</code> is false, use an <strong>early return</strong> to show a sign-in prompt.</li>
+<li>If signed in and <code>messages.length === 0</code>, show an <strong>empty state</strong> with a short, friendly message and one sentence of guidance.</li>
+<li>If signed in and there are messages, render them as a list (use <code>.map</code> with a proper <code>key</code>, from U15).</li>
+</ul>
+<h3>2. <code>App.jsx</code></h3>
+<p>Import and render <code>MessageList</code> <strong>three times</strong> so all three states are visible at once on the page.</p>
+<h3>3. <code>states.md</code></h3>
+<p>A short design document for your empty state. Include:</p>
+<ol>
+<li><strong>State inventory.</strong> A table listing every state your <code>MessageList</code> can be in (<code>signed out</code>, <code>empty</code>, <code>loaded</code>) and what the user sees in each.</li>
+<li><strong>Why the empty state matters.</strong> 3–5 sentences. What goes wrong for a brand-new user if you ship only the loaded state?</li>
+<li><strong>The condition.</strong> Write the exact boolean expression that decides between empty and loaded, and say in words why checking the array itself (instead of <code>.length</code>) would be wrong.</li>
+<li><strong>Tool choice.</strong> For each of the two conditions in your component, say whether you used <code>&amp;&amp;</code>, a ternary, or an early return, and why that one fit.</li>
+</ol>
+<h3>4. <code>error-reading.md</code></h3>
+<p>Paste, run, and answer:</p>
+<pre><code class="language-jsx">function Cart({ items }) {
+  return (
+    &lt;p&gt;You have {items.length &amp;&amp; &lt;b&gt;{items.length} items&lt;/b&gt;} in your cart.&lt;/p&gt;
+  );
+}
+
+// rendered as: &lt;Cart items={[]} /&gt;
+</code></pre>
+<p>a. Describe exactly what appears on the page.<br />
+b. Explain why, using the words truthy/falsy.<br />
+c. Fix it so that an empty cart shows plain "You have 0 items in your cart" with no stray characters.<br />
+d. Write the general rule in one sentence.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>All three states are visible when the app runs.</li>
+<li><code>MessageList.jsx</code> uses an early return, a ternary, and <code>.map</code> with keys.</li>
+<li><code>states.md</code> contains all four parts, including the exact boolean expression.</li>
+<li><code>error-reading.md</code> includes the real observed output, the fix, and the rule.</li>
+<li>Files are named exactly as above.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>The empty state is genuinely designed (a real message a user would want to see), not a placeholder like "empty."</li>
+<li>The state inventory is complete and matches what actually renders.</li>
+<li>The tool-choice answer reasons about readability, not just "it worked."</li>
+<li>The error-reading answer correctly names the <code>0</code> trap and fixes it with an explicit boolean.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U16 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MessageList</code> implements all three states correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>MessageList.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>Early return used for the signed-out view</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>MessageList.jsx</code></td>
+</tr>
+<tr>
+<td>Empty vs loaded chosen with an explicit <code>.length</code> check</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>MessageList.jsx</code></td>
+</tr>
+<tr>
+<td>List uses <code>.map</code> with unique stable keys</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>MessageList.jsx</code></td>
+</tr>
+<tr>
+<td><code>App</code> shows all three states simultaneously</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>App.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>State inventory is complete and accurate</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>states.md</code> part 1</td>
+</tr>
+<tr>
+<td>Explains why empty states matter for real users</td>
+<td>2</td>
+<td>No</td>
+<td><code>states.md</code> part 2</td>
+</tr>
+<tr>
+<td>Correctly explains why <code>.length</code> beats the array itself</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>states.md</code> part 3</td>
+</tr>
+<tr>
+<td>Tool choices justified by readability</td>
+<td>2</td>
+<td>No</td>
+<td><code>states.md</code> part 4</td>
+</tr>
+<tr>
+<td>Error-reading: explains the <code>0</code>, fixes it, states rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong>All logic with nested ternaries, no early return:</strong> award state points but only 1/2 for early return; part 4 must acknowledge why early return was avoided.</li>
+<li><strong>Empty state missing (only loaded state):</strong> this is the exact failure the unit warns about — award 0/3 for the empty-vs-loaded line and note it prominently.</li>
+<li><strong><code>items &amp;&amp; ...</code> used instead of <code>.length</code>:</strong> award 0/3 for the empty check even if the loaded case works; this is the core bug.</li>
+<li><strong>part 2:</strong> Generic answers ("empty states are good UX") cap at 1/2. Full marks describe the concrete new-user experience.</li>
+<li><strong>part 3:</strong> Must state that an empty array is truthy. Missing that caps at 1/2.</li>
+<li><strong>Error-reading:</strong> With <code>items=[]</code>, <code>items.length</code> is <code>0</code>, so <code>0 &amp;&amp; &lt;b&gt;…&lt;/b&gt;</code> evaluates to <code>0</code>, and React renders the numeral <code>0</code>. The page reads "You have 0 in your cart." (or similar with a stray 0). Full marks require naming the <code>0</code> and fixing with <code>items.length &gt; 0 ? ... : &lt;b&gt;0 items&lt;/b&gt;</code> or equivalent. Blaming <code>.map</code> or keys is off-target (1/3).</li>
+<li>Do not penalize imperfect English. Penalize copied lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U15-rendering-lists-with-map/index.html">U15 Rendering lists with map</a>
+    <a class="next" href="../U17-events-and-state-with-usestate/index.html">U17 Events and state with useState</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

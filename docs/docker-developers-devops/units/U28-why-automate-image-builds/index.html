@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U28 — Why automate image builds | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U28</div>
+    <h1>Why automate image builds</h1>
+    <span class="phase-badge ph6">Phase 6 — Registries and automation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U28 — Why automate image builds</h1>
+<p><strong>Phase 6 — Registries and automation</strong></p>
+<h2>Where you are</h2>
+<p>In U27 you pushed an image by hand: build, tag, push. It worked, but it depended on you being at your laptop, remembering the exact commands, and not making a typo. This unit explains why teams move that routine off their desks and into a <strong>build pipeline</strong> that runs the same steps the same way, every time. There are no new Docker commands here — the point is the <em>why</em>. The next unit (U29) gives you a concrete pipeline to run for free.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain the pain of doing builds by hand and name at least three specific problems it causes.</li>
+<li>Explain what "the same input produces the same artifact" means and why it matters.</li>
+<li>Describe the three stages of a build pipeline: build → test → push.</li>
+<li>Explain what CI (continuous integration) means in plain language.</li>
+<li>Read a pipeline's stages and say which one is failing.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U14–U16</strong> — building images, tags, and multi-stage builds.</li>
+<li><strong>U24</strong> — environment variables and secrets (a pipeline needs secrets too).</li>
+<li><strong>U26–U27</strong> — registries, <code>docker login</code>, <code>docker push</code>.</li>
+<li>A GitHub account is useful for U29 but not required for this unit's reading.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>40–60 minutes</strong>, almost entirely reading and reasoning. If the word "pipeline" has ever sounded like corporate fog, this is the unit where it becomes a clear, small idea.</p>
+<h2>Why this exists</h2>
+<p>Hand-building is fine while you are learning. It quietly becomes a problem the moment more than one person, or more than one machine, needs the image. Automating builds removes a whole category of "but it worked when I ran it" arguments. It also gives you a written, shared record of exactly how your image is produced — the kind of thing you can hand to a new teammate without a meeting.</p>
+<h2>Plain-language teaching</h2>
+<h3>The pain of manual builds, named precisely</h3>
+<p>Imagine a team of four. The release procedure lives in a chat message that says: "pull the latest, <code>docker build -t app:1.0 .</code>, then <code>docker push ...</code>." What can go wrong?</p>
+<ol>
+<li><strong>Someone forgets a step.</strong> They push before running the tests, or they forget to pull the latest code first.</li>
+<li><strong>Someone builds from their own mess.</strong> A developer builds with uncommitted local changes, so the pushed image contains code nobody else can see.</li>
+<li><strong>Machines differ.</strong> One laptop has a different base-image version cached, or a different Docker version, and gets a slightly different result.</li>
+<li><strong>Nobody can reproduce it.</strong> Months later, no one knows which commands produced the image now running in production.</li>
+<li><strong>It depends on a person being awake.</strong> Saturday-night fix? Whoever is online becomes the release process.</li>
+</ol>
+<p>Every one of these is a <em>process</em> failure, not a skill failure. The fix is not "try harder" — it is to write the steps down once and have a machine run them.</p>
+<h3>What a build pipeline is</h3>
+<p>A <strong>build pipeline</strong> is an automated sequence of steps that starts when something changes (usually a push to your code repository) and ends with a tested image in a registry.</p>
+<p>The word "pipeline" is just a metaphor for "things that happen in order, one after another." A useful concrete image: water flows in at one end and a finished bottle comes out the other. For us, the input is source code and the output is a tagged image.</p>
+<p>Most pipelines have three stages. We will use these names throughout the course:</p>
+<pre><code class="language-text">  [ build ]  →  [ test ]  →  [ push ]
+   make the      prove it     send the
+   image         behaves      image to the
+                              registry
+</code></pre>
+<ul>
+<li><strong>Build:</strong> create the image from the code, exactly as a developer would with <code>docker build</code>.</li>
+<li><strong>Test:</strong> run something against the image to prove it is not broken — a smoke test, unit tests, a version check. If tests fail, the pipeline <em>stops</em> here. Nothing reaches the registry.</li>
+<li><strong>Push:</strong> tag the image and push it to the registry, as in U27.</li>
+</ul>
+<p>The crucial property is order and gates. Test runs <em>before</em> push. A failing test blocks the bad image from being published. There is no "I will test it later."</p>
+<h3>What CI means, plainly</h3>
+<p><strong>CI</strong> stands for <strong>continuous integration</strong>. The honest, low-jargon meaning: <em>every time someone adds code to the shared project, a machine automatically checks that the code still builds and still passes its tests.</em> "Continuous" means it happens on every change, not once a month before release. "Integration" means it checks that this new code works together with everyone else's.</p>
+<p>CI is the build + test part of the pipeline. When people say "the CI is red," they mean the automated checks failed on the latest code. That red mark is a gift: it caught the problem in minutes instead of in production.</p>
+<h3>The same input should give the same output</h3>
+<p><strong>Reproducibility</strong> means: given the same source code and the same instructions, the build produces the same image, no matter who runs it or which machine runs it.</p>
+<p>Manual builds quietly break reproducibility:</p>
+<ul>
+<li>An unpinned base image (<code>FROM python:latest</code>) can change between two builds.</li>
+<li>Builds that depend on files only on one person's laptop.</li>
+<li>Builds that depend on a dependency version resolving differently on different days.</li>
+</ul>
+<p>Pipelines help by always starting from a clean machine and always running the same written steps. To get real reproducibility you also <strong>pin your versions</strong>: prefer <code>python:3.12.4-slim</code> over <code>python:latest</code>, and commit your lockfiles (<code>requirements.txt</code>, <code>package-lock.json</code>).</p>
+<h3>What we would do without a pipeline</h3>
+<p>You would keep doing what U27 had you do, by hand, and trust the group to remember. This "works" in exactly the same way that a shared document of house rules "works": fine until someone forgets, and then everyone argues.</p>
+<h3>Who runs the pipeline?</h3>
+<p>A <strong>CI service</strong> is the machine that watches your code repository and runs the pipeline when it changes. Popular free tiers include:</p>
+<ul>
+<li><strong>GitHub Actions</strong> — built into GitHub; free for public repositories, with a monthly free allowance for private ones. This is what U29 uses.</li>
+<li><strong>GitLab CI/CD</strong> — built into GitLab.</li>
+<li><strong>CircleCI, Travis CI</strong> — dedicated services with free tiers for open projects.</li>
+</ul>
+<p>The machine that runs your job is often called a <strong>runner</strong> or <strong>agent</strong>. It is a fresh, temporary computer that the service spins up, uses, and then throws away. Because it starts clean, "it worked on my laptop" cannot hide there.</p>
+<h3>Secrets in a pipeline</h3>
+<p>The pipeline needs to log in to the registry (U26) to push (U27). That login needs a secret — your Docker Hub access token. You must <strong>never</strong> paste that token into a file in your repository, because everyone who can read the repo can read the file.</p>
+<p>Instead, CI services have a <strong>secrets store</strong>: a private place on the service's website where you save a named value (for example <code>DOCKERHUB_TOKEN</code>) that the pipeline can use without ever printing it. U24 introduced the idea of secrets; a CI secrets store is the same idea, on the server side. We use this for real in U29.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pipeline</td>
+<td>An automated, ordered set of build steps</td>
+<td>Not a mysterious corporate process; just steps in order</td>
+</tr>
+<tr>
+<td>CI</td>
+<td>Automatically building + testing every code change</td>
+<td>Not a tool name; a practice</td>
+</tr>
+<tr>
+<td>Build stage</td>
+<td>Makes the image</td>
+<td>Not where tests live</td>
+</tr>
+<tr>
+<td>Test stage</td>
+<td>Proves the image works; blocks the push if it fails</td>
+<td>Optional but strongly recommended</td>
+</tr>
+<tr>
+<td>Push stage</td>
+<td>Sends the image to the registry</td>
+<td>Same act as U27's manual push</td>
+</tr>
+<tr>
+<td>Runner / agent</td>
+<td>The clean machine a CI service uses to run your steps</td>
+<td>Not your laptop</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>The event that starts the pipeline</td>
+<td>Usually "a push to the main branch"</td>
+</tr>
+<tr>
+<td>Artifact</td>
+<td>A file the pipeline produces and keeps</td>
+<td>Here, usually the built image or a test report</td>
+</tr>
+<tr>
+<td>Reproducibility</td>
+<td>Same input → same output</td>
+<td>Not "it built once"</td>
+</tr>
+<tr>
+<td>Secrets store</td>
+<td>A private place to keep tokens for CI</td>
+<td>Not a file in your repo</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> A book-club team maintains a small web app. Their manual release procedure has failed twice: once someone pushed an untested image, once someone pushed code that was not committed. We will rewrite the procedure as a pipeline on paper, then preview how it will look in U29.</p>
+<p><strong>The manual procedure they were using:</strong></p>
+<pre><code class="language-text">1. git pull
+2. docker build -t bookclub:1.0 .
+3. docker run --rm bookclub:1.0 python -m pytest   # tests
+4. docker tag bookclub:1.0 priya-hub/bookclub:1.0
+5. docker push priya-hub/bookclub:1.0
+</code></pre>
+<p>This is already almost a pipeline — it is just on a human's keyboard. Every command here is one you have seen:</p>
+<ul>
+<li><code>git pull</code> — fetch the latest code.</li>
+<li><code>docker build -t bookclub:1.0 .</code> — build the image (U11–U14).</li>
+<li><code>docker run --rm bookclub:1.0 python -m pytest</code> — run the tests inside the image, then remove the container (U07, U10).</li>
+<li><code>docker tag ...</code> and <code>docker push ...</code> — the U27 steps.</li>
+</ul>
+<p><strong>The same procedure as a pipeline, described in plain stages:</strong></p>
+<pre><code class="language-text">trigger: someone pushes to the main branch
+  stage build:  docker build -t bookclub:1.0 .
+  stage test:   docker run --rm bookclub:1.0 python -m pytest
+   → if tests fail: STOP. The push stage never runs.
+  stage push:   docker tag ... ; docker push priya-hub/bookclub:1.0
+  on success:   the registry has a new bookclub:1.0
+</code></pre>
+<p><strong>One decoded failure at pipeline level:</strong></p>
+<pre><code class="language-text">test stage failed: 2 failed, 7 passed
+build passed; push was skipped
+</code></pre>
+<p><strong>Decoded:</strong> the tests found a real problem. Because test sits before push, the broken image was <em>not</em> published. The team's registry is still serving the last good image. This is the pipeline doing its job — a red pipeline is often a success story, not a disaster.</p>
+<p><strong>A second decoded failure, the one pipelines are famous for:</strong></p>
+<pre><code class="language-text">build works on my laptop but fails on the runner with:
+ModuleNotFoundError: No module named 'pytest'
+</code></pre>
+<p><strong>Decoded:</strong> the laptop had <code>pytest</code> installed globally, so it "worked"; the clean runner only has what the Dockerfile installs. The fix is to make the image self-sufficient: install test dependencies <em>inside</em> the image (for example in the Dockerfile or a test-specific stage), not on the host. This is precisely the class of bug automation is built to surface early.</p>
+<h2>Common errors</h2>
+<h3>Error: "the pipeline passes but the app is broken"</h3>
+<p><strong>What happens:</strong> the test stage is too thin — it checks that the image <em>starts</em>, not that it <em>works</em>.</p>
+<p><strong>Fix:</strong> add at least one meaningful test (a real request, a real function call). A <code>docker version</code> step is not a test.</p>
+<h3>Error: "it worked when I ran the commands, but the pipeline fails"</h3>
+<p><strong>What happens:</strong> something existed on your laptop that the pipeline does not have — an installed package, a cached layer, a file you never committed.</p>
+<p><strong>Fix:</strong> commit everything needed, install tools inside the image, and pin versions. Read the failing stage's log line by line; the difference will be named there.</p>
+<h3>Error: secret appears in the pipeline log</h3>
+<p><strong>What happens:</strong> the token was echoed or written into a file in the repo.</p>
+<p><strong>Fix:</strong> rotate (regenerate) the token now — assume it is compromised — store it in the CI secrets store, and never print it. Secrets belong in the store, not the code.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name three specific problems caused by building images by hand.</li>
+<li>What does a pipeline do between build and push, and why does the order matter?</li>
+<li>Explain "continuous integration" without using the word "integrate."</li>
+<li>Why should the token never live in a file in your repository?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Here is a broken pipeline order:</p>
+<pre><code class="language-text">trigger: push to main
+  stage push:  docker push team/app:1.0
+  stage test:  docker run --rm team/app:1.0 python -m pytest
+  stage build: docker build -t team/app:1.0 .
+</code></pre>
+<p>Predict what generally goes wrong. Then write the correct order.</p>
+<h3>P2 — Change one thing</h3>
+<p>In the book-club pipeline, change the trigger to "every pull request" instead of "every push to main." Write two sentences on what improves and one on what could get noisier.</p>
+<h3>P3 — Write from a spec</h3>
+<p>Write the three pipeline stages for a Node.js app whose tests run with <code>npm test</code>, under the namespace <code>aisha-dev</code>, image name <code>notes-app</code>, tag <code>2.0</code>. You do not need real YAML yet — plain stages are fine.</p>
+<h3>P4 — Debug this</h3>
+<p>A teammate says: "Our pipeline is useless; it has been red all week and we cannot ship." Write three sentences explaining what the red pipeline is actually telling them.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No real workflow file or CI service setup — that is U29.</li>
+<li>No deployment, orchestration, or Kubernetes.</li>
+<li>No advanced pipeline features (matrix builds, caching, parallel jobs).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U29 — A minimal GitHub Actions build</strong> (we turn the pipeline we just described into a real, free, working file).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U28 Assignment — Why automate image builds</h1>
+<p>Submit everything in <strong>one folder or zip</strong> named:</p>
+<p><code>U28-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Pain points.</strong> Name three specific problems caused by building images by hand, and for each one say which step of a pipeline removes it.</li>
+<li><strong>Pipeline stages.</strong> Describe the three stages build → test → push. Why must test come before push? What happens to a bad image when the order is right?</li>
+<li><strong>CI in plain words.</strong> Explain <em>continuous integration</em> to a friend who has never heard the term. Do not use the words "integration" or "continuous" in your explanation (use your own phrasing instead).</li>
+<li><strong>Reproducibility.</strong> A teammate says "we pinned every version, so our image is reproducible." Is that enough? Name one more thing that must be true.</li>
+<li><strong>Secrets.</strong> Your pipeline needs a Docker Hub access token. Explain why it must go in the CI secrets store and not in a file in the repository. Say what to do if the token accidentally lands in the code after all.</li>
+<li><strong>Predict then explain.</strong> A pipeline builds successfully but the test stage fails with <code>ModuleNotFoundError: No module named 'pytest'</code>, even though the same command passed on your laptop. Explain the most likely cause and the fix.</li>
+</ol>
+<h3>2. <code>pipeline.md</code></h3>
+<p>Choose a small app you know (a class project, a personal script, an app from earlier units). Write its pipeline as three labelled stages with the exact commands you would run. Follow this shape:</p>
+<pre><code class="language-text">trigger: &lt;when should this run?&gt;
+
+stage build:
+  &lt;command(s)&gt;
+
+stage test:
+  &lt;command(s)&gt;
+
+stage push:
+  &lt;command(s)&gt;
+
+on failure at test:
+  &lt;what should happen?&gt;
+</code></pre>
+<p>Then add two sentences: one naming what would break if the stages ran in a different order, and one naming a secret your pipeline would need.</p>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U28 README fully.
+- [ ] I can name three hand-building pain points from memory.
+- [ ] I can order build, test, and push correctly.
+- [ ] I know secrets must not be committed to the repository.
+- [ ] I read the U28 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>answers.md</code>, <code>pipeline.md</code>, and <code>checklist.md</code> present with the names above.</li>
+<li>The pipeline uses correct stage order.</li>
+<li>Answers are in your own words.</li>
+</ul>
+<h2>Definition of <em>not</em> done</h2>
+<ul>
+<li>A pipeline where push runs before test.</li>
+<li>Copying the README's example stage list word-for-word with no commands of your own.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U28 Rubric</h1>
+<p>Visible to learners. Total <strong>22 points</strong>. Must-have criteria decide pass/fail.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names three real hand-building pain points, each mapped to a pipeline step</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains build → test → push and the gating role of test</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains CI in plain language without jargon-dumping</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Understands reproducibility needs more than pinned versions</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Correctly explains secrets handling and token rotation</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Diagnoses the "works on laptop, missing module on runner" case</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td><code>pipeline.md</code> has correct stage order and plausible commands</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>pipeline.md</code></td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder/zip structure</td>
+</tr>
+</tbody>
+</table>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Q1: award 2/4 if pain points are real but not linked to a pipeline step.</li>
+<li>Q2: award 2/4 if stages are correct but the <em>why test-before-push</em> reasoning is missing.</li>
+<li>Q3: award 1/3 for a restatement that still leans on "continuous." Look for "checks every change automatically."</li>
+<li>Q4: acceptable extra conditions include: starting from a clean environment, committing all inputs, reproducible dependency resolution (lockfiles), not depending on host state.</li>
+<li>Q5: must mention rotation ("regenerate/replace the token"), not only deletion.</li>
+<li>Q6: cause = host-installed dependency; fix = install test deps inside the image/stage.</li>
+</ul>
+<h2>Common wrong-but-thoughtful answers</h2>
+<ul>
+<li>"Automation is only for big companies." Reasonable, and worth addressing directly in feedback — the free GitHub Actions tier exists precisely for small projects.</li>
+<li>"The pipeline should push first so people can get the image sooner." Thoughtful, but explain why shipping an untested image is the exact failure the pipeline prevents.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U27-push-and-pull/index.html">U27 Pushing and pulling images</a>
+    <a class="next" href="../U29-github-actions-build/index.html">U29 A minimal GitHub Actions build</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

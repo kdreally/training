@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U30 — Building a small page, end to end | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U30</div>
+    <h1>Building a small page, end to end</h1>
+    <span class="phase-badge ph5">Phase 5 — Interaction and polish</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U30 — Building a small page, end to end</h1>
+<p><strong>Phase 5 — Interaction and polish</strong></p>
+<h2>Where you are</h2>
+<p>This is the last unit of Phase 5, and it is an <strong>integration</strong> unit: almost no new syntax, and a lot of putting pieces together. You have learned components, props, state, lists, conditions, forms, styling, tokens, responsive layout, accessibility, assets, and motion. Now you build one small finished page that uses them together in the right order.</p>
+<p>If Phase 5 felt like a set of separate tools, this unit makes them a kit. The skill here is <strong>build order</strong> — knowing what to make first and why.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Plan a small page as a list of components and a data flow, before writing code.</li>
+<li>Build a page in stages, with a working result at every stage.</li>
+<li>Combine props, state, lists, and conditional rendering in one page.</li>
+<li>Apply design tokens, a responsive grid, accessible markup, and a small transition.</li>
+<li>Read and fix errors that only appear when parts are combined.</li>
+<li>Explain your build order to another person.</li>
+</ul>
+<h2>What you need already</h2>
+<p>All of these, because this unit combines them:</p>
+<ul>
+<li><strong>U13</strong> — props. <strong>U14</strong> — composing components. <strong>U15</strong> — lists with <code>map</code>. <strong>U16</strong> — conditional rendering.</li>
+<li><strong>U17</strong> — <code>useState</code>. <strong>U18</strong> — controlled inputs.</li>
+<li><strong>U21</strong> — component-scoped CSS. <strong>U22</strong> — design tokens. <strong>U23</strong> — responsive layouts. <strong>U24</strong> — accessibility. <strong>U25</strong> — assets (optional reference).</li>
+<li><strong>U26</strong> — lifting state. <strong>U29</strong> — simple transitions.</li>
+</ul>
+<p>You do <strong>not</strong> need U27 (context) or U28 (custom hooks) for this page. They are available if you want them, but the page is deliberately small enough that lifting state (U26) is sufficient.</p>
+<h2>Time and energy</h2>
+<p>About <strong>2–3 hours</strong>, and it can be split across sessions. There are seven stages, each ending with a checkpoint. Do one or two stages per sitting. If you try to do it all at once and get lost, that is not a failing on your part — it is a sign you skipped a checkpoint. Back up one stage.</p>
+<h2>Why this exists</h2>
+<p>Tutorials teach tools in isolation: here is a button, here is a list, here is a color. Real work is the opposite — you start with a small goal and choose tools as needed. Integration is its own skill, and it is the one most beginners underestimate.</p>
+<p>The human problem: <strong>knowing the parts is not the same as building the thing.</strong> This unit is the bridge between "I understand the concepts" and "I can make a page."</p>
+<h2>Plain-language teaching</h2>
+<h3>The page we are building</h3>
+<p>A <strong>product card grid with a filter</strong>:</p>
+<ul>
+<li>A header with a title.</li>
+<li>A search box that filters products by name.</li>
+<li>A <strong>grid</strong> of product cards. Each card shows an image, a name, a price, and a category tag.</li>
+<li>A friendly message when no products match.</li>
+<li>Cards that lift slightly on hover (motion from U29).</li>
+<li>A layout that reflows from several columns to one on narrow screens.</li>
+<li>Markup that a screen reader can follow.</li>
+</ul>
+<h3>The two ideas for this unit</h3>
+<ol>
+<li><strong>Page plan.</strong> Before coding, write down the components and where the data lives. This is the code version of a wireframe plus a data map.</li>
+<li><strong>Build order.</strong> Make the smallest thing that renders, then add one layer at a time, checking after each. Never write all the files and then run. This is how you avoid the dreaded "nothing works and I do not know which part broke."</li>
+</ol>
+<h3>The components and the data flow (the plan)</h3>
+<pre><code>App                 (owns the search text — single source of truth, U26)
+├── Header          (static title; receives no state)
+├── FilterBar       (receives value + onValueChange — a controlled input, U18)
+└── ProductGrid     (receives the already-filtered products array, U15)
+    └── ProductCard (receives one product)
+</code></pre>
+<p>Data flows <strong>down</strong> as props; the search change flows <strong>up</strong> through a callback. This is exactly U26, applied to a page.</p>
+<h3>Why build in this order</h3>
+<p>Each stage adds one layer and gives you something you can see:</p>
+<ol>
+<li><strong>Static structure</strong> — the page with hard-coded data. No state. If this works, your components and CSS hooks are correct.</li>
+<li><strong>Real data list</strong> — render the products with <code>map</code>. Now the grid reflects data.</li>
+<li><strong>Extract a card component</strong> — give each product its own component. Reuse is real.</li>
+<li><strong>Add the filter state</strong> — lift state to <code>App</code>, add the input. Now the page responds.</li>
+<li><strong>Styling and tokens</strong> — make it match a design system.</li>
+<li><strong>Responsive grid</strong> — make it work narrow and wide.</li>
+<li><strong>Accessibility and motion</strong> — labels, semantics, focus, and a small hover transition.</li>
+</ol>
+<p>At every stage the page renders. That is the point.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Integration</td>
+<td>Combining separate skills into one working thing</td>
+<td>Not a new syntax; it is assembly</td>
+</tr>
+<tr>
+<td>Page plan</td>
+<td>A written list of components and where data lives, before coding</td>
+<td>Not a formal spec; a few lines are enough</td>
+</tr>
+<tr>
+<td>Build order</td>
+<td>The sequence you add layers, smallest working thing first</td>
+<td>Not "write everything, then run"</td>
+</tr>
+<tr>
+<td>Static data</td>
+<td>Hard-coded values used as a stand-in</td>
+<td>Not user data; it is scaffolding to be replaced</td>
+</tr>
+<tr>
+<td>Derived list</td>
+<td>A filtered/sorted list computed from state each render</td>
+<td>Not stored in its own <code>useState</code> (see U26)</td>
+</tr>
+<tr>
+<td>Grid</td>
+<td>A CSS layout that places cards in columns that wrap</td>
+<td>Not the same as the CSS <code>grid</code> keyword specifically</td>
+</tr>
+<tr>
+<td>Checkpoint</td>
+<td>A deliberate pause to verify one stage before adding the next</td>
+<td>Not a formality; skipping it is how builds get lost</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — the guided build</h2>
+<p>Follow the stages in order. After each stage, start or refresh the dev server with <code>npm run dev</code> (same command on Windows, macOS, and Linux) and complete the checkpoint before moving on.</p>
+<p>If you do not have a project yet, U09 covers creating one with Vite and U10 tours its folders. Keep your page files inside <code>src/</code>.</p>
+<h3>Stage 1 — Static structure</h3>
+<p>Create the data and the shell with hard-coded content. Do not add state yet.</p>
+<p><strong>File:</strong> <code>src/data.js</code></p>
+<pre><code class="language-js">export const PRODUCTS = [
+  { id: 1, name: &quot;Desk lamp&quot;, price: 42, category: &quot;Lighting&quot;, image: &quot;/lamp.jpg&quot; },
+  { id: 2, name: &quot;Desk mat&quot;, price: 18, category: &quot;Desk&quot;, image: &quot;/mat.jpg&quot; },
+  { id: 3, name: &quot;Floor lamp&quot;, price: 89, category: &quot;Lighting&quot;, image: &quot;/floor-lamp.jpg&quot; },
+  { id: 4, name: &quot;Task chair&quot;, price: 210, category: &quot;Seating&quot;, image: &quot;/chair.jpg&quot; },
+  { id: 5, name: &quot;Notebook&quot;, price: 9, category: &quot;Desk&quot;, image: &quot;/notebook.jpg&quot; },
+];
+</code></pre>
+<p>The <code>image</code> values are paths to files in the <code>public</code> folder (U25). If you do not have images ready, use a solid-color placeholder or omit the image for now and add it later. Missing images are one of the errors covered below.</p>
+<p><strong>File:</strong> <code>src/App.jsx</code></p>
+<pre><code class="language-jsx">import &quot;./App.css&quot;;
+import Header from &quot;./Header&quot;;
+import ProductGrid from &quot;./ProductGrid&quot;;
+import { PRODUCTS } from &quot;./data&quot;;
+
+export default function App() {
+  return (
+    &lt;div className=&quot;page&quot;&gt;
+      &lt;Header title=&quot;Studio Shop&quot; /&gt;
+      &lt;ProductGrid products={PRODUCTS} /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/Header.jsx</code></p>
+<pre><code class="language-jsx">export default function Header({ title }) {
+  return (
+    &lt;header className=&quot;page__header&quot;&gt;
+      &lt;h1&gt;{title}&lt;/h1&gt;
+    &lt;/header&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/ProductCard.jsx</code></p>
+<pre><code class="language-jsx">export default function ProductCard({ product }) {
+  return (
+    &lt;article className=&quot;card&quot;&gt;
+      &lt;img className=&quot;card__image&quot; src={product.image} alt={product.name} /&gt;
+      &lt;div className=&quot;card__body&quot;&gt;
+        &lt;h2 className=&quot;card__name&quot;&gt;{product.name}&lt;/h2&gt;
+        &lt;p className=&quot;card__price&quot;&gt;${product.price}&lt;/p&gt;
+        &lt;span className=&quot;card__tag&quot;&gt;{product.category}&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/article&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/ProductGrid.jsx</code></p>
+<pre><code class="language-jsx">import ProductCard from &quot;./ProductCard&quot;;
+
+export default function ProductGrid({ products }) {
+  return (
+    &lt;section className=&quot;grid&quot; aria-label=&quot;Products&quot;&gt;
+      {products.map((product) =&gt; (
+        &lt;ProductCard key={product.id} product={product} /&gt;
+      ))}
+    &lt;/section&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/App.css</code> (a first draft; you will refine it)</p>
+<pre><code class="language-css">.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: system-ui, sans-serif;
+}
+
+.page__header h1 {
+  margin: 0 0 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.card {
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card__image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.card__body {
+  padding: 1rem;
+}
+
+.card__name {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+.card__price {
+  margin: 0 0 0.5rem;
+  color: #444;
+}
+
+.card__tag {
+  font-size: 0.8rem;
+  background: #f0f0f0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+</code></pre>
+<p><strong>Checkpoint 1:</strong> the page shows a title and three columns of cards with names and prices. If images are broken, see the image error below; the layout should still hold.</p>
+<h3>Stage 2 — Real data list</h3>
+<p>You already passed <code>PRODUCTS</code> into <code>ProductGrid</code>, which maps over them. Confirm all five products appear. If you hard-coded a card in Stage 1 instead, replace it now with the <code>map</code> version.</p>
+<p><strong>Why <code>key={product.id}</code>:</strong> React uses <code>key</code> to tell list items apart between renders (U15). Using the array index as a key works for a static list but causes confusing bugs once items are filtered, because indexes shift. Prefer a stable <code>id</code>.</p>
+<p><strong>Checkpoint 2:</strong> all five products render in order, and the browser console has no <code>key</code> warning.</p>
+<h3>Stage 3 — Extract a card component</h3>
+<p>If your card markup is inside <code>ProductGrid</code>, move it into <code>ProductCard</code> (shown above). The grid should only decide layout and looping; the card should decide what a single product looks like.</p>
+<p><strong>Why this matters:</strong> this is the design-system instinct from U00 — one card, many uses. If you later change the card, you change it in one place.</p>
+<p><strong>Checkpoint 3:</strong> <code>ProductGrid</code> contains no product-specific markup, only <code>map</code> and <code>ProductCard</code>. Ask yourself: "If the card design changed, how many files would I edit?" The answer should be one.</p>
+<h3>Stage 4 — Add the filter state</h3>
+<p>Now the page becomes interactive. Lift the search text to <code>App</code>, add a <code>FilterBar</code>, and pass the filtered list to the grid. This is U26 with a real page around it.</p>
+<p><strong>File:</strong> <code>src/FilterBar.jsx</code></p>
+<pre><code class="language-jsx">export default function FilterBar({ value, onValueChange }) {
+  return (
+    &lt;div className=&quot;filter&quot;&gt;
+      &lt;label className=&quot;filter__label&quot; htmlFor=&quot;product-search&quot;&gt;
+        Filter by name
+      &lt;/label&gt;
+      &lt;input
+        id=&quot;product-search&quot;
+        className=&quot;filter__input&quot;
+        type=&quot;text&quot;
+        value={value}
+        onChange={(event) =&gt; onValueChange(event.target.value)}
+        placeholder=&quot;Try a search term&quot;
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/App.jsx</code> (updated)</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+import &quot;./App.css&quot;;
+import Header from &quot;./Header&quot;;
+import FilterBar from &quot;./FilterBar&quot;;
+import ProductGrid from &quot;./ProductGrid&quot;;
+import { PRODUCTS } from &quot;./data&quot;;
+
+export default function App() {
+  const [query, setQuery] = useState(&quot;&quot;);
+
+  const visibleProducts = PRODUCTS.filter((product) =&gt;
+    product.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    &lt;div className=&quot;page&quot;&gt;
+      &lt;Header title=&quot;Studio Shop&quot; /&gt;
+      &lt;FilterBar value={query} onValueChange={setQuery} /&gt;
+      &lt;ProductGrid products={visibleProducts} /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>Add an empty state to <code>ProductGrid</code>:</p>
+<pre><code class="language-jsx">import ProductCard from &quot;./ProductCard&quot;;
+
+export default function ProductGrid({ products }) {
+  if (products.length === 0) {
+    return &lt;p className=&quot;grid__empty&quot;&gt;No products match your search.&lt;/p&gt;;
+  }
+
+  return (
+    &lt;section className=&quot;grid&quot; aria-label=&quot;Products&quot;&gt;
+      {products.map((product) =&gt; (
+        &lt;ProductCard key={product.id} product={product} /&gt;
+      ))}
+    &lt;/section&gt;
+  );
+}
+</code></pre>
+<p><strong>Why <code>visibleProducts</code> is not state:</strong> it is derived from <code>query</code> and <code>PRODUCTS</code>. Storing it separately would create a second source of truth (U26). Compute it each render.</p>
+<p><strong>Checkpoint 4:</strong> typing narrows the grid in real time. Typing nonsense shows the empty message. Clearing the box restores all products. The input always shows exactly what you typed.</p>
+<h3>Stage 5 — Styling and tokens</h3>
+<p>Now bring in a shared token file (U22) instead of scattered hex values, so the page matches a system. Create tokens and reference them.</p>
+<p><strong>File:</strong> <code>src/tokens.css</code></p>
+<pre><code class="language-css">:root {
+  --color-bg: #ffffff;
+  --color-surface: #f7f7f8;
+  --color-border: #e2e2e2;
+  --color-text: #1a1a1a;
+  --color-text-muted: #555555;
+  --color-accent: #3b5bdb;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+}
+</code></pre>
+<p>Import it once, at the top of <code>src/main.jsx</code>, before your other styles:</p>
+<pre><code class="language-jsx">import &quot;./tokens.css&quot;;
+</code></pre>
+<p>Then use the tokens in <code>App.css</code>:</p>
+<pre><code class="language-css">.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: system-ui, sans-serif;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card__price {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text-muted);
+}
+
+.card__tag {
+  font-size: 0.8rem;
+  background: var(--color-bg);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+</code></pre>
+<p>The hover transition is from U29. Notice <code>transition</code> is written on the base <code>.card</code>, so both the rise and the fall animate.</p>
+<p><strong>Checkpoint 5:</strong> the page uses your tokens. Change <code>--color-accent</code> in one place and watch the tags update. The hero, cards, and text all read from tokens rather than one-off values.</p>
+<h3>Stage 6 — Responsive grid</h3>
+<p>Make the columns adapt. Replace the fixed three-column rule with <code>auto-fit</code>.</p>
+<p><strong>In <code>App.css</code></strong>, replace the <code>.grid</code> rule:</p>
+<pre><code class="language-css">.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-lg);
+}
+</code></pre>
+<p><strong>Why <code>auto-fit</code> with <code>minmax</code>:</strong> each column is at least 220px and shares the leftover space. The browser fits as many columns as will hold, and wraps the rest. No media query is required for the basic reflow. For a stricter handoff, add a media query for very narrow screens:</p>
+<pre><code class="language-css">@media (max-width: 480px) {
+  .page {
+    padding: var(--space-md);
+  }
+}
+</code></pre>
+<p><strong>Checkpoint 6:</strong> narrow the browser window. Columns drop from three to two to one. Nothing overflows horizontally. Test by narrowing the window slowly and watching the wrap point.</p>
+<h3>Stage 7 — Accessibility and motion preferences</h3>
+<p>Give the page honest structure and labels, then honor reduced motion.</p>
+<ul>
+<li>The <code>FilterBar</code> uses a real <code>&lt;label htmlFor="product-search"&gt;</code> tied to the input's <code>id</code>. Clicking the label focuses the input; screen readers announce the purpose (U24).</li>
+<li>The grid is a <code>&lt;section&gt;</code> with <code>aria-label="Products"</code>, and each card is an <code>&lt;article&gt;</code> with an <code>&lt;h2&gt;</code>. This gives a screen reader a heading per product.</li>
+<li>The image has a meaningful <code>alt</code> equal to the product name. If an image is decorative, use <code>alt=""</code> instead.</li>
+<li>The empty state is a <code>&lt;p&gt;</code>, so it is announced when it appears.</li>
+</ul>
+<p>Add reduced-motion handling to <code>App.css</code>:</p>
+<pre><code class="language-css">@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}
+</code></pre>
+<p><strong>Checkpoint 7:</strong> tab through the page. The search input receives a visible focus ring (do not remove outlines without replacing them). The screen-reader structure makes sense: one main heading, a labeled filter, then product headings. With reduced motion on, cards no longer lift.</p>
+<h3>Final result</h3>
+<p>If all seven checkpoints passed, you have built the page. You used props, lists, conditions, state, lifting state, tokens, responsive grid, accessibility, and a transition — in one small, coherent artifact.</p>
+<p><strong>What success looks like:</strong> a titled page with a labeled search box above a responsive grid of five product cards. Typing filters the grid; a friendly message appears when nothing matches; cards lift on hover; the layout reflows to one column on a phone-width window; the whole thing is keyboard-navigable and respects reduced motion.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>Each child in a list should have a unique "key" prop</code></h3>
+<p><strong>When it happens:</strong> you mapped products without a <code>key</code>, or used a non-unique value.</p>
+<p><strong>Decoded:</strong> React cannot reliably tell list items apart between renders. This shows in the browser console when filters change.</p>
+<p><strong>Fix:</strong> give each card <code>key={product.id}</code> using a stable, unique field. Do not use <code>Math.random()</code> or the array index for a list that filters.</p>
+<h3>Error: broken image icons, and the console shows <code>404</code> for <code>/lamp.jpg</code></h3>
+<p><strong>When it happens:</strong> the file is not in the <code>public</code> folder, or the name or case does not match.</p>
+<p><strong>Decoded:</strong> the browser asked for an image at that path and the server did not have it.</p>
+<p><strong>Fix:</strong> put images in <code>public/</code> and reference them as <code>"/lamp.jpg"</code> (with a leading slash, no <code>public</code> in the path). Match the filename exactly. On case-sensitive hosting, <code>Lamp.jpg</code> and <code>lamp.jpg</code> are different files.</p>
+<h3>Error: <code>Cannot read properties of undefined (reading 'toLowerCase')</code></h3>
+<p><strong>When it happens:</strong> a product object is missing its <code>name</code>, or you filter before checking the array.</p>
+<p><strong>Decoded:</strong> the filter ran on a product whose <code>name</code> is <code>undefined</code>. Almost always a typo in <code>data.js</code> (an object missing a field) or a mis-typed property name.</p>
+<p><strong>Fix:</strong> compare the field names in <code>data.js</code> with the names used in <code>App.jsx</code> and <code>ProductCard.jsx</code>. They must match exactly.</p>
+<h3>Error: the grid overflows to the right on a narrow screen</h3>
+<p><strong>When it happens:</strong> a fixed column count plus <code>minmax</code> with a large minimum, or a wide image, pushes past the viewport.</p>
+<p><strong>Decoded:</strong> the content cannot shrink below its minimum content width.</p>
+<p><strong>Fix:</strong> use the <code>repeat(auto-fit, minmax(220px, 1fr))</code> grid, add <code>img { max-width: 100%; }</code>, and check for any fixed pixel widths on cards.</p>
+<h3>Error: the page renders, but nothing reacts to typing</h3>
+<p><strong>When it happens:</strong> the input is controlled (<code>value={query}</code>) but the callback is missing or misnamed, or the grid still receives <code>PRODUCTS</code> instead of <code>visibleProducts</code>.</p>
+<p><strong>Decoded:</strong> either a read-only input (no callback, U26) or a filtered list that was never passed down.</p>
+<p><strong>Fix:</strong> confirm <code>FilterBar</code> receives both <code>value</code> and <code>onValueChange</code>, and that <code>ProductGrid</code> receives <code>visibleProducts</code>, not <code>PRODUCTS</code>.</p>
+<h3>Error: focus is invisible when tabbing</h3>
+<p><strong>When it happens:</strong> a global rule removed the outline, or a custom style hid it.</p>
+<p><strong>Decoded:</strong> keyboard users cannot see where they are. This is an accessibility defect.</p>
+<p><strong>Fix:</strong> do not use <code>outline: none</code> without supplying a visible replacement. If you remove the default, add a clear <code>:focus-visible</code> style.</p>
+<h2>Checkpoints</h2>
+<p>This unit's checkpoints are built into the stages above. If you want one consolidated self-check before the assignment, answer these:</p>
+<ol>
+<li>In your page, which component owns the state, and why?</li>
+<li>Why is the filtered list not stored in <code>useState</code>?</li>
+<li>What does <code>auto-fit</code> + <code>minmax(220px, 1fr)</code> do, and why is it better than <code>repeat(3, 1fr)</code> here?</li>
+<li>Name two accessibility choices in the page and what each one gives a user.</li>
+<li>Where is the class that triggers the hover transition, and where is the transition declared?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>These are warm-ups; the serious work is the assignment. If you completed the guided build, the assignment extends it.</p>
+<h3>P1 — Read and predict</h3>
+<p>Before changing anything, predict what the grid shows when <code>query</code> is <code>"de"</code>, then <code>"DE"</code>, then <code>"  "</code> (two spaces). Run each and compare. (The <code>toLowerCase</code> call explains part of this; spaces will match every name because every name contains no leading/trailing-space check.)</p>
+<h3>P2 — Change one value</h3>
+<p>Change the grid minimum from <code>220px</code> to <code>320px</code>. Run it and describe how many columns appear at a typical laptop width. Then restore it.</p>
+<h3>P3 — Fill in the blank</h3>
+<pre><code class="language-jsx">const visibleProducts = PRODUCTS.________((product) =&gt;
+  product.name.toLowerCase().includes(query.toLowerCase())
+);
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Add a <strong>category filter</strong>: a <code>&lt;select&gt;</code> with options "All", "Lighting", "Desk", and "Seating". Store the chosen category in <code>App</code> with <code>useState</code>, and filter products by both <code>query</code> and <code>category</code>. Keep the filtered list derived, not stored. This is the same lifting-state pattern with a second control.</p>
+<h3>P5 — Fix a broken example</h3>
+<pre><code class="language-jsx">export default function ProductGrid({ products }) {
+  return (
+    &lt;section className=&quot;grid&quot; aria-label=&quot;Products&quot;&gt;
+      {products.map((product, index) =&gt; (
+        &lt;ProductCard key={index} product={product} /&gt;
+      ))}
+    &lt;/section&gt;
+  );
+}
+</code></pre>
+<p>The page works at first, but after you add the filter, some cards briefly show the wrong details. Explain why the index is a poor <code>key</code> here, and fix it.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start; it is the same checklist your trainer uses.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No new React concepts. This unit integrates what you already know.</li>
+<li>No routing or multiple pages. Everything is one page.</li>
+<li>No data fetching from a server. The product list is a local file.</li>
+<li>No context or custom hooks (U27, U28) are required. They are optional.</li>
+<li>No build or deployment. That is Phase 6, starting in U31.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U31 — Production builds explained</strong> — what <code>npm run build</code> actually produces, and why it is different from the dev server you have been using.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U30 Assignment — Build a small page, end to end</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U30-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>What you are building</h2>
+<p>A small page that combines the skills from Phase 5 (and the units before it). You may build the <strong>Studio Shop product grid</strong> from the lesson, or your own equivalent small page.</p>
+<p>Requirements:</p>
+<ul>
+<li><strong>3–6 components</strong> composed into one page.</li>
+<li><strong>One stateful interaction</strong> driven by a control (a filter, a search, a toggle, or a select). The lesson's product filter is the model.</li>
+<li>A <strong>list</strong> rendered with <code>map</code> and stable <code>key</code>s.</li>
+<li>At least one <strong>conditional render</strong> (for example, an empty state).</li>
+<li><strong>Design tokens</strong> in one token file, referenced throughout (U22).</li>
+<li>A <strong>responsive layout</strong> that reflows from multiple columns to one (U23).</li>
+<li><strong>Accessible markup</strong>: a labeled input, heading structure, meaningful <code>alt</code> text, and visible focus (U24).</li>
+<li>One <strong>CSS transition</strong> on an interactive element, respecting <code>prefers-reduced-motion</code> (U29).</li>
+<li>State lifted to the correct parent (U26).</li>
+</ul>
+<p>Keep it small. A single evening should be enough if you build in stages.</p>
+<h2>Files to submit</h2>
+<h3>1. Your project files</h3>
+<p>Include:</p>
+<ul>
+<li>All component files you wrote.</li>
+<li>Your data file (local, no server).</li>
+<li>Your CSS files and token file.</li>
+<li><code>App.jsx</code> and <code>main.jsx</code> if you changed them.</li>
+</ul>
+<p>If your project has many files, include only the ones you touched and say so in <code>answers.md</code>.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Do not paste lesson text back unchanged.</p>
+<ol>
+<li><strong>Page plan.</strong> Before building, you should have made a plan. Reproduce it here: list your components and mark where the shared state lives. If you wrote the plan after starting, say so honestly and give the plan for the finished page.</li>
+<li><strong>Build order.</strong> Describe the order in which you built the page and one thing that went wrong (or almost did) because of ordering. If nothing went wrong, describe how a checkpoint caught a problem.</li>
+<li><strong>Data flow.</strong> Trace one value from its source to where it is displayed. Name the component that owns it and each component it passes through.</li>
+<li><strong>Derived data.</strong> Is your filtered/derived list stored in <code>useState</code>? Explain in two or three sentences why or why not, using the phrase "single source of truth."</li>
+<li><strong>Tokens.</strong> Name three tokens you used and where. Explain one benefit of tokens over typing values directly.</li>
+<li><strong>Responsive.</strong> Describe what your layout does at a narrow width. Name the technique that makes it reflow.</li>
+<li><strong>Accessibility.</strong> Name two accessibility choices and what each gives a user. Include how focus stays visible.</li>
+<li><strong>Predict then run.</strong> Before running, predict which products or items appear when the control is set to a specific value. Then run it and record what appeared. If they differ, explain why.</li>
+<li><strong>Error reading.</strong> Copy one real error or console warning that appeared while combining your parts (a <code>key</code> warning, a 404, an <code>undefined</code> read). Decode it: what caused it, and how did you fix it?</li>
+<li><strong>Design bridge.</strong> In two or three sentences, connect building the page in stages to presenting a design in review: how does showing a working draft at each stage compare to presenting only the finished comp?</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My page has 3–6 components, each with one clear job.
+- [ ] One control changes what is displayed.
+- [ ] The shared value lives in one parent (not duplicated in children).
+- [ ] The list uses a stable, unique `key`.
+- [ ] There is an empty or conditional state.
+- [ ] Colors/spacing come from a token file, not scattered values.
+- [ ] The layout reflows to one column on a narrow screen.
+- [ ] The main input has a `&lt;label&gt;`; images have appropriate `alt`; focus is visible.
+- [ ] There is a CSS transition with a `prefers-reduced-motion` rule.
+- [ ] I read the U30 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>A single page that works from top to bottom, built in stages.</li>
+<li>All eight requirements above are observable in the running page.</li>
+<li><code>answers.md</code> present and in your own words.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+<li>No errors or warnings in the browser console while the page is open.</li>
+</ul>
+<h2>Submission format</h2>
+<p>Put everything inside one folder named <code>U30-YourName</code>. Compress it only if your trainer asks. If your file names differ from the suggestions, list them at the top of <code>answers.md</code>.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U30 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Page composes 3–6 components, each with one clear job</td>
+<td>4</td>
+<td>Yes</td>
+<td>project files</td>
+</tr>
+<tr>
+<td>One stateful interaction driven by a control; state lifted to the correct parent (U26)</td>
+<td>5</td>
+<td>Yes</td>
+<td>code + <code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>List rendered with <code>map</code> and a stable, unique <code>key</code></td>
+<td>3</td>
+<td>Yes</td>
+<td>code</td>
+</tr>
+<tr>
+<td>At least one conditional/empty state</td>
+<td>2</td>
+<td>Yes</td>
+<td>code</td>
+</tr>
+<tr>
+<td>Design tokens in one file and referenced throughout (U22)</td>
+<td>3</td>
+<td>Yes</td>
+<td>token file + CSS</td>
+</tr>
+<tr>
+<td>Responsive layout reflows to one column at a narrow width (U23)</td>
+<td>4</td>
+<td>Yes</td>
+<td>CSS + <code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Accessible markup: labeled input, heading structure, <code>alt</code>, visible focus (U24)</td>
+<td>4</td>
+<td>Yes</td>
+<td>code + <code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>One CSS transition respecting <code>prefers-reduced-motion</code> (U29)</td>
+<td>3</td>
+<td>Yes</td>
+<td>CSS</td>
+</tr>
+<tr>
+<td>Page plan and build order explained concretely</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q1 + Q2</td>
+</tr>
+<tr>
+<td>Predict-then-run is concrete and compares prediction to reality</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+<tr>
+<td>Error-reading: a real error/warning quoted and decoded</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q9</td>
+</tr>
+<tr>
+<td>Design bridge compares staged building to a staged design review</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q10</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>The central outcome is <strong>integration</strong>: a page where components, props, state, and lists work together. A beautiful page with duplicated state still fails the state-lifting criterion.</li>
+<li>Derived data: if the filtered list is stored in state and synced with <code>useEffect</code>, award partial and note it. It often works but creates a second source of truth.</li>
+<li>Responsive: check it actually reflows. A <code>repeat(3, 1fr)</code> that squeezes three columns onto a phone-width screen is not responsive; it should drop to one.</li>
+<li>Accessibility: focus visibility is a must-have in this unit. Missing focus styles are a real defect, not a nicety.</li>
+<li><code>key={index}</code>: the page may work, but the P5 exercise explains the drift. Treat index keys in a <em>filtered</em> list as a partial miss.</li>
+<li>Error-reading and predict-then-run reward honest process. Full credit requires a genuine message or prediction, not a generic statement.</li>
+<li>Do not penalize imperfect English. Do penalize copied lesson text with no personalization on Q1, Q2, and Q10.</li>
+</ul>
+<h3>What to look for (assessor pointer)</h3>
+<p>Read the page's code top-down as a story: data → state in one parent → filter (derived) → grid maps → card displays. If you can follow the data without hunting, the integration is sound.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U29-transitions-and-animation/index.html">U29 Simple transitions and animation</a>
+    <a class="next" href="../U31-production-builds/index.html">U31 Production builds explained</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

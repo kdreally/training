@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U34 — Capstone: design a page, build it in React, host it | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U34</div>
+    <h1>Capstone: design a page, build it in React, host it</h1>
+    <span class="phase-badge ph6">Phase 6 — Shipping and craft</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U34 — Capstone: design a page, build it in React, host it</h1>
+<p><strong>Phase 6 — Shipping and craft</strong></p>
+<h2>Where you are</h2>
+<p>This is the last unit. Everything from U00 to U33 comes together here. You will choose one page (or use a brief below), design it, build it from <strong>3–6 React components</strong>, style it with tokens and a responsive layout, meet an accessibility checklist, produce a production build, and host it at a public URL.</p>
+<p>There is no brand-new concept in this unit. That is deliberate. A capstone is not a harder lesson; it is proof that you can <em>combine</em> the pieces you already learned without being walked through each one. If you feel a flicker of "wait, can I actually do this alone?" — that is the normal feeling at the start of a capstone. The answer is yes, and the unit tells you exactly what "done" looks like so nothing is a mystery.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Plan a single page and break it into 3–6 components.</li>
+<li>Implement at least one component driven by <strong>props</strong> and at least one <strong>stateful interaction</strong> with <code>useState</code>.</li>
+<li>Apply a shared <strong>tokens</strong> file for color, spacing, and radius.</li>
+<li>Make the layout <strong>responsive</strong> across at least one breakpoint.</li>
+<li>Meet a short <strong>accessibility checklist</strong>.</li>
+<li>Run a <strong>production build</strong> and <strong>host</strong> the result at a live URL.</li>
+<li>Explain your decisions in your own words and review your own work against a checklist.</li>
+</ul>
+<h2>What you need already</h2>
+<p>The whole course, in order: <strong>U00–U33</strong>. In particular:</p>
+<ul>
+<li><strong>U13–U17</strong> — props, composition, lists, conditions, state.</li>
+<li><strong>U21–U25</strong> — component CSS, tokens, responsive layout, accessibility, assets.</li>
+<li><strong>U31</strong> — <code>npm run build</code> and <code>dist/</code>.</li>
+<li><strong>U32</strong> — GitHub Pages hosting and the <code>base</code> path.</li>
+</ul>
+<p>If any of those feel shaky, revisit the specific unit before starting. A capstone is the wrong place to learn props for the first time.</p>
+<h2>Time and energy</h2>
+<p>Plan for <strong>one focused evening, roughly 4–6 hours</strong>, and you may split it across two sittings. Suggested split:</p>
+<ul>
+<li>Sitting 1 (60–90 min): choose the brief, sketch the page, list the components, decide props and state.</li>
+<li>Sitting 2 (2–4 hours): build, style, make it responsive, check accessibility.</li>
+<li>Sitting 3 (30–45 min): build for production, host it, write the reflection and self-review.</li>
+</ul>
+<p>Breaks are part of the method, not a delay. Designers know that stepping away reveals mistakes fresh eyes would catch. Use that.</p>
+<h2>Why this exists</h2>
+<p>You have practiced each skill in isolation. Real work never arrives isolated. A real page needs structure, data, interaction, styling, responsiveness, accessibility, and delivery at the same time. This unit is that real thing, at a size you can finish in an evening.</p>
+<p>The second reason is evidence. A hosted URL plus source code plus a reflection is a <strong>portfolio artifact</strong>. You can show it to an employer, a client, or a collaborator, and you can explain every decision in it. That is what this course was for.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a capstone is</h3>
+<p>A <strong>capstone</strong> is a final piece of work that uses many earlier skills at once, on a small but genuine artifact. It is graded more holistically than a normal assignment: not "did you remember function X" but "does this hang together as a real page."</p>
+<p><strong>What it is <em>not</em>:</strong> a capstone is not a test designed to trick you, and it is not an excuse to build an entire app. Scope is your friend here. One page, done well, beats five pages half-finished.</p>
+<h3>Scope fence: one page, 3–6 components</h3>
+<p>Keep the build to <strong>one page</strong> with <strong>3–6 components</strong>. The example below breaks a library events page into five:</p>
+<pre><code class="language-text">App
+├── Header            (name + nav links)
+├── EventList         (maps over events -&gt; EventCard)
+│   └── EventCard     (props: title, date, category)
+├── RsvpToggle        (state: going / not going)
+└── Footer
+</code></pre>
+<p>Every component has a single clear job. <code>EventCard</code> is configured by <strong>props</strong> (the same idea as layer properties, from U13). <code>RsvpToggle</code> holds <strong>state</strong> (useState, from U17) so the page responds to clicks.</p>
+<h3>Choose a brief (or bring your own)</h3>
+<p>You may use one of these, or a page of your own that meets the same requirements.</p>
+<p><strong>Brief A — Community Library Events.</strong> A page listing upcoming library events. A header with the library name; a list of event cards (title, date, category); a "filter by category" control; an RSVP toggle button; a footer. Content: make up 4–6 events.</p>
+<p><strong>Brief B — Plant Shop Product Page.</strong> A page for one plant: a nav, a product image, product details (name, price, description), a quantity selector with increase/decrease, and care tips. Content: one plant, a few care facts.</p>
+<p><strong>Brief C — Your own single page.</strong> Anything small and real: a personal portfolio landing, a coffee shop menu, a classroom roster. It must meet every requirement below.</p>
+<h3>The requirement checklist</h3>
+<p>Your page must include all of these. They map directly to the rubric.</p>
+<ol>
+<li><strong>3–6 components</strong>, each with a single clear responsibility.</li>
+<li>At least one component driven by <strong>props</strong>.</li>
+<li>At least one <strong>stateful interaction</strong> using <code>useState</code> (for example a toggle, a quantity, an open/closed panel).</li>
+<li>A <strong>tokens file</strong> (like <code>tokens.css</code>) holding color, spacing, and radius values used across components. No scattered one-off hex values.</li>
+<li>A <strong>responsive layout</strong> that works at both a narrow (≈375px) and a wide (≈1024px) width, using at least one breakpoint from U23.</li>
+<li>The <strong>accessibility checklist below</strong>, satisfied.</li>
+<li>A working <strong>production build</strong> (<code>npm run build</code>) that you have previewed with <code>npm run preview</code>.</li>
+<li>A live <strong>hosted URL</strong> (GitHub Pages, per U32).</li>
+</ol>
+<h3>The accessibility checklist</h3>
+<p>Keep this short and check every line:</p>
+<ul>
+<li>One <code>&lt;h1&gt;</code> on the page; headings descend in order (no skipping h2 → h4).</li>
+<li>Every meaningful image has descriptive <code>alt</code> text; decorative images use empty <code>alt=""</code>.</li>
+<li>Every form control (input, button) has a visible label or an <code>aria-label</code>.</li>
+<li>Focus is visible when you press <code>Tab</code> through interactive elements.</li>
+<li>Text contrast is at least <strong>4.5:1</strong> against its background; large text and UI borders at least <strong>3:1</strong>.</li>
+<li>Interactive elements are real <code>&lt;button&gt;</code> or <code>&lt;a&gt;</code> elements, not clickable <code>&lt;div&gt;</code>s.</li>
+<li>The page works with the keyboard alone.</li>
+</ul>
+<h3>Design reference: show your starting point</h3>
+<p>A capstone is a <em>design-and-build</em> unit. Submit a <strong>design reference</strong> — a sketch, a Figma screenshot, or an exported image of the page you intended. It does not need to be polished. A photo of a paper sketch is fine. The point is to show the intention you then built, so your assessor can compare intent to result.</p>
+<h3>How this is graded</h3>
+<p>The rubric is built so a trainer can score your work in a few minutes:</p>
+<ol>
+<li>Open your hosted URL. See the page. (30 seconds)</li>
+<li>Confirm the required elements are visibly present. (1–2 minutes)</li>
+<li>Run your project: <code>npm install</code>, <code>npm run build</code>, <code>npm run preview</code>. (2–3 minutes)</li>
+<li>Skim your source for components, props, state, and tokens. (1–2 minutes)</li>
+<li>Read your reflection. (1–2 minutes)</li>
+</ol>
+<p>To make that possible, submit clean, clearly named files. Confusing structure costs you points you actually earned.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capstone</td>
+<td>Final project combining many skills</td>
+<td>Not a new lesson; it combines prior ones</td>
+</tr>
+<tr>
+<td>Scope</td>
+<td>How much you are building</td>
+<td>Not "more is better"</td>
+</tr>
+<tr>
+<td>Deliverable</td>
+<td>A thing you submit for grading</td>
+<td>Not your scratch files</td>
+</tr>
+<tr>
+<td>Design reference</td>
+<td>Your sketch or mockup of intent</td>
+<td>Not judged on polish</td>
+</tr>
+<tr>
+<td>Token file</td>
+<td>Shared CSS values (color, spacing, radius)</td>
+<td>Not per-component one-off values</td>
+</tr>
+<tr>
+<td>Breakpoint</td>
+<td>A screen width where layout changes</td>
+<td>Not a device brand</td>
+</tr>
+<tr>
+<td>Stateful interaction</td>
+<td>Something that changes on user action</td>
+<td>Not just a hover animation</td>
+</tr>
+<tr>
+<td>Hosted URL</td>
+<td>The public web address of your page</td>
+<td>Not <code>localhost</code></td>
+</tr>
+<tr>
+<td>Reflection</td>
+<td>Short written explanation of choices</td>
+<td>Not a copy of the README</td>
+</tr>
+<tr>
+<td>Self-review</td>
+<td>Checking your own work against a checklist</td>
+<td>Not the same as the trainer's rubric</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> You chose Brief A, the library events page. Here is a compact plan — not a full build, just the decisions you make <em>before</em> coding.</p>
+<p><strong>Components:</strong></p>
+<pre><code class="language-text">Header      — library name + nav (static)
+EventList   — maps events array to EventCard (U15)
+EventCard   — props: title, date, category (U13)
+RsvpToggle  — useState: going / not going (U17)
+Footer      — small print (static)
+</code></pre>
+<p><strong>Tokens (<code>src/tokens.css</code>):</strong></p>
+<pre><code class="language-css">:root {
+  --color-bg: #f7f5f0;
+  --color-text: #1f2933;
+  --color-brand: #4a5d23;
+  --color-card: #ffffff;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --radius-md: 10px;
+}
+</code></pre>
+<p>Every component uses these names. <code>EventCard</code> writes <code>background: var(--color-card)</code>, not <code>#ffffff</code>.</p>
+<p><strong>State plan:</strong> <code>RsvpToggle</code> holds <code>const [going, setGoing] = useState(false)</code> and flips between "RSVP" and "Going ✓". <code>EventList</code> filters events by a category held in <code>App</code>.</p>
+<p><strong>Responsive plan:</strong> the event list is one column below 700px and a two-column grid at 700px and above, using a media query from U23.</p>
+<p><strong>Build and host plan:</strong> set <code>base: '/library-events/'</code> in <code>vite.config.js</code> <em>before</em> building, so the hosted assets resolve (this is the U32 trap, planned for, not hit by accident).</p>
+<p><strong>Then:</strong> <code>npm run build</code>, <code>npm run preview</code> to check, upload <code>dist/</code> contents to the <code>library-events</code> repo, enable Pages, confirm the live URL.</p>
+<p>A plan like this takes fifteen minutes and saves an evening of false starts. You are not expected to invent a better process — copy this shape.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Scope creep</h3>
+<p><strong>What happens:</strong> "While I am here, I will add a second page, a search bar, and dark mode." The evening ends with three half-built features.</p>
+<p><strong>Fix:</strong> Re-read the scope fence. One page, 3–6 components, one stateful interaction. Extra ideas go in a "later" list, not the build.</p>
+<h3>Error 2 — Only the default state</h3>
+<p><strong>What happens:</strong> The page looks right at first glance, but the RSVP toggle has no visible focus, the empty list shows a blank gap, and long titles overflow.</p>
+<p><strong>Fix:</strong> Test the interactive states and content stress (very long text, empty list) before you call it done. This is exactly the visual QA habit from U33, turned on your own work.</p>
+<h3>Error 3 — Hard-coded values everywhere</h3>
+<p><strong>What happens:</strong> Colors, spacing, and radii are typed directly into each component. The tokens file exists but is barely used.</p>
+<p><strong>Fix:</strong> If you change <code>--color-brand</code> once and the whole page follows, you did it right. If not, replace the literals with <code>var(--...)</code>.</p>
+<h3>Error 4 — Hosted page is blank after deploy</h3>
+<p><strong>What happens:</strong> The build uploaded, but the page is blank and the console shows a 404 for a <code>.js</code> file.</p>
+<p><strong>Decoded:</strong> The <code>base</code> path is wrong for your project site. This is the U32 failure. Set <code>base: '/&lt;repo-name&gt;/'</code>, rebuild, re-upload, hard refresh. Plan for it and it takes one minute; discover it at 1 a.m. and it takes thirty.</p>
+<h3>Error 5 — "It works, but I cannot explain why"</h3>
+<p><strong>What happens:</strong> You copied patterns you half-remember, and the reflection section collapses.</p>
+<p><strong>Fix:</strong> Before submitting, answer the reflection prompts out loud. If you cannot explain a decision, revisit the unit that taught it. The reflection is graded precisely because understanding is the point.</p>
+<h2>Checkpoints</h2>
+<p>Before you submit, confirm all of these:</p>
+<ol>
+<li>The hosted URL loads my styled page in a fresh tab.</li>
+<li>I have 3–6 components, each with one clear job.</li>
+<li>At least one component takes props; at least one uses <code>useState</code>.</li>
+<li>A tokens file drives color, spacing, and radius across components.</li>
+<li>The page works at ≈375px and ≈1024px.</li>
+<li>I checked every line of the accessibility checklist.</li>
+<li><code>npm run build</code> and <code>npm run preview</code> both succeed.</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>These lead directly into the capstone; do them before or while planning.</p>
+<h3>P1 — Read and predict</h3>
+<p>Read all three briefs. Write one sentence for each explaining what it would teach you. Pick one. Do not start building yet.</p>
+<h3>P2 — Plan the components</h3>
+<p>On paper, draw your page as nested boxes and name each box a component. Does each have one job? Is it 3–6 of them?</p>
+<h3>P3 — Decide props and state</h3>
+<p>For each component, write "static," "props," or "state." You must have at least one of each of props and state.</p>
+<h3>P4 — Token draft</h3>
+<p>List the colors, spacing steps, and radii your page needs. Give each a token name. You now have your <code>tokens.css</code> plan.</p>
+<h3>P5 — Accessibility dry run</h3>
+<p>Walk the accessibility checklist against your <em>plan</em>. Fix problems on paper, where they are free.</p>
+<h2>Assignment</h2>
+<p>See <a href="#assignment">Assignment</a>. This is the complete capstone deliverable.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is designed to be scored in a few minutes; read it before you build so you know exactly what evidence to submit.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No new React concepts — this unit combines U00–U33.</li>
+<li>No multi-page apps, routers, or backends.</li>
+<li>No testing frameworks, TypeScript, or CI pipelines.</li>
+<li>No paid tools or hosts.</li>
+<li>No requirement for a polished visual design; the requirement is a working, accessible, well-structured page.</li>
+</ul>
+<h2>Next unit</h2>
+<p>There is no next unit — this is the end of the course. After you submit, you will have a hosted page, its source, and the ability to explain every choice in it. That is a genuine portfolio piece, not a certificate. Well done for reaching the end.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U34 Assignment — Capstone: design, build, and host</h1>
+<p>This is the full capstone deliverable. It combines everything from <strong>U00–U33</strong>.</p>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U34-YourName</code></p>
+<h2>1. The build (source code)</h2>
+<p>Include your entire React project <strong>except</strong> <code>node_modules/</code>. A zip, or a link to a public GitHub repo, both work. Do not include <code>node_modules</code> — it is huge and can be regenerated with <code>npm install</code>.</p>
+<p>Your project must contain:<br />
+- 3–6 components, each with a single clear job.<br />
+- At least one component driven by props.<br />
+- At least one stateful interaction using <code>useState</code>.<br />
+- A tokens file (for example <code>src/tokens.css</code>) used across components.<br />
+- A responsive layout with at least one breakpoint.<br />
+- A <code>vite.config.js</code> with the correct <code>base</code> for your hosting setup.</p>
+<h2>2. The live page (hosted URL)</h2>
+<p>Deploy the production build to GitHub Pages, exactly as taught in <strong>U32</strong>. Provide the public URL in <code>submission.md</code>.</p>
+<p>If hosting genuinely fails after honest attempts, follow the stuck protocol and submit the exact error and failing URL. Do not invent a URL.</p>
+<h2>3. <code>design-reference</code> (your starting point)</h2>
+<p>A sketch, a Figma screenshot, or an exported image of the page you intended to build. A photo of a paper sketch is acceptable. Name it <code>design-reference.png</code> (or <code>.jpg</code>/<code>.pdf</code>).</p>
+<h2>4. <code>reflection.md</code> (explain in your own words)</h2>
+<p>Answer these prompts honestly. Short paragraphs are fine. This is graded; it is not optional.</p>
+<ol>
+<li><strong>Plan.</strong> Name your components and, for each, say whether it is static, uses props, or uses state. Explain why you split the page that way.</li>
+<li><strong>Props.</strong> Pick your props-driven component. Which values are props, and why does that make it reusable?</li>
+<li><strong>State.</strong> Pick your stateful interaction. What triggers the change, and what does the user see before and after?</li>
+<li><strong>Tokens.</strong> Name three tokens you used and where. What would happen if you changed one of them?</li>
+<li><strong>Responsive.</strong> Describe your layout at ≈375px and at ≈1024px. What changed at the breakpoint?</li>
+<li><strong>Accessibility.</strong> Which two checklist items were hardest to satisfy, and what did you do?</li>
+<li><strong>Build and host.</strong> In your own words, what did <code>npm run build</code> produce, and what did you have to set so the hosted page worked (the <code>base</code> path)?</li>
+<li><strong>Hard part.</strong> What was the most confusing moment, and how did you get unstuck? (Use the U00 stuck protocol vocabulary.)</li>
+<li><strong>What you would change.</strong> If you had another hour, what would you improve, and why?</li>
+</ol>
+<h2>5. <code>self-review.md</code> (check your own work)</h2>
+<p>Copy this checklist and mark each item <code>[x]</code> when true. Be honest — the trainer will verify it against the deployed site.</p>
+<pre><code class="language-markdown">## Structure
+- [ ] I have 3–6 components, each with one clear responsibility.
+- [ ] At least one component is driven by props.
+- [ ] At least one interaction uses useState.
+
+## Styling
+- [ ] Color, spacing, and radius come from a tokens file.
+- [ ] Changing one token changes the page consistently.
+- [ ] No obvious one-off hex or pixel values remain in components.
+
+## Responsive
+- [ ] The page works at ≈375px wide.
+- [ ] The page works at ≈1024px wide.
+
+## Accessibility
+- [ ] Exactly one &lt;h1&gt;; headings descend in order.
+- [ ] Meaningful images have alt text; decorative ones use alt=&quot;&quot;.
+- [ ] Every control has a visible or screen-reader label.
+- [ ] Focus is visible when tabbing.
+- [ ] Contrast is at least 4.5:1 for body text.
+- [ ] Interactive elements are real buttons/links.
+- [ ] The page works with the keyboard alone.
+
+## Build and host
+- [ ] `npm run build` succeeds.
+- [ ] `npm run preview` shows the correct page.
+- [ ] The hosted URL loads the styled page in a fresh tab.
+- [ ] The browser console shows no 404 errors on the live site.
+</code></pre>
+<h2>6. <code>submission.md</code></h2>
+<pre><code class="language-markdown"># Capstone submission — &lt;your name&gt;
+
+- Brief chosen: &lt;A / B / C — short description&gt;
+- Live URL: &lt;https://...&gt;
+- Repo (if used): &lt;https://github.com/...&gt;
+- Components: &lt;comma-separated list&gt;
+- Props component: &lt;name&gt;
+- Stateful component: &lt;name&gt;
+- Breakpoint used: &lt;e.g. 700px&gt;
+
+## One-sentence summary
+&lt;What your page does, in one sentence.&gt;
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All six parts present (<code>design-reference</code>, project source, <code>reflection.md</code>, <code>self-review.md</code>, <code>submission.md</code>, live URL).</li>
+<li>The hosted URL loads the styled page.</li>
+<li>The reflection is in your own words and references real decisions from your build.</li>
+<li>The self-review checklist is completed honestly.</li>
+<li>No <code>node_modules/</code> in the submission.</li>
+</ul>
+<h2>If something is broken at submission time</h2>
+<p>Do not hide it and do not fake anything. Submit what works, describe what does not in <code>submission.md</code>, and include the exact error or failing URL. A partly working, honestly explained capstone is graded far more fairly than a polished description of code you did not actually run.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U34 Rubric — Capstone</h1>
+<p>Visible to learners. Total <strong>40 points</strong>. Designed so a trainer can score it in a few minutes.</p>
+<h2>Criteria</h2>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Live page loads correctly (styled, not blank/404)</td>
+<td>8</td>
+<td>Yes</td>
+<td>live URL in a fresh tab</td>
+</tr>
+<tr>
+<td>3–6 components, each with one clear responsibility</td>
+<td>4</td>
+<td>Yes</td>
+<td>source; <code>submission.md</code></td>
+</tr>
+<tr>
+<td>At least one component driven by props</td>
+<td>4</td>
+<td>Yes</td>
+<td>source; reflection Q2</td>
+</tr>
+<tr>
+<td>At least one stateful interaction with <code>useState</code></td>
+<td>4</td>
+<td>Yes</td>
+<td>source; reflection Q3</td>
+</tr>
+<tr>
+<td>Tokens file drives color, spacing, radius</td>
+<td>4</td>
+<td>Yes</td>
+<td>source; reflection Q4</td>
+</tr>
+<tr>
+<td>Responsive layout across at least one breakpoint</td>
+<td>4</td>
+<td>Yes</td>
+<td>live URL at ≈375px and ≈1024px; reflection Q5</td>
+</tr>
+<tr>
+<td>Accessibility checklist met</td>
+<td>4</td>
+<td>Yes</td>
+<td>live URL + source; reflection Q6</td>
+</tr>
+<tr>
+<td>Production build succeeds; correct <code>base</code> for hosting</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>npm run build</code> / <code>npm run preview</code>; <code>vite.config.js</code></td>
+</tr>
+<tr>
+<td>Reflection answers are specific and in own words</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>reflection.md</code></td>
+</tr>
+<tr>
+<td>Design reference present</td>
+<td>1</td>
+<td>No</td>
+<td><code>design-reference.*</code></td>
+</tr>
+<tr>
+<td>Self-review checklist present and honest</td>
+<td>1</td>
+<td>No</td>
+<td><code>self-review.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 40.</strong> Must-have subtotal: <strong>38</strong>. Nice-to-have: <strong>2</strong>.</p>
+<h2>Fast pass — scoring order (about 3 minutes)</h2>
+<ol>
+<li><strong>Open the live URL</strong> (8 points). Blank/404? See the honest-failure rule.</li>
+<li><strong>Count components</strong> in the source and match to <code>submission.md</code> (4).</li>
+<li><strong>Search the source</strong> for <code>useState</code> and for a props parameter in a component (4 + 4).</li>
+<li><strong>Search for <code>var(--</code></strong> and confirm a tokens file exists (4).</li>
+<li><strong>Check both widths</strong> on the live URL — narrow and wide (4).</li>
+<li><strong>Skim accessibility</strong> on the live page: Tab order, one <code>&lt;h1&gt;</code>, alt text, contrast (4).</li>
+<li><strong>Run</strong> <code>npm install</code>, <code>npm run build</code>, <code>npm run preview</code>; open <code>vite.config.js</code> for <code>base</code> (3).</li>
+<li><strong>Read <code>reflection.md</code></strong> for real, specific answers (3).</li>
+<li><strong>Confirm</strong> <code>design-reference</code> and <code>self-review.md</code> are present (1 + 1).</li>
+</ol>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li><strong>Live page:</strong> award 0 if blank/404 <em>unless</em> <code>submission.md</code> documents an honest, specific failure (exact error or URL). Then award up to 4 of 8 if <code>npm run preview</code> works locally.</li>
+<li><strong>Components:</strong> full for 3–6 single-purpose components; 2 for 2 or 7+; 0 for one monolithic component.</li>
+<li><strong>Props / state:</strong> full only if the feature is actually used, not imported and ignored.</li>
+<li><strong>Tokens:</strong> 0 if hex/pixel literals dominate; 2 if a tokens file exists but is partly ignored.</li>
+<li><strong>Responsive:</strong> require evidence at both widths. A single fixed width gets 1–2.</li>
+<li><strong>Accessibility:</strong> 1 point per satisfied group up to 4 — headings, alt text, labels, focus + contrast + keyboard. Do not accept clickable <code>&lt;div&gt;</code>s.</li>
+<li><strong>Reflection:</strong> full for specific, personal answers; 0 for copy-pasted lesson text. Imperfect English is not penalized.</li>
+<li><strong>Self-review:</strong> 1 if completed; do not penalize an honest "not done" on a nice-to-have item.</li>
+</ul>
+<h3>Honest-failure rule (state this to learners)</h3>
+<p>A working build that fails only at hosting, with a clearly documented cause (for example a wrong <code>base</code> plus the exact console 404), keeps all must-have points except the live-page points, which are capped at 4 of 8. We grade capability and honesty, not luck.</p>
+<h2>Common weak submissions</h2>
+<ul>
+<li>One giant <code>App.jsx</code> with no separate components.</li>
+<li>State declared but no user-facing interaction.</li>
+<li>A tokens file that exists but components use raw hex.</li>
+<li>Layout that only works at one screen width.</li>
+<li>Clickable <code>&lt;div&gt;</code>s instead of buttons.</li>
+<li>Reflection that restates the README rather than their own decisions.</li>
+<li><code>node_modules/</code> zipped into the submission.</li>
+<li>Hosted URL is actually <code>localhost</code>.</li>
+<li>Blank live page with no explanation in <code>submission.md</code>.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U33-working-with-developers/index.html">U33 Working with developers</a>
+    
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

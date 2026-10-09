@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U29 — A minimal GitHub Actions build | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U29</div>
+    <h1>A minimal GitHub Actions build</h1>
+    <span class="phase-badge ph6">Phase 6 — Registries and automation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U29 — A minimal GitHub Actions build</h1>
+<p><strong>Phase 6 — Registries and automation</strong></p>
+<h2>Where you are</h2>
+<p>U28 gave you the <em>idea</em> of a pipeline: build → test → push. This unit makes it real with <strong>GitHub Actions</strong>, a CI service that is built into GitHub and free for public repositories. You will write one small YAML file, commit it, watch the pipeline run, and read its log. You do not need to own a server; GitHub lends you a clean machine for a few minutes at a time.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what GitHub Actions is and what a <strong>workflow</strong> file is.</li>
+<li>Write <code>.github/workflows/build.yml</code> that checks out your code and builds your Docker image.</li>
+<li>Optionally extend the workflow to log in and push to Docker Hub using a secret.</li>
+<li>Read an Actions run: find the failing step and the exact error line.</li>
+<li>Decode two common failures: a missing secret and a wrong file path.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U27</strong> — <code>docker tag</code>, <code>docker push</code>, <code>docker login</code>, and <code>denied</code> errors.</li>
+<li><strong>U28</strong> — build → test → push and why secrets go in a secrets store.</li>
+<li>A free <strong>GitHub account</strong>, and a repository to push to.</li>
+<li>A free <strong>Docker Hub account</strong> (only needed for the optional push part).</li>
+<li>Basic comfort with <code>git add</code>, <code>git commit</code>, <code>git push</code> (you will use them here; the lesson shows each).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>75–110 minutes</strong>, and it needs the internet. The first run of any workflow feels slow because you are watching a machine in another building. Take a break after your first green run; the optional push half is a second sitting if you are tired.</p>
+<h2>Why this exists</h2>
+<p>A pipeline you cannot run is philosophy. GitHub Actions lets you <em>feel</em> the difference between "I think this build works" and "a fresh machine in the cloud just proved this build works from committed code alone." It is also the first totally free, honest taste of DevOps: code goes in, a verified image comes out, and you have a URL you can show anyone.</p>
+<h2>Plain-language teaching</h2>
+<h3>What GitHub Actions is</h3>
+<p><strong>GitHub Actions</strong> is an automation service built into GitHub. You give it a small instruction file inside your repository, and GitHub runs that file on a fresh machine whenever you tell it to — most often "whenever code is pushed."</p>
+<p>Three words to separate now:</p>
+<ul>
+<li><strong>Workflow:</strong> the whole instruction file. One <code>.yml</code> file, one workflow.</li>
+<li><strong>Job:</strong> one bundle of steps that run on one machine. Simple workflows have one job.</li>
+<li><strong>Step:</strong> one action inside a job, such as "check out the code" or "run <code>docker build</code>."</li>
+</ul>
+<h3>Where the workflow file lives</h3>
+<p>GitHub only finds workflows in a specific place:</p>
+<pre><code class="language-text">.github/workflows/build.yml
+</code></pre>
+<ul>
+<li><code>.github</code> is a folder at the top of your repository.</li>
+<li><code>workflows</code> is a folder inside it.</li>
+<li><code>build.yml</code> is your file. The name is up to you as long as it ends in <code>.yml</code> or <code>.yaml</code>.</li>
+</ul>
+<p>If the file is anywhere else, GitHub ignores it entirely. This location is the single most common "why did nothing happen?" cause, so it is worth reading twice.</p>
+<h3>What YAML is, in one breath</h3>
+<p>YAML is a plain-text format for configuration, where <strong>indentation is meaning</strong>. Two spaces of indentation under a heading mean "these belong to that heading." Tabs and mixed indentation cause errors, so use spaces only. You do not need to master YAML; you need to copy this file carefully and keep the indentation as shown.</p>
+<h3>What a "runner" is, again</h3>
+<p>From U28: the machine that runs your job. In GitHub Actions you choose it with one line, <code>runs-on: ubuntu-latest</code>. That asks GitHub for a fresh, clean Linux machine with common tools — including Docker — already installed. It is created for your run, used, and destroyed. That cleanliness is the point: nothing hidden on your laptop can leak into the build.</p>
+<h3>Why we start with "build only"</h3>
+<p>Logging in and pushing from a pipeline needs a <strong>secret</strong>, and secrets are the part people get wrong under pressure. So we do it in two calm halves:</p>
+<ol>
+<li><strong>Build only.</strong> No login, no secret, nothing to leak. Prove the pipeline runs.</li>
+<li><strong>Build and push.</strong> Add login + push once the first half is green.</li>
+</ol>
+<p>If anything goes wrong in a run, you only have one new thing to suspect.</p>
+<h3>Secrets in GitHub Actions</h3>
+<p>GitHub stores pipeline secrets under <strong>Settings → Secrets and variables → Actions → New repository secret</strong>. You give a secret a name (for example <code>DOCKERHUB_TOKEN</code>) and a value. In the workflow you refer to it as:</p>
+<pre><code class="language-yaml">${{ secrets.DOCKERHUB_TOKEN }}
+</code></pre>
+<p>GitHub substitutes the real value at run time and <strong>masks</strong> it in logs (it prints <code>***</code>). A secret never appears in your file, so it can never be read by someone browsing your repo.</p>
+<p>For Docker Hub you need two secrets: <code>DOCKERHUB_USERNAME</code> and <code>DOCKERHUB_TOKEN</code> (an access token from U26 — not your password).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GitHub Actions</td>
+<td>GitHub's built-in automation service</td>
+<td>Not a separate download</td>
+</tr>
+<tr>
+<td>Workflow</td>
+<td>One <code>.yml</code> pipeline definition</td>
+<td>Not a job; a workflow can have several jobs</td>
+</tr>
+<tr>
+<td>Job</td>
+<td>A bundle of steps on one runner</td>
+<td>Not a single command</td>
+</tr>
+<tr>
+<td>Step</td>
+<td>One action in a job</td>
+<td><code>uses:</code> and <code>run:</code> steps look different but are both steps</td>
+</tr>
+<tr>
+<td>Runner</td>
+<td>The clean machine GitHub provides</td>
+<td>Not your computer</td>
+</tr>
+<tr>
+<td><code>on:</code></td>
+<td>The trigger that starts the workflow</td>
+<td>Forgetting it means the workflow never runs</td>
+</tr>
+<tr>
+<td><code>uses:</code></td>
+<td>Run a prebuilt action (e.g. checkout)</td>
+<td>Not a shell command</td>
+</tr>
+<tr>
+<td><code>run:</code></td>
+<td>Run a shell command</td>
+<td>Not a prebuilt action</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>A masked value stored in GitHub settings</td>
+<td>Not a value written in the YAML</td>
+</tr>
+<tr>
+<td><code>runs-on</code></td>
+<td>Which runner operating system to use</td>
+<td>Usually <code>ubuntu-latest</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> Priya has a repository <code>bookclub-app</code> with this <code>Dockerfile</code> at its top level:</p>
+<pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+COPY app.py .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>We will make GitHub build that image on every push to <code>main</code>.</p>
+<h3>The commands that put code on GitHub</h3>
+<p>You need your files in a GitHub repository. If you have never done this, these commands do the job from inside your project folder:</p>
+<pre><code class="language-bash">git init
+git add .
+git commit -m &quot;Add Dockerfile for bookclub app&quot;
+git branch -M main
+git remote add origin https://github.com/priya-hub/bookclub-app.git
+git push -u origin main
+</code></pre>
+<ul>
+<li><strong>What they do:</strong> <code>git init</code> starts tracking this folder; <code>git add .</code> stages every file; <code>git commit</code> saves a snapshot; <code>git branch -M main</code> names the branch <code>main</code>; <code>git remote add origin ...</code> links your folder to the GitHub repository; <code>git push -u origin main</code> uploads it.</li>
+<li><strong>Success looks like:</strong> the final command prints progress and ends with a line like <code>branch 'main' set up to track 'origin/main'.</code></li>
+<li><strong>One decoded failure:</strong> <code>remote: Support for password authentication was removed</code> → decoded: GitHub no longer accepts your account password for <code>git push</code>. Create a <strong>personal access token</strong> or use the GitHub CLI / SSH key. This is the same "use a token, not a password" lesson as Docker Hub in U26.</li>
+</ul>
+<h3>File: <code>.github/workflows/build.yml</code> — build only</h3>
+<pre><code class="language-yaml">name: Build image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Show Docker version
+        run: docker version
+
+      - name: Build the image
+        run: docker build -t bookclub:ci .
+</code></pre>
+<p>Read it line by line:</p>
+<ul>
+<li><code>name:</code> — a human label shown in GitHub's Actions tab. Free text.</li>
+<li><code>on:</code> — the trigger. Here, a push <strong>to the <code>main</code> branch</strong>.</li>
+<li><code>jobs:</code> — the container for one or more jobs.</li>
+<li><code>build:</code> — the job's name (ours to choose).</li>
+<li><code>runs-on: ubuntu-latest</code> — run on GitHub's current Linux runner.</li>
+<li><code>steps:</code> — the ordered list. Indentation under <code>steps:</code> matters.</li>
+<li><code>- name:</code> — a label for one step. The <code>-</code> starts a list item.</li>
+<li><code>uses: actions/checkout@v4</code> — a prebuilt action that copies your repository onto the runner. Without it, the runner has an empty folder and there is no Dockerfile to build.</li>
+<li><code>run: docker version</code> — a shell command proving Docker exists on the runner. A small, honest sanity check.</li>
+<li><code>run: docker build -t bookclub:ci .</code> — exactly the build you have run by hand (U11–U14); the <code>.</code> is the current folder on the runner.</li>
+</ul>
+<p><strong>Success looks like:</strong> in the GitHub <strong>Actions</strong> tab, a green check beside your commit. Click it: each step has a green check, and the last step's log ends with <code>Successfully tagged bookclub:ci</code> (or <code>naming to ...bookclub:ci</code>).</p>
+<h3>File: <code>.github/workflows/build.yml</code> — build and push (optional)</h3>
+<p>Once the build-only run is green, add login and push. First create the two secrets in GitHub settings (values from Docker Hub, U26), then replace the workflow with:</p>
+<pre><code class="language-yaml">name: Build and push image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bookclub-app:ci
+</code></pre>
+<p>New pieces explained:</p>
+<ul>
+<li><code>uses: docker/login-action@v3</code> — a prebuilt action that runs <code>docker login</code> for you, using the values under <code>with:</code>.</li>
+<li><code>with:</code> — inputs to an action, laid out as <code>key: value</code> pairs.</li>
+<li><code>${{ secrets.DOCKERHUB_USERNAME }}</code> — look up the secret named <code>DOCKERHUB_USERNAME</code> and substitute it (masked in logs).</li>
+<li><code>uses: docker/build-push-action@v6</code> — a prebuilt action that builds the image and pushes it in one step.</li>
+<li><code>context: .</code> — the build folder; <code>.</code> is the repo root, where the Dockerfile is.</li>
+<li><code>push: true</code> — yes, actually push (the same action can build without pushing).</li>
+<li><code>tags:</code> — the registry-ready name from U27. Notice it uses your username so the namespace matches your account.</li>
+</ul>
+<p><strong>Success looks like:</strong> a green run, and the image appears on Docker Hub under your username.</p>
+<h3>Reading the Actions log</h3>
+<ol>
+<li>Open your repository on GitHub and click the <strong>Actions</strong> tab.</li>
+<li>Click the run (named after your commit message or the workflow's <code>name</code>).</li>
+<li>You see the job and a list of steps, each with a green check or a red X.</li>
+<li>Click the <strong>failing step</strong> — the red one. Expand it and read the <strong>last lines first</strong>; errors are usually there.</li>
+<li>The <code>##[error]</code> line is GitHub's marker for the exact failure. The lines just above it give context.</li>
+</ol>
+<p>A calm reading order: which step is red → last 10 lines of that step → the first line that names a file, a name, or a command.</p>
+<h2>Common errors</h2>
+<h3>Error: a missing secret</h3>
+<pre><code class="language-text">Error: Username and password required
+</code></pre>
+<p>Or, during push:</p>
+<pre><code class="language-text">denied: requested access to the resource is denied
+</code></pre>
+<p><strong>What happens:</strong> the secret name in the YAML does not match the secret name in GitHub settings (they are case-sensitive), the secret was never created, or the account does not own the namespace in <code>tags:</code>.</p>
+<p><strong>Fix:</strong> open <strong>Settings → Secrets and variables → Actions</strong> and check the names match exactly (<code>DOCKERHUB_TOKEN</code>, not <code>DOCKERHUB_TOKEN</code>, not <code>dockerhub_token</code>). Then confirm the <code>tags:</code> namespace is your own username. When in doubt, add a temporary step that prints only the <em>username</em> (never the token) to confirm substitution.</p>
+<h3>Error: a wrong path</h3>
+<pre><code class="language-text">failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+</code></pre>
+<p><strong>What happens:</strong> the build ran in a folder without a <code>Dockerfile</code>, or your file is named <code>dockerfile</code>, or you set <code>context:</code> to the wrong directory.</p>
+<p><strong>Fix:</strong> confirm the Dockerfile's exact name and location in the repo (case matters on Linux). Set <code>context:</code> to the folder that contains it. If it lives in a subfolder, use <code>context: ./subfolder</code> and, if needed, <code>file: ./subfolder/Dockerfile</code>.</p>
+<h3>Error: the workflow never runs at all</h3>
+<p><strong>What happens:</strong> no run appears in the Actions tab.</p>
+<p><strong>Fix:</strong> the file is not at <code>.github/workflows/&lt;name&gt;.yml</code>, or the trigger does not match. If you pushed to a branch other than <code>main</code>, <code>on: push: branches: [ main ]</code> will not fire. Check the path first, then the branch name.</p>
+<h3>Error: YAML indentation</h3>
+<pre><code class="language-text">Invalid workflow file: .github/workflows/build.yml#L12
+</code></pre>
+<p><strong>What happens:</strong> YAML is sensitive to indentation. A stray tab, or a <code>-</code> step not aligned with its siblings, breaks the file.</p>
+<p><strong>Fix:</strong> use two spaces per level, never tabs, and keep each <code>- name:</code> aligned with the others under <code>steps:</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In what exact folder must a workflow file live?</li>
+<li>What does <code>uses: actions/checkout@v4</code> do, and what breaks without it?</li>
+<li>What is the difference between <code>uses:</code> and <code>run:</code>?</li>
+<li>Why do we start with a build-only workflow before adding a push?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Look at this trigger. Will the workflow run when Priya pushes to a branch named <code>dev</code>? Explain.</p>
+<pre><code class="language-yaml">on:
+  push:
+    branches: [ main ]
+</code></pre>
+<h3>P2 — Change one thing</h3>
+<p>Change the build-only workflow so it runs on every push to <strong>any</strong> branch. What did you remove or change in the <code>on:</code> section?</p>
+<h3>P3 — Debug this</h3>
+<p>A learner's workflow builds fine but the push step fails with <code>denied: requested access to the resource is denied</code>. List three things you would check, in order.</p>
+<h3>P4 — Write from a spec</h3>
+<p>Write the <code>steps:</code> list for a workflow that (a) checks out the code, (b) logs in to Docker Hub, (c) builds and pushes <code>aisha-dev/notes-app:ci</code>. You may copy the shapes from the lesson; you are not expected to invent new YAML keys.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No GitHub Actions beyond one job and a small number of steps.</li>
+<li>No matrix builds, caching, environments, or reusable workflows.</li>
+<li>No deployment stage — that is discussed from U31.</li>
+<li>No explanation of every <code>git</code> command; we use the minimum needed to publish the file.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U30 — Image scanning and size hygiene</strong> (your automated image now exists; let us keep it small and look at what is inside it).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U29 Assignment — A minimal GitHub Actions build</h1>
+<p>Submit everything in <strong>one folder or zip</strong> named:</p>
+<p><code>U29-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>workflow.yml</code></h3>
+<p>Your finished workflow file. It must:</p>
+<ul>
+<li>Live at <code>.github/workflows/build.yml</code> in your repository (so tell your trainer the repo URL and that path).</li>
+<li>Trigger on a push to <code>main</code>.</li>
+<li>Check out the code.</li>
+<li>Build your image with <code>docker build</code>.</li>
+<li>(Optional, for extra credit) log in and push to Docker Hub using secrets.</li>
+</ul>
+<p>If you cannot publish to GitHub, submit the file and complete <code>answers.md</code> — your trainer will assess the file and your reasoning.</p>
+<h3>2. <code>evidence.md</code></h3>
+<ol>
+<li>Paste the <strong>URL</strong> of one successful Actions run (or, if offline, describe what you saw step by step).</li>
+<li>For each step in the run, write one line: step name → green or red.</li>
+<li>Paste the single log line that proved the image was built.</li>
+<li>If you did the push half, paste your image's name as it appears on Docker Hub (no token, ever).</li>
+</ol>
+<p><strong>Important:</strong> never paste a secret or token value into your submission. If GitHub shows <code>***</code>, that is correct — leave it as <code>***</code>.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Anatomy.</strong> Define workflow, job, and step, and give one example of each from your own file.</li>
+<li><strong>Location matters.</strong> Where exactly must a workflow file live, and what happens if it is elsewhere?</li>
+<li><strong>uses vs run.</strong> Explain the difference between a step that uses <code>uses:</code> and one that uses <code>run:</code>, using two steps from your file as examples.</li>
+<li><strong>Refresh the build.</strong> Why is <code>actions/checkout@v4</code> almost always the first step? What would your build do without it?</li>
+<li><strong>Secrets.</strong> Why do we write <code>${{ secrets.DOCKERHUB_TOKEN }}</code> instead of the token itself? What does GitHub print for the secret in the log, and why is that safe?</li>
+<li><strong>Predict then explain.</strong> Priya adds the push step but forgets to create the <code>DOCKERHUB_TOKEN</code> secret. Predict the failure, name the exact error text you would expect, and describe the fix.</li>
+<li><strong>Debug this.</strong> A workflow never appears in the Actions tab. Give the first two things you would check and why.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] My workflow file is at .github/workflows/ (not somewhere else).
+- [ ] My workflow ran at least once and I opened the log.
+- [ ] I never committed a secret value into any file.
+- [ ] I read the U29 README fully.
+- [ ] I read the U29 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>workflow.yml</code>, <code>evidence.md</code>, <code>answers.md</code>, and <code>checklist.md</code> present with the names above.</li>
+<li>The workflow is valid YAML and correctly located.</li>
+<li>No secret values anywhere in the submission.</li>
+<li>Answers are in your own words.</li>
+</ul>
+<h2>Definition of <em>not</em> done</h2>
+<ul>
+<li>A workflow file at the repository root instead of <code>.github/workflows/</code>.</li>
+<li>Any token or password pasted into the submission.</li>
+<li>Copying the README's YAML with no explanation in <code>answers.md</code>.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U29 Rubric</h1>
+<p>Visible to learners. Total <strong>26 points</strong>. Must-have criteria decide pass/fail.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file valid, correctly located at <code>.github/workflows/</code>, right trigger</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>workflow.yml</code></td>
+</tr>
+<tr>
+<td>Includes checkout + build steps</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>workflow.yml</code></td>
+</tr>
+<tr>
+<td>At least one successful run documented</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>evidence.md</code></td>
+</tr>
+<tr>
+<td>Explains workflow / job / step with own examples</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1–Q2</td>
+</tr>
+<tr>
+<td>Explains <code>uses:</code> vs <code>run:</code> correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Explains checkout step's role</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Correctly explains secrets masking and rotation-free safety</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Predicts missing-secret failure with the right error</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Diagnoses "workflow never ran"</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+</tbody>
+</table>
+<h3>Bonus (nice-to-have, up to +4, not required to pass)</h3>
+<ul>
+<li>Push-to-Docker-Hub half completed with secrets (no token exposed): +4.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Workflow: award 3/5 if it builds correctly but the trigger is missing or wrong.</li>
+<li>Evidence: award 2/4 if the run happened but step-by-step evidence is thin; award 0 if invented.</li>
+<li>Q2: must include <em>both</em> "at <code>.github/workflows/</code>" and "ignored elsewhere."</li>
+<li>Q3: require that <code>uses:</code> references a prebuilt action and <code>run:</code> is a shell command. Blurring them costs 2.</li>
+<li>Q5: masking (<code>***</code>) and "never committed" are the two required ideas.</li>
+<li>Q6: accept <code>Error: Username and password required</code> or <code>denied</code>; the fix is creating/matching the secret name.</li>
+</ul>
+<h2>Integrity flags</h2>
+<ul>
+<li>A token or password anywhere in the submission — do not grade the push half, and tell the learner to rotate the token immediately.</li>
+<li>An <code>evidence.md</code> digest or run URL that does not resolve.</li>
+</ul>
+<h2>Common wrong-but-thoughtful answers</h2>
+<ul>
+<li>Putting the workflow at the repo root "so it is easier to find" — genuinely logical; explain GitHub's fixed path.</li>
+<li>Thinking <code>actions/checkout</code> downloads Docker images — it downloads the repository, not images.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U28-why-automate-image-builds/index.html">U28 Why automate image builds</a>
+    <a class="next" href="../U30-image-scanning-and-size/index.html">U30 Image scanning and size hygiene</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

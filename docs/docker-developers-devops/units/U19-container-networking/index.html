@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U19 — Container networking basics | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U19</div>
+    <h1>Container networking basics</h1>
+    <span class="phase-badge ph4">Phase 4 — Data and networking</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U19 — Container networking basics</h1>
+<p><strong>Phase 4 — Data and networking</strong></p>
+<h2>Where you are</h2>
+<p>You can keep data (U17) and open a door to the outside world (U18). Now we look <em>inside</em> the container world: how containers are connected to each other, what an address means there, and why the word <code>localhost</code> means something different depending on where you are standing. This unit introduces the default <strong>bridge network</strong>; U20 builds on it to connect your own containers by name.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Name the networks Docker creates by default and list them with <code>docker network ls</code>.</li>
+<li>Explain what an IP address means for a container and find a container's IP.</li>
+<li>Reach one container from another <strong>by IP</strong> on the shared default network.</li>
+<li>Explain the classic confusion: <code>localhost</code> inside a container is the container itself, not your computer or another container.</li>
+<li>State why containers on the default network usually cannot reach each other <strong>by name</strong>, and that a network you create yourself changes that (U20).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U10</strong> — container lifecycle (<code>docker run</code>, <code>docker ps</code>, <code>docker rm</code>, <code>docker exec</code>).</li>
+<li><strong>U18</strong> — ports and the meaning of <code>localhost</code> / <code>127.0.0.1</code> from the outside.</li>
+<li><strong>U09</strong> — pulling images. We use <code>nginx</code> again, and <code>alpine</code> from U17.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>70–100 minutes</strong>. This is the unit where the word "network" stops being scary and becomes a small set of clear facts. Go slowly through the <code>localhost</code> part; it trips up experienced people too.</p>
+<h2>Why this exists</h2>
+<p>The moment your app needs a second container, you must answer: "how does the app find the database?" The naive answer is <code>localhost</code>, and it fails every time. To understand why, you need a mental picture of where a container lives and what an address means inside it.</p>
+<p>This unit builds that picture with real, visible commands. It also prepares you for U20, where two containers will finally talk to each other by name — the thing every real multi-service app depends on.</p>
+<h2>Plain-language teaching</h2>
+<h3>A network is a group of things that can talk</h3>
+<p>A <strong>network</strong> is a set of machines (or containers) that can exchange data with each other. To talk, each member needs an address.</p>
+<p>An <strong>IP address</strong> is a numeric address, such as <code>172.17.0.2</code>. It answers "which member of the network am I?" On the public internet, addresses look like <code>142.250.x.x</code>. Inside Docker's private networks, they are usually in ranges like <code>172.17.0.0/16</code> that never leave your computer.</p>
+<p>A <strong>subnet</strong> is a range of addresses that belong together, written with a slash, such as <code>172.17.0.0/16</code>. Everything in that range is "on the same network."</p>
+<h3>Docker creates networks for you</h3>
+<p>When Docker is installed, it creates a few networks. You can see them:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bridge</code></td>
+<td>The <strong>default</strong> network. Any container you start without <code>--network</code> joins this one.</td>
+</tr>
+<tr>
+<td><code>host</code></td>
+<td>Removes isolation: the container shares your computer's network directly (Linux mainly).</td>
+</tr>
+<tr>
+<td><code>none</code></td>
+<td>No network at all. The container is cut off from everything.</td>
+</tr>
+</tbody>
+</table>
+<p>The one you must understand first is <strong><code>bridge</code></strong>. A <strong>bridge network</strong> is a private, internal network that Docker creates and manages. Containers attached to the same bridge can talk to each other, but nothing outside that bridge can reach them unless you publish a port (U18).</p>
+<p>You do not create the <code>bridge</code> network; it exists already.</p>
+<h3>Every container gets its own address</h3>
+<p>When a container joins the <code>bridge</code> network, Docker gives it its own IP address, such as <code>172.17.0.2</code>. Because every container on that network has an address, they can reach each other <strong>by IP</strong>.</p>
+<p>This is the first honest answer to "how do containers find each other?": by IP address, if they share a network.</p>
+<h3>Names vs addresses (and the catch)</h3>
+<p>IP addresses are hard to remember and can change every time you restart a container. Humans prefer names. Docker can answer "what is the IP for the name <code>db</code>?" — a service called <strong>DNS</strong> (Domain Name System), the same system that turns <code>example.com</code> into an address on the internet.</p>
+<p>Here is the catch, and it is the whole reason U20 exists: <strong>on the default <code>bridge</code> network, Docker does not give containers a DNS entry for each other's names.</strong> Two containers on the default bridge can talk by IP, but asking for the other by name typically fails. When you create a network of your own (U20), Docker adds that name resolution. Many people meet this as a confusing <code>bad address</code> error, which this unit shows you on purpose.</p>
+<p>So the accurate summary is:</p>
+<ul>
+<li><strong>Default bridge:</strong> containers can reach each other by <strong>IP</strong>; names usually do <strong>not</strong> resolve.</li>
+<li><strong>A network you create:</strong> containers can reach each other by <strong>name</strong> as well (U20).</li>
+</ul>
+<h3>localhost inside vs outside</h3>
+<p>Remember from U18 that <strong><code>localhost</code></strong> (numeric form <code>127.0.0.1</code>) means "this same computer." The classic confusion is that "this same computer" depends on where you are standing.</p>
+<ul>
+<li>On <strong>your laptop</strong>, <code>localhost</code> is your laptop.</li>
+<li>Inside <strong>container A</strong>, <code>localhost</code> is container A.</li>
+<li>Inside <strong>container B</strong>, <code>localhost</code> is container B.</li>
+</ul>
+<p>So a web app in container A that tries to reach a database at <code>localhost</code> is asking a question about <em>itself</em>, not about the database container. The database is not inside container A, so the connection is refused. To reach container B, container A must use B's IP address (or, on a user-defined network, B's name — U20).</p>
+<p>Think of <code>localhost</code> as the word "home." Saying "it's at home" means a different building depending on who says it.</p>
+<h3>Many containers, many views of the network</h3>
+<p>Each container has its own isolated network space (sometimes called a <strong>network namespace</strong>). That is why two containers can each have something listening on port 80 without clashing (U18). It is also why their idea of <code>localhost</code> differs. Isolation is not a bug; it is exactly what keeps containers predictable.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Network</td>
+<td>A group of machines/containers that can exchange data</td>
+<td>Not the same as the internet</td>
+</tr>
+<tr>
+<td>Bridge network</td>
+<td>A private, Docker-managed network containers join</td>
+<td>The default one already exists; you do not create <code>bridge</code></td>
+</tr>
+<tr>
+<td>Driver</td>
+<td>The piece of Docker that implements a network type (<code>bridge</code>, <code>host</code>, <code>null</code>)</td>
+<td>Not a hardware device</td>
+</tr>
+<tr>
+<td>IP address</td>
+<td>A numeric address of one member on a network</td>
+<td>Not a name, and not a port</td>
+</tr>
+<tr>
+<td>Subnet</td>
+<td>A range of addresses that belong together, e.g. <code>172.17.0.0/16</code></td>
+<td>Written with a slash</td>
+</tr>
+<tr>
+<td>DNS</td>
+<td>The system that turns a name into an IP address</td>
+<td>Docker provides it on user-defined networks (U20)</td>
+</tr>
+<tr>
+<td>Name resolution</td>
+<td>Looking up the IP address for a name</td>
+<td>Does not work by default on the <code>bridge</code> network</td>
+</tr>
+<tr>
+<td>localhost / <code>127.0.0.1</code></td>
+<td>"This same computer"</td>
+<td>Means the container itself when used inside one</td>
+</tr>
+<tr>
+<td>Network namespace</td>
+<td>A container's private view of the network</td>
+<td>Why ports and localhost are isolated</td>
+</tr>
+<tr>
+<td><code>--network</code></td>
+<td>The <code>docker run</code> flag that puts a container on a named network</td>
+<td>Defaults to <code>bridge</code> when omitted</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We use <code>nginx</code> for a small server and <code>alpine</code> for a small client. Both download quickly.</p>
+<h3>Step 1 — List the networks Docker made</h3>
+<p><strong>Purpose:</strong> see what already exists before changing anything.</p>
+<pre><code class="language-bash">docker network ls
+</code></pre>
+<p><strong>Expected output</strong> (ids differ):</p>
+<pre><code class="language-text">NETWORK ID     NAME      DRIVER    SCOPE
+9f1c...        bridge    bridge    local
+7a2b...        host      host      local
+3d4e...        none      null      local
+</code></pre>
+<p>The <code>bridge</code> row is the default network we will use.</p>
+<p><strong>Decoded failure:</strong> <code>Cannot connect to the Docker daemon</code> means Docker Desktop or the Docker service is not running (U06). Start it and try again.</p>
+<h3>Step 2 — Look inside the default network</h3>
+<p><strong>Purpose:</strong> see the address range and which containers are attached.</p>
+<pre><code class="language-bash">docker network inspect bridge
+</code></pre>
+<p><strong>Expected output</strong> (abbreviated):</p>
+<pre><code class="language-json">[
+    {
+        &quot;Name&quot;: &quot;bridge&quot;,
+        &quot;Driver&quot;: &quot;bridge&quot;,
+        &quot;IPAM&quot;: {
+            &quot;Config&quot;: [
+                { &quot;Subnet&quot;: &quot;172.17.0.0/16&quot; }
+            ]
+        },
+        &quot;Containers&quot;: {}
+    }
+]
+</code></pre>
+<p><code>Subnet</code> is the address range. <code>Containers</code> is empty because nothing is running yet.</p>
+<p><strong>Decoded failure:</strong> <code>Error: No such network: bridge</code> is very unusual; it would mean the default network was removed. Recreate it with <code>docker network create bridge</code> (or restart Docker).</p>
+<h3>Step 3 — Start two containers on the default network</h3>
+<p><strong>Purpose:</strong> give ourselves two members of the same network.</p>
+<pre><code class="language-bash">docker run -d --name site1 nginx
+docker run -d --name site2 nginx
+</code></pre>
+<p>We did not pass <code>--network</code>, so both join <code>bridge</code> automatically.</p>
+<p><strong>Success:</strong> each command prints a container id.</p>
+<p><strong>Decoded failure:</strong> if you see <code>Conflict. The container name "/site1" is already in use</code>, a container with that name already exists. Remove it with <code>docker rm -f site1</code> and try again.</p>
+<h3>Step 4 — Find a container's IP address</h3>
+<p><strong>Purpose:</strong> learn the address we will connect to.</p>
+<pre><code class="language-bash">docker inspect -f &quot;{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}&quot; site1
+</code></pre>
+<p><strong>Expected output</strong> (yours may differ):</p>
+<pre><code class="language-text">172.17.0.2
+</code></pre>
+<p>The <code>-f</code> flag formats the output. The template walks every network the container is on and prints its <code>IPAddress</code>. Write this address down; it is your "destination."</p>
+<p><strong>Decoded failure:</strong> if the output is blank, the container is not attached to any network, or the name is wrong. Check <code>docker ps</code> and re-run Step 3.</p>
+<h3>Step 5 — Reach the other container by IP</h3>
+<p><strong>Purpose:</strong> prove containers on one network can talk.</p>
+<p>Replace <code>172.17.0.2</code> with the address you found in Step 4:</p>
+<pre><code class="language-bash">docker run --rm alpine wget -qO- http://172.17.0.2
+</code></pre>
+<p><code>wget</code> fetches a web page. <code>-q</code> keeps it quiet; <code>-O-</code> sends the page to your screen instead of a file.</p>
+<p><strong>Expected output</strong> (abbreviated): the nginx welcome page.</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+...
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+</code></pre>
+<p>That is a container-to-container request working by IP address, with no published port needed. Container-to-container traffic stays inside Docker's private network.</p>
+<p><strong>Decoded failure:</strong> <code>wget: can't connect to remote host (172.17.0.2): Connection refused</code> means the address is wrong or belongs to a container that is not running the server. Re-run Step 4 and confirm <code>site1</code> is up with <code>docker ps</code>.</p>
+<h3>Step 6 — Watch a name lookup fail on the default bridge</h3>
+<p><strong>Purpose:</strong> meet the limitation this unit warns about.</p>
+<pre><code class="language-bash">docker run --rm alpine ping -c 1 site2
+</code></pre>
+<p><strong>Expected output:</strong></p>
+<pre><code class="language-text">ping: bad address 'site2'
+</code></pre>
+<p><strong>Decoded meaning:</strong> the name <code>site2</code> was not found. On the default <code>bridge</code> network Docker does not publish container names into DNS, so the name cannot be turned into an address. This is not your mistake; it is how the default network behaves. U20 fixes it.</p>
+<p><strong>Decoded failure:</strong> if <code>ping</code> instead reports <code>1 packets transmitted, 1 packets received</code>, you are on a network that does provide name resolution (for example, a user-defined network from U20). That is also a correct outcome — note which network you were on.</p>
+<h3>Step 7 — Meet the localhost confusion</h3>
+<p><strong>Purpose:</strong> see that <code>localhost</code> points at the client container itself, not at <code>site1</code>.</p>
+<pre><code class="language-bash">docker run --rm alpine wget -qO- http://localhost
+</code></pre>
+<p><strong>Expected output:</strong></p>
+<pre><code class="language-text">wget: can't connect to remote host (127.0.0.1): Connection refused
+</code></pre>
+<p><strong>Decoded meaning:</strong> inside this short-lived <code>alpine</code> container, <code>localhost</code> is that alpine container. Nothing is listening on its port 80, so the connection is refused. It is not looking at <code>site1</code> at all. To reach <code>site1</code>, use its IP (Step 5) or, later, its name on a user-defined network (U20).</p>
+<h3>Cleanup</h3>
+<pre><code class="language-bash">docker rm -f site1 site2
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: using <code>localhost</code> to reach another container</h3>
+<p><strong>What happens:</strong> <code>connection refused</code>, even though the other container is running fine.</p>
+<p><strong>Fix:</strong> Inside a container, <code>localhost</code> is that container. Use the other container's IP (this unit) or its name on a user-defined network (U20).</p>
+<h3>Error: using a container name on the default bridge</h3>
+<p><strong>What happens:</strong> <code>ping: bad address 'site2'</code> or <code>wget: bad address</code>.</p>
+<p><strong>Fix:</strong> Use the IP address on the default bridge, or create your own network so names resolve (U20).</p>
+<h3>Error: the IP changed after a restart</h3>
+<p><strong>What happens:</strong> A container restarts, gets a new IP, and your hard-coded address stops working.</p>
+<p><strong>Fix:</strong> This is exactly why names are better. IPs are not stable across restarts; names on a user-defined network are. U20 shows the pattern that avoids hard-coding IPs.</p>
+<h3>Error: expecting published ports between containers</h3>
+<p><strong>What happens:</strong> A learner publishes ports and tries to have one container reach another through the host.</p>
+<p><strong>Fix:</strong> Containers on the same network reach each other directly by internal IP; publishing (U18) is for reaching a container from <em>outside</em> Docker, not for container-to-container traffic.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Name the three networks <code>docker network ls</code> shows by default and say what the <code>bridge</code> network is for.</li>
+<li>Can two containers on the default <code>bridge</code> network reach each other by IP? By name? Explain both.</li>
+<li>What does <code>localhost</code> mean inside a container, and why does that cause a confusing failure?</li>
+<li>Which command finds a container's IP address?</li>
+<li>Why is using an IP address fragile compared with using a name?</li>
+</ol>
+<p>If you can answer those, you are ready for the exercises.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Predict then run</h3>
+<p>Predict the output of:</p>
+<pre><code class="language-bash">docker run --rm alpine ping -c 1 site1
+</code></pre>
+<p>while <code>site1</code> is running on the <strong>default bridge</strong>. Then run it and compare. Explain the result in one sentence.</p>
+<h3>P2 — Change one value</h3>
+<p>Start a third container named <code>site3</code> on the default bridge. Find its IP with <code>docker inspect</code>, then reach it by IP from a throwaway alpine container. Change only the name and address.</p>
+<h3>P3 — Read an inspect</h3>
+<p>Run <code>docker network inspect bridge</code> while two containers are running. In your notes, write which containers appear under <code>Containers</code> and one of their <code>IPv4Address</code> values.</p>
+<h3>P4 — Explain the confusion</h3>
+<p>Write a short note (3–5 lines) you could give a teammate explaining why <code>http://localhost:5432</code> inside an app container does not reach a database container. Use the words <em>namespace</em>, <em>localhost</em>, and <em>name</em>.</p>
+<h3>P5 — Fix the broken command</h3>
+<p>A learner wants a temporary client container to reach <code>site1</code> by name on the default bridge:</p>
+<pre><code class="language-bash">docker run --rm alpine ping -c 1 site1
+</code></pre>
+<p>They get <code>bad address</code>. Explain in two sentences why, and say what U20 will let them do instead. (Do not fix it here; explain only.)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No creating your own networks yet (that is U20).</li>
+<li>No connecting two different services (app + database) yet (U20).</li>
+<li>No Compose networking (U22).</li>
+<li>No DNS configuration or custom hostnames.</li>
+<li>No <code>--network host</code> deep dive (mentioned only as an existing default).</li>
+<li>No firewalls or cross-machine networking.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U20 — Connecting containers to each other</strong> (create a network, use service names, and make <code>localhost</code> mistakes impossible).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U19 Assignment — Container networking basics</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U19-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs and bullet lists are both fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Default networks.</strong> List the three default networks from <code>docker network ls</code> and give one sentence on each. Then explain in two sentences what the <code>bridge</code> network is.</li>
+<li><strong>By IP vs by name.</strong> Can two containers on the default <code>bridge</code> network reach each other by IP? By name? Answer both clearly and explain why.</li>
+<li><strong>The localhost trap.</strong> In 4–6 lines, explain what <code>localhost</code> means inside a container, and why an app container cannot reach a database container at <code>localhost</code>. Use the word <em>namespace</em> correctly.</li>
+<li><strong>Predict, then check.</strong> Two containers <code>a</code> and <code>b</code> run on the default bridge. Without running it, predict the result of this command:</li>
+</ol>
+<p><code>bash
+   docker run --rm alpine ping -c 1 b</code></p>
+<p>Write your prediction first, then set up the two containers and run the command. Paste the real output below your prediction. If your prediction was wrong, explain what you missed.<br />
+5. <strong>Find an address.</strong> Write the exact command that prints a container's IP address. Then run it on one of your containers and paste the result.<br />
+6. <strong>Why names matter.</strong> In 3–5 lines, explain why hard-coding a container's IP address is fragile, and what better approach U20 will introduce.<br />
+7. <strong>Still fuzzy.</strong> Name one part of this unit that still feels unclear. Write the exact question you would ask your trainer.</p>
+<h3>2. <code>transcript.md</code></h3>
+<p>Paste the exact commands and output for this experiment, in order, in one code block:</p>
+<ol>
+<li>Start <code>site1</code> and <code>site2</code> (both <code>nginx</code>) on the default bridge.</li>
+<li>Find <code>site1</code>'s IP with <code>docker inspect</code>.</li>
+<li>Reach <code>site1</code> <strong>by IP</strong> from a throwaway alpine container.</li>
+<li>Try to reach <code>site2</code> <strong>by name</strong> and show the failure.</li>
+<li>Run <code>curl.exe http://localhost</code> (or <code>curl http://localhost</code>) from a throwaway alpine container and show the failure.</li>
+</ol>
+<p>Your real output, not a retyped ideal version. Keep the HTML excerpt short.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the whole U19 README, not only the assignment.
+- [ ] I ran `docker network ls` and can name the default networks.
+- [ ] I found a container's IP address with `docker inspect`.
+- [ ] I reached one container from another by IP.
+- [ ] I saw a name lookup fail on the default bridge.
+- [ ] I explained why `localhost` differs inside a container.
+- [ ] I read the U19 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files are present with the exact names above.</li>
+<li><code>answers.md</code> answers all seven prompts in your own words.</li>
+<li><code>transcript.md</code> shows a real by-IP success and both expected failures (name lookup, <code>localhost</code>).</li>
+<li>The Q4 prediction is written <em>before</em> the real output, and any mismatch is explained.</li>
+<li>The checklist is completed honestly (do not tick an item you did not do).</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U19 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names the three default networks and explains the bridge network</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correctly states by-IP works and by-name usually does not on the default bridge</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains <code>localhost</code> inside a container and the namespace idea</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Predicts the name-lookup failure, runs it, and explains the result</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Gives the correct <code>docker inspect</code> command and a real IP</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Explains why hard-coded IPs are fragile and previews U20</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Transcript shows by-IP success and both failures</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>transcript.md</code></td>
+</tr>
+<tr>
+<td>Reflects honestly on a remaining confusion</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q2: award 2/4 if they say containers can communicate but do not distinguish IP from name. Award full only if both answers are correct (IP yes; name usually no on the default bridge).</li>
+<li>Q3: award 2/4 if they describe <code>localhost</code> as "the container itself" but do not connect it to isolation/namespace.</li>
+<li>Q4: expected output is <code>ping: bad address 'b'</code>. Award 1/3 if the prediction is missing but the real run is present; award 0 if no run is shown. If the learner ran it on a user-defined network and got a reply, that is a legitimate variant — award full if they explain which network they were on.</li>
+<li>Q5: the command must be a working form (for example <code>docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" &lt;name&gt;</code>). Older <code>{{.NetworkSettings.IPAddress}}</code> is acceptable if it printed a real address.</li>
+<li>Q6: key idea is that IPs change across restarts and are hard to remember; names on a user-defined network are the better approach (U20).</li>
+<li>Do not penalize imperfect English. Penalize empty answers or lesson text pasted back with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U18-ports/index.html">U18 Ports</a>
+    <a class="next" href="../U20-connecting-containers/index.html">U20 Connecting containers to each other</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

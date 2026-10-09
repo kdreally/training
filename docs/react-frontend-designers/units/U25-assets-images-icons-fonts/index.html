@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U25 — Assets: images, icons, fonts | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U25</div>
+    <h1>Assets: images, icons, fonts</h1>
+    <span class="phase-badge ph4">Phase 4 — Styling and design</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U25 — Assets: images, icons, fonts</h1>
+<p><strong>Phase 4 — Styling and design</strong></p>
+<h2>Where you are</h2>
+<p>Your components, styles, tokens, and layouts are in place. What is missing is the raw material a real design needs: <strong>images, icons, and typefaces</strong>. This unit brings those into the project the right way, and is honest about the cost they carry.</p>
+<p>Assets are where a designer's eye and a developer's performance budget meet. Handled carelessly, a beautiful page weighs ten megabytes and loads slowly on a phone. Handled well, it looks the same and loads in a blink. This unit teaches the difference.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Decide whether an asset belongs in <code>public/</code> or <code>src/assets/</code>.</li>
+<li>Import an image in a component and render it with correct <code>alt</code> text.</li>
+<li>Add an icon as an inline SVG component (no plugin required).</li>
+<li>Load a web font using a <code>&lt;link&gt;</code> or <code>@font-face</code>, and use it in CSS.</li>
+<li>Explain what a file's size does to load time, and one way to reduce it.</li>
+<li>Read a failed asset load (a broken image or a console 404) and fix it.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U10 — The project folder tour</strong>: <code>public/</code>, <code>src/</code>, <code>index.html</code>, <code>main.jsx</code>.</li>
+<li><strong>U21 — Component-scoped CSS</strong>: component stylesheets and naming.</li>
+<li><strong>U22 — Design tokens as props</strong>: <code>tokens.css</code>; fonts and colors are tokens too.</li>
+<li><strong>U24 — Accessibility</strong>: <code>alt</code> text was introduced there; this unit applies it to real files.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>. Downloading or exporting a font and a couple of images adds time. Free options are enough; nothing here requires a paid service.</p>
+<h2>Why this exists</h2>
+<p>Designers ship files constantly — exports, SVGs, font choices — but the web has rules that a logo file on your desktop does not announce. Two files with the same name and different letter case, a 4MB hero image, a font weight nobody actually uses: each has a consequence in code.</p>
+<p>Where a file lives changes how you reference it. A wrong path is the single most common asset bug, and it is easy to avoid once you understand the two locations. Size is the other half: your design decisions about imagery and type become the page's weight, so you should be the one deciding them deliberately.</p>
+<h2>Plain-language teaching</h2>
+<h3>The two places assets live</h3>
+<p>A Vite project (U09) gives you two homes for assets, and they behave differently.</p>
+<table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>How you refer to a file</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>public/</code></td>
+<td>By absolute path from the site root: <code>src="/logo.png"</code></td>
+<td>Files whose name must stay fixed and be reachable by URL: <code>favicon.ico</code>, <code>robots.txt</code>, social images, or a font you reference by URL</td>
+</tr>
+<tr>
+<td><code>src/assets/</code></td>
+<td>By <strong>importing</strong> it in JavaScript: <code>import logo from "./assets/logo.png"</code></td>
+<td>Images and other assets tied to components, so the build can track, rename, and optimise them</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>public/</code></strong> is copied to the site root exactly as-is. A file at <code>public/logo.png</code> is served at <code>/logo.png</code>. The <strong>absolute path</strong> starts with <code>/</code> and means "from the site root," not "from this file."</li>
+<li><strong><code>src/assets/</code></strong> is processed by the build. When you import a file, the import gives you back a <strong>URL string</strong> you can use in <code>src</code>. If the file moves, the build updates the URL; if you mistype, the build tells you.</li>
+</ul>
+<p>Which to choose? Default to <code>src/assets/</code> for anything a component displays (logos, photos, illustrations), because the build manages it. Use <code>public/</code> for things that must live at a fixed URL and are not imported (favicons, a web manifest, a font referenced by URL).</p>
+<p>A note on operating systems: Windows, macOS, and Linux differ in how they treat letter case. Windows usually ignores it (<code>Logo.png</code> and <code>logo.png</code> are "the same"); Linux and most servers do not. If your import uses <code>Logo.png</code> but the file is <code>logo.png</code>, it may work on your machine and fail once deployed. Match the case exactly, always.</p>
+<h3>Importing an image in a component</h3>
+<pre><code class="language-jsx">import heroImage from &quot;../assets/hero.jpg&quot;;
+
+export default function Hero() {
+  return (
+    &lt;img src={heroImage} alt=&quot;A studio desk with a sketchbook and pencils&quot; /&gt;
+  );
+}
+</code></pre>
+<ul>
+<li><code>import heroImage from "../assets/hero.jpg";</code> — the build reads the file and hands the variable <code>heroImage</code> a URL string.</li>
+<li><code>&lt;img src={heroImage} ... /&gt;</code> — braces, because <code>heroImage</code> is a JavaScript variable, not a quoted path.</li>
+<li>
+<p><code>alt</code> — the description from U24, written for a person who cannot see the image.</p>
+</li>
+<li>
+<p><strong>What it does:</strong> renders the image, with the build tracking the real URL.</p>
+</li>
+<li><strong>Success looks like:</strong> the image appears, and Developer Tools' Network panel shows the file with status <code>200</code>.</li>
+<li><strong>One decoded failure:</strong> importing a path that does not exist stops the build with <em>"Failed to resolve import "../assets/hero.jpg" from "src/components/Hero/Hero.jsx". Does the file exist?"</em> The message names the import and the file it could not find. Check spelling, folder, and letter case.</li>
+</ul>
+<h3><code>alt</code> text, applied</h3>
+<p>Rules from U24, made concrete:</p>
+<ul>
+<li>Informative image: <code>alt="A studio desk with a sketchbook and pencils"</code>.</li>
+<li>Decorative image (adds nothing): <code>alt=""</code> — deliberately empty, so screen readers skip it.</li>
+<li>Image inside a link or button that already has text: <code>alt=""</code> to avoid duplication.</li>
+<li>Never use <code>alt</code> to repeat visible caption text.</li>
+</ul>
+<h3>Icons: the inline SVG approach</h3>
+<p>There are three common ways to add icons; we use the simplest dependency-free one: <strong>inline SVG</strong>.</p>
+<p>An <strong>SVG</strong> (Scalable Vector Graphics) is a vector image described in text-based markup — basically the code version of a vector shape. Its advantage for UI is that it scales to any size without blurring, exactly like vector shapes in a design tool.</p>
+<p>"<strong>Inline</strong>" means you paste the SVG's markup directly into your JSX, wrapped in a small component:</p>
+<pre><code class="language-jsx">export default function StarIcon({ size = 20 }) {
+  return (
+    &lt;svg
+      width={size}
+      height={size}
+      viewBox=&quot;0 0 24 24&quot;
+      fill=&quot;none&quot;
+      stroke=&quot;currentColor&quot;
+      strokeWidth=&quot;2&quot;
+      aria-hidden=&quot;true&quot;
+    &gt;
+      &lt;path d=&quot;M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z&quot; /&gt;
+    &lt;/svg&gt;
+  );
+}
+</code></pre>
+<ul>
+<li><code>viewBox="0 0 24 24"</code> — the icon's internal coordinate grid; the shape is defined within it and scales with width/height.</li>
+<li><code>stroke="currentColor"</code> — the icon takes the <strong>current text color</strong>, so it inherits whatever <code>color</code> its parent has. That is how you make an icon match a button label without editing the SVG.</li>
+<li><code>aria-hidden="true"</code> — tells assistive tech to skip the icon when it is decorative. If the icon is the <em>only</em> content (an icon-only button), hide the icon and label the button instead, as in U24.</li>
+<li><code>{...}</code> on <code>width</code>/<code>height</code> — the <code>size</code> prop (default 20) from U13.</li>
+</ul>
+<p>Other approaches you may meet later: importing an <code>.svg</code> file as a URL for use in <code>&lt;img src&gt;</code> (fine for standalone illustrations), or a plugin that converts SVG files to components. We avoid the plugin here because it is an extra dependency and this unit has enough moving parts.</p>
+<ul>
+<li><strong>What it does:</strong> draws a crisp, color-inheriting icon with no external file request.</li>
+<li><strong>Success looks like:</strong> the icon renders at the requested size and matches the surrounding text color.</li>
+<li><strong>One decoded failure:</strong> copying SVG markup and leaving HTML attributes like <code>stroke-width</code> (hyphenated) instead of React's camelCase <code>strokeWidth</code> triggers a console warning and the icon may lose its stroke. React uses camelCase for SVG attributes too.</li>
+</ul>
+<h3>Fonts: two ways to load them</h3>
+<p>You already choose type in your design tool. On the web, the browser only has fonts you explicitly load; otherwise it falls back to a system font. There are two common methods.</p>
+<h4>Option A: a <code>&lt;link&gt;</code> to a font host (simplest)</h4>
+<p>Add tags to the <code>&lt;head&gt;</code> of <code>index.html</code>:</p>
+<pre><code class="language-html">&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot; /&gt;
+&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+&lt;link
+  href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap&quot;
+  rel=&quot;stylesheet&quot;
+/&gt;
+</code></pre>
+<p>Then use the family in CSS:</p>
+<pre><code class="language-css">:root {
+  --font-family-base: &quot;Inter&quot;, system-ui, sans-serif;
+}
+body {
+  font-family: var(--font-family-base);
+}
+</code></pre>
+<ul>
+<li>The <code>link</code> fetches a stylesheet that defines the font. <code>preconnect</code> warms the connection early, which speeds loading.</li>
+<li><code>wght@400;600</code> limits the request to two weights. Every weight you request is more data; request only what you use.</li>
+<li><code>display=swap</code> means text shows in a fallback font immediately, then swaps to Inter when it loads — so the page never shows invisible text.</li>
+<li>The <code>font-family</code> stack lists <code>"Inter"</code> first, then fallbacks (<code>system-ui</code>, then a generic <code>sans-serif</code>) in case Inter does not load.</li>
+</ul>
+<p><strong>Cost honesty:</strong> Google Fonts is free and easy, but it is a third-party request, and in some regions or regulated settings it is blocked or discouraged. Mention this to whoever owns the project. A locally hosted font avoids the external dependency at the cost of hosting the file yourself.</p>
+<h4>Option B: <code>@font-face</code> with local files (full control)</h4>
+<p>Put the font files in <code>public/fonts/</code>, then declare them in CSS:</p>
+<pre><code class="language-css">@font-face {
+  font-family: &quot;Inter&quot;;
+  src: url(&quot;/fonts/Inter-Regular.woff2&quot;) format(&quot;woff2&quot;);
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: &quot;Inter&quot;;
+  src: url(&quot;/fonts/Inter-SemiBold.woff2&quot;) format(&quot;woff2&quot;);
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-family-base: &quot;Inter&quot;, system-ui, sans-serif;
+}
+</code></pre>
+<ul>
+<li>Each <code>@font-face</code> block describes one file: a family name, where it is, its weight and style.</li>
+<li>The path <code>/fonts/...</code> is absolute because the files are in <code>public/</code>.</li>
+<li><code>format("woff2")</code> is the modern, compressed font format; prefer it.</li>
+<li>
+<p><code>font-display: swap</code> avoids invisible text.</p>
+</li>
+<li>
+<p><strong>What it does:</strong> loads your own font files, with no third party.</p>
+</li>
+<li><strong>Success looks like:</strong> text renders in Inter, and the Network panel shows the <code>.woff2</code> file with <code>200</code>.</li>
+<li><strong>One decoded failure:</strong> a <code>404</code> on <code>/fonts/Inter-Regular.woff2</code> means the path or filename does not match what is in <code>public/fonts/</code>. Developer Tools' Network panel and the Console both show the requested URL; compare it to the actual file, letter by letter.</li>
+</ul>
+<h3>Performance honesty: file size</h3>
+<p>Every asset is bytes the user must download. On a fast office laptop this is invisible; on a phone on a train it is the difference between instant and abandoned.</p>
+<p>Practical rules:</p>
+<ul>
+<li><strong>Images:</strong> prefer modern formats (<code>.webp</code>, <code>.avif</code>) over <code>.png</code>/<code>.jpg</code> where quality allows; size images to the largest size they will actually display; compress exports before adding them. A 4000px hero shown at 800px is wasted bytes.</li>
+<li><strong>Fonts:</strong> request only the weights and styles you use; <code>woff2</code> only; <code>font-display: swap</code>. A variable font can cover many weights in one file if you need several.</li>
+<li><strong>Icons:</strong> inline SVG scales for free and adds no image requests. Prefer it over exporting dozens of PNG icons.</li>
+<li><strong>Measure, do not guess:</strong> the browser's <strong>Network</strong> panel (F12) shows each file's size and load time. That is your performance instrument. Sort by size and ask "does this earn its place?"</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Asset</td>
+<td>A file your app uses: image, icon, font, etc.</td>
+<td>Not only images</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td>Files copied as-is to the site root</td>
+<td>Referred to by absolute path <code>/name</code>; not imported</td>
+</tr>
+<tr>
+<td><code>src/assets/</code></td>
+<td>Files processed by the build</td>
+<td>Referred to via <code>import</code>, which returns a URL</td>
+</tr>
+<tr>
+<td>Absolute path</td>
+<td>Starts with <code>/</code>, means "from the site root"</td>
+<td>Not "from this file"</td>
+</tr>
+<tr>
+<td>Relative path</td>
+<td>Starts with <code>./</code> or <code>../</code>, means "from this file"</td>
+<td><code>../</code> goes up one folder</td>
+</tr>
+<tr>
+<td>Imported URL</td>
+<td>The string an image import returns</td>
+<td>Use it in <code>src</code>, not as a literal path</td>
+</tr>
+<tr>
+<td>Inline SVG</td>
+<td>SVG markup pasted directly into JSX</td>
+<td>Not an image file; it is markup you can style</td>
+</tr>
+<tr>
+<td><code>currentColor</code></td>
+<td>A keyword meaning "inherit the text color"</td>
+<td>Lets icons match their parent's color</td>
+</tr>
+<tr>
+<td><code>viewBox</code></td>
+<td>The SVG's internal coordinate grid</td>
+<td>Enables clean scaling</td>
+</tr>
+<tr>
+<td><code>@font-face</code></td>
+<td>A CSS rule declaring a font file</td>
+<td>One block per weight/style</td>
+</tr>
+<tr>
+<td><code>woff2</code></td>
+<td>Modern compressed web font format</td>
+<td>Preferred over <code>.ttf</code>/<code>.otf</code>/<code>.woff</code></td>
+</tr>
+<tr>
+<td><code>font-display: swap</code></td>
+<td>Show fallback text, then swap in the font</td>
+<td>Prevents invisible text while loading</td>
+</tr>
+<tr>
+<td>404</td>
+<td>The browser's "not found" status for a missing file</td>
+<td>The most common asset bug; check paths</td>
+</tr>
+<tr>
+<td>Network panel</td>
+<td>DevTools list of every file the page requested</td>
+<td>Your tool for finding heavy assets</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A <code>PromoCard</code> that uses an imported image, an inline SVG icon, and a tokenised font.</p>
+<h3>File 1 — <code>src/components/PromoCard/PromoCard.jsx</code></h3>
+<pre><code class="language-jsx">import promoImage from &quot;../../assets/promo-workshop.jpg&quot;;
+import CalendarIcon from &quot;../icons/CalendarIcon&quot;;
+import &quot;./PromoCard.css&quot;;
+
+export default function PromoCard({ title, date, description }) {
+  return (
+    &lt;article className=&quot;promoCard&quot;&gt;
+      &lt;img
+        className=&quot;promoCard__image&quot;
+        src={promoImage}
+        alt=&quot;A person sketching UI layouts on a whiteboard&quot;
+      /&gt;
+      &lt;div className=&quot;promoCard__body&quot;&gt;
+        &lt;h3 className=&quot;promoCard__title&quot;&gt;{title}&lt;/h3&gt;
+        &lt;p className=&quot;promoCard__meta&quot;&gt;
+          &lt;CalendarIcon /&gt;
+          &lt;span className=&quot;promoCard__metaText&quot;&gt;{date}&lt;/span&gt;
+        &lt;/p&gt;
+        &lt;p className=&quot;promoCard__description&quot;&gt;{description}&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/article&gt;
+  );
+}
+</code></pre>
+<p>Line-by-line:</p>
+<ul>
+<li><code>import promoImage from ...</code> — the build returns a URL string; the file lives in <code>src/assets/</code>, two levels up from <code>src/components/PromoCard/</code>.</li>
+<li><code>&lt;img ... alt="..."&gt;</code> — informative alt text (U24).</li>
+<li><code>import CalendarIcon from "../icons/CalendarIcon";</code> — the inline SVG icon component (file below). Component imports have no file extension.</li>
+<li><code>&lt;CalendarIcon /&gt;</code> — renders the icon at its default size; <code>stroke="currentColor"</code> makes it inherit the meta text color.</li>
+</ul>
+<h3>File 2 — <code>src/components/icons/CalendarIcon.jsx</code></h3>
+<pre><code class="language-jsx">export default function CalendarIcon({ size = 16 }) {
+  return (
+    &lt;svg
+      width={size}
+      height={size}
+      viewBox=&quot;0 0 24 24&quot;
+      fill=&quot;none&quot;
+      stroke=&quot;currentColor&quot;
+      strokeWidth=&quot;2&quot;
+      strokeLinecap=&quot;round&quot;
+      strokeLinejoin=&quot;round&quot;
+      aria-hidden=&quot;true&quot;
+      focusable=&quot;false&quot;
+    &gt;
+      &lt;rect x=&quot;3&quot; y=&quot;4&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;2&quot; /&gt;
+      &lt;line x1=&quot;16&quot; y1=&quot;2&quot; x2=&quot;16&quot; y2=&quot;6&quot; /&gt;
+      &lt;line x1=&quot;8&quot; y1=&quot;2&quot; x2=&quot;8&quot; y2=&quot;6&quot; /&gt;
+      &lt;line x1=&quot;3&quot; y1=&quot;10&quot; x2=&quot;21&quot; y2=&quot;10&quot; /&gt;
+    &lt;/svg&gt;
+  );
+}
+</code></pre>
+<ul>
+<li><code>focusable="false"</code> — an extra safeguard for older browsers that made SVGs focusable; harmless here.</li>
+<li><code>strokeWidth</code>, <code>strokeLinecap</code>, <code>strokeLinejoin</code> — React's camelCase spellings of the SVG attributes.</li>
+</ul>
+<h3>File 3 — <code>src/components/PromoCard/PromoCard.css</code></h3>
+<pre><code class="language-css">.promoCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  max-width: 320px;
+  font-family: var(--font-family-base);
+}
+
+.promoCard__image {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.promoCard__body {
+  padding: var(--space-md);
+}
+
+.promoCard__title {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: 1.125rem;
+  color: var(--color-text);
+}
+
+.promoCard__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: #64748b;
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.promoCard__description {
+  margin: 0;
+  color: #475569;
+  line-height: 1.5;
+}
+</code></pre>
+<ul>
+<li><code>object-fit: cover;</code> — makes the image fill its box and crop the overflow without distorting it. This is the CSS version of "Fill" in a design tool's image controls.</li>
+<li><code>overflow: hidden;</code> on the card — clips the image to the card's rounded corners.</li>
+<li>The font-family comes from the <code>--font-family-base</code> token, so changing the font is a one-line change.</li>
+</ul>
+<h3>File 4 — <code>src/tokens.css</code> (font token addition)</h3>
+<pre><code class="language-css">:root {
+  --font-family-base: &quot;Inter&quot;, system-ui, sans-serif;
+  --font-family-heading: &quot;Inter&quot;, system-ui, sans-serif;
+  /* ... existing color, space, radius tokens ... */
+}
+</code></pre>
+<h3>File 5 — <code>index.html</code> (font link)</h3>
+<p>Add inside <code>&lt;head&gt;</code>:</p>
+<pre><code class="language-html">&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot; /&gt;
+&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+&lt;link
+  href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap&quot;
+  rel=&quot;stylesheet&quot;
+/&gt;
+</code></pre>
+<h3>How to run and verify</h3>
+<ol>
+<li>Save the files; the dev server reloads.</li>
+<li>The promo card should show the image, the calendar icon next to the date, and Inter as the font.</li>
+<li>Press <strong>F12</strong> → <strong>Network</strong>, then reload (Ctrl/Cmd+R). Confirm:<br />
+   - the image file returns <code>200</code>,<br />
+   - the Inter font file(s) return <code>200</code>,<br />
+   - no red <code>404</code> rows.</li>
+<li>Sort the Network list by <strong>Size</strong> and note which asset is largest. Ask whether it earns its weight.</li>
+</ol>
+<h2>Common errors</h2>
+<h3>Error 1: Broken image, console shows a 404</h3>
+<p><strong>What you see:</strong> a broken-image icon in the layout; the Console shows a red line ending in <code>404</code> for the image URL.</p>
+<p><strong>What it means:</strong> the path the browser requested does not point to a real file. Common causes: a <code>public/</code> file referenced with a relative path, a <code>src/assets/</code> file referenced by a hard-coded path instead of an import, or a letter-case mismatch.</p>
+<p><strong>Fix:</strong> decide which folder the file is in. If <code>public/</code>, reference it as <code>/name.jpg</code>. If <code>src/assets/</code>, <code>import</code> it and use the variable. Match letter case exactly.</p>
+<h3>Error 2: "Failed to resolve import" stops the build</h3>
+<p><strong>What you see:</strong> the dev server prints <em>"Failed to resolve import "./assets/promo.jpg" ... Does the file exist?"</em></p>
+<p><strong>What it means:</strong> an <code>import</code> points at a file that is not there. This is a build-time error, so the page may not update at all.</p>
+<p><strong>Fix:</strong> read the exact path in the message and compare it to the actual file location. Adjust <code>../</code> depth or fix the filename.</p>
+<h3>Error 3: SVG icon is invisible or has no stroke</h3>
+<p><strong>What you see:</strong> the icon area is blank, and the Console warns about an invalid attribute.</p>
+<p><strong>What it means:</strong> you copied SVG markup that uses HTML attribute names (<code>stroke-width</code>) instead of React's camelCase (<code>strokeWidth</code>).</p>
+<p><strong>Fix:</strong> convert hyphenated SVG attributes to camelCase. <code>fill</code>, <code>stroke</code>, <code>width</code>, and <code>height</code> are already single words and stay as-is.</p>
+<h3>Error 4: Text flashes in the wrong font, then changes</h3>
+<p><strong>What you see:</strong> text briefly appears in a system font, then swaps to your font.</p>
+<p><strong>What it means:</strong> the web font loads after the initial paint. With <code>font-display: swap</code> this is expected and preferable to invisible text.</p>
+<p><strong>Fix:</strong> this is usually fine. To reduce the flash, <code>preconnect</code> to the font host (shown above), limit weights, and keep the fallback stack close in style to your brand font.</p>
+<h3>Error 5: The page is slow, and you do not know why</h3>
+<p><strong>What you see:</strong> a long load, especially on a throttled connection.</p>
+<p><strong>What it means:</strong> something is oversized — often a multi-megabyte image, several font weights, or many icon files.</p>
+<p><strong>Fix:</strong> open the <strong>Network</strong> panel, sort by size, and identify the top offenders. Re-export images smaller and in <code>.webp</code>/<code>.avif</code>, reduce font weights to those in use, and prefer inline SVG icons.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is the difference between how you reference a file in <code>public/</code> and a file in <code>src/assets/</code>?</li>
+<li>Given <code>import logo from "../assets/logo.png"</code>, what kind of value is <code>logo</code>, and how do you use it in JSX?</li>
+<li>When is empty <code>alt=""</code> correct, and when must <code>alt</code> describe something?</li>
+<li>How does <code>stroke="currentColor"</code> make an icon fit into a button?</li>
+<li>Name one way to reduce page weight from fonts and one from images.</li>
+<li>An image shows a broken icon. What one keystroke opens the tool that shows you the requested URL, and what status code are you looking for?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Given <code>import icon from "./star.svg"</code> used as <code>&lt;img src={icon} alt="" /&gt;</code>, predict whether the icon is announced by a screen reader. Explain your answer.</p>
+<h3>P2 — Change one value</h3>
+<p>In <code>CalendarIcon.jsx</code>, change the default <code>size</code> from <code>16</code> to <code>40</code>. Predict the result, then apply. Note that the icon stays crisp because it is vector.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete this snippet so the image is decorative (no description) and fills its box without distortion:</p>
+<pre><code class="language-jsx">&lt;img src={banner} alt=&quot;____&quot; className=&quot;banner&quot; /&gt;
+</code></pre>
+<pre><code class="language-css">.banner { width: 100%; height: 200px; object-fit: ____; }
+</code></pre>
+<h3>P4 — Debug this broken snippet</h3>
+<pre><code class="language-jsx">function Logo() {
+  return &lt;img src=&quot;src/assets/logo.png&quot; alt=&quot;Company logo&quot; /&gt;;
+}
+</code></pre>
+<p>Explain what is wrong and write the corrected version.</p>
+<h3>P5 — Inspection practice</h3>
+<p>Open whichever site you use most, press <strong>F12</strong> → <strong>Network</strong>, reload, and sort by size. Write down the three largest resources and their types (image, font, script). Identify at least one that seems larger than necessary.</p>
+<h3>P6 — Design bridge</h3>
+<p>Choose the typeface you use in a design file. Write down the weights and styles you actually use. List exactly which font files you would request in code (for example, <code>400</code> regular and <code>600</code> semibold, <code>woff2</code>) and which you would leave out.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No image CDNs, image APIs, or build-time image optimisation plugins.</li>
+<li>No icon-library installation; we use inline SVG only.</li>
+<li>No variable-font or font-subsetting tooling in depth (mentioned, not taught).</li>
+<li>No video or audio assets.</li>
+<li>No responsive <code>&lt;picture&gt;</code>/<code>srcset</code> art direction (mentioned via sizing, not taught).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U26 — Lifting state: sharing data between components</strong>: you move into Phase 5, where separate components start sharing the same data.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U25 Assignment — Bringing assets into a component</h1>
+<p>Submit to your trainer in <strong>one folder or zip</strong> named <code>U25-YourName</code>.</p>
+<p>You will build one small component that uses an image, an inline SVG icon, and a project font, and report what you learned from the Network panel.</p>
+<h2>Files to submit</h2>
+<h3>1. Your component (folder <code>component/</code>)</h3>
+<pre><code class="language-text">component/
+  YourComponent/
+    YourComponent.jsx
+    YourComponent.css
+  icons/
+    YourIcon.jsx
+  App.jsx
+</code></pre>
+<ul>
+<li>Pick your own subject: a <code>TeamMember</code>, <code>EventTile</code>, <code>RecipeCard</code>, <code>ProductHighlight</code>, or similar.</li>
+<li>Use <strong>one image</strong> imported from <code>src/assets/</code> (not <code>public/</code>) — a photo or illustration you are allowed to use. Free options include your own export or a public-domain image.</li>
+<li>Use <strong>one inline SVG icon</strong> as its own component with a <code>size</code> prop and <code>currentColor</code> stroke.</li>
+<li>Use the <strong>project font</strong> from <code>tokens.css</code>, loaded via <code>&lt;link&gt;</code> or <code>@font-face</code>.</li>
+<li>Give the image correct <code>alt</code> text (or an empty <code>alt</code> if it is genuinely decorative, explained in <code>answers.md</code>).</li>
+</ul>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li><strong>Folder choice.</strong> Explain why your image lives in <code>src/assets/</code> rather than <code>public/</code>. Then name one asset type that would belong in <code>public/</code> and why.</li>
+<li><strong>Import.</strong> In your own words, what does an image <code>import</code> give you, and how do you use it in JSX?</li>
+<li><strong><code>alt</code> decision.</strong> State your <code>alt</code> text and justify it (informative vs decorative).</li>
+<li><strong>Icon.</strong> Explain how <code>stroke="currentColor"</code> lets your icon match its surroundings. Include one React-specific attribute rule for SVG.</li>
+<li><strong>Font.</strong> State which method you used (link or <code>@font-face</code>), which weights you requested, and why you did not request more.</li>
+<li><strong>Performance.</strong> Open the Network panel, reload, and report: the image's size, the font file size(s), and whether any request returned a non-200 status. Name the largest asset and whether you would reduce it.</li>
+<li><strong>Path reading.</strong> Paste any 404 or build "failed to resolve" message you hit (or, if none, write the exact absolute-path form <code>public/</code> uses versus the relative form an import uses for a file two folders up).</li>
+<li><strong>Design bridge.</strong> State the typeface and weights you use in a design file, and list exactly which font files you requested in code.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] My image is imported from src/assets/ and renders.
+- [ ] My image has considered alt text (empty if decorative).
+- [ ] My icon is an inline SVG component with a size prop.
+- [ ] My icon uses currentColor and camelCase SVG attributes.
+- [ ] My font is loaded and applied via a token.
+- [ ] I requested only the font weights I use.
+- [ ] I checked the Network panel for sizes and status codes.
+- [ ] I read the U25 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>The component renders the image, the icon, and the font correctly.</li>
+<li>No 404s in the Network panel for the assets you added.</li>
+<li><code>answers.md</code> reports real observations from the Network panel.</li>
+<li>Written answers are in your own words.</li>
+</ul>
+<h2>Predict-then-run requirement</h2>
+<p>Before checking the Network panel, predict the approximate size of your image file and which asset you expect to be the largest. Then verify and explain any surprise.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U25 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image imported from <code>src/assets/</code> and renders</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>YourComponent.jsx</code>, <code>component/</code></td>
+</tr>
+<tr>
+<td><code>alt</code> text is correct (informative or deliberately empty)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>YourComponent.jsx</code>, <code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Inline SVG icon component with a <code>size</code> prop</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>icons/YourIcon.jsx</code></td>
+</tr>
+<tr>
+<td>Icon uses <code>currentColor</code> and camelCase SVG attributes</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>icons/YourIcon.jsx</code></td>
+</tr>
+<tr>
+<td>Font loaded and applied via a token</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>tokens.css</code>, <code>index.html</code> or CSS</td>
+</tr>
+<tr>
+<td>Only used font weights requested</td>
+<td>2</td>
+<td>No</td>
+<td><code>index.html</code> / CSS</td>
+</tr>
+<tr>
+<td>Explains <code>public/</code> vs <code>src/assets/</code> correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1–Q2</td>
+</tr>
+<tr>
+<td>Network panel observations are real and specific</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>No 404s for added assets</td>
+<td>2</td>
+<td>Yes</td>
+<td>testing / <code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Path-reading answer shows a real message or correct forms</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Design bridge lists typeface and weights requested</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<h2>What the assessor should look for</h2>
+<ul>
+<li><strong>Image import (4):</strong> the image is in <code>src/assets/</code> and imported, not hard-coded as a string path. Hard-coding <code>src="src/assets/..."</code> is a common failure and loses this row.</li>
+<li><strong><code>alt</code> (3):</strong> informative images have a plain-language description; decorative ones use exactly <code>alt=""</code>. Descriptive alt on a decorative flourish, or missing alt entirely, loses points.</li>
+<li><strong>Icon (4):</strong> a real inline SVG (or an equally dependency-free approach), with a <code>size</code> prop actually used. A screenshot-exported PNG icon does not meet the outcome.</li>
+<li><strong><code>currentColor</code> + camelCase (3):</strong> both present. Hyphenated attributes (<code>stroke-width</code>) lose this row with a note.</li>
+<li><strong>Font (4):</strong> loaded and referenced through a token. Using the font without a token still earns most of this row; using a token is the expected course style.</li>
+<li><strong>Q1–Q2 (3):</strong> must contrast <code>public/</code> (absolute path, copied as-is) with <code>src/assets/</code> (import returns a URL).</li>
+<li><strong>Q6 (3):</strong> evidence of opening the Network panel: named sizes and status codes. A vague "it loaded fine" fails this row.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>If the image renders but is served from <code>public/</code>, award 2/4 on the import row and explain the trade-off, rather than zeroing it.</li>
+<li>If the icon is inline SVG but has no <code>size</code> prop, award 2/4.</li>
+<li>If the font is applied but not tokenised, award 3/4 and note the U22 connection.</li>
+<li>If a weight is requested but never used, deduct 1 on the weights row and name the specific weight.</li>
+<li>A 404 on a <em>third-party</em> font while a local fallback works is a partial, not a zero; note it as a real-world caveat.</li>
+<li>Do not penalise a component idea different from the lesson's example.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Image referenced with a hard-coded <code>src="src/assets/..."</code> string.</li>
+<li>Icon exported as a PNG instead of an inline SVG.</li>
+<li>Hyphenated SVG attributes copied directly from a design tool export.</li>
+<li>Font requested at many weights (e.g. 100–900) "just in case."</li>
+<li><code>answers.md</code> Q6 with no actual sizes or status codes.</li>
+<li>Decorative image given long descriptive alt text, cluttering screen-reader output.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U24-accessibility/index.html">U24 Accessibility</a>
+    <a class="next" href="../U26-lifting-state/index.html">U26 Lifting state</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

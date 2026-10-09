@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U32 — Where Kubernetes fits | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U32</div>
+    <h1>Where Kubernetes fits</h1>
+    <span class="phase-badge ph7">Phase 7 — Craft and capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U32 — Where Kubernetes fits</h1>
+<p><strong>Phase 7 — Craft and capstone</strong></p>
+<h2>Where you are</h2>
+<p>In U31 you learned that a service needs a host, a runtime, and a process that stays up. That works beautifully for one machine. This unit is a <strong>survey, not a tutorial</strong>. We look at what breaks when one machine is not enough, and at the tool the industry reaches for: Kubernetes. You will not install it or run it here. By the end you will be able to say, honestly, when Kubernetes is the right answer and when it is expensive overkill.</p>
+<p>If a word in this unit feels like jargon, that is expected. The goal is recognition, not mastery. We define every term the first time it appears.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why one host stops being enough as a service grows.</li>
+<li>Define scheduling, scaling, and self-healing in plain language.</li>
+<li>Describe how Kubernetes relates to Docker — and what it does <em>not</em> replace.</li>
+<li>Read a Docker Compose file and a Kubernetes manifest side by side, without panic.</li>
+<li>Give a clear recommendation for a small app: Compose or Kubernetes.</li>
+<li>List concrete situations where reaching for Kubernetes is a mistake.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U21–U25</strong> — Compose files, two-service apps, <code>compose up/down</code>, <code>restart:</code>.</li>
+<li><strong>U31</strong> — host, runtime, service, restart policy, desired state.</li>
+</ul>
+<p>No Kubernetes experience is expected or required.</p>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>. This unit is mostly reading and judgement. There is very little to type, on purpose. Wear your "compare and decide" hat, not your "memorise a manual" hat.</p>
+<h2>Why this exists</h2>
+<p>Every few months someone asks a developer with one small web app: "Should we use Kubernetes?" Sometimes the honest answer is yes. Very often it is no, and the person asking does not know how to say so without sounding unambitious.</p>
+<p>Kubernetes is a powerful tool for a real problem: <strong>running many containers across many machines, reliably, without a human babysitting each one.</strong> If you do not have that problem, adopting Kubernetes creates work rather than removing it. This unit exists so you can make that call from understanding instead of fashion.</p>
+<h2>Plain-language teaching</h2>
+<h3>What breaks when one host is not enough</h3>
+<p>Recall U31: a host is a machine that stays on. One host is a fine start. It fails in four predictable ways:</p>
+<ol>
+<li><strong>The host dies, and so does the service.</strong> A power supply, a disk, a kernel panic — any of these takes everything down at once. There is no second machine to take over.</li>
+<li><strong>You cannot grow past the machine.</strong> If traffic doubles, you can add memory and CPU up to the machine's limits. Past that, you are stuck.</li>
+<li><strong>You are the restart policy.</strong> On one host you might restart a crashed container from your terminal. At scale, nobody can watch a hundred services.</li>
+<li><strong>Updates are scary.</strong> Replacing a running service with a new image means a gap where the service is down, unless you have a second machine ready.</li>
+</ol>
+<p>Each of these is solved by "more than one host, managed together." The general name for that is <strong>orchestration</strong>.</p>
+<h3>The three words you must be able to define</h3>
+<ul>
+<li><strong>Scheduling:</strong> deciding <em>which</em> machine should run a given container. A <strong>scheduler</strong> is the component that picks. It looks at each machine's spare capacity and places work where it fits.</li>
+<li><strong>Scaling:</strong> running more (or fewer) copies of the same service. <strong>Horizontal scaling</strong> means more copies across machines; <strong>vertical scaling</strong> means a bigger single machine (U31's limit).</li>
+<li><strong>Self-healing:</strong> automatically replacing a copy that dies, and rescheduling work from a machine that fails.</li>
+</ul>
+<h3>The cluster, briefly</h3>
+<p>A <strong>cluster</strong> is a group of machines that orchestration software treats as one pool. Each machine in the cluster is a <strong>node</strong>. You tell the cluster what you want; it works out which node runs what.</p>
+<p>A cluster has two kinds of parts:</p>
+<ul>
+<li><strong>Nodes</strong> where your containers actually run ("workers").</li>
+<li>A <strong>control plane</strong>: the small set of components that stores your intentions and makes decisions (the scheduler lives here).</li>
+</ul>
+<p>You do not need to know the control plane's internals. You only need to know it exists and that you talk to it, not to each node by hand.</p>
+<h3>Desired state, the big idea</h3>
+<p>In U31, one restart policy meant "keep this container up." Kubernetes takes that idea and expands it: you write down a <strong>desired state</strong> — "I want three copies of this service, reachable on this port, using this image" — and the cluster works continuously to make reality match.</p>
+<p>The tool that reads your intent is a <strong>controller</strong>. It watches reality and nudges it back toward the desired state. A <strong>manifest</strong> is the file where you write the desired state, usually in YAML.</p>
+<h3>How Kubernetes relates to Docker</h3>
+<p>This is the most common source of confusion, so read it twice:</p>
+<ul>
+<li>Kubernetes does <strong>not</strong> replace Docker's image format. Your images and Dockerfiles from U11–U16 still matter. Kubernetes pulls the same images from the same registries (U26).</li>
+<li>Kubernetes is <strong>not</strong> a container runtime itself. It relies on a runtime on each node (today usually <code>containerd</code>, which Docker also uses under the hood) to actually start containers.</li>
+<li>Docker (<strong>Compose</strong>) and Kubernetes solve <strong>different sizes of the same problem</strong>. Compose manages containers on <strong>one host</strong>. Kubernetes manages containers across <strong>many hosts</strong>.</li>
+<li>You can use Docker to build your image locally and Kubernetes to run it later. They cooperate; they do not compete.</li>
+</ul>
+<h3>Docker Compose vs Kubernetes</h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Docker Compose</th>
+<th>Kubernetes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scope</td>
+<td>One host</td>
+<td>Many hosts (a cluster)</td>
+</tr>
+<tr>
+<td>File</td>
+<td><code>compose.yaml</code></td>
+<td>One or more YAML manifests</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>docker compose up</code></td>
+<td><code>kubectl apply</code> (or <code>helm</code>), against a cluster</td>
+</tr>
+<tr>
+<td>Scaling a service</td>
+<td>Manual / <code>--scale</code> for testing</td>
+<td>Designed for replicas, autoscaling</td>
+</tr>
+<tr>
+<td>Self-healing</td>
+<td>Restart policy on one host (U31)</td>
+<td>Reschedules across nodes</td>
+</tr>
+<tr>
+<td>Networking</td>
+<td>Automatic default network (U19–U20)</td>
+<td>Its own service and network model</td>
+</tr>
+<tr>
+<td>Learning curve</td>
+<td>Gentle; an afternoon</td>
+<td>Steep; weeks to be effective</td>
+</tr>
+<tr>
+<td>Good fit</td>
+<td>Local dev, small single-machine services, prototypes</td>
+<td>Multi-host production, many services, teams with ops capacity</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Free; runs on your laptop</td>
+<td>Free software, but real machines to run it on and real people to run it</td>
+</tr>
+<tr>
+<td>Ops burden</td>
+<td>Low</td>
+<td>High; someone must operate the cluster</td>
+</tr>
+</tbody>
+</table>
+<h3>When NOT to reach for Kubernetes</h3>
+<p>Be honest in these cases:</p>
+<ul>
+<li><strong>One small app on one machine.</strong> Compose is simpler and enough.</li>
+<li><strong>Learning Docker.</strong> Kubernetes adds a second, larger learning curve too early.</li>
+<li><strong>A team with no one to operate a cluster.</strong> An unmaintained cluster is worse than one clear Compose host.</li>
+<li><strong>You want to save money or time right now.</strong> A cluster costs in machines, attention, and updates.</li>
+<li><strong>You cannot yet describe your desired state clearly.</strong> Orchestration amplifies clarity; it also amplifies confusion.</li>
+</ul>
+<p>Reach for Kubernetes when you genuinely have many services, many hosts, a need for automatic scaling or healing, and people who can run it.</p>
+<h3>A look at a manifest (reading only)</h3>
+<p>Below is a tiny Kubernetes manifest, shown so it stops being mysterious. <strong>Do not run it.</strong> You are not expected to write one yet; the point is to notice it looks like a wish list, not a set of commands.</p>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: notes-app
+  template:
+    metadata:
+      labels:
+        app: notes-app
+    spec:
+      containers:
+        - name: notes-app
+          image: yourname/notes-app:1.0
+          ports:
+            - containerPort: 8000
+</code></pre>
+<p>Read it as English: "I want a Deployment called <code>notes-app</code>. Please keep <strong>3</strong> copies running. Each copy runs the image <code>yourname/notes-app:1.0</code> and listens on port 8000." That is desired state. Compare it with the Compose fragment from your earlier units: same intent, far more structure, because the cluster must make decisions a single host never had to.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Orchestration</td>
+<td>Managing many containers across many machines automatically</td>
+<td>Not the same as building images</td>
+</tr>
+<tr>
+<td>Cluster</td>
+<td>A group of machines treated as one pool</td>
+<td>Not a single computer</td>
+</tr>
+<tr>
+<td>Node</td>
+<td>One machine inside a cluster</td>
+<td>Not a container</td>
+</tr>
+<tr>
+<td>Scheduler</td>
+<td>Component that picks which node runs work</td>
+<td>Not a person, not your shell</td>
+</tr>
+<tr>
+<td>Scaling</td>
+<td>Running more or fewer copies of a service</td>
+<td>"Scaling" is not always adding RAM</td>
+</tr>
+<tr>
+<td>Self-healing</td>
+<td>Automatically replacing failed copies or nodes</td>
+<td>Not a substitute for fixing bugs</td>
+</tr>
+<tr>
+<td>Desired state</td>
+<td>What you want the system to look like</td>
+<td>Not the current state</td>
+</tr>
+<tr>
+<td>Controller</td>
+<td>Small program that nudges reality toward desire</td>
+<td>Not your app's code</td>
+</tr>
+<tr>
+<td>Manifest</td>
+<td>YAML file describing desired state</td>
+<td>Not an executable script</td>
+</tr>
+<tr>
+<td><code>kubectl</code></td>
+<td>The command-line tool to talk to a cluster</td>
+<td>Not Docker; a different tool</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>A Kubernetes object that manages copies of a service</td>
+<td>Not "the act of deploying" in general</td>
+</tr>
+<tr>
+<td>Compose</td>
+<td>Docker's one-host multi-container tool</td>
+<td>Not a mini-Kubernetes, exactly</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> A colleague asks, "Our notes app runs with <code>docker compose</code> on my laptop. Traffic is modest. Should we move to Kubernetes?" You answer with a short comparison.</p>
+<p><strong>Step 1 — ground the current reality (safe, local).</strong></p>
+<p>This lists the containers Compose is managing on your machine right now. It is the "one host" view.</p>
+<pre><code class="language-bash">docker compose ps
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> show the services Compose started here.</li>
+<li><strong>Success looks like:</strong> a table with your service names, images, state (<code>running</code>), and ports. If you have none running, the table is empty — that is not a failure.</li>
+<li><strong>One decoded failure:</strong> <code>no configuration file provided: not found</code> means you ran it in a folder without a <code>compose.yaml</code>. Change into your project folder (U22) and try again.</li>
+</ul>
+<p><strong>Step 2 — reason about the four one-host failure modes.</strong></p>
+<p>Write them next to your app: host dies; cannot grow past the machine; nobody to restart; updates cause downtime. Ask: <em>does this app actually suffer from these?</em> For a modest single-machine app, usually not yet.</p>
+<p><strong>Step 3 — make a recommendation.</strong></p>
+<p>For the scenario above, a defensible answer is: <strong>stay on Compose for now.</strong> The app has one host's worth of load, likely one person maintaining it, and no multi-node requirement. Note the trigger that would change your mind: multiple hosts, high availability, or many services needing automatic healing and scaling.</p>
+<p>That is the whole skill: match the tool to the actual problem.</p>
+<h2>Common errors</h2>
+<h3>Error: "Kubernetes replaces Docker"</h3>
+<p><strong>What happens:</strong> You abandon learning images and Dockerfiles, thinking they are obsolete.</p>
+<p><strong>Why:</strong> Kubernetes runs the same container images. It swaps out the <em>orchestration</em>, not the <em>image format</em>.</p>
+<p><strong>Fix:</strong> Keep building images the Docker way. Kubernetes consumes them.</p>
+<h3>Error: "More tools means more professional"</h3>
+<p><strong>What happens:</strong> A single small app is moved onto a cluster. Now there are machines to pay for and a cluster to maintain, and the app is no better off.</p>
+<p><strong>Why:</strong> Tool choice is about the problem, not about appearance.</p>
+<p><strong>Fix:</strong> Write down the problem you are solving. If one host solves it, use one host.</p>
+<h3>Error: "I need Kubernetes to deploy at all"</h3>
+<p><strong>What happens:</strong> You delay shipping because you believe only Kubernetes counts as "real" deployment.</p>
+<p><strong>Why:</strong> U31 showed that running an image on a host <em>is</em> deployment. Kubernetes is one option, not a requirement.</p>
+<p><strong>Fix:</strong> Deploy on your Compose host. Adopt orchestration when a real limit appears.</p>
+<h3>Error: Confusing Docker Swarm with Kubernetes</h3>
+<p><strong>What happens:</strong> You read old tutorials about <code>docker swarm</code> and mix them up.</p>
+<p><strong>Why:</strong> Docker once shipped its own orchestrator, Swarm. It exists but is not what most people mean by "orchestration" today.</p>
+<p><strong>Fix:</strong> Note the name for recognition; this course does not teach it. Kubernetes is the tool the industry conversation is about.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Name the four ways one host stops being enough.</li>
+<li>Define scheduling, scaling, and self-healing without using the word "just."</li>
+<li>In one sentence, state how Kubernetes relates to Docker images.</li>
+<li>Give two situations where Kubernetes is the wrong choice.</li>
+<li>What does a controller do with your "desired state"?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Concept mapping</h3>
+<p>Without looking back, write the Kubernetes equivalent (or "no simple equivalent") for each Compose idea: a service, <code>ports:</code>, <code>volumes:</code>, <code>restart:</code>, <code>depends_on:</code>.</p>
+<h3>P2 — The four failure modes</h3>
+<p>Pick any app you have run in this course. For each of the four one-host failure modes, write one sentence: does it affect this app today? Yes/No and why.</p>
+<h3>P3 — Recommendation drill</h3>
+<p>Write a three-sentence recommendation for each scenario:<br />
+- A solo developer's portfolio site, one container.<br />
+- A company with 40 services across 6 teams and a platform team.</p>
+<h3>P4 — Read the manifest</h3>
+<p>Re-read the manifest above. In your own words, write what each of these lines asks for: <code>replicas: 3</code>, <code>image:</code>, <code>containerPort: 8000</code>.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No installing a cluster, <code>kubectl</code>, <code>minikube</code>, or <code>kind</code>.</li>
+<li>No writing or applying real manifests.</li>
+<li>No cloud providers or paid services.</li>
+<li>No deep networking, storage, or ingress topics.</li>
+<li>No Docker Swarm tutorial.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U33 — Security habits</strong> (non-root users, minimal images, and keeping secrets out of layers).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U32 Assignment — The honest recommendation</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U32-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. This is a judgement exercise, not a commands exercise.</p>
+<ol>
+<li><strong>One host's limits.</strong> Name the four ways one host stops being enough. Write two lines for each.</li>
+<li><strong>Define three words.</strong> Define <em>scheduling</em>, <em>scaling</em>, and <em>self-healing</em> in your own words, then give one realistic example of each.</li>
+<li><strong>Docker vs Kubernetes.</strong> In 5–8 lines, explain how Kubernetes relates to Docker. You must address: (a) does it replace the image format, and (b) what does it rely on to actually start containers?</li>
+<li><strong>When not to.</strong> List at least three situations where reaching for Kubernetes is a mistake, and explain the cost in each case.</li>
+<li><strong>Concept mapping.</strong> Complete this table:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Docker Compose idea</th>
+<th>Kubernetes equivalent, or "no simple equivalent"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A service definition</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ports:</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>volumes:</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>restart:</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>depends_on:</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ol start="6">
+<li><strong>Recommendation.</strong> Read the scenario below and write a short recommendation (6–10 lines). State your choice, give two reasons, and name one trigger that would change your mind.</li>
+</ol>
+<blockquote>
+<p><strong>Scenario:</strong> A two-person team maintains an internal "meeting notes" web app. It runs as a Python web service plus a PostgreSQL database using <code>docker compose</code> on a single office server. Load is light and steady. There are occasional weekend restarts of the server for updates.</p>
+</blockquote>
+<ol start="7">
+<li><strong>Reflection.</strong> Name one sentence in this unit that changed how you think about Kubernetes, and one sentence you still find unclear.</li>
+</ol>
+<h3>2. <code>manifest-reading.md</code></h3>
+<p>Re-read the sample manifest in the unit. Answer:</p>
+<ul>
+<li>What does <code>replicas: 3</code> ask the cluster to do?</li>
+<li>What does <code>image: yourname/notes-app:1.0</code> tell the cluster?</li>
+<li>Why is a manifest described as "desired state" rather than "commands"?</li>
+</ul>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present with the names above.</li>
+<li>The recommendation is specific and names a trigger to revisit the decision.</li>
+<li>The concept-mapping table is filled in (it is acceptable to write "no simple equivalent" where that is honest).</li>
+<li>Answers are in your own words.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U32 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Four one-host limits named and explained</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Scheduling, scaling, self-healing defined correctly with examples</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Docker/Kubernetes relationship correct (same images; runtime underpins it)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>At least three sensible "when not to" cases with costs</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Concept-mapping table substantially correct</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Recommendation is specific, reasoned, and names a trigger</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Manifest questions answered correctly</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>manifest-reading.md</code></td>
+</tr>
+<tr>
+<td>Honest reflection</td>
+<td>0–1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: 1 point per limit correctly identified (cap 4); explanation not required for full marks if the limit is clearly named.</li>
+<li>Q2: award 1.5 per term with a valid example; a correct definition with no example earns 1.</li>
+<li>Q3: the two decisive facts are "Kubernetes uses the same container images" and "it needs a container runtime (for example containerd) on each node." Award 1.5 each.</li>
+<li>Q5: key mappings are service→Deployment (or Pod), <code>ports:</code>→Service/containerPort, <code>volumes:</code>→PersistentVolume/PVC, <code>restart:</code>→part of desired-state via controllers, <code>depends_on:</code>→no simple equivalent (accept "readiness probes / init containers" as a thoughtful answer).</li>
+<li>Q6: full credit requires a trigger to revisit; a choice with no trigger earns at most 1.</li>
+<li>Do not penalise learners for not knowing <code>kubectl</code> commands; this is a survey unit.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U31-from-image-to-service/index.html">U31 From image to service</a>
+    <a class="next" href="../U33-security-habits/index.html">U33 Security habits</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

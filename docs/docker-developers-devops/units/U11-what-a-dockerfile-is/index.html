@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U11 — What a Dockerfile is | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U11</div>
+    <h1>What a Dockerfile is</h1>
+    <span class="phase-badge ph3">Phase 3 — Building images</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U11 — What a Dockerfile is</h1>
+<p><strong>Phase 3 — Building images</strong></p>
+<h2>Where you are</h2>
+<p>In U07–U10 you ran other people's images: you pulled them, started them, read their logs, and cleaned up after them. That was valuable, but you were always the guest. This unit is where you become the author. You will learn what a <strong>Dockerfile</strong> is, what it is <em>not</em>, and how Docker turns it into an image you own. This is the first unit of Phase 3, and everything that follows builds on the word you learn here.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain, in plain language, what a Dockerfile is and name three things it is not.</li>
+<li>Describe what a <strong>build context</strong> is at a high level, and why its size matters.</li>
+<li>Run <code>docker build -t</code> and explain every part of the command.</li>
+<li>Point to the line in a Dockerfile that decides what a container runs.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U08 — Images vs containers.</strong> You need the recipe-and-cake idea: an image is the saved recipe, a container is a running instance of it.</li>
+<li><strong>U09 — Pulling and running existing images.</strong> You need to have run an image you did not build.</li>
+<li><strong>U10 — Container lifecycle.</strong> You need <code>docker run</code>, <code>docker ps</code>, and <code>docker rm</code> so you can inspect what your new image does.</li>
+</ul>
+<p>You also need a working Docker install (U06). If <code>docker --version</code> prints a version, you are ready.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. Most of it is reading and one very short build. Builds can feel slow the first time; that is normal and the wait is explained below.</p>
+<h2>Why this exists</h2>
+<p>Pulling images works until the image you need does not exist. The moment you want to run <em>your</em> app — the one with your code, your settings, your files — you have to describe how to turn it into an image. A Dockerfile is that description. Without it, you would be emailing tarballs, writing install scripts, and hoping the other machine behaves. The Dockerfile is the single, readable source of truth for "how this image is made."</p>
+<h2>Plain-language teaching</h2>
+<h3>The one-sentence definition</h3>
+<p>A <strong>Dockerfile</strong> is a plain text file named exactly <code>Dockerfile</code> that lists the instructions Docker follows to build an image, one instruction per line, read from top to bottom.</p>
+<p>That is the whole idea. Everything else in Phase 3 is about the individual instructions and how Docker executes them efficiently.</p>
+<h3>What a Dockerfile is <em>not</em></h3>
+<p>This is where most confusion starts, so we name the wrong ideas on purpose.</p>
+<ul>
+<li>It is <strong>not a script you run directly.</strong> You never type <code>./Dockerfile</code> or <code>Dockerfile.exe</code>. That file is not executable on its own. You hand it to the <code>docker build</code> command, and <code>docker build</code> reads it. The Dockerfile is input, not a program.</li>
+<li>It is <strong>not a program with logic.</strong> A Dockerfile has no loops, no <code>if</code> statements, and no functions. It is a fixed list of steps. (Later, <code>ARG</code> and variables add a little flexibility, but the shape stays: a list.) Compare it to a recipe card, not to source code.</li>
+<li>It is <strong>not the image itself.</strong> The Dockerfile is the recipe; the image is the finished dish. You can copy the Dockerfile to another machine and build a brand-new image from it.</li>
+<li>It is <strong>not sent into the running container.</strong> The file stays on your machine. Its <em>effect</em> is baked into the image. A running container does not "have" your Dockerfile inside it.</li>
+</ul>
+<h3>The build context, at a high level</h3>
+<p>When you run <code>docker build</code>, Docker does not receive only the Dockerfile. It receives a <strong>bundle of files</strong> from a folder on your computer. That bundle is called the <strong>build context</strong>.</p>
+<p>The folder you point Docker at defines the context. The Dockerfile instructions that copy files (like <code>COPY</code>) can only reach files that are inside that context.</p>
+<p>Why does this matter now? Two reasons, and both get a full unit later:</p>
+<ol>
+<li><strong>Speed.</strong> A bigger context takes longer to send to the build engine, even if most of the files are never used. (U13.)</li>
+<li><strong>Safety.</strong> Files you never meant to share can end up in the context, and a careless instruction can copy them into the image. (U13.)</li>
+</ol>
+<p>For this unit, hold one idea: <em>the context is the pile of files Docker gets to look at.</em></p>
+<h3><code>docker build -t</code> introduced</h3>
+<p>The build command has three parts worth naming:</p>
+<pre><code class="language-text">docker build  -t hello-docker  .
+   │            │                │
+   │            │                └── where the build context is (the dot means &quot;this folder&quot;)
+   │            └── give the resulting image a name (a &quot;tag&quot; — see U14)
+   └── the command that reads a Dockerfile and builds an image
+</code></pre>
+<ul>
+<li><code>docker build</code> = "read a Dockerfile and produce an image."</li>
+<li><code>-t hello-docker</code> = "call the result <code>hello-docker</code>." The letter <code>t</code> stands for <strong>tag</strong>, a name for an image. U14 gives tags their full treatment; for now, think "name."</li>
+<li><code>.</code> = "use the current folder as the build context, and look for a file named <code>Dockerfile</code> there."</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dockerfile</td>
+<td>A text file named exactly <code>Dockerfile</code> listing instructions to build an image</td>
+<td>Not a script you run; not a program with logic</td>
+</tr>
+<tr>
+<td>Instruction</td>
+<td>One line in a Dockerfile, such as <code>FROM</code> or <code>COPY</code></td>
+<td>Not a shell command you type yourself</td>
+</tr>
+<tr>
+<td>Base image</td>
+<td>An existing image your build starts from (named by <code>FROM</code>)</td>
+<td>Confused with "the final image"</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>The act of reading a Dockerfile and producing an image</td>
+<td>Not the same as <em>running</em> a container</td>
+</tr>
+<tr>
+<td>Build context</td>
+<td>The pile of files Docker receives when you build</td>
+<td>Not just the Dockerfile; not a web "browser context"</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>A name you give an image, set with <code>-t</code></td>
+<td>Not a price tag; not a git tag</td>
+</tr>
+<tr>
+<td>Daemon / build engine</td>
+<td>The background part of Docker that does the heavy build work</td>
+<td>You talk to it through the <code>docker</code> command</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build the smallest honest image: one that prints a message and exits. You do not need to understand every instruction yet — they get their own unit next (U12). Here, notice the <em>shape</em> of the file and the <em>shape</em> of the build command.</p>
+<h3>Step 1 — Make a folder and a file</h3>
+<p>Create a folder called <code>hello-docker</code>, and inside it a file named <code>Dockerfile</code> with exactly these two lines:</p>
+<pre><code class="language-dockerfile">FROM alpine
+CMD [&quot;echo&quot;, &quot;hello from my first image&quot;]
+</code></pre>
+<ul>
+<li><code>FROM alpine</code> means "start from the tiny Linux image called <strong>alpine</strong>." We build on someone else's base instead of an empty nothing.</li>
+<li><code>CMD ["echo", ...]</code> means "when a container starts, run this command by default."</li>
+</ul>
+<h3>Step 2 — Build the image</h3>
+<p>Open your terminal <strong>inside the <code>hello-docker</code> folder</strong> (see U03 for <code>cd</code>).</p>
+<p><strong>What it does:</strong> reads the <code>Dockerfile</code> in the current folder, uses the current folder as the build context, and produces an image named <code>hello-docker</code>.</p>
+<pre><code class="language-text">docker build -t hello-docker .
+</code></pre>
+<p><strong>What success looks like</strong> (your timings will differ; the important line is the last one):</p>
+<pre><code class="language-text">[+] Building 0.9s (5/5) FINISHED
+ =&gt; [internal] load build definition from Dockerfile
+ =&gt; [1/2] FROM docker.io/library/alpine:latest
+ =&gt; [2/2] CMD [&quot;echo&quot;, &quot;hello from my first image&quot;]
+ =&gt; exporting to image
+ =&gt; =&gt; naming to docker.io/library/hello-docker:latest
+</code></pre>
+<p>On older Docker versions you may instead see several <code>Step 1/2 ...</code> lines ending in <code>Successfully tagged hello-docker:latest</code>. Either format means the same thing: it worked.</p>
+<p><strong>One decoded failure.</strong> If you run this from the wrong folder, you may see:</p>
+<pre><code class="language-text">ERROR: failed to solve: failed to read Dockerfile: open Dockerfile: no such file or directory
+</code></pre>
+<p>This does <strong>not</strong> mean Docker is broken. It means the current folder has no file named <code>Dockerfile</code>. Move into the folder that contains it (<code>cd hello-docker</code>) and try again.</p>
+<h3>Step 3 — Run the image</h3>
+<p><strong>What it does:</strong> starts a container from your new image; <code>--rm</code> removes the container when it finishes, so you do not leave clutter behind (introduced back in U10).</p>
+<pre><code class="language-text">docker run --rm hello-docker
+</code></pre>
+<p><strong>What success looks like:</strong></p>
+<pre><code class="language-text">hello from my first image
+</code></pre>
+<p><strong>One decoded failure.</strong> If you see:</p>
+<pre><code class="language-text">docker: Error response from daemon: failed to create task for container: ... exec: &quot;echo&quot;: executable file not found
+</code></pre>
+<p>then your base image does not contain the program you asked <code>CMD</code> to run. Here <code>alpine</code> does contain <code>echo</code>, so this error usually means a typo in the command or a base image that lacks the tool. Read the quoted program name — that is what Docker could not find.</p>
+<h2>Common errors</h2>
+<h3>Error: the file is named <code>Dockerfile.txt</code> (Windows, often)</h3>
+<p><strong>What happens:</strong> On Windows, Explorer and Notepad hide file extensions by default. You think the file is <code>Dockerfile</code>, but it is really <code>Dockerfile.txt</code>, and the build cannot find a Dockerfile.</p>
+<p><strong>Fix:</strong> In File Explorer, turn on "File name extensions" (View → Show → File name extensions) and rename the file to <code>Dockerfile</code>. In PowerShell, run <code>Get-ChildItem</code> and confirm the name has no extra suffix. The name is exact and case-sensitive: <code>Dockerfile</code>, not <code>dockerfile</code>.</p>
+<h3>Error: expecting to run the Dockerfile like a script</h3>
+<p><strong>What happens:</strong> You try <code>./Dockerfile</code> or double-click it, and nothing useful happens.</p>
+<p><strong>Fix:</strong> A Dockerfile is data for <code>docker build</code>, not a program. The command is always <code>docker build ...</code>, never <code>./Dockerfile</code>.</p>
+<h3>Error: building from the wrong folder</h3>
+<p><strong>What happens:</strong> The build fails with <code>open Dockerfile: no such file or directory</code>, or it succeeds but seems to contain the wrong files.</p>
+<p><strong>Fix:</strong> Check where you are with <code>pwd</code> (macOS/Linux) or <code>Get-Location</code> (PowerShell). The dot in <code>docker build -t name .</code> means "this folder." Aim it at the folder that holds the Dockerfile.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Why can you not run a Dockerfile with <code>./Dockerfile</code>?</li>
+<li>In <code>docker build -t hello-docker .</code>, what does each of the three parts do?</li>
+<li>What is the build context, and why is it more than just the Dockerfile?</li>
+<li>Name two things a Dockerfile is <em>not</em>.</li>
+</ol>
+<p>If you can answer these, you are ready to practice.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Read the shape</h3>
+<p>Write down, without looking, the three parts of <code>docker build -t hello-docker .</code> and what each does.</p>
+<h3>P2 — Break it on purpose</h3>
+<p>Rename your <code>Dockerfile</code> to <code>recipe.txt</code> and run the build again. Read the error. Rename it back and confirm the build succeeds. You are training yourself to read that message calmly.</p>
+<h3>P3 — Predict then run</h3>
+<p>Look at this Dockerfile and predict exactly what a container will print before you build and run it:</p>
+<pre><code class="language-dockerfile">FROM alpine
+CMD [&quot;echo&quot;, &quot;dockerfile practice&quot;]
+</code></pre>
+<p>Then build it as <code>docker build -t practice-11 .</code> and run it with <code>docker run --rm practice-11</code>. Compare reality to your prediction.</p>
+<h3>P4 — Spot the wrong idea</h3>
+<p>Which of these statements are false? For each false one, write the correction.</p>
+<ul>
+<li>"A Dockerfile is a script you execute."</li>
+<li>"The Dockerfile is stored inside the running container."</li>
+<li>"The build context is the set of files Docker receives when building."</li>
+<li>"<code>-t</code> gives the image a name."</li>
+</ul>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No deep dive into individual instructions — that is <strong>U12</strong>.</li>
+<li>No <code>.dockerignore</code> — that is <strong>U13</strong>.</li>
+<li>No serious discussion of tags — that is <strong>U14</strong>.</li>
+<li>No layers or build cache — that is <strong>U15</strong>.</li>
+<li>No multi-stage builds — that is <strong>U16</strong>.</li>
+<li>No pushing images anywhere — that is Phase 6.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U12 — Dockerfile instructions</strong> (what <code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, <code>RUN</code>, <code>CMD</code>, <code>EXPOSE</code>, and <code>ENTRYPOINT</code> actually do).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U11 Assignment — Describe and build your first image</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U11-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words. Short paragraphs or bullet lists are fine. Do not paste this assignment back unchanged.</p>
+<ol>
+<li><strong>Definition.</strong> In 3–5 sentences, explain what a Dockerfile is to someone who has never seen one. Include the words <em>instruction</em> and <em>build</em>.</li>
+<li><strong>Not this.</strong> Name three things a Dockerfile is <em>not</em>, and give one sentence of reasoning for each.</li>
+<li><strong>Build context.</strong> In 2–4 sentences, explain what the build context is and why it is more than just the Dockerfile.</li>
+<li><strong>Command parts.</strong> Break <code>docker build -t hello-docker .</code> into its three parts. Explain what each part does.</li>
+<li><strong>Predict then run.</strong> Look at this Dockerfile and write your prediction <em>before</em> you build it:</li>
+</ol>
+<p><code>dockerfile
+   FROM alpine
+   CMD ["echo", "assignment says hi"]</code></p>
+<p>Predict the exact output of <code>docker run --rm assign11</code>. Then build it as <code>docker build -t assign11 .</code>, run it, and paste the real output under a heading "What actually happened." If the two differ, explain why.<br />
+6. <strong>Read an error on purpose.</strong> Run the build from a folder that has no Dockerfile (or rename the file first). Paste the error text and decode it in one or two sentences.</p>
+<h3>2. <code>answers.md</code> includes your terminal evidence</h3>
+<p>Under a heading "Terminal evidence," paste the build output and the run output for question 5. Exact copy is fine; screenshots are also acceptable if your trainer allows them.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U11 README fully (not only the assignment).
+- [ ] I can explain what the build context is.
+- [ ] I ran `docker build -t` successfully at least once.
+- [ ] I ran the image and saw its output.
+- [ ] I read the U11 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>answers.md</code> and <code>checklist.md</code> are present with those exact names.</li>
+<li>Every answer is in your own words.</li>
+<li>Question 5 shows both a prediction and real terminal output.</li>
+<li>The checklist is completed honestly.</li>
+</ul>
+<h2>Submission format recap</h2>
+<pre><code class="language-text">U11-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U11 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definition of a Dockerfile is accurate and plainly worded</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Names three correct "is not" statements with reasoning</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Build context explained as the files Docker receives, not just the Dockerfile</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>All three parts of <code>docker build -t ... .</code> identified correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Prediction made before running; real output shown; any difference explained</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5 + evidence</td>
+</tr>
+<tr>
+<td>Error text present and decoded without fear or hand-waving</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award 2/3 if they describe "a list of instructions" but never mention that Docker reads it (i.e. treat it as a program).</li>
+<li>Q2: award 1/3 for one or two correct "is not" statements; 0 if all are invented.</li>
+<li>Q4: award 2/3 if two of the three parts are right.</li>
+<li>Q5: this is the key task. Award 2/4 if they only show real output with no stated prediction, or a prediction with no run. Award full only when both are present and any mismatch is addressed.</li>
+<li>Q6: award 1/2 if they paste an error but rewrite it in their own words without decoding it.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or pasted lesson text with no personalization.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li>Must-have failing any single row caps the grade at 15/20 and the unit is "revise and resubmit" for those rows.</li>
+<li>Nice-to-have rows (Q6) can be omitted without failing the unit, but full marks require them.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U10-container-lifecycle/index.html">U10 Container lifecycle</a>
+    <a class="next" href="../U12-dockerfile-instructions/index.html">U12 Dockerfile instructions</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

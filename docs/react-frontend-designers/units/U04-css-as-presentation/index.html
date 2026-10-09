@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U04 — CSS as presentation | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U04</div>
+    <h1>CSS as presentation</h1>
+    <span class="phase-badge ph1">Phase 1 — Foundations</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U04 — CSS as presentation</h1>
+<p><strong>Phase 1 — Foundations</strong></p>
+<h2>Where you are</h2>
+<p>U03 gave your page a <strong>skeleton</strong>: real HTML structure with meaningful tags. Right now it looks like every other unstyled page — black text, default font, no spacing of your choosing. This unit gives it <strong>skin</strong>: color, type, spacing, and layout.</p>
+<p>You will write your first <strong>stylesheet</strong> and connect it to your page. Everything here maps directly to what you already do in a design tool — you just spell it in text now. By the end you will have styled your own U03 page and you will understand <em>why</em> each value is where it is.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what CSS is and how it stays separate from HTML.</li>
+<li>Create <code>styles.css</code> and link it to your page with a <code>&lt;link&gt;</code> tag.</li>
+<li>Write rules using <strong>element</strong>, <strong>class</strong>, and <strong>id</strong> selectors.</li>
+<li>Use the <strong>box model</strong> — content, padding, border, margin — deliberately.</li>
+<li>Set colors and fonts, including an honest note on contrast.</li>
+<li>Lay elements out in a row with basic <strong>flexbox</strong>.</li>
+<li>Diagnose "my CSS did nothing" using DevTools.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00–U03.</strong> Specifically: U02 for the DOM and DevTools, and U03 because you will <strong>style the page you built there</strong>. Have that <code>index.html</code> and its folder ready.</li>
+</ul>
+<p>No terminal and no installation. You will create one more text file.</p>
+<h2>Time and energy</h2>
+<p>About <strong>2–3 hours</strong>, and it rewards breaks. CSS is where designers usually start to enjoy themselves — it is visual and immediate — but it is also where "why isn't this applying?" shows up often. That frustration is a normal part of learning CSS, not evidence that you are bad at it. The debugging habit in this unit is as valuable as the syntax.</p>
+<h2>Why this exists</h2>
+<p>A page that is only structure is like a wireframe: correct but unusable as a product. Presentation is where your actual craft lives — hierarchy, rhythm, contrast, whitespace. If you only ever style through a design tool, you cannot fix a live interface, and you cannot see the rules that your design decisions become.</p>
+<p>CSS is also the shared language between your design work and the developers who build it. When you can write even a little CSS, handoffs get dramatically better: you stop saying "make the gap bigger" and start saying "increase the section's padding to 24 pixels." Precision travels.</p>
+<p>And in React, styling does not disappear — it is carried over. Everything you learn here is exactly what you will reuse in Phase 4.</p>
+<h2>Plain-language teaching</h2>
+<h3>What CSS is, precisely</h3>
+<p><strong>CSS</strong> stands for <strong>Cascading Style Sheets</strong>. You met the gist in U02: <em>pick a target, describe its look.</em> The precise version:</p>
+<ul>
+<li>A <strong>stylesheet</strong> is a file containing styling rules.</li>
+<li>A <strong>rule</strong> has a <strong>selector</strong> (the target) and one or more <strong>declarations</strong> (the look).</li>
+<li>A <strong>declaration</strong> is a <code>property: value;</code> pair.</li>
+</ul>
+<pre><code class="language-css">p {
+  color: navy;
+  font-size: 16px;
+}
+</code></pre>
+<p>Read it as: "For every <code>&lt;p&gt;</code>, make the text <code>navy</code> and the size <code>16px</code>." Everything before the <code>{</code> is the selector; everything inside is declarations. Each declaration ends in a <strong>semicolon</strong>.</p>
+<h3>Why CSS lives in its own file</h3>
+<p>You <em>could</em> write styles inside the HTML, but we will not, for two reasons:</p>
+<ol>
+<li><strong>Separation.</strong> Structure (HTML) stays about <em>what is there</em>; presentation (CSS) stays about <em>how it looks</em>. One stylesheet can restyle a whole site without touching content.</li>
+<li><strong>Reuse.</strong> Change one rule; update every element it matches. This is the same "master style" instinct from your design tools — and it is a first taste of the reuse idea React is built on.</li>
+</ol>
+<h3>Linking a stylesheet</h3>
+<p>Create a file named <code>styles.css</code> in the <strong>same folder</strong> as your <code>index.html</code>. Then add this line inside the <code>&lt;head&gt;</code> of your HTML:</p>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;styles.css&quot;&gt;
+</code></pre>
+<ul>
+<li><code>&lt;link&gt;</code> is a <strong>void element</strong> (no closing tag) that pulls in another file.</li>
+<li><code>rel="stylesheet"</code> says what kind of relationship it is: this file is a stylesheet.</li>
+<li><code>href="styles.css"</code> is the path to the file. Because both files are in the same folder, the path is simply the filename.</li>
+</ul>
+<p><em>Success looks like:</em> after saving both files and refreshing, your styling appears. If you change the page background to a color and refresh, the whole page changes color — that proves the link works.</p>
+<p><em>Decoded failure:</em> if <strong>nothing</strong> changes, the link is not working. The three usual causes are: the filename in <code>href</code> does not exactly match the real file (<code>style.css</code> vs <code>styles.css</code>), the file is in a different folder than <code>index.html</code>, or the file was saved as <code>styles.css.txt</code>. Check the filename first, then the location.</p>
+<h3>Selectors: element, class, id</h3>
+<p>A selector decides <em>which elements</em> a rule applies to. Three kinds cover almost everything at this stage.</p>
+<p><strong>Element selector</strong> — matches every element of that tag:</p>
+<pre><code class="language-css">p { line-height: 1.5; }
+</code></pre>
+<p>Every <code>&lt;p&gt;</code> on the page gets this. Good for broad, site-wide defaults (base font, base color).</p>
+<p><strong>Class selector</strong> — matches elements with a matching <code>class</code> attribute. Written with a leading dot:</p>
+<pre><code class="language-css">.card { border-radius: 12px; }
+</code></pre>
+<pre><code class="language-html">&lt;article class=&quot;card&quot;&gt;...&lt;/article&gt;
+</code></pre>
+<p>Any number of elements can share a class. This is the workhorse. In your HTML you add <code>class="card"</code>, and in CSS you target <code>.card</code>. Think of a class as a <strong>style tag</strong> you can apply to as many layers as you like.</p>
+<p><strong>Id selector</strong> — matches the one element with a matching <code>id</code> attribute. Written with a leading <code>#</code>:</p>
+<pre><code class="language-css">#hero { background-color: #222; }
+</code></pre>
+<pre><code class="language-html">&lt;header id=&quot;hero&quot;&gt;...&lt;/header&gt;
+</code></pre>
+<p>An <code>id</code> must be <strong>unique</strong> — only one element on the page may use it. Ids are intended for anchoring and naming a single element, not for general styling.</p>
+<p><strong>Specificity</strong> is the tie-breaker when two rules both match an element. The rough ordering: an <strong>id</strong> rule beats a <strong>class</strong> rule, which beats an <strong>element</strong> rule. Because id rules are hard to override, a common recommendation is: <strong>use classes for styling</strong>, and reserve ids for their uniqueness role. If a style "won't change" no matter what you do, a more specific rule is probably winning — DevTools will show you exactly which (see below).</p>
+<h3>The box model: every element is a box</h3>
+<p>This is the single most important CSS idea for a designer, and you already know it intuitively. Every element is a rectangle made of four layers, from the inside out:</p>
+<pre><code class="language-text">┌─────────────────────────────────────────┐
+│                 margin                   │  space OUTSIDE the border
+│  ┌───────────────────────────────────┐  │
+│  │            border                  │  │  the visible edge
+│  │  ┌─────────────────────────────┐  │  │
+│  │  │          padding             │  │  │  space INSIDE the border
+│  │  │  ┌───────────────────────┐  │  │  │
+│  │  │  │        content         │  │  │  │  the text or image
+│  │  │  └───────────────────────┘  │  │  │
+│  │  └─────────────────────────────┘  │  │
+│  └───────────────────────────────────┘  │
+└─────────────────────────────────────────┘
+</code></pre>
+<ul>
+<li><strong>Content</strong> — the text, image, or child elements.</li>
+<li><strong>Padding</strong> — space <em>inside</em> the box, between content and border. Like the interior margin in a Figma frame.</li>
+<li><strong>Border</strong> — a visible line around the padding.</li>
+<li><strong>Margin</strong> — space <em>outside</em> the box, pushing other boxes away. Like the distance between frames.</li>
+</ul>
+<p><strong>The classic mistake — margin vs padding.</strong> If you want the space <em>inside</em> a button between its label and its edge, that is <strong>padding</strong>. If you want space <em>between</em> two buttons, that is <strong>margin</strong>. Mixing these up is the most common beginner bug, and it is a visual bug: the box grows in the wrong place.</p>
+<p><strong><code>box-sizing: border-box</code>.</strong> By default, CSS adds padding and border <em>on top of</em> a specified width, so a <code>width: 100px</code> box with <code>padding: 20px</code> becomes 140px wide. Designers find this maddening, because in a design tool the width you type is the width you get. The fix is one rule at the top of your stylesheet:</p>
+<pre><code class="language-css">* { box-sizing: border-box; }
+</code></pre>
+<p>Now padding and border are counted <em>inside</em> the width, matching your design-tool intuition. Put it at the top of every stylesheet you write.</p>
+<h3>Colors</h3>
+<p>CSS accepts colors in several common spellings:</p>
+<ul>
+<li><strong>Named:</strong> <code>tomato</code>, <code>navy</code>, <code>gray</code>. Easy to read, limited palette.</li>
+<li><strong>Hex:</strong> <code>#2f6b4f</code> — a <code>#</code> then six characters (pairs for red, green, blue). Most common from design tools.</li>
+<li><strong>RGB:</strong> <code>rgb(47, 107, 79)</code> — the same color as decimal numbers 0–255.</li>
+<li><strong>RGBA:</strong> <code>rgba(47, 107, 79, 0.5)</code> — RGB plus an <strong>alpha</strong> (0 = invisible, 1 = solid), for transparency.</li>
+</ul>
+<p><strong>Contrast is part of the job, not decoration.</strong> Body text should be clearly legible against its background. A widely used guideline (WCAG) is a contrast ratio of at least <strong>4.5:1</strong> for normal text. Dark gray on white is safe; light gray on white often is not. This matters for accessibility and for real users in sunlight or on poor screens. We are not using a paid tool; your eyes plus a free contrast checker if you want one.</p>
+<h3>Fonts</h3>
+<p>Typography is set with a handful of properties:</p>
+<pre><code class="language-css">body {
+  font-family: system-ui, &quot;Segoe UI&quot;, Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+</code></pre>
+<ul>
+<li><strong><code>font-family</code></strong> — a list of fonts, in order of preference. The browser uses the first one it has. The last item is a <strong>generic family</strong> (<code>sans-serif</code>, <code>serif</code>, <code>monospace</code>) as a safety net. Using <strong>system fonts</strong> (<code>system-ui</code>) means no downloads, no paid services, and fast loading.</li>
+<li><strong><code>font-size</code></strong> — how large. <code>16px</code> is a common readable base.</li>
+<li><strong><code>line-height</code></strong> — spacing between lines of text. A unitless number like <code>1.5</code> scales with the font size and is usually more pleasant than a fixed pixel value.</li>
+<li><strong><code>font-weight</code></strong> — thickness: <code>400</code> normal, <code>700</code> bold.</li>
+</ul>
+<p>You can also set size and weight on headings separately to build hierarchy — but remember from U03 that the <em>level</em> (<code>&lt;h1&gt;</code> vs <code>&lt;h2&gt;</code>) is chosen for meaning. CSS chooses how each level <em>looks</em>.</p>
+<h3>Flexbox basics: laying things out in a row</h3>
+<p>HTML stacks elements vertically by default. The moment you want a row — a nav bar, a toolbar, a row of cards — you reach for <strong>flexbox</strong>.</p>
+<p>You turn a container into a <strong>flex container</strong> with one line:</p>
+<pre><code class="language-css">.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+</code></pre>
+<ul>
+<li><strong><code>display: flex</code></strong> — the container now arranges its direct children in a row (by default).</li>
+<li><strong>Its children</strong> automatically become <strong>flex items</strong>.</li>
+<li><strong><code>gap: 12px</code></strong> — space between the items. This replaces the old fiddly margins between children.</li>
+<li><strong><code>align-items</code></strong> — aligns items along the cross axis (here, vertical). <code>center</code> lines them up centrally.</li>
+<li><strong><code>justify-content</code></strong> — distributes items along the main axis (here, horizontal). <code>space-between</code> pushes them to the ends with space in between.</li>
+</ul>
+<p>That is genuinely most of what you need to start. Flexbox has more options, and we will return to it in Phase 4; for now, "<code>display: flex</code> + <code>gap</code>" will already let you build a header and a toolbar.</p>
+<h3>How to diagnose CSS with DevTools</h3>
+<p>CSS does not throw big red errors the way some tools do; it mostly <strong>silently ignores</strong> what it cannot understand. That makes DevTools your best friend. Right-click an element → <strong>Inspect</strong> (U02), then look at the <strong>Styles</strong> panel:</p>
+<ul>
+<li>Your matching rules appear, top to bottom by specificity.</li>
+<li>A property with a <strong>strikethrough</strong> line is being overridden by a more specific rule.</li>
+<li>A crossed-out or greyed property means the browser did not understand it — often a typo or a missing semicolon.</li>
+</ul>
+<p>This is your "read the error message" practice for CSS: the error is usually a rule that simply did not apply, and the Styles panel shows you why.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSS</td>
+<td>The language of presentation — layout, color, type</td>
+<td>Not structure or content</td>
+</tr>
+<tr>
+<td>Stylesheet</td>
+<td>A file of CSS rules (<code>styles.css</code>)</td>
+<td>Not the HTML file</td>
+</tr>
+<tr>
+<td><code>link</code> tag</td>
+<td>The <code>&lt;head&gt;</code> line that connects the stylesheet</td>
+<td>Confused with an <code>&lt;a&gt;</code> link — different element</td>
+</tr>
+<tr>
+<td>Rule</td>
+<td>Selector + one or more declarations</td>
+<td>Not the same as a selector</td>
+</tr>
+<tr>
+<td>Selector</td>
+<td>The part that chooses which elements to style</td>
+<td>Not the value inside</td>
+</tr>
+<tr>
+<td>Declaration</td>
+<td>One <code>property: value;</code> pair</td>
+<td>Missing the semicolon breaks it</td>
+</tr>
+<tr>
+<td>Element selector</td>
+<td>Targets every element of a tag, e.g. <code>p</code></td>
+<td>Broad — affects all of them</td>
+</tr>
+<tr>
+<td>Class selector</td>
+<td>Targets <code>.class</code> names; reusable</td>
+<td>Not unique; that is the point</td>
+</tr>
+<tr>
+<td>Id selector</td>
+<td>Targets one unique <code>#id</code></td>
+<td>Should not be reused; hard to override</td>
+</tr>
+<tr>
+<td>Specificity</td>
+<td>Which rule wins when several match</td>
+<td>Id &gt; class &gt; element</td>
+</tr>
+<tr>
+<td>Box model</td>
+<td>Every element's content, padding, border, margin</td>
+<td>Margin is outside; padding is inside</td>
+</tr>
+<tr>
+<td><code>padding</code></td>
+<td>Space inside the border, around content</td>
+<td>Not the space between boxes</td>
+</tr>
+<tr>
+<td><code>margin</code></td>
+<td>Space outside the border, pushing neighbors</td>
+<td>Not the space inside the box</td>
+</tr>
+<tr>
+<td><code>border</code></td>
+<td>The visible edge line</td>
+<td>Can be invisible if set to <code>none</code></td>
+</tr>
+<tr>
+<td><code>box-sizing: border-box</code></td>
+<td>Makes padding/border count inside the width</td>
+<td>Not on by default</td>
+</tr>
+<tr>
+<td>Hex color</td>
+<td><code>#2f6b4f</code> style color code</td>
+<td>Not a CSS variable or id</td>
+</tr>
+<tr>
+<td><code>font-family</code></td>
+<td>The list of fonts to try, in order</td>
+<td>Not a downloadable font by itself</td>
+</tr>
+<tr>
+<td><code>line-height</code></td>
+<td>Vertical spacing between text lines</td>
+<td>Unitless numbers scale best</td>
+</tr>
+<tr>
+<td>Flexbox</td>
+<td>A one-line way to lay children in a row/column</td>
+<td>Not a grid; different tool</td>
+</tr>
+<tr>
+<td>Flex container / item</td>
+<td>The element with <code>display: flex</code> / its direct children</td>
+<td>Items are direct children only</td>
+</tr>
+<tr>
+<td><code>gap</code></td>
+<td>Space between flex items</td>
+<td>Not padding inside an item</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Two files, in the same folder. Type them, then open <code>index.html</code> and refresh as you experiment.</p>
+<p><strong><code>index.html</code></strong></p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;Tea Card&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;styles.css&quot;&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;nav class=&quot;toolbar&quot;&gt;
+      &lt;a class=&quot;toolbar__link&quot; href=&quot;#&quot;&gt;Home&lt;/a&gt;
+      &lt;a class=&quot;toolbar__link&quot; href=&quot;#&quot;&gt;Teas&lt;/a&gt;
+      &lt;button class=&quot;toolbar__button&quot;&gt;Add&lt;/button&gt;
+    &lt;/nav&gt;
+
+    &lt;article class=&quot;card&quot;&gt;
+      &lt;h2 class=&quot;card__title&quot;&gt;Jasmine Green&lt;/h2&gt;
+      &lt;p class=&quot;card__note&quot;&gt;Brewed at 80&amp;deg;C for two minutes.&lt;/p&gt;
+      &lt;button class=&quot;card__button&quot;&gt;Save&lt;/button&gt;
+    &lt;/article&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p><strong><code>styles.css</code></strong></p>
+<pre><code class="language-css">* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, &quot;Segoe UI&quot;, Roboto, sans-serif;
+  background-color: #f5f3ef;
+  color: #2b2b2b;
+  padding: 24px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 16px;
+}
+
+.toolbar__link {
+  color: #2f6b4f;
+}
+
+.toolbar__button {
+  margin-left: auto;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2f6b4f;
+  color: #ffffff;
+}
+
+.card {
+  max-width: 320px;
+  padding: 20px;
+  border: 1px solid #d8d4cc;
+  border-radius: 12px;
+  background-color: #ffffff;
+}
+
+.card__title {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.card__note {
+  margin: 0 0 16px;
+  line-height: 1.5;
+  color: #5a5a5a;
+}
+
+.card__button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2f6b4f;
+  color: #ffffff;
+  font-size: 14px;
+}
+</code></pre>
+<p><strong>Why each rule exists:</strong></p>
+<ul>
+<li><code>* { box-sizing: border-box; }</code> — makes every width include its padding and border, matching design-tool intuition. The asterisk is the <strong>universal selector</strong>: it matches every element.</li>
+<li><code>body { ... }</code> — sets page-wide defaults: a system font stack, a warm off-white background, dark text, and 24px of breathing room around everything.</li>
+<li><code>.toolbar { display: flex; ... }</code> — turns the nav into a row. <code>gap: 12px</code> spaces the links and button; <code>align-items: center</code> lines them up nicely; <code>padding-bottom</code> gives the row air below it.</li>
+<li><code>.toolbar__link</code> — colors the links green. (The double-underscore naming, <code>toolbar__link</code>, is a popular convention for "a link that belongs to the toolbar." It is just a class name, but it keeps your stylesheet readable.)</li>
+<li><code>.toolbar__button { margin-left: auto; ... }</code> — inside a flex row, <code>margin-left: auto</code> pushes this item to the far right. The rest gives it a green fill, no border, rounded corners, and white text.</li>
+<li><code>.card { ... }</code> — the card: capped at 320px wide (a reading-friendly width), inner padding, a subtle border, rounded corners, and a white surface that lifts it off the page.</li>
+<li><code>.card__title</code> — removes the default heading margin above it and adds 8px below, then sets a usable size. (Browsers add default margins; <code>margin: 0 0 8px</code> means top 0, sides 0, bottom 8px.)</li>
+<li><code>.card__note</code> — comfortable line spacing and a softer gray for secondary text. Note it is deliberately darker than you might first reach for, to keep contrast legible.</li>
+<li><code>.card__button</code> — a larger, filled button for the card's main action.</li>
+</ul>
+<p><strong>The box model in action:</strong> in <code>.card__button</code>, the <code>padding: 8px 16px</code> is the space <em>inside</em> the button between its label and its edge. If you wanted space <em>between</em> the note and the button, that would be a <strong>margin</strong> on one of them. Getting this right is most of "why does my spacing look wrong?"</p>
+<p><strong>The DOM reminder:</strong> the CSS does not change the tree at all. It only changes how the existing elements look. Structure and presentation stay separate — exactly the separation that will make React styling saner later.</p>
+<h2>Common errors</h2>
+<h3>Error: Nothing is styled at all.</h3>
+<p><strong>What happens:</strong> You wrote CSS, refreshed, and the page is unchanged.</p>
+<p><strong>Fix:</strong> The link is almost always the culprit. Check, in order: (1) the <code>&lt;link&gt;</code> line is inside <code>&lt;head&gt;</code>; (2) <code>href</code> exactly matches the real filename and case; (3) both files are in the same folder; (4) the CSS file did not save as <code>.txt</code>. Open DevTools → <strong>Network</strong> or look for the stylesheet in the <strong>Styles</strong> panel; if it is missing there, the link is broken.</p>
+<h3>Error: One rule works, the next one does not.</h3>
+<p><strong>What happens:</strong> A missing semicolon or brace causes the browser to skip a declaration or a whole rule.</p>
+<p><strong>Fix:</strong> Every declaration ends in <code>;</code>, and every rule is wrapped in <code>{ }</code>. A missing <code>;</code> before the next property is the classic offender. In DevTools → Styles, an ignored declaration may look greyed or crossed out. That is the browser telling you where it stopped understanding.</p>
+<h3>Error: The class rule does nothing.</h3>
+<p><strong>What happens:</strong> Your HTML says <code>class="card__titel"</code> and your CSS says <code>.card__title</code> — a typo. They no longer match.</p>
+<p><strong>Fix:</strong> Class and selector names must match <strong>exactly</strong>, including case. Compare letter by letter in DevTools (the Elements panel shows the element's classes; the Styles panel shows which rules matched — if yours is absent, the name or the dot is wrong).</p>
+<h3>Error: "I set the width to 100px but the box is bigger."</h3>
+<p><strong>What happens:</strong> Default CSS adds padding and border to the width, so the visible box is wider than 100px.</p>
+<p><strong>Fix:</strong> Add <code>* { box-sizing: border-box; }</code> at the top of the stylesheet, as the worked example does. Now the padding and border fit inside the width.</p>
+<h3>Error: Using margin where you meant padding (or vice versa).</h3>
+<p><strong>What happens:</strong> A button's label touches its edge, and you "fix" it with margin, which moves the whole button instead.</p>
+<p><strong>Fix:</strong> Space <em>inside</em> a box (between content and edge) is <strong>padding</strong>. Space <em>outside</em> a box (between it and its neighbors) is <strong>margin</strong>. Ask: "is the empty space inside this element or between it and something else?"</p>
+<h3>Error: A style refuses to change no matter what.</h3>
+<p><strong>What happens:</strong> You keep editing <code>.button</code> but nothing happens.</p>
+<p><strong>Fix:</strong> Something more specific is winning — likely an <code>#id</code> rule or a later rule of equal specificity. Open DevTools → Styles and look for the <strong>strikethrough</strong>: the winning value is shown, the losing one is crossed out. Prefer classes over ids exactly to avoid this.</p>
+<h3>Error: Text is unreadable (light gray on white).</h3>
+<p><strong>What happens:</strong> Aesthetics win over legibility, and the low-contrast text fails accessibility and fails for users in bright light.</p>
+<p><strong>Fix:</strong> Darken the text or lighten the background until the contrast is clearly comfortable. Aim for at least the WCAG 4.5:1 guideline for normal text. This is design craft, not bureaucracy.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words. If you can, you are ready for the assignment:</p>
+<ol>
+<li>What is the difference between a selector and a declaration?</li>
+<li>Why do we keep CSS in its own file instead of inside the HTML?</li>
+<li>What is the difference between <code>padding</code> and <code>margin</code>, in one sentence each?</li>
+<li>What does <code>box-sizing: border-box</code> change, and why do designers prefer it?</li>
+<li>When would you use a <strong>class</strong> selector instead of an <strong>element</strong> selector, and why not an <strong>id</strong>?</li>
+<li>What does <code>display: flex; gap: 12px;</code> do to a container and its children?</li>
+<li>In DevTools, what does a strikethrough on a CSS property tell you?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these on your U03 page or a scratch copy. Difficulty increases on purpose.</p>
+<h3>P1 — Read and predict</h3>
+<p>Look at this rule and write, before applying it, exactly what you expect to change on a page that contains two paragraphs inside a section.</p>
+<pre><code class="language-css">section { padding: 16px; }
+p { color: #444; }
+</code></pre>
+<p>Apply it and check. Did the padding create space inside the section (pushing the paragraphs inward) or outside it?</p>
+<h3>P2 — Change one value</h3>
+<p>Take the worked example and change only <code>gap: 12px</code> to <code>gap: 40px</code>. Observe. Then change it back. One-value experiments are the safest way to learn what each property does.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete this rule so all elements with <code>class="tag"</code> have rounded corners, 4px of inner padding, and a light gray background:</p>
+<pre><code class="language-css">________ {
+  ________: 6px;
+  ________: 4px 8px;
+  ________: #eeeeee;
+}
+</code></pre>
+<h3>P4 — Write a rule from a specification</h3>
+<p>Add a <code>&lt;h1&gt;</code> to the worked example and write a CSS rule that makes it 32px, bold (<code>font-weight</code>), and dark green (<code>#2f6b4f</code>). Verify in the browser.</p>
+<h3>P5 — Fix the broken stylesheet</h3>
+<p>This stylesheet has <strong>three</strong> mistakes that stop styles from applying as intended. Find and fix each.</p>
+<pre><code class="language-css">.card {
+  background-color: white
+  padding: 20px
+  border-radius: 12px;
+}
+
+.crad__title {
+  font-size: 20px;
+}
+</code></pre>
+<h3>P6 — Diagnose with DevTools</h3>
+<p>Pick any element on your styled page and inspect it. In the Styles panel, find one property that is <strong>not</strong> applying (greyed or struck through) and write one sentence explaining why.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is visible so there are no surprises.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No JavaScript, no interactivity (a <code>:hover</code> rule is CSS, not behavior).</li>
+<li>No CSS frameworks, preprocessors, or animation libraries.</li>
+<li>No grid layout, media queries, or responsive design — those come in Phase 4.</li>
+<li>No styling inside React and no CSS modules or CSS-in-JS yet.</li>
+<li>No terminal and no installation.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U05 — JavaScript: values, variables, functions.</strong> You leave the visual layer for a short, gentle introduction to the language that makes pages <em>change</em> — and eventually powers React.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U04 Assignment — Style your page</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U04-YourName</code> (use your real name or student id as they prefer)</p>
+<p>You are styling the page you built in U03. Do <strong>not</strong> rebuild the structure; add presentation to it. The structure should still be correct.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>index.html</code></h3>
+<p>Your U03 page, updated so that its <code>&lt;head&gt;</code> links to your stylesheet:</p>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;styles.css&quot;&gt;
+</code></pre>
+<p>No CSS written inside the HTML (no <code>&lt;style&gt;</code> block, no <code>style="..."</code> attributes). Keeping the two separate is part of the lesson.</p>
+<h3>2. <code>styles.css</code></h3>
+<p>An external stylesheet that does <strong>all</strong> of the following:</p>
+<ul>
+<li>[ ] Starts with <code>* { box-sizing: border-box; }</code>.</li>
+<li>[ ] Uses at least <strong>one element selector</strong> (e.g. <code>body</code> or <code>p</code>).</li>
+<li>[ ] Uses at least <strong>two class selectors</strong> (add <code>class</code> attributes to your HTML as needed).</li>
+<li>[ ] Sets a <strong>color</strong> using a hex code, plus at least one more color expressed any valid way (named, hex, <code>rgb</code>, or <code>rgba</code>).</li>
+<li>[ ] Sets a <strong>font-family</strong> stack ending in a generic family, plus <code>font-size</code> and <code>line-height</code>.</li>
+<li>[ ] Uses <strong>padding</strong> and <strong>margin</strong> deliberately (at least one of each, in a place you can explain).</li>
+<li>[ ] Uses <strong>flexbox</strong> (<code>display: flex</code>) on at least one container, with <code>gap</code>.</li>
+<li>[ ] Has short comments (<code>/* like this */</code>) on <strong>at least three</strong> rules explaining why each exists.</li>
+</ul>
+<p>Do not use CSS frameworks, <code>!important</code>, or id selectors for styling. If you use an id, explain why in <code>answers.md</code>.</p>
+<h3>3. <code>answers.md</code></h3>
+<ol>
+<li><strong>Selector vs declaration.</strong> In 2–4 lines, explain the difference, using one of your own rules as the example.</li>
+<li><strong>Why separate files.</strong> Why is the CSS in <code>styles.css</code> rather than inside <code>index.html</code>? Give one practical benefit.</li>
+<li><strong>Padding vs margin, in your page.</strong> Point to one place in <strong>your</strong> CSS where you used padding and one where you used margin. For each, say in one sentence what the space is doing.</li>
+<li><strong>Box-sizing.</strong> Explain what <code>box-sizing: border-box</code> changed for you. What would go wrong without it?</li>
+<li><strong>Flexbox.</strong> Name the container you turned into a flex container. What did <code>display: flex</code> and <code>gap</code> do to its children? What does <code>align-items</code> or <code>justify-content</code> do in your case?</li>
+<li><strong>Contrast and accessibility.</strong> Find your body text and its background. State both colors and explain, in one or two sentences, why you believe the text is readable (aim for the 4.5:1 guideline mentioned in the lesson).</li>
+<li><strong>Predict then run.</strong> Before saving, write a prediction: "If I change the <code>gap</code> in my flex container from ___ to ___, ___ will happen." Then actually change it, observe, and write what happened. Revert it afterward if you prefer.</li>
+<li><strong>Debug this broken stylesheet.</strong> Find <strong>three</strong> problems below, explain each, and write the corrected version.</li>
+</ol>
+<p>```css<br />
+   .card {<br />
+     background-color: white<br />
+     padding: 20px<br />
+     border-radius: 12px;<br />
+   }</p>
+<p>.crad__title {<br />
+     font-size: 20px;<br />
+   }<br />
+   ```</p>
+<h3>4. <code>styled.png</code> (or <code>styled.jpg</code>)</h3>
+<p>A screenshot of your styled page open in a browser.</p>
+<ul>
+<li><strong>Windows:</strong> <strong>Win + Shift + S</strong>, drag over the page, then save.</li>
+<li><strong>macOS:</strong> <strong>Cmd + Shift + 4</strong>, drag over the page; saved to your Desktop.</li>
+<li><strong>Linux:</strong> your screenshot tool (often the <strong>PrtSc</strong> key or an app).</li>
+</ul>
+<h3>5. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U04 README fully (not only the assignment).
+- [ ] My stylesheet is linked (not pasted into the HTML).
+- [ ] The page changes color when I change the body background in CSS.
+- [ ] I used at least one element selector and two class selectors.
+- [ ] I used a flex container with gap.
+- [ ] I checked a padding-vs-margin decision against the box model.
+- [ ] I took a screenshot and named it styled.png or styled.jpg.
+- [ ] I read the U04 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All five items present with the exact names above.</li>
+<li><code>index.html</code> still has the correct semantic structure from U03, now linked to <code>styles.css</code>.</li>
+<li><code>styles.css</code> satisfies every checkbox in section 2.</li>
+<li>The screenshot clearly shows the page is styled (not the browser default look).</li>
+<li><code>answers.md</code> covers all eight prompts, including the corrected broken stylesheet.</li>
+<li>The checklist is completed honestly.</li>
+</ul>
+<p>If the CSS does nothing, work through the decoded failures in the lesson — the link path and filename are the usual causes — before asking for help, and note what you tried.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U04 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>styles.css</code> linked from <code>&lt;head&gt;</code>; no inline/<code>&lt;style&gt;</code> CSS</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td><code>box-sizing: border-box</code> present</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>styles.css</code></td>
+</tr>
+<tr>
+<td>≥1 element selector and ≥2 class selectors used correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>styles.css</code></td>
+</tr>
+<tr>
+<td>Colors: hex + one other valid form; legible</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>styles.css</code></td>
+</tr>
+<tr>
+<td>Font stack ends in a generic family; size + line-height set</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>styles.css</code></td>
+</tr>
+<tr>
+<td>Padding and margin used deliberately (both present, explained)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>styles.css</code>, <code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Flex container with <code>display: flex</code> and <code>gap</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>styles.css</code></td>
+</tr>
+<tr>
+<td>≥3 explanatory comments on rules</td>
+<td>1</td>
+<td>No</td>
+<td><code>styles.css</code></td>
+</tr>
+<tr>
+<td>Structure from U03 preserved (semantic tags intact)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>index.html</code></td>
+</tr>
+<tr>
+<td>Selector vs declaration explained with own example</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Separation-of-files reason is sound</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Padding-vs-margin answer matches their own CSS</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Box-sizing explanation correct</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Flexbox answer names their container and effects</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Contrast answer: states colors and gives a valid readability reason</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Predict-then-run recorded honestly</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Debug task: all three problems found, named, fixed</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+<tr>
+<td>Screenshot clearly styled; checklist; correct filenames</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder/zip</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit guidance</h3>
+<ul>
+<li><strong>Link (3):</strong> 1 if a <code>&lt;style&gt;</code> block or inline styles are used instead of an external file (this is a core teaching point; award credit only for the linked external sheet). 0 if no CSS reaches the page.</li>
+<li><strong>Selectors (3):</strong> 1 per qualifying selector type, capped at 3. A single class used many times earns 1, not 2.</li>
+<li><strong>Fonts (3):</strong> 1 for the stack ending in a generic family, 1 for <code>font-size</code>, 1 for <code>line-height</code>. A stack with no generic fallback loses 1.</li>
+<li><strong>Padding/margin (3):</strong> 2 if both appear in the CSS but the explanation is vague; 0 for the explanation if they clearly swapped the two concepts. Award up to 3 when the explanation matches the actual CSS.</li>
+<li><strong>Flex (3):</strong> 2 if <code>display: flex</code> is present but <code>gap</code> is missing; 0 if flex is claimed but not in the file.</li>
+<li><strong>Debug task (3, one per problem):</strong><br />
+  1. Missing semicolon after <code>background-color: white</code> (and after <code>padding: 20px</code>).<br />
+  2. Missing semicolon after <code>padding: 20px</code>.<br />
+  3. <code>.crad__title</code> is misspelled — should be <code>.card__title</code> (selector will never match).<br />
+  Award 1 point per distinct problem correctly named and fixed.</li>
+<li><strong>Contrast (1):</strong> accept any answer that names both colors and gives a sensible readability reason. Do not demand an exact numeric ratio; auto-fail only if the colors are clearly unreadable and the learner claims otherwise.</li>
+<li><strong>Structure preserved (2):</strong> 2 if semantic tags remain; 1 if minor regressions; 0 if the page was replaced with <code>&lt;div&gt;</code>s.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li><strong>Must-have (unit fails without these):</strong> linked external stylesheet, box-sizing, selectors, colors, fonts, deliberate padding/margin, flexbox, preserved structure, padding-vs-margin answer, the debug task, and the files/screenshot.</li>
+<li><strong>Nice-to-have (points only):</strong> comments, Q1, Q2, Q4, Q5, Q6, Q7.</li>
+</ul>
+<p>Do not penalize aesthetic choices. Do penalize inline styling, <code>!important</code>, id-based styling without justification, or unreadable contrast.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U03-html-as-structure/index.html">U03 HTML as structure</a>
+    <a class="next" href="../U05-js-values-variables-functions/index.html">U05 JavaScript: values, variables, and functions</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

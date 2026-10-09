@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U05 — Virtual machines vs containers | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U05</div>
+    <h1>Virtual machines vs containers</h1>
+    <span class="phase-badge ph1">Phase 1 — Why containers exist</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U05 — Virtual machines vs containers</h1>
+<p><strong>Phase 1 — Why containers exist</strong></p>
+<h2>Where you are</h2>
+<p>This is the last unit of Phase 1. You now understand the problem ("works on my machine" from U02) and what a program needs (its environment, from U04). Before we install Docker, we answer the big question honestly: <strong>how do containers differ from virtual machines?</strong> Marketing blurs these two ideas, and that blur causes real, expensive confusion. We will not run Docker in this unit.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain, in plain words, what a virtual machine is and what a container is.</li>
+<li>Explain the key differences: guest operating system vs shared kernel, size, startup time, and isolation.</li>
+<li>Choose virtual machines or containers for simple scenarios, and justify the choice.</li>
+<li>Correct four common false beliefs about containers.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong></li>
+<li><strong>U01 — What we are building toward.</strong> You need the rough preview of a container.</li>
+<li><strong>U02 — The works-on-my-machine problem.</strong></li>
+<li><strong>U03 — The terminal, deliberately.</strong></li>
+<li><strong>U04 — Apps and their environments.</strong> You need the runtime/library/config/port list, because both VMs and containers exist to package that list.</li>
+</ul>
+<p>No Docker installation is required.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–80 minutes</strong>. This unit is conceptual, not hands-on. If you feel a metaphor slipping, slow down and name it — the whole point is to replace confused metaphors with clear ones.</p>
+<h2>Why this exists</h2>
+<p>People often say "a container is like a tiny virtual machine." That sentence is comfortable and wrong in ways that cause bad decisions later. This unit gives you the honest picture so that when Docker arrives, you reason about it correctly instead of inheriting a myth.</p>
+<h2>Plain-language teaching</h2>
+<h3>Two ways to package an environment</h3>
+<p>From U04 we know an app needs a runtime, libraries, OS bits, configuration, and a port. Teams wanted a way to package all of that and ship it. Two big approaches exist:</p>
+<ol>
+<li><strong>Virtual machines</strong> — package an entire computer inside your computer.</li>
+<li><strong>Containers</strong> — package the app and its needs, but share the machine's operating-system core.</li>
+</ol>
+<p>They solve overlapping problems, but they are built differently. We take them one at a time.</p>
+<h3>What a virtual machine is</h3>
+<p>A <strong>virtual machine</strong> (VM) is a complete, simulated computer running inside your real computer, as a program. Inside the VM there is its own operating system — its own <strong>guest OS</strong> — with its own kernel, drivers, and filesystem. The real computer is called the <strong>host</strong>.</p>
+<p>The software that creates and runs VMs is a <strong>hypervisor</strong>. It splits the real machine's processor, memory, and disk into pretend machines. Some hypervisors run directly on the hardware (type 1, common in data centres); others run as an app on your desktop (type 2, such as VirtualBox or the virtualization built into Docker Desktop).</p>
+<p>Because each VM carries a full operating system, it is <strong>heavy</strong>:</p>
+<ul>
+<li>Large: gigabytes of disk, mostly for the guest OS.</li>
+<li>Slow to start: booting an OS takes tens of seconds.</li>
+<li>Memory-hungry: each VM reserves memory for its whole OS.</li>
+</ul>
+<p>The payoff is isolation: each VM is very separate from the host and from other VMs. It has its own kernel, so it behaves like an independent computer.</p>
+<h3>What a container is</h3>
+<p>A <strong>container</strong> packages an app with its runtime, libraries, and configuration — the things from U04 — but it does <strong>not</strong> include a full operating system. Instead, all containers on a machine <strong>share the host's kernel</strong>.</p>
+<p>The <strong>kernel</strong> is the core of an operating system: the part that manages processes, memory, and hardware. Sharing one kernel is the key idea. Because containers do not each carry an OS, they are <strong>light</strong>:</p>
+<ul>
+<li>Small: megabytes, not gigabytes.</li>
+<li>Fast to start: milliseconds to seconds, not tens of seconds.</li>
+<li>Efficient: many containers can share one machine comfortably.</li>
+</ul>
+<p>The program that runs and manages containers is called a <strong>container engine</strong>. Docker is the most common one, which is why this course uses it.</p>
+<p>The <strong>image</strong> a container starts from is the packaged snapshot of the app plus its runtime, libraries, and settings. (Precise, rigorous treatment of images arrives in U08.)</p>
+<h3>How isolation works without a second OS</h3>
+<p>If containers share a kernel, how are they kept apart? The operating system provides two built-in features, which you only need to recognize by name:</p>
+<ul>
+<li><strong>Namespaces</strong> give each container its own private view of things like processes, files, and network, so it cannot see other containers' internals.</li>
+<li><strong>cgroups</strong> (control groups) limit and account for how much processor, memory, and disk each container may use.</li>
+</ul>
+<p>So containers are isolated, but through the shared kernel rather than through a separate OS. The phrase to remember: <strong>isolation without a second kernel.</strong></p>
+<h3>Side-by-side comparison</h3>
+<p>The numbers below are <strong>typical, approximate</strong> values to build intuition. Do not memorize them; they vary by machine and workload.</p>
+<pre><code class="language-text">                        Virtual machine              Container
+--------------------------------------------------------------------------------
+What it contains        App + full guest OS          App + runtime + libraries
+Operating system        Each VM has its own OS       Share the host's kernel
+Size                    Gigabytes (GB)               Megabytes (MB)
+Startup time            Seconds to a minute          Fractions of a second
+Density on one host     A handful                    Dozens to hundreds
+Isolation               Very strong (own kernel)     Strong (shared kernel rules)
+Best when               Different OS, strong         Same OS, many small
+                        separation needed            services, fast start needed
+</code></pre>
+<h3>When each one is the right tool</h3>
+<p>Choose a <strong>virtual machine</strong> when:</p>
+<ul>
+<li>You need a <strong>different operating system</strong> from the host (for example, running Windows on a Linux server).</li>
+<li>You need the strongest possible separation, such as running untrusted code.</li>
+<li>You are simulating a whole machine for testing or development of an OS.</li>
+</ul>
+<p>Choose a <strong>container</strong> when:</p>
+<ul>
+<li>Your app runs on the <strong>same kind of operating system</strong> as the host.</li>
+<li>You want many services side by side, each small and quick to start.</li>
+<li>You want a reproducible, portable package (the goal of this course).</li>
+</ul>
+<h3>The metaphor trap</h3>
+<p>Here is a sentence to be suspicious of: <em>"A container is just a tiny virtual machine."</em></p>
+<p>It is tempting because both isolate apps. But it makes you expect each container to contain its own operating system — which it does not. That wrong expectation leads to wrong guesses about size, startup time, and security. Keep the honest sentence instead: <strong>a container is an isolated bundle of an app and its dependencies that shares the host's kernel.</strong></p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host OS</td>
+<td>The operating system of the real machine</td>
+<td>Not the same as the guest OS</td>
+</tr>
+<tr>
+<td>Guest OS</td>
+<td>The full operating system inside a virtual machine</td>
+<td>Containers do <strong>not</strong> have one</td>
+</tr>
+<tr>
+<td>Hypervisor</td>
+<td>Software that creates and runs virtual machines</td>
+<td>Not the same as a container engine</td>
+</tr>
+<tr>
+<td>Virtual machine</td>
+<td>A simulated computer with its own operating system</td>
+<td>People over-generalize it to containers</td>
+</tr>
+<tr>
+<td>Kernel</td>
+<td>The core of an OS that manages processes, memory, hardware</td>
+<td>Containers share one; VMs each have one</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>An app plus its dependencies, isolated, sharing the host kernel</td>
+<td>Not a small VM</td>
+</tr>
+<tr>
+<td>Container engine</td>
+<td>Software that runs containers (Docker is one)</td>
+<td>Not a hypervisor</td>
+</tr>
+<tr>
+<td>Isolation</td>
+<td>Keeping one workload from affecting another</td>
+<td>Achieved differently in VMs vs containers</td>
+</tr>
+<tr>
+<td>Namespaces</td>
+<td>Kernel feature giving each container a private view</td>
+<td>You only need to recognize the name</td>
+</tr>
+<tr>
+<td>cgroups</td>
+<td>Kernel feature limiting resource use per container</td>
+<td>You only need to recognize the name</td>
+</tr>
+<tr>
+<td>Image</td>
+<td>The packaged snapshot a container starts from</td>
+<td>Not the same as a running container</td>
+</tr>
+<tr>
+<td>Overhead</td>
+<td>Extra cost (size, memory, time) beyond the app itself</td>
+<td>VMs carry much more than containers</td>
+</tr>
+<tr>
+<td>Boot time</td>
+<td>How long something takes to become ready</td>
+<td>Containers have almost none</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>You are not running anything. Read the same app packaged both ways and compare.</p>
+<p><strong>The app:</strong> a small web service needing Python 3.11, three libraries, a <code>PORT</code> setting, and port 8000.</p>
+<pre><code class="language-text">Package it as a virtual machine:
+  - Install a full Linux guest OS inside the hypervisor   (several GB)
+  - Install Python 3.11 and the libraries in that OS
+  - Copy the app in, set PORT, start it
+  - Result: a complete simulated computer, ready in ~40 seconds,
+            using ~1–2 GB of memory before the app even starts.
+
+Package it as a container:
+  - Start from a Python 3.11 base image
+  - Add the libraries and the app, set PORT, expose port 8000
+  - Result: a small bundle (tens to hundreds of MB) that starts in
+            well under a second and shares the host's kernel.
+</code></pre>
+<h3>A "wrong on purpose" example</h3>
+<pre><code class="language-text">Claim:  &quot;The container starts fast because it is a small VM.&quot;
+</code></pre>
+<p><strong>Why it is wrong:</strong> the speed does <strong>not</strong> come from being small; it comes from not starting a second operating system at all. A small virtual machine would still boot a full OS and be slow. The speed is a <em>consequence of sharing the kernel</em>, not of size.</p>
+<p>Notice how the wrong sentence would lead you to the wrong reason. When you reason about Docker later, you want the real reason.</p>
+<h2>Common errors</h2>
+<h3>Error: believing a container includes a full OS</h3>
+<p><strong>What happens:</strong> You expect gigabytes and long startup, then distrust containers when they are small and fast, or you look for an "OS" inside a container that is not there.</p>
+<p><strong>Fix:</strong> A container includes the app's runtime and libraries, not a whole OS. It borrows the host's kernel.</p>
+<h3>Error: believing containers are always more secure than VMs</h3>
+<p><strong>What happens:</strong> You put untrusted code in a container, assuming the same isolation as a VM.</p>
+<p><strong>Fix:</strong> VMs have an extra boundary — a separate kernel. Containers are isolated well for normal workloads, but the strongest separation traditionally comes from VMs. Treat this as a trade-off, not a rule. (Security habits get their own unit, U33.)</p>
+<h3>Error: believing VMs are obsolete</h3>
+<p><strong>What happens:</strong> You dismiss VMs entirely, then cannot explain why cloud providers still rent them.</p>
+<p><strong>Fix:</strong> VMs remain essential for different-OS needs, strong isolation, and whole-machine testing. Containers and VMs coexist; often a container runs <em>inside</em> a VM in the cloud.</p>
+<h3>Error: using the words interchangeably</h3>
+<p><strong>What happens:</strong> You say "VM" when you mean "container," and a colleague's mental model breaks.</p>
+<p><strong>Fix:</strong> Keep the two words distinct. The difference is real and load-bearing.</p>
+<h2>Checkpoints</h2>
+<p>Answer before the assignment:</p>
+<ol>
+<li>What is the single biggest structural difference between a VM and a container?</li>
+<li>Why does sharing the kernel make containers small and fast?</li>
+<li>Name one task for which a VM is the better choice, and one for which a container is.</li>
+</ol>
+<p>If you can answer these, you are ready.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded, increasing difficulty.</p>
+<h3>P1 — Classify the workload</h3>
+<p>For each scenario, choose <strong>VM</strong> or <strong>container</strong> and write one sentence of justification:</p>
+<ol>
+<li>Thirty small web services that must start and stop quickly.</li>
+<li>Running Windows software on a Linux-only server.</li>
+<li>A reproducible build environment for a Python app, same OS as the host.</li>
+<li>Executing a stranger's untrusted code with maximum separation.</li>
+<li>A team that wants every developer to get the identical app environment on their own laptops.</li>
+</ol>
+<h3>P2 — Complete the comparison</h3>
+<p>Fill in the blanks from memory, then check the lesson:</p>
+<pre><code class="language-text">                        Virtual machine        Container
+Own operating system?   ________               ________
+Size (typical)          ________               ________
+Startup time            ________               ________
+Isolation mechanism     ________ kernel        shared kernel + ________ / cgroups
+</code></pre>
+<h3>P3 — Predict then read</h3>
+<p>Before reading further: a colleague says "we should replace all our VMs with containers to save money." Write <strong>two</strong> situations where that plan would fail or be risky. Then compare with the "When each one is the right tool" section.</p>
+<h3>P4 — Fix the wrong sentence</h3>
+<p>Rewrite this so it is accurate, in one or two sentences: <em>"A container is a tiny VM that boots faster because it is smaller."</em></p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No installing or running Docker.</li>
+<li>No namespaces or cgroups internals — names only.</li>
+<li>No Kubernetes, orchestration, or cloud platforms.</li>
+<li>No security deep dive (that is U33), only the key isolation trade-off.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U06 — Installing Docker safely</strong> (installing the container engine and verifying it works).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U05 Assignment — Choose honestly</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U05-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>comparison.md</code></h3>
+<p>Build a comparison of virtual machines and containers with these rows: <em>contains, own operating system?, size, startup time, isolation mechanism, best suited to.</em> Fill in each cell in your own words. Do not paste the lesson's table unchanged; a rewritten table in your own phrasing earns full marks.</p>
+<p>Below the table, answer:</p>
+<ol>
+<li><strong>Explain in your own words.</strong> Define <em>hypervisor</em>, <em>kernel</em>, <em>container engine</em>, and <em>isolation</em> as if to a friend who is not technical.</li>
+<li><strong>The key difference.</strong> In two or three sentences, explain the single structural difference between a VM and a container and why it leads to the size and speed differences.</li>
+<li><strong>Scenario choices.</strong> For each scenario, choose <strong>VM</strong> or <strong>container</strong> and give one sentence of justification:<br />
+   - a) Twenty small services that start and stop many times an hour.<br />
+   - b) Running macOS software on a Linux server.<br />
+   - c) Running a stranger's untrusted code with maximum separation.<br />
+   - d) A team wanting identical app environments on mixed laptops.</li>
+<li><strong>Debug this claim.</strong> A colleague writes: "Containers are just smaller virtual machines, so they are always more secure and always the right choice." Write two or three sentences correcting the mistakes in that claim.</li>
+<li><strong>Predict then read.</strong> Before re-reading the lesson, list <strong>two</strong> situations where replacing all VMs with containers would fail or be risky. Then note whether the lesson agreed.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the whole U05 README, not only the assignment.
+- [ ] I can explain the shared-kernel idea without notes.
+- [ ] I know a container does not include a full operating system.
+- [ ] I made two scenario predictions before re-reading.
+- [ ] I read the U05 rubric before writing comparison.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present with the exact names above.</li>
+<li>The comparison table has all six rows, in your own words.</li>
+<li>All five prompts are answered in your own words.</li>
+<li>Scenario choices have justifications, not just labels.</li>
+<li>The checklist is completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U05 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comparison table complete, all six rows, in learner's own words</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>comparison.md</code> table</td>
+</tr>
+<tr>
+<td>Hypervisor, kernel, container engine, isolation defined correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Shared-kernel difference explained and linked to size/speed</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Four scenario choices correct with justifications</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Claim about containers-as-small-VMs corrected (isolation + "always right")</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Two failure/risk situations for replacing VMs</td>
+<td>3</td>
+<td>No</td>
+<td>Q5</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>0 (gate)</td>
+<td>Yes</td>
+<td>folder / zip structure</td>
+</tr>
+</tbody>
+</table>
+<p>The last row is a <strong>gate</strong>, not points. Flag missing or misnamed files to the learner without reducing the total out of 24.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Table: award 1 point per accurate row, up to 5. A table copied verbatim from the lesson earns at most 2 — the task asks for the learner's own phrasing.</li>
+<li>Q1: award 3/4 if three of four terms are right; 0 if copied from the vocabulary table.</li>
+<li>Q2: full marks only if they name <strong>sharing the host kernel</strong> as the cause, not merely "it is smaller." "Smaller" is a result, not the cause; award 2/4 for that.</li>
+<li>Q3: (a) container, (b) VM, (c) VM, (d) container. Award 1 point each for a correct choice <strong>with</strong> a sensible reason. A right label with no reason earns half.</li>
+<li>Q4: two distinct corrections are needed — (1) a container does not include its own OS / is not merely a small VM, and (2) "always more secure" and "always right" are false. Award 2/4 if only one is addressed.</li>
+<li>Q5: any two sensible risks (different-OS needs, strong isolation for untrusted code, whole-machine testing). Award 1/3 for one.</li>
+<li>Do not penalize imperfect English. Penalize pasted lesson text with no reasoning.</li>
+</ul>
+<h3>A note on scenario (c)</h3>
+<p>Some learners will argue containers can run untrusted code too. That is defensible in modern practice. Accept it <strong>only</strong> if they acknowledge that the strongest traditional separation is a VM with its own kernel. Otherwise award VMs for (c) as the intended answer.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U04-apps-and-their-environments/index.html">U04 Apps and their environments</a>
+    <a class="next" href="../U06-installing-docker/index.html">U06 Installing Docker safely</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

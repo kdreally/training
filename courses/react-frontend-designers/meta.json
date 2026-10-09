@@ -1,0 +1,24 @@
+﻿{
+  "slug": "react-frontend-designers",
+  "title": "React.js Frontend for Designers",
+  "tagline": "Turn design intuition into working React interfaces — components, props, state, styling, and shipping your first app.",
+  "hero": "For designers who want to build. Translate Figma thinking into HTML, CSS, JavaScript, and React — slowly, calmly, and with the terminal explained every step of the way.",
+  "phases": {
+    "0": "Orientation",
+    "1": "Foundations",
+    "2": "Running React",
+    "3": "Components and data",
+    "4": "Styling and design",
+    "5": "Interaction and polish",
+    "6": "Shipping and craft"
+  },
+  "unitPhase": {
+    "U00": 0, "U01": 0,
+    "U02": 1, "U03": 1, "U04": 1, "U05": 1, "U06": 1, "U07": 1,
+    "U08": 2, "U09": 2, "U10": 2, "U11": 2, "U12": 2,
+    "U13": 3, "U14": 3, "U15": 3, "U16": 3, "U17": 3, "U18": 3, "U19": 3,
+    "U20": 4, "U21": 4, "U22": 4, "U23": 4, "U24": 4, "U25": 4,
+    "U26": 5, "U27": 5, "U28": 5, "U29": 5, "U30": 5,
+    "U31": 6, "U32": 6, "U33": 6, "U34": 6
+  }
+}

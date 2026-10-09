@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U14 — Composing components | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U14</div>
+    <h1>Composing components</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U14 — Composing components</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>You can make a component and configure it with props (U13). But so far everything has lived inside one file (<code>App.jsx</code>), and it is starting to feel crowded. In this unit you learn to <strong>break a page into components</strong> — a Header, a Card, a Footer — put each in its own file, and <strong>assemble</strong> them into a page.</p>
+<p>This is the unit where a real page starts to emerge from parts you already know how to build.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why a page is easier to work with when it is split into components.</li>
+<li>Create a component in its own file and import it where it is needed.</li>
+<li>Nest components inside each other to form a page.</li>
+<li>Follow a file-per-component convention and know when a component is too big.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11</strong> — Writing your first component.</li>
+<li><strong>U12</strong> — JSX explained (a component returns markup; a tag in JSX can be a custom component).</li>
+<li><strong>U13</strong> — Props (you will pass props into the components you compose).</li>
+<li><strong>U07</strong> — Imports and exports (we use <code>import</code>/<code>export default</code> throughout; a reminder is included).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. This unit is mostly mechanical once you see the pattern: make a file, export a component, import it, place it. The thinking work is deciding <em>where</em> to draw the boundaries. That decision is the same one you make when grouping layers in a design tool.</p>
+<h2>Why this exists</h2>
+<p>Open a design file where the entire home screen is one flat frame with 200 layers and no grouping. Finding the footer means scrolling. Moving the footer means selecting half the canvas. Changing the header means hoping you did not grab a body layer.</p>
+<p>Now open a file where the page is a frame containing three named groups: <code>Header</code>, <code>Body</code>, <code>Footer</code>. Everything is easier. You can move the footer by moving one group. You can ask "is the footer done?" and answer it by looking at one group.</p>
+<p>React has the same problem and the same solution. If you put the entire page in one component, the file becomes that flat frame. <strong>Composition</strong> means building the page out of named components that each own one piece. You already do this visually; this unit teaches the code equivalent.</p>
+<h2>Plain-language teaching</h2>
+<h3>What "composition" means</h3>
+<p>To <strong>compose</strong> is to build a larger thing by placing smaller things inside it. A page is composed of a header, a body, and a footer. Each of those is composed of smaller pieces. Composition is that nesting, all the way down.</p>
+<p>In React, composing means one component's returned markup <strong>contains other components as tags</strong>. That is the only new mechanical idea in this unit.</p>
+<h3>One file per component (the convention)</h3>
+<p>A <strong>convention</strong> is an agreed way of doing something that everyone follows so code is predictable. This course uses <strong>one component per file</strong>, with the file named after the component:</p>
+<pre><code class="language-text">src/
+  App.jsx        -&gt; the page; composes the others
+  Header.jsx     -&gt; one component
+  Card.jsx       -&gt; one component
+  Footer.jsx     -&gt; one component
+</code></pre>
+<p>Why one per file, and not one giant file with everything?</p>
+<ul>
+<li>You can find a component by its filename, the same way a named group is easy to find.</li>
+<li>A file that describes one thing is short enough to understand at a glance.</li>
+<li>Two people can edit different components without fighting over the same file.</li>
+</ul>
+<p>This is not a hard law of React. It is a team habit that keeps large projects sane. We adopt it now.</p>
+<h3>Importing and exporting (the reminder from U07)</h3>
+<p>For one file to use a component from another, two things must happen.</p>
+<p><strong>Export</strong> means "make this thing available to other files." You do it at the bottom of the component's file:</p>
+<pre><code class="language-jsx">export default Header;
+</code></pre>
+<p><code>export default</code> means "when another file imports from me without naming a specific export, give them this one thing." One default export per file.</p>
+<p><strong>Import</strong> means "pull that thing in." You do it at the top of the file that needs it:</p>
+<pre><code class="language-jsx">import Header from &quot;./Header.jsx&quot;;
+</code></pre>
+<p>Read it as: "import the default thing from <code>./Header.jsx</code>, and call it <code>Header</code> here." The <code>./</code> means "in the same folder as this file." The <code>.jsx</code> is the file extension. Vite (U09) handles the details of turning that into a working page; you just write the path.</p>
+<h3>Nesting components</h3>
+<p>A component's returned markup can contain other components, exactly like HTML tags can contain nested tags (U02, U03):</p>
+<pre><code class="language-jsx">function App() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><code>&lt;Header /&gt;</code> is not an HTML tag. React sees a capitalized tag, looks for a component named <code>Header</code> in the file, and renders whatever that component returns. Capitalization matters: a lowercase tag like <code>&lt;header&gt;</code> means the HTML element; <code>&lt;Header&gt;</code> means your component. That single capital letter is how React tells the two apart.</p>
+<h3>Composition vs one giant file</h3>
+<p>Here is the same page two ways. First, everything in one component (fine for a toy, painful at scale):</p>
+<pre><code class="language-jsx">function App() {
+  return (
+    &lt;div&gt;
+      &lt;header&gt;My Shop&lt;/header&gt;
+      &lt;main&gt;
+        &lt;article&gt;Item one&lt;/article&gt;
+        &lt;article&gt;Item two&lt;/article&gt;
+      &lt;/main&gt;
+      &lt;footer&gt;© 2026&lt;/footer&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>Second, composed:</p>
+<pre><code class="language-jsx">function App() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;Card title=&quot;Item one&quot; body=&quot;...description...&quot; /&gt;
+      &lt;Card title=&quot;Item two&quot; body=&quot;...description...&quot; /&gt;
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p>The second version <em>reads like a wireframe</em>. You can see the page's structure at a glance, and each named piece can be edited on its own. That readability is the real payoff — same as why you name your layers.</p>
+<h3>When is a component too big?</h3>
+<p>A useful smell test: <strong>if you cannot describe what a component does in a short phrase, it is doing too much.</strong> "Header," "Card," "Footer," "PriceBadge" are clear. "HomePageButAlsoTheNavAndTheFooterInline" is a sign to split.</p>
+<p>Split when a piece:</p>
+<ul>
+<li>has a clear name and boundary,</li>
+<li>is reused, or likely to be,</li>
+<li>changes for its own reasons (the footer changes independently of the cards).</li>
+</ul>
+<p>Do not split so finely that every two lines is its own component; that creates a maze. Aim for named, meaningful pieces — the same judgment you use when grouping layers.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Composition</td>
+<td>Building a bigger component by nesting smaller ones inside it</td>
+<td>Not a special React command; it is just nesting</td>
+</tr>
+<tr>
+<td>Child component</td>
+<td>A component rendered inside another component's markup</td>
+<td>Not a different type of component; "child" describes its position</td>
+</tr>
+<tr>
+<td>Parent component</td>
+<td>A component whose markup contains other components</td>
+<td>Same idea as parent/child layers</td>
+</tr>
+<tr>
+<td>Import</td>
+<td>Pulling a component in from another file</td>
+<td>Needs the correct relative path (<code>./Header.jsx</code>)</td>
+</tr>
+<tr>
+<td>Export default</td>
+<td>Making one thing available to importers</td>
+<td>One default export per file</td>
+</tr>
+<tr>
+<td>Relative path</td>
+<td>A file location starting from the current file (<code>./</code>, <code>../</code>)</td>
+<td>Not an internet address; <code>./</code> is "same folder"</td>
+</tr>
+<tr>
+<td>File-per-component</td>
+<td>Convention: one component per file, named after it</td>
+<td>Not a React requirement, a team habit</td>
+</tr>
+<tr>
+<td>Capitalization</td>
+<td><code>&lt;Header&gt;</code> is a component; <code>&lt;header&gt;</code> is HTML</td>
+<td>Forgetting the capital is a common silent bug</td>
+</tr>
+<tr>
+<td>Wireframe</td>
+<td>A rough structure drawing</td>
+<td>The composed <code>App</code> should read like one</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a tiny page with a Header, two Cards, and a Footer, each in its own file. Use the project from U09–U13.</p>
+<p><strong><code>src/Header.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/Header.jsx
+function Header({ title }) {
+  return (
+    &lt;header&gt;
+      &lt;h1&gt;{title}&lt;/h1&gt;
+    &lt;/header&gt;
+  );
+}
+
+export default Header;
+</code></pre>
+<ul>
+<li>Declares <code>Header</code>, taking a <code>title</code> prop (U13).</li>
+<li>Returns a <code>&lt;header&gt;</code> element containing an <code>&lt;h1&gt;</code> with the title.</li>
+<li><code>export default</code> so other files can import it.</li>
+</ul>
+<p><strong><code>src/Card.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/Card.jsx
+function Card({ title, body }) {
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;p&gt;{body}&lt;/p&gt;
+    &lt;/article&gt;
+  );
+}
+
+export default Card;
+</code></pre>
+<ul>
+<li>Takes two props, <code>title</code> and <code>body</code>.</li>
+<li>Returns an <code>&lt;article&gt;</code> with a heading and a paragraph.</li>
+</ul>
+<p><strong><code>src/Footer.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/Footer.jsx
+function Footer() {
+  return &lt;footer&gt;© 2026 My Shop&lt;/footer&gt;;
+}
+
+export default Footer;
+</code></pre>
+<ul>
+<li>Takes no props. Returns a <code>&lt;footer&gt;</code>.</li>
+</ul>
+<p><strong><code>src/App.jsx</code> — the composition:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import Header from &quot;./Header.jsx&quot;;
+import Card from &quot;./Card.jsx&quot;;
+import Footer from &quot;./Footer.jsx&quot;;
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Header title=&quot;My Shop&quot; /&gt;
+      &lt;Card title=&quot;Mug&quot; body=&quot;A sturdy ceramic mug.&quot; /&gt;
+      &lt;Card title=&quot;Notebook&quot; body=&quot;120 ruled pages.&quot; /&gt;
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<ul>
+<li>The three <code>import</code> lines pull in the components.</li>
+<li><code>App</code> nests them: one <code>Header</code>, two <code>Card</code>s (each configured with props), one <code>Footer</code>.</li>
+<li>Read top to bottom, it is a wireframe of the page.</li>
+</ul>
+<p><strong>Run it</strong> (U09):</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>Same command on Windows, macOS, and Linux; only your terminal app differs.</p>
+<p><strong>What success looks like:</strong> The browser shows a heading "My Shop," two articles with their own headings and paragraphs, and a footer reading <code>© 2026 My Shop</code>. If it looks unstyled, that is correct — CSS is Phase 4.</p>
+<p><strong>A design-tool parallel:</strong> you made a frame (<code>App</code>) containing four named instances/groups (<code>Header</code>, <code>Card</code>, <code>Card</code>, <code>Footer</code>), and the two cards are instances of one <code>Card</code> component with different text properties.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Lowercase custom component tag</h3>
+<pre><code class="language-jsx">&lt;header title=&quot;My Shop&quot; /&gt;
+</code></pre>
+<p><strong>What happens:</strong> React sees lowercase <code>header</code> and renders the plain HTML <code>&lt;header&gt;</code> element. Your custom <code>Header</code> component is never used, so the <code>title</code> prop does nothing and you see no heading.</p>
+<p><strong>Reading it:</strong> No red error. The page is just missing the expected content. Silent bugs like this are why capitalization is worth checking first.</p>
+<p><strong>Fix:</strong> Capitalize the tag: <code>&lt;Header title="My Shop" /&gt;</code>.</p>
+<h3>Error 2 — Forgot to export or import</h3>
+<p><strong>What happens:</strong> If a component file lacks <code>export default</code>, the import finds nothing and you get a build error in the terminal, something like:</p>
+<pre><code class="language-text">The requested module './Header.jsx' does not provide an export named 'default'
+</code></pre>
+<p>Or, if you forgot the import, you may see:</p>
+<pre><code class="language-text">'Header' is not defined
+</code></pre>
+<p><strong>Decode it:</strong> "does not provide an export named 'default'" means "I opened that file and there was nothing marked for export." "is not defined" means "I looked for a name and found nothing."</p>
+<p><strong>Fix:</strong> Add <code>export default Header;</code> to the component file, and make sure the consuming file has the matching <code>import Header from "./Header.jsx";</code>.</p>
+<h3>Error 3 — Wrong relative path</h3>
+<pre><code class="language-jsx">import Header from &quot;./components/Header.jsx&quot;;
+</code></pre>
+<p>when the file is actually sitting right next to <code>App.jsx</code>.</p>
+<p><strong>What happens:</strong> The terminal says it cannot resolve the import, something like <code>Failed to resolve import "./components/Header.jsx"</code>.</p>
+<p><strong>Decode it:</strong> "Failed to resolve" means "I followed that path and there was no file there." Check where the file really lives. <code>./</code> means "same folder as me"; <code>../</code> means "one folder up."</p>
+<h3>Error 4 — Circular imports</h3>
+<p>If <code>App.jsx</code> imports <code>Header.jsx</code>, and <code>Header.jsx</code> imports <code>App.jsx</code>, React may render one of them as blank or throw a confusing error. Nested components should import <em>their</em> children, never their parents. Keep the tree flowing one direction — like layers, parents contain children, not the other way around.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In one sentence, what does "composition" mean in React?</li>
+<li>Why do we put one component per file?</li>
+<li>What is the difference between <code>&lt;header&gt;</code> and <code>&lt;Header&gt;</code>?</li>
+<li>How do you make a component available to another file, and how do you use it there?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Given <code>Header</code> from the worked example, what does each line render? Predict before running.</p>
+<pre><code class="language-jsx">&lt;Header title=&quot;Inbox&quot; /&gt;
+&lt;Header /&gt;
+&lt;header title=&quot;Inbox&quot; /&gt;
+</code></pre>
+<h3>P2 — Change one value, observe</h3>
+<p>Add a third <code>&lt;Card title="Pen" body="A smooth gel pen." /&gt;</code> to <code>App</code>. Save and watch the page. Then remove one <code>Card</code>. Observe both.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Make <code>Hero.jsx</code> and import it. Fill the blanks:</p>
+<pre><code class="language-jsx">// src/Hero.jsx
+function Hero({ ____ }) {
+  return &lt;section&gt;{tagline}&lt;/section&gt;;
+}
+
+____ ____ Hero;
+</code></pre>
+<pre><code class="language-jsx">// src/App.jsx
+import ____ from &quot;./Hero.jsx&quot;;
+// ...
+&lt;Hero tagline=&quot;Design that ships&quot; /&gt;
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Create a <code>Nav</code> component in its own file. It takes no props. It returns a <code>&lt;nav&gt;</code> containing two links written as plain HTML anchors: one to <code>#home</code> reading "Home," one to <code>#about</code> reading "About." Import and place it at the top of <code>App</code>, above the <code>Header</code>.</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This page renders but the heading is missing. Find and fix the bug, and explain it in one sentence.</p>
+<pre><code class="language-jsx">// App.jsx
+import header from &quot;./Header.jsx&quot;;
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;header title=&quot;My Shop&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No events or clicks — U17.</li>
+<li>No state, no <code>useState</code> — U17.</li>
+<li>No list rendering with <code>map</code> — U15 (we write the two Cards by hand here on purpose).</li>
+<li>No conditional rendering — U16.</li>
+<li>No styling, layout, or CSS — Phase 4.</li>
+<li>No folder nesting beyond one <code>src</code> folder; deeper structure arrives later.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U15 — Rendering lists with map</strong> (turning an array of data into many components automatically, instead of hand-writing each one).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U14 Assignment — Compose a page from parts</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U14-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. Component files (one per component)</h3>
+<p>Create these four component files, each exporting one component via <code>export default</code>:</p>
+<ul>
+<li><code>Header.jsx</code> — component <code>Header</code>, takes a <code>title</code> prop, returns a <code>&lt;header&gt;</code> containing an <code>&lt;h1&gt;</code> with the title.</li>
+<li><code>Card.jsx</code> — component <code>Card</code>, takes <code>title</code> and <code>body</code> props, returns an <code>&lt;article&gt;</code> with an <code>&lt;h2&gt;</code> and a <code>&lt;p&gt;</code>.</li>
+<li><code>Footer.jsx</code> — component <code>Footer</code>, takes no props, returns a <code>&lt;footer&gt;</code> with some footer text.</li>
+<li><code>App.jsx</code> — imports the three above and composes a page containing one <code>Header</code>, <strong>at least three</strong> <code>Card</code>s (each with different props), and one <code>Footer</code>.</li>
+</ul>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Explain composition.</strong> In 4–6 sentences, explain to a designer who has never coded what "composing a page from components" means, using a design-tool comparison.</li>
+<li><strong>One file per component.</strong> Give two reasons this convention makes a project easier to work with.</li>
+<li><strong>Capitalization.</strong> Explain the difference between <code>&lt;header&gt;</code> and <code>&lt;Header&gt;</code> and why getting it wrong is easy to miss.</li>
+<li><strong>Boundaries.</strong> Pick one component from your page. In 2–3 sentences, explain why it deserves to be its own component rather than being written inline inside <code>App</code>.</li>
+<li><strong>Read the structure.</strong> Paste your final <code>App.jsx</code> return block and, underneath it, write a one-line-per-line "wireframe" description of the page it builds.</li>
+</ol>
+<h3>3. <code>error-reading.md</code></h3>
+<p>Paste this broken code and answer below it:</p>
+<pre><code class="language-jsx">// App.jsx
+import Card from &quot;./Card.jsx&quot;;
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;card title=&quot;Mug&quot; body=&quot;A mug.&quot; /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<p>a. Describe what the browser actually shows.<br />
+b. Explain why, in one or two sentences.<br />
+c. Fix the code.<br />
+d. Write the general rule this teaches in one sentence.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>Four component files exist with the names above.</li>
+<li>Each component file has <code>export default</code> and the matching <code>import</code> appears where it is used.</li>
+<li>The running app shows a header, three or more cards with different content, and a footer.</li>
+<li><code>answers.md</code> answers all five prompts in your own words.</li>
+<li><code>error-reading.md</code> includes the fix and the one-sentence rule.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>The <code>App</code> reads like a wireframe: you can understand the page's structure without opening the other files.</li>
+<li>Cards are instances of one component with different props, not three hand-written articles.</li>
+<li>The "boundaries" answer (Q4) reasons about change and reuse, not just "it looked cleaner."</li>
+<li>The error-reading answer correctly identifies lowercase <code>&lt;card&gt;</code> as the cause and states the capitalization rule.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U14 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Four files present with correct names and one component each</td>
+<td>3</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+<tr>
+<td><code>Header</code>, <code>Card</code>, <code>Footer</code> accept/return per spec</td>
+<td>3</td>
+<td>Yes</td>
+<td>component files</td>
+</tr>
+<tr>
+<td><code>App</code> imports and composes all three, with 3+ distinct cards</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>App.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>Explains composition in own words using a design comparison</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Gives two real reasons for one-file-per-component</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains <code>&lt;header&gt;</code> vs <code>&lt;Header&gt;</code> correctly</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Justifies a component boundary with change/reuse reasoning</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Wireframe description matches the actual App structure</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Error-reading: correct cause + fix + general rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<p><em>(Categories overlap by design; total weights to 20. If a single submission is flawless in content but misnamed, do not zero it — dock only the naming line.)</em></p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong>Everything in one file:</strong> award component points but 0–1/4 for composition. The unit is about splitting, so an unsplit page misses the point even if it renders.</li>
+<li><strong>Cards hand-written as <code>&lt;article&gt;</code> blocks instead of <code>&lt;Card&gt;</code> instances:</strong> award 1/4 for composition; the reuse lesson from U13/U14 is the target.</li>
+<li><strong><code>&lt;Header /&gt;</code> used but component file forgot <code>export default</code>:</strong> award component partial (2/3) and full error-reading if they diagnose it. This is the intended Error 2 experience.</li>
+<li><strong>Q1:</strong> Full marks require a genuine design-tool comparison (groups, symbols, frames). A purely technical answer caps at 2/3.</li>
+<li><strong>Q3:</strong> Must state that lowercase renders an HTML element and the custom component is skipped, silently. "It's just wrong" without the silent-render detail caps at 1/2.</li>
+<li><strong>Error-reading:</strong> Must identify lowercase <code>&lt;card&gt;</code>; "it shows a plain article with weird attributes" is partially right (1–2/3). Full marks require the capitalization rule.</li>
+<li>Do not penalize imperfect English. Penalize copy-pasted lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U13-props-as-design-properties/index.html">U13 Props as design properties</a>
+    <a class="next" href="../U15-rendering-lists-with-map/index.html">U15 Rendering lists with map</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

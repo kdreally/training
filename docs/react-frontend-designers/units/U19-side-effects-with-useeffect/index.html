@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U19 — Side effects with useEffect | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U19</div>
+    <h1>Side effects with useEffect</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U19 — Side effects with useEffect</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>You can respond to events and hold state (U17), and bind state to form fields (U18). So far, everything a component does happens either while it renders JSX or in response to a user action. This unit covers the third case: code that runs <strong>after</strong> rendering, for reasons that reach outside the component — like changing the browser tab's title.</p>
+<p>This unit is deliberately <strong>light and honest</strong>. <code>useEffect</code> is famously over-taught and over-used, and a lot of its reputation comes from trying to do too much with it. We teach what a side effect is, the safe shape of <code>useEffect</code>, the dependency array, a one-line cleanup, and one decoded failure. We do <strong>not</strong> teach data fetching here.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a "side effect" is and give two examples.</li>
+<li>Use <code>useEffect</code> to run code after render.</li>
+<li>Explain what an empty dependency array (<code>[]</code>) means.</li>
+<li>Mention cleanup and know when it is needed.</li>
+<li>Read and decode the classic infinite-loop error caused by an effect that updates state.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12</strong> — JSX and curly braces.</li>
+<li><strong>U17</strong> — <code>useState</code>, setters, and the re-render idea (essential — effects live and die by re-renders).</li>
+<li><strong>U18</strong> — Events and controlled inputs (we reuse state and handlers).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–80 minutes</strong>. Short on new syntax, heavy on an idea that is easy to misapply. The most valuable thing you will take away is a sense of <em>when not to reach for <code>useEffect</code></em>.</p>
+<h2>Why this exists</h2>
+<p>Rendering produces the UI. That is a component's main job. But sometimes you need to do something that is <strong>not</strong> producing UI:</p>
+<ul>
+<li>change the browser tab's title to match the page,</li>
+<li>log something for debugging,</li>
+<li>start a timer,</li>
+<li>read or write to storage,</li>
+<li>(later) fetch data from a server,</li>
+<li>set up a subscription.</li>
+</ul>
+<p>These are called <strong>side effects</strong>: things that reach outside the pure job of turning state into on-screen elements. The human problem is timing: if you change the tab title <em>while</em> rendering, you are intermixing an outside-world action with drawing the screen, which leads to confusing bugs. React gives you a controlled place to run side effects <strong>after</strong> the screen has been drawn: <code>useEffect</code>.</p>
+<p>A good mental model from design tools: rendering is drawing the frame; effects are the automations that fire <em>after</em> the frame is drawn — like a prototype "on load" action or a plugin that runs once the screen appears.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a side effect is</h3>
+<p>A <strong>side effect</strong> is any action a component takes that is not "compute and return JSX." Two examples we can run today:</p>
+<ul>
+<li>Setting <code>document.title</code> (the text in the browser tab).</li>
+<li>Logging to the console (<code>console.log</code>).</li>
+</ul>
+<p>Both touch the world <em>outside</em> the component. Both are fine to do — just not during rendering.</p>
+<p>To see the outside world here, we need one new vocabulary item. <strong><code>document</code></strong> is the browser's representation of the whole page (this is the <strong>DOM</strong>, met back in U02). <code>document.title = "..."</code> sets the tab title. In plain JavaScript (U05), assigning to <code>document.title</code> is how you change it. React does not give you a special way to do this; it is a normal, outside-the-component assignment.</p>
+<h3><code>useEffect</code> basics</h3>
+<p><code>useEffect</code> is a hook (U17). Like <code>useState</code>, you import it from React and call it at the top level of your component:</p>
+<pre><code class="language-jsx">import { useEffect, useState } from &quot;react&quot;;
+
+useEffect(() =&gt; {
+  // code that runs after render, side-effect territory
+});
+</code></pre>
+<p>Read it as: "after every render of this component, React, please run this function."</p>
+<p>The function you pass is called the <strong>effect function</strong> (or just "the effect"). React runs it <em>after</em> the browser has drawn the current output, so you never block or corrupt the render.</p>
+<h3>Re-running and the dependency array</h3>
+<p>By default, the effect runs after <strong>every</strong> render. Often you do not want that; you want it to run only when certain values change. You control this with the second argument: the <strong>dependency array</strong>.</p>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  document.title = &quot;Count: &quot; + count;
+}, [count]);
+</code></pre>
+<p>The array <code>[count]</code> lists the values the effect depends on. React compares this list to the previous render's list. The effect runs again only if a listed value changed.</p>
+<p>Two special cases you must know:</p>
+<ul>
+<li><strong><code>[]</code> (empty array)</strong> — a list of no dependencies. The effect runs <strong>once, after the first render</strong>, and not again. This is the shape for setup that should happen on mount.</li>
+<li><strong>No array at all</strong> — the effect runs after every render. This is the shape that most often causes bugs, because if the effect changes state, you get a loop (see Common Errors).</li>
+</ul>
+<p>(The word <strong>mount</strong> means "when the component first appears on screen"; <strong>unmount</strong> means "when it disappears.")</p>
+<h3>Cleanup (a mention, not a deep dive)</h3>
+<p>If your effect starts something that needs stopping — a timer, a subscription, an event listener — you return a function from the effect. That function is the <strong>cleanup function</strong>, and React calls it before re-running the effect and when the component unmounts:</p>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  const id = setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
+  return () =&gt; clearInterval(id);
+}, []);
+</code></pre>
+<p>For a small course project you may never need this. Know that it exists, know the shape (return a function), and know it matters most for timers and subscriptions. That is the honest scope here.</p>
+<h3>When <em>not</em> to use an effect</h3>
+<p>A surprising amount of beginner trouble comes from using <code>useEffect</code> for things that need no effect at all.</p>
+<ul>
+<li>To compute a value from props or state, just compute it during render: <code>const total = price * quantity;</code>.</li>
+<li>To run code <em>in response to a click</em>, put it in the handler (U17), not an effect.</li>
+<li>To show or hide something by rule, use conditional rendering (U16).</li>
+</ul>
+<p>The rule of thumb: <strong>effects are for reaching outside the component — the browser, the network, timers — not for reorganizing your own data.</strong> If you cannot name what outside thing the effect touches, you probably do not need it.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Side effect</td>
+<td>An action outside "compute and return JSX"</td>
+<td>Not a bug; a category of legitimate work</td>
+</tr>
+<tr>
+<td><code>useEffect</code></td>
+<td>Hook to run code after render</td>
+<td>Not a place to calculate values for render</td>
+</tr>
+<tr>
+<td>Effect function</td>
+<td>The function you pass to <code>useEffect</code></td>
+<td>Runs after paint, not during render</td>
+</tr>
+<tr>
+<td>Dependency array</td>
+<td>Second argument listing values the effect watches</td>
+<td><code>[]</code> means once; missing array means every render</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>Empty dependency array — run once after first render</td>
+<td>Not "run never"</td>
+</tr>
+<tr>
+<td>Mount</td>
+<td>When a component first appears</td>
+<td>Not a filesystem mount</td>
+</tr>
+<tr>
+<td>Unmount</td>
+<td>When a component is removed</td>
+<td>Cleanup runs here</td>
+</tr>
+<tr>
+<td>Cleanup function</td>
+<td>A function returned from an effect to undo it</td>
+<td>Not required unless you started something</td>
+</tr>
+<tr>
+<td><code>document.title</code></td>
+<td>The browser tab's text (a real side effect target)</td>
+<td>Part of the DOM (U02), not a React feature</td>
+</tr>
+<tr>
+<td>Infinite loop</td>
+<td>An effect that triggers a render that re-triggers the effect</td>
+<td>Decoded below</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a component whose effect updates the browser tab title to follow a counter.</p>
+<p><strong><code>src/CounterTitle.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/CounterTitle.jsx
+import { useEffect, useState } from &quot;react&quot;;
+
+function CounterTitle() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    document.title = &quot;Count: &quot; + count;
+  }, [count]);
+
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;Watch the browser tab&lt;/h2&gt;
+      &lt;p&gt;Count is {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;Add one&lt;/button&gt;
+    &lt;/section&gt;
+  );
+}
+
+export default CounterTitle;
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>import { useEffect, useState } from "react";</code> — both hooks come from React.</li>
+<li><code>const [count, setCount] = useState(0);</code> — state (U17), starting at <code>0</code>.</li>
+<li><code>useEffect(() =&gt; { document.title = "Count: " + count; }, [count]);</code> — after render, set the tab title. The dependency array <code>[count]</code> says: re-run this effect whenever <code>count</code> changes.</li>
+<li><code>document.title = "Count: " + count;</code> — a real side effect: it reaches outside React and changes the browser tab.</li>
+<li><code>onClick={() =&gt; setCount(count + 1)}</code> — the click changes state, which re-renders, which re-runs the effect, which updates the title. Follow that chain; it is the whole point.</li>
+</ul>
+<p><strong><code>src/App.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import CounterTitle from &quot;./CounterTitle.jsx&quot;;
+
+function App() {
+  return &lt;CounterTitle /&gt;;
+}
+
+export default App;
+</code></pre>
+<p><strong>Run it</strong> (U09):</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>Same command on every OS; only the terminal app differs.</p>
+<p><strong>What success looks like:</strong> The page shows "Count is 0," and the browser tab reads <code>Count: 0</code>. Click "Add one": the number and the tab title both update to <code>Count: 1</code>, then <code>Count: 2</code>, and so on. The tab text follows the state.</p>
+<p><strong>A design-tool parallel:</strong> an "on change" automation attached to a variable, updating something outside the frame — the document itself.</p>
+<p><strong>Try this variation:</strong> change <code>[count]</code> to <code>[]</code>. Now the title is set once to <code>Count: 0</code> and never updates, even as the number changes. That is what an empty dependency array means: run once.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Infinite loop (effect sets state, no/wrong dependency)</h3>
+<pre><code class="language-jsx">function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    setCount(count + 1);
+  });
+
+  return &lt;p&gt;{count}&lt;/p&gt;;
+}
+</code></pre>
+<p>There is no dependency array, so the effect runs after <strong>every</strong> render. The effect calls <code>setCount</code>, which causes a render, which runs the effect again, forever. React stops it and throws:</p>
+<pre><code class="language-text">Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect, but useEffect either doesn't have a dependency array, or one of the dependencies changes on every render.
+</code></pre>
+<p><strong>Decode it, piece by piece:</strong></p>
+<ul>
+<li><strong>"Maximum update depth exceeded"</strong> — the component updated itself too many times in a row.</li>
+<li><strong>"calls setState inside useEffect"</strong> — the effect changed state.</li>
+<li><strong>"doesn't have a dependency array, or one of the dependencies changes on every render"</strong> — the two usual causes: a missing array (runs every time), or an array whose contents are always "new" so React always sees a change.</li>
+</ul>
+<p><strong>How to fix:</strong> Decide what the effect truly depends on and list it. If the effect is setup that should run once, use <code>[]</code>. And beware: if the effect genuinely must set state, make sure it does so only under a condition, not unconditionally after every render.</p>
+<h3>Error 2 — A dependency that is "new" every render</h3>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  // ...
+}, [user]);
+</code></pre>
+<p>where <code>user</code> is an object recreated on each render (for example <code>const user = { name: "Ada" };</code> inside the component). Even if the values inside look identical, React sees a brand-new object each render, so the effect re-runs every time — which can loop.</p>
+<p><strong>Decode it:</strong> Same "Maximum update depth exceeded" message. The subtle part is the cause: the dependency <em>is</em> listed, but it changes on every render.</p>
+<p><strong>Fix:</strong> Depend on the specific values you need (<code>user.id</code>) rather than a whole object, or create the object outside the component if it does not change. (This is a known sharp edge; you are not expected to master it now.)</p>
+<h3>Error 3 — Doing render work inside an effect</h3>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  const total = price * quantity;
+  setTotal(total);
+}, [price, quantity]);
+</code></pre>
+<p>This works but is a roundabout, bug-prone way to compute a value that could simply be <code>const total = price * quantity;</code> during render. It causes an extra render and can loop if written carelessly.</p>
+<p><strong>Fix:</strong> If you can compute it from current props and state, compute it in the component body. Save <code>useEffect</code> for genuinely outside-the-component actions.</p>
+<h3>Error 4 — Forgetting cleanup for a timer</h3>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
+}, []);
+</code></pre>
+<p>You started a timer and never stopped it. It keeps running even if the component is removed, leaking work.</p>
+<p><strong>Fix:</strong> Return a cleanup function:</p>
+<pre><code class="language-jsx">useEffect(() =&gt; {
+  const id = setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
+  return () =&gt; clearInterval(id);
+}, []);
+</code></pre>
+<h2>Checkpoints</h2>
+<ol>
+<li>In one sentence, what is a side effect?</li>
+<li>When does an effect with <code>[]</code> run, and when does an effect with no array run?</li>
+<li>Why can an effect that calls <code>setCount</code> unconditionally create an infinite loop?</li>
+<li>Name one thing people often put in <code>useEffect</code> that should not be there.</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Predict what the browser tab reads after: page loads, click once, click again — for the worked example. Then predict what it reads if you change <code>[count]</code> to <code>[]</code> and click twice.</p>
+<h3>P2 — Change one value, observe</h3>
+<p>Change the effect body to <code>document.title = "Hello!";</code> with <code>[count]</code> still in place. What updates the title now? Then change the array to <code>[]</code> with the original body and observe.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Make the tab title always show the current <code>name</code> from a text field:</p>
+<pre><code class="language-jsx">const [name, setName] = useState(&quot;&quot;);
+
+useEffect(() =&gt; {
+  ____ = &quot;Name: &quot; + name;
+}, [____]);
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Create <code>Clock.jsx</code>: a component that, on mount, uses <code>setInterval</code> to update a <code>seconds</code> state every second, and displays the seconds. Include a cleanup function with <code>clearInterval</code>. (This combines the timer pattern with state; keep it small.)</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This component loops forever. Fix it and explain in one sentence why it looped.</p>
+<pre><code class="language-jsx">import { useEffect, useState } from &quot;react&quot;;
+
+function Ticker() {
+  const [n, setN] = useState(0);
+
+  useEffect(() =&gt; {
+    setN(n + 1);
+  });
+
+  return &lt;p&gt;{n}&lt;/p&gt;;
+}
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No data fetching (<code>fetch</code>), no loading states, no API calls — deliberately deferred.</li>
+<li>No <code>useRef</code>, <code>useMemo</code>, <code>useCallback</code>, or other hooks.</li>
+<li>No deep cleanup patterns or subscription management — only the shape is shown.</li>
+<li>No global side effects or state management libraries.</li>
+<li>No explanation of React's internal scheduling; we treat effects as "run after render."</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U20 — Styling options in a React app</strong> (Phase 4). That closes Phase 3: you can now configure components with props, compose them, render lists and conditions, respond to events, hold state, build forms, and run a careful side effect. You can build a genuinely interactive single page. Phase 4 turns to <strong>styling and design</strong> — carrying your design system into a React app. U20 surveys how styling is done, including plain CSS, and picks one clear recommendation.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U19 Assignment — One careful effect</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U19-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>TitleSync.jsx</code></h3>
+<p>A small component that uses <code>useState</code> and <code>useEffect</code> meeting this specification:</p>
+<ul>
+<li>Holds a piece of state that the user can change with a control (for example, a counter with a button, or a text field from U18).</li>
+<li>Uses <code>useEffect</code> with a <strong>dependency array</strong> to keep <code>document.title</code> in sync with that state.</li>
+<li>The title must update when the state changes, and must not cause an infinite loop.</li>
+</ul>
+<h3>2. <code>App.jsx</code></h3>
+<p>Imports and renders <code>TitleSync</code>.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Side effect.</strong> In 3–5 sentences, explain what a side effect is to a designer who has not coded, using a design-tool or prototype comparison.</li>
+<li><strong>Timing.</strong> Why does <code>useEffect</code> run <em>after</em> render rather than during it? What problem does that avoid?</li>
+<li><strong>Dependency array.</strong> Explain the difference between no array, <code>[]</code>, and <code>[count]</code>. Say when each runs.</li>
+<li><strong>When not to use it.</strong> Name one task that people often put inside <code>useEffect</code> that does not belong there, and say where it should go instead.</li>
+<li><strong>Predict then run.</strong> For your own component, write the sequence of browser-tab titles as the user interacts with it, then run it and confirm.</li>
+</ol>
+<h3>4. <code>error-reading.md</code></h3>
+<p>Paste, run, and answer:</p>
+<pre><code class="language-jsx">import { useEffect, useState } from &quot;react&quot;;
+
+function Badge() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    setCount(count + 1);
+  });
+
+  return &lt;span&gt;{count}&lt;/span&gt;;
+}
+
+export default Badge;
+</code></pre>
+<p>a. Describe what happens when the component loads.<br />
+b. Quote the exact warning from the console.<br />
+c. Explain, in one or two sentences, why the loop happens (mention the dependency array).<br />
+d. Fix it so the component renders once and stays at 0.<br />
+e. Write the general rule in one sentence.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>The tab title is driven by state through <code>useEffect</code> and updates without looping.</li>
+<li><code>app.jsx</code> renders the component cleanly.</li>
+<li><code>answers.md</code> answers all five prompts in your own words.</li>
+<li><code>error-reading.md</code> quotes the real warning, explains the loop, fixes it, and states the rule.</li>
+<li>Files are named exactly as above.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>The effect's dependency array genuinely matches what the effect reads.</li>
+<li>The "when not to use it" answer (Q4) names a concrete example (e.g. computing a total, or responding to a click) and its correct home.</li>
+<li>The error-reading answer correctly ties the loop to the missing dependency array, and the fix keeps the component stable (removing the unwanted <code>setCount</code>, or guarding it).</li>
+<li>The side-effect explanation uses the timing idea (after render), not just "it runs extra code."</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U19 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component uses <code>useState</code> + <code>useEffect</code> together correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>TitleSync.jsx</code> + running app</td>
+</tr>
+<tr>
+<td><code>document.title</code> is kept in sync with state</td>
+<td>3</td>
+<td>Yes</td>
+<td>running app (tab text)</td>
+</tr>
+<tr>
+<td>Dependency array is present and correct</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>TitleSync.jsx</code></td>
+</tr>
+<tr>
+<td>No infinite loop</td>
+<td>3</td>
+<td>Yes</td>
+<td>running app</td>
+</tr>
+<tr>
+<td>Explains side effects with a design/prototype comparison</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains why effects run after render</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Correctly distinguishes no-array / <code>[]</code> / <code>[value]</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Names a task that should not be in <code>useEffect</code></td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Error-reading: quotes warning, explains loop, fixes, states rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<p><em>(Weights overlap; total 20. If a flawless submission is misnamed, dock only the naming line.)</em></p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong>Effect present but no dependency array on a state-setting effect:</strong> this loops; award 0/3 for "no infinite loop" and guide to the decoded warning.</li>
+<li><strong>Effect sets <code>document.title</code> but never updates (used <code>[]</code> while depending on state):</strong> award 1/3 for the dependency array; the title is frozen. This is the intended "empty array means once" lesson.</li>
+<li><strong>Effect used to compute a value that could be computed in render (no side effect at all):</strong> award effect-syntax points but note Q4; the unit explicitly warns against this.</li>
+<li><strong>Q1:</strong> Full marks for a timing/outside-the-component framing or a prototype "on load" comparison. "It does extra stuff" caps at 1/2.</li>
+<li><strong>Q3:</strong> Must state that no array = every render, <code>[]</code> = once, <code>[value]</code> = when value changes. Missing one caps at 2/3.</li>
+<li><strong>Error-reading:</strong> The missing dependency array makes the effect run every render, calling <code>setCount</code> each time. React shows: <code>Warning: Maximum update depth exceeded. This can happen when a component calls setState inside useEffect...</code>. Fix: remove the <code>setCount</code> (the component is meant to stay at 0) or add <code>[]</code> <strong>and</strong> stop unconditionally setting state. Full marks require the fix to actually render once and stay at 0.</li>
+<li>Do not penalize imperfect English. Penalize copied lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U18-forms-and-controlled-inputs/index.html">U18 Forms and controlled inputs</a>
+    <a class="next" href="../U20-styling-options/index.html">U20 Styling options in a React app</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

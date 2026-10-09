@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U02 — The works-on-my-machine problem | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U02</div>
+    <h1>The works-on-my-machine problem</h1>
+    <span class="phase-badge ph1">Phase 1 — Why containers exist</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U02 — The works-on-my-machine problem</h1>
+<p><strong>Phase 1 — Why containers exist</strong></p>
+<h2>Where you are</h2>
+<p>This is the first unit of Phase 1. We are not touching Docker yet. Instead we study the <strong>human problem</strong> that Docker was invented to solve. If you understand the problem clearly, every tool later will feel like a sensible answer instead of an arbitrary ritual.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what people mean by "it works on my machine" and describe when it happens.</li>
+<li>Name the parts of a software <strong>environment</strong>: operating system, runtime, libraries, versions, and configuration.</li>
+<li>Explain why "install the same thing" often fails to fix the problem.</li>
+<li>See the problem as a systems issue rather than a personal failure.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong></li>
+<li><strong>U01 — What we are building toward.</strong> You need the journey map and the rough preview of containers.</li>
+</ul>
+<p>No Docker, no programming setup, and no terminal commands are required in this unit.</p>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>. There are no commands to type. If the story below feels uncomfortably familiar, that recognition is the point — it means the unit is working.</p>
+<h2>Why this exists</h2>
+<p>This exact frustration is the reason Docker exists. Teams lose days to it every year. When you can name the problem precisely, you stop blaming yourself and start seeing a solvable engineering situation. That shift is worth a whole unit.</p>
+<h2>Plain-language teaching</h2>
+<h3>A short story</h3>
+<p>A small team builds a web app. On Dana's laptop it runs perfectly. Dana sends the project to a colleague, Omar, who follows the same setup instructions. Omar gets errors before the app even starts.</p>
+<p>Dana says, "It works on my machine." Omar hears, "You did something wrong." A week disappears into screen-sharing before someone discovers the truth: the two laptops were never actually running the same thing.</p>
+<h3>What an "environment" actually means</h3>
+<p>An app never runs in a vacuum. It runs inside an <strong>environment</strong> — everything around the code that the code depends on. Five pieces matter most for now:</p>
+<ol>
+<li><strong>Operating system.</strong> Windows, macOS, and Linux differ in thousands of small ways: file paths, permissions, case sensitivity of filenames, and the low-level system libraries available.</li>
+<li><strong>Runtime.</strong> The engine that executes the code. Python, Node.js, the Java runtime, and .NET are all runtimes. The code cannot run without its runtime.</li>
+<li><strong>Libraries.</strong> Bundles of code the app uses but did not write. A web app might rely on forty of them.</li>
+<li><strong>Versions.</strong> The <em>specific</em> versions of the runtime and each library. Library version 2.1.0 and 2.2.0 can behave differently, even in ways that break the app.</li>
+<li><strong>Configuration.</strong> Settings that are not code: database addresses, passwords, feature flags, and environment variables (settings passed in from outside the program).</li>
+</ol>
+<h3>Dependencies and version drift</h3>
+<p>A <strong>dependency</strong> is anything the app needs in order to run — a runtime, a library, a system tool. When two machines install those dependencies at different times, they slowly stop matching. We call this <strong>version drift</strong>. It is gradual and sneaky: each person's machine is a little different, and nobody noticed the day it happened.</p>
+<h3>Why copying the project folder is not enough</h3>
+<p>The project folder usually contains only the <em>code</em>. It does not contain the operating system, the installed runtime, the exact library versions, or the settings. That is why two people can open the same folder and get two different results. The folder is identical; the <strong>environment around it</strong> is not.</p>
+<h3>How teams used to cope (and where each falls short)</h3>
+<ul>
+<li><strong>A long setup document.</strong> Works until the document goes out of date, which is quickly.</li>
+<li><strong>A shared server everyone logs into.</strong> Consistent, but fragile, shared, and hard to reproduce.</li>
+<li><strong>Virtual machines hand-built by an expert.</strong> More consistent, but large, slow, and still hand-made unless carefully automated.</li>
+</ul>
+<p>Notice the pattern: none of these fully solve the problem of shipping <strong>the app plus its environment together</strong>. That is the gap containers fill — later in this course.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment</td>
+<td>Everything around the code that the code needs to run</td>
+<td>People think "environment" means only settings</td>
+</tr>
+<tr>
+<td>Runtime</td>
+<td>The engine that executes the code (Python, Node.js, Java)</td>
+<td>Not the same as the operating system</td>
+</tr>
+<tr>
+<td>Library</td>
+<td>A bundle of ready-made code the app uses</td>
+<td>People call libraries "dependencies," which is broader</td>
+</tr>
+<tr>
+<td>Dependency</td>
+<td>Anything the app needs to run: runtime, library, or system tool</td>
+<td>Not only external packages</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>The specific release number of a piece of software</td>
+<td>"Same software" is not the same as "same version"</td>
+</tr>
+<tr>
+<td>Version drift</td>
+<td>Two machines slowly drifting to different versions</td>
+<td>Not a single event; it accumulates</td>
+</tr>
+<tr>
+<td>Reproducibility</td>
+<td>Getting the same result again and again on any machine</td>
+<td>Not the same as "it worked once"</td>
+</tr>
+<tr>
+<td>"Works on my machine"</td>
+<td>A bug that only appears in some environments</td>
+<td>Not proof the reporter is lying or careless</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>Settings the app reads from outside its code</td>
+<td>Not the same as the code itself</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>You are not running anything. Read the two machines and notice exactly where they differ.</p>
+<p><strong>Scenario:</strong> A small Node.js web app. The team checked in the code plus a file called <code>package.json</code>, which lists the libraries the app wants. It does <strong>not</strong> pin exact versions for all of them.</p>
+<pre><code class="language-text">package.json (excerpt)
+{
+  &quot;name&quot;: &quot;todo-app&quot;,
+  &quot;dependencies&quot;: {
+    &quot;express&quot;: &quot;^4.0.0&quot;,
+    &quot;pg&quot;: &quot;latest&quot;
+  }
+}
+</code></pre>
+<p>The caret (<code>^</code>) and the word <code>latest</code> tell the package installer "any recent version is fine." That is the trap.</p>
+<pre><code class="language-text">Dana's machine (it works)              Omar's machine (it fails)
+-------------------                    -------------------
+Node.js 20.11                          Node.js 18.19
+express 4.18                           express 4.19
+pg 8.11                                pg 8.13
+macOS Sonoma                           Windows 11
+DATABASE_URL set                       DATABASE_URL missing
+</code></pre>
+<p>Omar runs the app and sees:</p>
+<pre><code class="language-text">Error: connect ECONNREFUSED 127.0.0.1:5432
+</code></pre>
+<p><strong>Decoding it:</strong> the app tried to reach a database at the address <code>127.0.0.1</code> (this computer) on port <code>5432</code>, and nothing answered. On Dana's machine a database was running; on Omar's it was not, and the setting that points to it was missing entirely.</p>
+<p>Nothing here is Omar's fault. The environment was never the same. This is the exact class of problem containers are designed to remove: instead of hoping two machines match, you ship the environment as part of the product.</p>
+<h2>Common errors</h2>
+<h3>Error: telling the other person to "reinstall everything"</h3>
+<p><strong>What happens:</strong> They reinstall, versions drift again, and the bug returns next week.</p>
+<p><strong>Fix:</strong> The problem is not a missing install; it is an <strong>unmatched</strong> install. Reinstallation does not guarantee the same versions.</p>
+<h3>Error: assuming the code is buggy</h3>
+<p><strong>What happens:</strong> The team spends days hunting through code that is fine on one machine.</p>
+<p><strong>Fix:</strong> Ask first: "Do the two environments match?" Code that fails on one machine and works on another is usually an environment difference before it is a code bug.</p>
+<h3>Error: blaming the person</h3>
+<p><strong>What happens:</strong> "You must have done it wrong" damages trust and hides the real cause.</p>
+<p><strong>Fix:</strong> Separate the <em>work</em> from the <em>person</em>. The environment drifted; the person did nothing wrong. Every mature team treats this as a systems problem.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What are the five parts of an environment this unit named?</li>
+<li>What is version drift, and why is it sneaky?</li>
+<li>Why does copying the project folder not fix "works on my machine"?</li>
+</ol>
+<p>If you can answer these, you are ready.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Inventory a real environment</h3>
+<p>Pick any program or project you have used. List its runtime, at least two libraries, one configuration setting, and the operating system. If you do not know a value, write "unknown" and note what you would check.</p>
+<h3>P2 — Spot the drift</h3>
+<p>Two machines are described below. Circle every line where they differ.</p>
+<pre><code class="language-text">Machine A: Python 3.11, macOS, numpy 1.24, &quot;DEBUG=false&quot;
+Machine B: Python 3.12, Linux,  numpy 1.26, &quot;DEBUG=true&quot;
+</code></pre>
+<p>Then write one sentence about which difference could most easily change behaviour.</p>
+<h3>P3 — Predict then read</h3>
+<p>Before reading further, predict: if the database setting is missing on Machine B, what error would it likely produce? Then re-read the worked example and compare your prediction to the real error. Predictions that are wrong are more useful than ones that are right.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No Docker commands, no installing anything.</li>
+<li>No container or image mechanics yet (precise versions arrive in U05 and U08).</li>
+<li>No terminal navigation (that is U03).</li>
+<li>No networking deep dive — you only met the idea of a database address.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U03 — The terminal, deliberately</strong> (the tool where Docker commands will later be typed).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U02 Assignment — Diagnose the drift</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U02-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>incident.md</code></h3>
+<p>Answer these prompts in your own words. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Tell the story.</strong> Describe a real or realistic "works on my machine" incident in 6–9 lines. It can be from your own experience, a story you were told, or a realistic invention. Name the people, what each machine had, and what went wrong.</li>
+<li><strong>Name the environment.</strong> For your incident, list each of the five environment parts (operating system, runtime, libraries, versions, configuration) and say which one caused the trouble. If a part was fine, say so and why.</li>
+<li><strong>Why "install the same thing" fails.</strong> In 3–5 lines, explain why telling someone to reinstall does not reliably fix this class of problem.</li>
+<li><strong>Predict then read.</strong> Before looking back at the worked example, a teammate's app fails with:<br />
+<code>Error: connect ECONNREFUSED 127.0.0.1:5432</code><br />
+   Write what you think this message means. Then write, in two lines, what the lesson said it meant. Note whether your prediction matched.</li>
+<li><strong>Drift detection.</strong> Write three questions a team could ask to catch version drift <em>before</em> it causes a bad bug.</li>
+<li><strong>Explain in your own words.</strong> Define <em>environment</em>, <em>version drift</em>, and <em>reproducibility</em> in your own words as if explaining to a friend who is not technical.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the whole U02 README, not only the assignment.
+- [ ] I can name the five parts of an environment without looking.
+- [ ] I can explain version drift in one sentence.
+- [ ] I wrote a prediction for the error message before re-reading.
+- [ ] I read the U02 rubric before writing incident.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files are present with the exact names above.</li>
+<li><code>incident.md</code> answers all six prompts in your own words.</li>
+<li>The environment is described with at least four of the five parts named.</li>
+<li>The prediction in Q4 is written down <em>before</em> the explanation, and both are present.</li>
+<li>The checklist is completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U02 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Incident is coherent and shows the two machines differing</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>incident.md</code> Q1</td>
+</tr>
+<tr>
+<td>Environment named with four or more of the five parts</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>incident.md</code> Q2</td>
+</tr>
+<tr>
+<td>Correct cause identified (unmatched, not merely missing)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>incident.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains why reinstall does not guarantee a match</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>incident.md</code> Q3</td>
+</tr>
+<tr>
+<td>Prediction recorded and compared to the decoded error</td>
+<td>3</td>
+<td>No</td>
+<td><code>incident.md</code> Q4</td>
+</tr>
+<tr>
+<td>Three concrete drift-detection questions</td>
+<td>2</td>
+<td>No</td>
+<td><code>incident.md</code> Q5</td>
+</tr>
+<tr>
+<td>All three terms defined in plain, correct language</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>incident.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>0 (gate)</td>
+<td>Yes</td>
+<td>folder / zip structure</td>
+</tr>
+</tbody>
+</table>
+<p>Note: the final row is a <strong>gate</strong>, not points. Missing or misnamed files must be flagged to the learner, but the total stays out of 20.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q2: award 2/4 if three parts are named; 1/4 if only "the OS" is blamed with no detail. Blaming the operating system by itself is a thoughtful but incomplete answer — award partial and point to libraries/versions.</li>
+<li>Q3: award 1/2 for "installs can differ" without the word version; full marks if they connect it to matching versions, not just presence.</li>
+<li>Q4: award 1/3 if a prediction exists but is vague; 3/3 if it distinguishes "connection refused" from "wrong password." A wrong-but-reasoned prediction earns full marks here.</li>
+<li>Q6: definitions must be in their own words. A near-verbatim copy of the vocabulary table earns at most 1/2.</li>
+<li>Do not penalize imperfect English. Penalize empty answers and pasted lesson text.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U01-what-we-are-building-toward/index.html">U01 What we are building toward</a>
+    <a class="next" href="../U03-the-terminal/index.html">U03 The terminal, deliberately</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

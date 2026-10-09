@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U01 — What we are building toward | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U01</div>
+    <h1>What we are building toward</h1>
+    <span class="phase-badge ph0">Phase 0 — Orientation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U01 — What we are building toward</h1>
+<p><strong>Phase 0 — Orientation</strong></p>
+<h2>Where you are</h2>
+<p>You have finished the orientation unit (U00) and you know how the course runs. This unit shows you the <strong>destination</strong> before the journey: what you will actually be able to do with Docker by the end, and what this course honestly will not teach you. Seeing the whole mountain first makes each later step feel like progress instead of random homework.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Describe, in your own words, the journey from source code on your laptop to an app running in a container.</li>
+<li>Name the main ideas you will meet (image, container, Dockerfile, Compose, registry, CI, deploy) and the human problem each one solves.</li>
+<li>State honestly what this course covers and what it leaves out.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong> You need the unit structure, the practice-vs-assignment idea, and the stuck protocol. Nothing else.</li>
+</ul>
+<p>No programming and no Docker are needed for this unit.</p>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>, almost all of it reading and reflecting. There are no commands to run here. If your eyes glaze over, stop at a heading and come back. This unit is a map, and maps are worth studying slowly.</p>
+<h2>Why this exists</h2>
+<p>Being told "learn Docker" is like being dropped in a city with no map. You wander, you get lost, and you start to believe the problem is you. It is not. The problem is that nobody showed you the shape of the journey.</p>
+<p>This unit hands you the map. When a later unit feels hard, you can look back and see which part of the larger goal you are standing on.</p>
+<h2>Plain-language teaching</h2>
+<h3>The destination in one sentence</h3>
+<p>By the end of this course you will take a small app that runs on your laptop, wrap it and everything it needs into a <strong>container</strong>, and run that same container on another machine so it behaves the same way there.</p>
+<h3>The stops on the journey</h3>
+<p>Here is the whole route. Each stop gets its own unit later; you do not need to master any of it now.</p>
+<ol>
+<li><strong>A program needs an environment.</strong> The app is not only its code. It also needs a runtime, libraries, settings, and a way to receive network traffic. (U04.)</li>
+<li><strong>"Works on my machine" is the pain.</strong> Two machines with "the same app" behave differently because their environments drifted apart. (U02, and you met this idea in the course map.)</li>
+<li><strong>Containers package the app <em>and</em> its environment.</strong> (U05, U07.)</li>
+<li><strong>An image is the recipe; a container is the running instance of that recipe.</strong> (U08.) This sentence is the heart of the course, and you will earn it properly later.</li>
+<li><strong>A Dockerfile is how we write the recipe.</strong> (U11–U16.)</li>
+<li><strong>Compose runs several containers together</strong> so a real app (web + database, say) can start with one command. (U21–U25.)</li>
+<li><strong>A registry lets images travel</strong> from your laptop to a teammate or a server. (U26–U27.)</li>
+<li><strong>CI builds images automatically</strong> when code changes, and <strong>deployment runs those images somewhere.</strong> (U28–U31.)</li>
+</ol>
+<h3>Plain-language preview of the two central words</h3>
+<p>You will meet these two words constantly, so here is a first, rough taste. U08 gives you the precise version.</p>
+<ul>
+<li>A <strong>container</strong> is a box that holds a running program together with everything that program needs to run. It is isolated from the rest of your computer but shares your computer's core operating system, which is why containers are small and fast.</li>
+<li>An <strong>image</strong> is the saved, reusable blueprint that a container is created from. You build an image once and can start many containers from it.</li>
+</ul>
+<p>Think <em>image = blueprint, container = building made from the blueprint</em>. You are <strong>not</strong> expected to invent anything from this preview — it is orientation only.</p>
+<h3>Honest scope: what this course promises</h3>
+<ul>
+<li>You will be able to <strong>containerize a small app end to end</strong> (the capstone, U35).</li>
+<li>You will be able to <strong>read any Dockerfile or Compose file</strong> and explain what each line does.</li>
+<li>You will be able to <strong>explain what every running container on your machine is doing.</strong></li>
+<li>You will understand how containers fit into developer and DevOps work: building, testing, shipping.</li>
+</ul>
+<h3>Honest scope: what this course does <em>not</em> promise</h3>
+<ul>
+<li>It does <strong>not</strong> make you a Kubernetes expert. U32 is a short survey that shows where Kubernetes fits, nothing more.</li>
+<li>It does <strong>not</strong> teach you to program. It assumes you can read a little code, not write a large app.</li>
+<li>It does <strong>not</strong> require a cloud account or anything paid. Everything runs on your own computer.</li>
+<li>It does <strong>not</strong> cover advanced production infrastructure (multi-region clusters, service meshes). Those are later, separate skills.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Container</td>
+<td>A running program bundled with everything it needs, isolated but sharing the host's operating-system core</td>
+<td>Not the same as a virtual machine (see U05)</td>
+</tr>
+<tr>
+<td>Image</td>
+<td>The saved blueprint that containers are started from</td>
+<td>People say "run the image" as if the image <em>is</em> the running thing</td>
+</tr>
+<tr>
+<td>Dockerfile</td>
+<td>A text recipe listing how to build an image</td>
+<td>Not a script you run directly; Docker reads it</td>
+</tr>
+<tr>
+<td>Docker Compose</td>
+<td>A tool to define and run several containers together from one file</td>
+<td>Not the same as a single <code>run</code> command</td>
+</tr>
+<tr>
+<td>Registry</td>
+<td>An online library where images are stored and shared</td>
+<td>Not the same as a running container</td>
+</tr>
+<tr>
+<td>CI (continuous integration)</td>
+<td>An automated service that builds and tests your code when it changes</td>
+<td>Not a Docker feature; Docker is used <em>inside</em> CI</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Putting your app somewhere it can serve real users</td>
+<td>Not the same as "it runs on my laptop"</td>
+</tr>
+<tr>
+<td>Orchestration</td>
+<td>Software that manages many containers across many machines</td>
+<td>Kubernetes is one example; not required in this course</td>
+</tr>
+<tr>
+<td>Host</td>
+<td>The computer the containers run on</td>
+<td>Distinct from a "guest," which is the container's own view</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>You do not type anything here. Read the journey and notice how each stop maps to a later unit.</p>
+<p><strong>Scenario:</strong> Priya has a small web app — a to-do list. It runs on her laptop (a Mac). A teammate, Sam, is on Windows, and Sam cannot make it run.</p>
+<pre><code class="language-text">Priya's laptop                          Sam's laptop
+-------------                           -------------
+Node.js version 20                      Node.js version 18
+PostgreSQL installed locally            No PostgreSQL
+Database password stored in a file      No such file
+App listens on port 3000                Port 3000 already used by another tool
+App runs fine                           App crashes with confusing errors
+</code></pre>
+<p>The journey this course builds:</p>
+<pre><code class="language-text">Step 1  Understand why the two laptops differ            (this course: U02, U04)
+Step 2  Learn to drive the terminal where Docker lives   (U03)
+Step 3  Understand what a container is, vs a VM          (U05)
+Step 4  Install Docker and run your first container      (U06, U07)
+Step 5  Write an image recipe (a Dockerfile)             (U11–U16)
+Step 6  Run app + database together with Compose         (U21–U25)
+Step 7  Share the image through a registry               (U26–U27)
+Step 8  Let CI build it and deploy it                    (U28–U31)
+Step 9  Do it yourself, end to end, in the capstone      (U35)
+</code></pre>
+<p>By step 9, Priya and Sam both run <strong>the same image</strong>, so the app behaves the same for both. That is the whole point.</p>
+<h2>Common errors</h2>
+<h3>Error: trying to memorize Docker commands now</h3>
+<p><strong>What happens:</strong> You scroll ahead, feel overwhelmed by unfamiliar words, and conclude you are "bad at this."</p>
+<p><strong>Fix:</strong> A map is for orientation, not memorization. You are expected to <em>recognize</em> these words after this unit, not explain them. Each word gets a full, patient unit later.</p>
+<h3>Error: assuming Docker is only for large companies</h3>
+<p><strong>What happens:</strong> You decide containers are "not for someone like me" and disengage.</p>
+<p><strong>Fix:</strong> Containers help one person on one laptop just as much as a team of hundreds. The same two commands that run a big service also run a small personal project.</p>
+<h3>Error: expecting Kubernetes mastery from this course</h3>
+<p><strong>What happens:</strong> You sign up expecting orchestrators, clusters, and YAML everywhere, then feel cheated by U32 being a survey.</p>
+<p><strong>Fix:</strong> Re-read the honest scope above. This course is about containers, and it is honest about stopping short of orchestration.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What is the difference between an image and a container, in one sentence each?</li>
+<li>Name two things this course will make you able to do, and two things it will <em>not</em>.</li>
+<li>Which stop on the journey deals with "an app needs an environment," and which deals with sharing images?</li>
+</ol>
+<p>If you can answer these, you are ready.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Draw the journey</h3>
+<p>On paper or in a text file, draw a simple line with the nine steps above. Next to each step, write one sentence explaining what problem it solves.</p>
+<h3>P2 — Match idea to problem</h3>
+<p>Write each idea below beside the human problem it solves: <em>image, container, Dockerfile, Compose, registry, CI, deploy.</em></p>
+<ul>
+<li>"Our app needs a database running next to it."</li>
+<li>"My teammate cannot rebuild my app."</li>
+<li>"We keep rebuilding images by hand every release."</li>
+<li>"It works for me but crashes for the tester."</li>
+<li>"The running copy of the app is doing something strange."</li>
+</ul>
+<h3>P3 — Your own target</h3>
+<p>Think of a small app you have written or used. Write three sentences describing what it needs to run (language, database, settings). You will test this thinking again in U04.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No installing Docker.</li>
+<li>No commands typed anywhere.</li>
+<li>No Dockerfile, Compose file, or registry work.</li>
+<li>No deep dive into Kubernetes or production infrastructure.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U02 — The works-on-my-machine problem</strong> (the human pain that containers exist to solve).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U01 Assignment — Your destination map</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U01-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>destination-map.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs and bullet lists are both fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>The journey.</strong> In 7–10 lines, describe the path from "app source code on my laptop" to "the same app running elsewhere in a container." Mention at least five of the stops from the unit.</li>
+<li><strong>Idea to problem.</strong> For each of these ideas, write the human problem it solves: <em>image, container, Dockerfile, Compose, registry, CI, deploy.</em> One sentence each.</li>
+<li><strong>Image vs container (first pass).</strong> Explain the difference in your own words, then add the line: "I will learn the precise version in U08." This shows you know the difference between a preview and a full definition.</li>
+<li><strong>Honest scope.</strong> List <strong>two</strong> things this course will help you do and <strong>two</strong> things it will <em>not</em> cover. Then write one sentence on why knowing the limits is useful.</li>
+<li><strong>Your target app.</strong> Describe a small app you would most like to containerize by the end (real or imagined). Write three sentences about what it needs to run.</li>
+<li><strong>Early confusion.</strong> Name one word from this unit that still feels fuzzy. Write the exact question you would ask your trainer about it.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the whole U01 README, not only the assignment.
+- [ ] I can say what an image is and what a container is, roughly.
+- [ ] I know this course stops short of deep Kubernetes work.
+- [ ] I named a small app I would like to containerize.
+- [ ] I read the U01 rubric before writing destination-map.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files are present with the exact names above.</li>
+<li><code>destination-map.md</code> answers all six prompts in your own words.</li>
+<li>At least five stops of the journey are mentioned in Q1.</li>
+<li>The checklist is completed honestly (do not tick an item you did not do).</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U01 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Journey from source code to running container described, five or more stops named</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>destination-map.md</code> Q1</td>
+</tr>
+<tr>
+<td>Each of the seven ideas matched to a sensible human problem</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>destination-map.md</code> Q2</td>
+</tr>
+<tr>
+<td>Image vs container explained in own words; U08 noted as precise source</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>destination-map.md</code> Q3</td>
+</tr>
+<tr>
+<td>Two capabilities and two exclusions, with a reason limits matter</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>destination-map.md</code> Q4</td>
+</tr>
+<tr>
+<td>Chosen app is concrete and its needs are plausible</td>
+<td>2</td>
+<td>No</td>
+<td><code>destination-map.md</code> Q5</td>
+</tr>
+<tr>
+<td>One honest question about a fuzzy word is posed</td>
+<td>2</td>
+<td>No</td>
+<td><code>destination-map.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder / zip structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q2: award 2/4 if four or five matches are sensible; 0 if the list is copied verbatim from the lesson with no reasoning. Minor mis-mappings for <code>CI</code> and <code>deploy</code> are common and thoughtful — award half for those.</li>
+<li>Q3: award 1/3 if they describe a container well but cannot yet separate it from an image, provided they acknowledge the gap.</li>
+<li>Q4: award 1/3 if only exclusions are listed with no capabilities.</li>
+<li>Do not penalize imperfect English. Do penalize empty answers or pasted lesson text with no personalization, especially on Q5 and Q6.</li>
+<li>Q6 is a confidence check: any genuine question scores full marks. "None, it all made sense" is not a question; award 0 there but treat it as a signal, not a failure.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U00-how-this-course-works/index.html">U00 How this course works</a>
+    <a class="next" href="../U02-works-on-my-machine/index.html">U02 The works-on-my-machine problem</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

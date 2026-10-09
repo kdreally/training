@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U18 — Ports | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U18</div>
+    <h1>Ports</h1>
+    <span class="phase-badge ph4">Phase 4 — Data and networking</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U18 — Ports</h1>
+<p><strong>Phase 4 — Data and networking</strong></p>
+<h2>Where you are</h2>
+<p>In U17 you kept data alive past a container's life. Now we handle the other half of "isolated." A container can be running perfectly and you still cannot open it in a browser. That is usually not a bug — it is a <strong>closed door</strong>. This unit explains what a port is and how to open one on purpose.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain, in plain words, what a port is and how it differs from an IP address.</li>
+<li>Describe why a server running inside a container is not automatically reachable from your computer.</li>
+<li>Publish a container port to your machine with <code>-p host:container</code>.</li>
+<li>Read <code>docker port</code> output and confirm a published mapping.</li>
+<li>Decode a "connection refused" and a "port is already allocated" failure.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U06–U10</strong> — install Docker, run containers, pull images, container lifecycle (<code>docker run</code>, <code>docker rm</code>, <code>docker ps</code>).</li>
+<li><strong>U09</strong> — pulling existing images from Docker Hub. We will pull <code>nginx</code>, a small web server.</li>
+</ul>
+<p>You do not need U17 for this unit, but both belong to Phase 4 and are often used together.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. Ports confuse many people at first because one number is doing two jobs (the door outside and the door inside). Go slowly through the worked example; it shows the exact moment the door opens.</p>
+<h2>Why this exists</h2>
+<p>Here is a scene almost everyone meets. You run a database or a web server in a container. The container logs look happy. You open your browser to <code>http://localhost</code> and get nothing — "connection refused." You start to doubt the container.</p>
+<p>Nothing is wrong with the container. A container has its own isolated network, so its doors face inward, not toward your laptop. To reach it you must deliberately connect one container door to a door on your computer. That deliberate connection is called <strong>publishing a port</strong>. Without it, the server may as well be in a locked room.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a port is</h3>
+<p>A <strong>port</strong> is a numbered door on a computer that network traffic can arrive at. A computer uses ports to tell apart different programs running at the same time. Web servers commonly listen on port <code>80</code>; encrypted web servers on <code>443</code>; databases on <code>5432</code> (PostgreSQL) or <code>3306</code> (MySQL).</p>
+<p>An <strong>IP address</strong> answers "which computer?". A <strong>port</strong> answers "which program on that computer?". Both are needed to reach something: <code>192.168.1.10:80</code> means "the program on port 80 of the computer at 192.168.1.10."</p>
+<p>To <strong>listen</strong> on a port means a program has opened that door and is waiting for connections.</p>
+<h3>Containers have their own network</h3>
+<p>Every container gets its own isolated network space. That means the ports inside a container are separate from the ports on your computer. A web server inside a container can listen on port <code>80</code> inside that container, and your computer's port <code>80</code> is a completely unrelated door.</p>
+<p>So by default, a container's doors face inward. Nothing on your computer can knock from outside. This isolation is a feature: two containers can both use port <code>80</code> internally without clashing.</p>
+<h3>Publishing a port</h3>
+<p><strong>Publishing</strong> (also called <strong>mapping</strong>) means connecting a port on your computer to a port inside the container. You do it with the <code>-p</code> flag on <code>docker run</code>:</p>
+<pre><code class="language-text">-p   hostPort : containerPort
+</code></pre>
+<ul>
+<li><strong>hostPort</strong> (left) is the door on <em>your computer</em>.</li>
+<li><strong>containerPort</strong> (right) is the door <em>inside the container</em>.</li>
+</ul>
+<p>For example, <code>-p 8080:80</code> says "when someone knocks on port 8080 of my computer, forward them to port 80 inside the container." After that, <code>http://localhost:8080</code> reaches the server.</p>
+<p>The order matters and is a classic source of confusion: <strong>host first, container second</strong>. If you swap them you will usually hit a port conflict or an unreachable server.</p>
+<h3>localhost</h3>
+<p><strong>localhost</strong> (whose numeric form is <code>127.0.0.1</code>) means "this same computer." When you type <code>http://localhost:8080</code> on your laptop, you are knocking on a door of <em>your laptop</em>. When port 8080 is published to the container, that knock is forwarded inward. Without publishing, nothing is listening on your laptop's 8080, so you get "connection refused."</p>
+<p>Inside a container, <code>localhost</code> means <em>the container itself</em> — a point we explore fully in U19.</p>
+<h3>Publish vs expose</h3>
+<p>On a server inside an image you may see a line like <code>EXPOSE 80</code> (a Dockerfile instruction, U12). <strong>EXPOSE</strong> is documentation: it records which port the image's author expects the server to use. It does <strong>not</strong> open a door to your computer. Only <code>-p</code> (or <code>-P</code>) publishes.</p>
+<ul>
+<li><code>-p 8080:80</code> publishes one specific mapping.</li>
+<li><code>-P</code> (capital) publishes <em>all</em> ports the image marks with <code>EXPOSE</code>, each to a random free port on your computer. Useful for a quick look; less predictable.</li>
+</ul>
+<h3>How to read a published mapping</h3>
+<p>Docker shows mappings as <code>container -&gt; host</code>:</p>
+<pre><code class="language-text">80/tcp -&gt; 0.0.0.0:8080
+</code></pre>
+<p>Read it as "container port 80 is reachable through host port 8080." <code>0.0.0.0</code> means "all of this computer's network interfaces." That is why <code>localhost:8080</code> and your machine's own IP both work.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Port</td>
+<td>A numbered door for network traffic to one program</td>
+<td>Not the same as an IP address</td>
+</tr>
+<tr>
+<td>IP address</td>
+<td>Which computer on the network</td>
+<td>Not which program</td>
+</tr>
+<tr>
+<td>Listening</td>
+<td>A program has opened a port and waits for connections</td>
+<td>Not the same as "published"</td>
+</tr>
+<tr>
+<td>Publish / map</td>
+<td>Connect a host port to a container port with <code>-p</code></td>
+<td>Not done automatically</td>
+</tr>
+<tr>
+<td>Host port</td>
+<td>The door on <em>your computer</em> (left of the colon)</td>
+<td>People assume it is the container port</td>
+</tr>
+<tr>
+<td>Container port</td>
+<td>The door <em>inside the container</em> (right of the colon)</td>
+<td>Must match what the server actually listens on</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td>The <code>docker run</code> flag that publishes one port</td>
+<td>Its value is <code>host:container</code></td>
+</tr>
+<tr>
+<td><code>-P</code></td>
+<td>Publish every <code>EXPOSE</code>d port to a random host port</td>
+<td>Not the same as <code>-p</code></td>
+</tr>
+<tr>
+<td><code>EXPOSE</code></td>
+<td>Dockerfile note of the expected port; documentation only</td>
+<td>Does not publish anything</td>
+</tr>
+<tr>
+<td>localhost / <code>127.0.0.1</code></td>
+<td>"This same computer"</td>
+<td>Inside a container it means the container, not the host</td>
+</tr>
+<tr>
+<td><code>0.0.0.0</code></td>
+<td>All network interfaces of a machine</td>
+<td>Not a specific address you browse to</td>
+</tr>
+<tr>
+<td>Port conflict</td>
+<td>Two programs trying to use the same host port</td>
+<td>The second one fails to start</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We use the <strong><code>nginx</code></strong> image, a small web server. If you have not pulled it before, Docker pulls it automatically the first time (U09).</p>
+<h3>Step 1 — Start a web server without publishing</h3>
+<p><strong>Purpose:</strong> show that a running server can still be unreachable.</p>
+<pre><code class="language-bash">docker run -d --name web nginx
+</code></pre>
+<p><code>-d</code> runs the container in the background (detached) so you get your prompt back. <code>--name web</code> gives it a name we can refer to.</p>
+<p><strong>Success output:</strong> a long container id:</p>
+<pre><code class="language-text">a1b2c3d4e5f6...
+</code></pre>
+<h3>Step 2 — Confirm there is no mapping</h3>
+<p><strong>Purpose:</strong> ask Docker which ports are published.</p>
+<pre><code class="language-bash">docker port web
+</code></pre>
+<p><strong>Expected output:</strong> nothing at all. Empty output is the honest answer "this container publishes no ports." That is the closed door.</p>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">Error: No such container: web
+</code></pre>
+<p>means the container does not exist — perhaps the run in Step 1 failed, or you spelled the name differently. Check with <code>docker ps -a</code>.</p>
+<h3>Step 3 — Try to reach it anyway</h3>
+<p><strong>Purpose:</strong> see the closed door from the outside.</p>
+<p>On macOS or Linux (bash):</p>
+<pre><code class="language-bash">curl http://localhost:80
+</code></pre>
+<p>On Windows (PowerShell), <code>curl</code> is an alias for a PowerShell command that ignores some options, so call the real program with <code>.exe</code>:</p>
+<pre><code class="language-powershell">curl.exe http://localhost:80
+</code></pre>
+<p><strong>Expected output</strong> (one common form):</p>
+<pre><code class="language-text">curl: (7) Failed to connect to localhost port 80: Connection refused
+</code></pre>
+<p><strong>Decoded meaning:</strong> nothing on your computer is listening on port 80. The container's own port 80 is not connected to your computer. The nginx server is fine; the door is closed.</p>
+<h3>Step 4 — Recreate the container with a published port</h3>
+<p><strong>Purpose:</strong> open the door.</p>
+<p>Docker cannot add a port to an existing container; you must remove and run it again (this is the lifecycle idea from U10). Remove the old one first:</p>
+<pre><code class="language-bash">docker rm -f web
+</code></pre>
+<p><code>-f</code> forces removal even though the container is running.</p>
+<p>Now start it again with <code>-p 8080:80</code>:</p>
+<pre><code class="language-bash">docker run -d --name web -p 8080:80 nginx
+</code></pre>
+<p><strong>Success output:</strong> a new container id.</p>
+<h3>Step 5 — Confirm the mapping</h3>
+<pre><code class="language-bash">docker port web
+</code></pre>
+<p><strong>Expected output:</strong></p>
+<pre><code class="language-text">80/tcp -&gt; 0.0.0.0:8080
+</code></pre>
+<p>Read it as: container port <code>80</code> is reachable through host port <code>8080</code>.</p>
+<h3>Step 6 — Reach the server</h3>
+<p><strong>Purpose:</strong> prove the door is open.</p>
+<p>On macOS or Linux (bash):</p>
+<pre><code class="language-bash">curl http://localhost:8080
+</code></pre>
+<p>On Windows (PowerShell):</p>
+<pre><code class="language-powershell">curl.exe http://localhost:8080
+</code></pre>
+<p><strong>Expected output</strong> (abbreviated — an HTML page, not an error):</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+...
+</code></pre>
+<p>You can also open <code>http://localhost:8080</code> in a browser. The words "Welcome to nginx!" are your success signal.</p>
+<p><strong>Decoded failure:</strong> if you still get <code>Connection refused</code>, check <code>docker port web</code> and make sure the host port you typed matches. A very common mistake is browsing <code>:80</code> while the mapping was <code>8080:80</code>.</p>
+<h3>Step 7 — Meet a port conflict</h3>
+<p><strong>Purpose:</strong> see what happens when the host door is already taken.</p>
+<p>While <code>web</code> is running on host port 8080, try to start a second nginx on the same host port:</p>
+<pre><code class="language-bash">docker run -d --name web2 -p 8080:80 nginx
+</code></pre>
+<p><strong>Expected failure:</strong></p>
+<pre><code class="language-text">docker: Error response from daemon: driver failed programming external connectivity on endpoint web2 (...): Error starting userland proxy: listen tcp4 0.0.0.0:8080: bind: address already in use.
+</code></pre>
+<p><strong>Decoded meaning:</strong> host port <code>8080</code> is already used by the first container. Only one program can own a host door at a time. <strong>Fix:</strong> choose a different host port, for example <code>-p 8081:80</code>. (Docker Desktop may phrase the message as <code>Ports are not available: exposing port TCP 0.0.0.0:8080</code> — same cause.)</p>
+<h3>Cleanup</h3>
+<pre><code class="language-bash">docker rm -f web web2
+</code></pre>
+<p><code>docker ps</code> should no longer list them.</p>
+<h2>Common errors</h2>
+<h3>Error: reversing the ports</h3>
+<p><strong>What happens:</strong> You write <code>-p 80:8080</code> when you meant <code>-p 8080:80</code>. When you browse <code>http://localhost:8080</code>, nothing answers because the host door is 80 and the container door is 8080 (which nginx does not use).</p>
+<p><strong>Fix:</strong> The left number is the host port; the right number must match the port the server listens on inside the container. For nginx, that is <code>80</code>, so <code>-p &lt;anything-free&gt;:80</code> is right.</p>
+<h3>Error: forgetting <code>-p</code>, then blaming the app</h3>
+<p><strong>What happens:</strong> The server runs, logs look fine, but the browser refuses to connect.</p>
+<p><strong>Fix:</strong> An isolated container is unreachable until you publish a port. Run <code>docker port &lt;name&gt;</code>; empty output means "not published."</p>
+<h3>Error: <code>address already in use</code></h3>
+<p><strong>What happens:</strong> Another program (another container, or a local server such as a database or another web tool) already owns that host port.</p>
+<p><strong>Fix:</strong> Pick a different host port, or stop the program that owns it. <code>docker ps</code> shows your containers and their published ports.</p>
+<h3>Error: changing the port but not the container</h3>
+<p><strong>What happens:</strong> You edit the <code>docker run</code> command to a new port but the old container is still running, so the new mapping never appears.</p>
+<p><strong>Fix:</strong> Port mappings are fixed at container creation. Remove the container (<code>docker rm -f web</code>) and run it again with the new <code>-p</code> value.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What does a port identify, and how is that different from what an IP address identifies?</li>
+<li>In <code>-p 9000:80</code>, which number is the door on your computer and which is the door inside the container?</li>
+<li>Why is a container's web server unreachable before you add <code>-p</code>?</li>
+<li>What does <code>docker port web</code> print when nothing is published, and why is that not an error?</li>
+<li>What does <code>EXPOSE 80</code> in a Dockerfile do — and what does it <em>not</em> do?</li>
+</ol>
+<p>If you can answer those, you are ready for the exercises.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Predict then run</h3>
+<p>Predict the output of <code>docker port web</code> for a container started with:</p>
+<pre><code class="language-bash">docker run -d --name web -p 4000:80 nginx
+</code></pre>
+<p>Then run it and compare. Write the real output in your notes.</p>
+<h3>P2 — Change one value</h3>
+<p>Remove the container from P1 and start it again publishing host port <code>5050</code> instead. Browse or curl <code>http://localhost:5050</code>. Then try <code>http://localhost:4000</code>. Explain in one sentence why one works and the other does not.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the command so that <code>http://localhost:7000</code> reaches a server listening on port <code>80</code> inside a container named <code>site</code>:</p>
+<pre><code class="language-bash">docker run -d --name site -p ____:____ nginx
+</code></pre>
+<h3>P4 — Read a mapping</h3>
+<p>You run a container and <code>docker port db</code> prints:</p>
+<pre><code class="language-text">5432/tcp -&gt; 0.0.0.0:6000
+</code></pre>
+<p>In one sentence, say which host port you would connect to from a database client, and which port the database is using inside the container.</p>
+<h3>P5 — Fix the broken command</h3>
+<p>A learner wants their app reachable at <code>http://localhost:3000</code>, but the app listens on port <code>3000</code> inside the container. Their command is wrong:</p>
+<pre><code class="language-bash">docker run -d --name app -p 3000:8080 my-app:1.0
+</code></pre>
+<p>Rewrite the <code>-p</code> value so it works, and explain the mistake in one sentence.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No networking <em>between</em> containers (that is U19 and U20).</li>
+<li>No DNS or service names (U20).</li>
+<li>No Compose <code>ports:</code> syntax (U22).</li>
+<li>No HTTPS/TLS setup or domain names.</li>
+<li>No firewall configuration on the host.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U19 — Container networking basics</strong> (what <code>localhost</code> means inside a container, and how containers are connected).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U18 Assignment — Ports</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U18-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs and bullet lists are both fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Port vs IP.</strong> In 4–6 lines, explain what a port identifies and what an IP address identifies, and why you need both to reach a program.</li>
+<li><strong>The colon.</strong> In <code>-p 6000:80</code>, say which number is on your computer and which is inside the container. Then explain what a browser request to <code>http://localhost:6000</code> does with that mapping.</li>
+<li><strong>Why unreachable.</strong> A teammate starts a web server in a container with no <code>-p</code> and cannot open it. In 4–6 lines, explain why, using the words <em>isolated</em> and <em>publish</em>.</li>
+<li><strong>Predict, then check.</strong> Without running it, predict the exact output of:</li>
+</ol>
+<p><code>bash
+   docker run -d --name check -p 5500:80 nginx
+   docker port check</code></p>
+<p>Write your prediction first, then run both commands and paste the real output below it. If your prediction was wrong, write one sentence explaining what you missed.<br />
+5. <strong>Decode a failure.</strong> A learner runs a second container with <code>-p 8080:80</code> while another container already uses host port 8080. Quote one plausible error message and explain, in your own words, what the message means and how you would fix it.<br />
+6. <strong>Still fuzzy.</strong> Name one part of this unit that still feels unclear. Write the exact question you would ask your trainer.</p>
+<h3>2. <code>transcript.md</code></h3>
+<p>Paste the exact commands and output for this experiment, in order, in one code block:</p>
+<ol>
+<li>Start <code>nginx</code> named <code>web</code> <strong>without</strong> <code>-p</code>.</li>
+<li>Run <code>docker port web</code> (expect empty).</li>
+<li>Remove it.</li>
+<li>Start it again with <code>-p 7000:80</code>.</li>
+<li>Run <code>docker port web</code>.</li>
+<li>Reach it: <code>curl.exe http://localhost:7000</code> (Windows) or <code>curl http://localhost:7000</code> (macOS/Linux). A short excerpt of the HTML is enough; make clear it is not an error.</li>
+</ol>
+<p>Your real output, not a retyped ideal version.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the whole U18 README, not only the assignment.
+- [ ] I can say which side of `-p host:container` is the host port.
+- [ ] I saw a container be unreachable before publishing, and reachable after.
+- [ ] I ran `docker port` and read its output.
+- [ ] I triggered or explained a port conflict.
+- [ ] I read the U18 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files are present with the exact names above.</li>
+<li><code>answers.md</code> answers all six prompts in your own words.</li>
+<li><code>transcript.md</code> shows the before (empty <code>docker port</code>) and after (published mapping + reachable server) states.</li>
+<li>The Q4 prediction is written <em>before</em> the real output, and any mismatch is explained.</li>
+<li>The checklist is completed honestly (do not tick an item you did not do).</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U18 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Distinguishes port (which program) from IP (which machine)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Reads <code>host:container</code> correctly and traces a browser request</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains unreachability using isolation and publish</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Predicts <code>docker port</code> output correctly; runs it; explains any mismatch</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Decodes a real port-conflict error and gives a correct fix</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Transcript shows the unpublished state, then the published mapping and a reached server</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>transcript.md</code></td>
+</tr>
+<tr>
+<td>Reflects honestly on a remaining confusion</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q2: award 2/4 if they identify both numbers but cannot describe what a request to <code>localhost:6000</code> does (the request hits host port 6000, which forwards to container port 80).</li>
+<li>Q3: award 1/3 if they only say "ports must be published" without naming isolation as the reason.</li>
+<li>Q4: expected output is a mapping line such as <code>80/tcp -&gt; 0.0.0.0:5500</code>. Award 1/3 if the prediction is missing but the run and real output are present; award 0 if no real run is shown.</li>
+<li>Q5: any real wording of the conflict message is acceptable (for example <code>bind: address already in use</code> or Docker Desktop's <code>Ports are not available</code>). Reward a fix that changes the host port or stops the other container.</li>
+<li>Q6: any concrete question is fine.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or lesson text pasted back with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U17-volumes/index.html">U17 Volumes</a>
+    <a class="next" href="../U19-container-networking/index.html">U19 Container networking basics</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

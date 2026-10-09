@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U20 — Connecting containers to each other | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U20</div>
+    <h1>Connecting containers to each other</h1>
+    <span class="phase-badge ph4">Phase 4 — Data and networking</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U20 — Connecting containers to each other</h1>
+<p><strong>Phase 4 — Data and networking</strong></p>
+<h2>Where you are</h2>
+<p>In U19 you learned that containers get their own addresses and that <code>localhost</code> means the container itself. You also saw the limit of the default bridge: containers could reach each other by IP but not by name. This unit removes that limit. We create a <strong>user-defined network</strong>, attach an app and a database to it, and let them find each other by name — the pattern every real multi-service app depends on.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create a network of your own and list it.</li>
+<li>Attach containers to it with <code>--network</code>.</li>
+<li>Reach one container from another by its <strong>name</strong>, and explain why this works here but not on the default bridge.</li>
+<li>Explain why <code>localhost</code> still fails between containers, even on a user-defined network.</li>
+<li>Attach an already-running container to a network with <code>docker network connect</code>.</li>
+<li>Decode a "bad address" failure and a "network has active endpoints" failure.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U19</strong> — networks, container IPs, <code>localhost</code> inside vs outside, <code>docker network ls</code>.</li>
+<li><strong>U18</strong> — ports (we still publish the app so <em>you</em> can reach it; containers reach each other without publishing).</li>
+<li><strong>U17</strong> — volumes (the database example keeps its data in a named volume).</li>
+<li><strong>U09</strong> — pulling images. We use <code>nginx</code>, <code>alpine</code>, and <code>postgres</code>.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>80–120 minutes</strong>. This is the payoff unit of Phase 4: the moment names finally work. The database step can take a little longer because the image is larger. Take a break before the assignment; you have earned it.</p>
+<h2>Why this exists</h2>
+<p>Real applications are rarely one container. A typical small app is a web process <em>and</em> a database. The web process must find the database, and it must keep finding it after restarts and renames. Hard-coding an IP address (U19) breaks the moment the database container gets a new address.</p>
+<p>What you want to write in your app's configuration is a <strong>name</strong>: "the database is at <code>db</code>, port <code>5432</code>." This unit makes that name work. It is also the exact foundation Compose builds on (U21–U25), where service names are resolved the same way.</p>
+<h2>Plain-language teaching</h2>
+<h3>The default bridge is not enough</h3>
+<p>Recall from U19: on the default <code>bridge</code> network, containers can reach each other by IP, but Docker does not publish their names into DNS. As soon as you want to say "connect to <code>db</code>" instead of "connect to <code>172.17.0.2</code>", you need a better network.</p>
+<h3>User-defined networks</h3>
+<p>A <strong>user-defined network</strong> is a network <em>you</em> create with <code>docker network create</code>. It looks like the bridge network (it is also a bridge type), but it comes with one crucial upgrade: <strong>Docker runs its own DNS server for it.</strong> On that network, Docker registers each container's name so other containers can look the name up.</p>
+<p>To put a container on your network, pass <code>--network &lt;name&gt;</code> to <code>docker run</code>. A container can be on several networks at once, but most of the time one is enough.</p>
+<p><strong>Service name</strong> (or <strong>container name</strong>) is the hostname you use to reach a container on a user-defined network. If the container is named <code>db</code>, other containers on the same network reach it at the address <code>db</code>.</p>
+<h3>DNS, in one paragraph</h3>
+<p><strong>DNS</strong> (Domain Name System) is the system that turns a human-friendly name into an IP address. On the public internet it turns <code>example.com</code> into a number. Docker's <strong>embedded DNS</strong> does the same thing inside a user-defined network: it turns <code>db</code> into the database container's current IP. You never see the IP; you use the name. This is why names survive restarts — the name stays <code>db</code> even when the IP changes behind it.</p>
+<h3>localhost still means "me"</h3>
+<p>The biggest mistake people make once names work is going back to <code>localhost</code>. Names and <code>localhost</code> are not interchangeable.</p>
+<ul>
+<li>Container <code>app</code> connects to <code>db</code> → looks up the name <code>db</code> on the shared network → reaches the database container.</li>
+<li>Container <code>app</code> connects to <code>localhost</code> → reaches <strong>container <code>app</code> itself</strong> → connection refused, because <code>app</code> does not run a database.</li>
+</ul>
+<p>The rule from U19 still holds: <strong><code>localhost</code> is always the container you are standing in.</strong> Use the other container's name instead.</p>
+<h3>Connecting a running container later</h3>
+<p>Sometimes a container is already running when you realize it needs to join a network. You do not have to destroy it. <code>docker network connect &lt;network&gt; &lt;container&gt;</code> attaches a running container to an additional network. Its counterpart, <code>docker network disconnect</code>, detaches it.</p>
+<h3>A note on <code>-e</code> and <code>-v</code> in the database example</h3>
+<p>The database image needs two things we have seen or will see soon:</p>
+<ul>
+<li><code>-v pgdata:/var/lib/postgresql/data</code> attaches a named volume so the database's data survives (U17).</li>
+<li><code>-e POSTGRES_PASSWORD=devpass</code> sets an <strong>environment variable</strong> inside the container. An environment variable is a named setting (<code>POSTGRES_PASSWORD</code>) passed to a program, here telling PostgreSQL what password to use. <code>-e</code> is the flag that passes one in. We will study environment variables properly in U24; for now, read <code>-e</code> as "give the program this setting."</li>
+</ul>
+<p><code>devpass</code> is a throwaway local password for learning. Never put a real secret in a command you share.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User-defined network</td>
+<td>A network you create with <code>docker network create</code></td>
+<td>Not the same as the default <code>bridge</code></td>
+</tr>
+<tr>
+<td>Service name</td>
+<td>The name other containers use to reach a container</td>
+<td>Not a web address; no scheme or port included</td>
+</tr>
+<tr>
+<td>Hostname</td>
+<td>The name a program uses in a network address</td>
+<td>Here it is the container's name</td>
+</tr>
+<tr>
+<td>Embedded DNS</td>
+<td>Docker's built-in name-to-IP lookup on user-defined networks</td>
+<td>Not the public internet DNS</td>
+</tr>
+<tr>
+<td><code>--network</code></td>
+<td><code>docker run</code> flag that joins a named network</td>
+<td>Omitting it puts the container on the default bridge</td>
+</tr>
+<tr>
+<td><code>docker network connect</code></td>
+<td>Attach a running container to a network</td>
+<td>Not needed when you pass <code>--network</code> at run time</td>
+</tr>
+<tr>
+<td><code>docker network disconnect</code></td>
+<td>Detach a container from a network</td>
+<td>Does not stop the container</td>
+</tr>
+<tr>
+<td>Endpoint</td>
+<td>A container's attachment point on a network</td>
+<td>Not a port</td>
+</tr>
+<tr>
+<td>Network alias</td>
+<td>An extra name for a container on a network</td>
+<td>A convenience; the container name works by default</td>
+</tr>
+<tr>
+<td>localhost / <code>127.0.0.1</code></td>
+<td>The container itself</td>
+<td>Still never another container</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We build a small app-and-database scene. Then we connect a late container.</p>
+<h3>Step 1 — Create your own network</h3>
+<p><strong>Purpose:</strong> make a network that includes name resolution.</p>
+<pre><code class="language-bash">docker network create appnet
+</code></pre>
+<p><strong>Success output:</strong> a long network id:</p>
+<pre><code class="language-text">c9d0e1f2a3b4...
+</code></pre>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">Error response from daemon: network with name appnet already exists
+</code></pre>
+<p>The network is already there from an earlier attempt. That is fine; you can reuse it or remove it with <code>docker network rm appnet</code> first (it must have no containers attached).</p>
+<h3>Step 2 — Confirm it exists</h3>
+<pre><code class="language-bash">docker network ls
+</code></pre>
+<p><strong>Expected output</strong> (ids differ): a row such as</p>
+<pre><code class="language-text">NETWORK ID     NAME      DRIVER    SCOPE
+c9d0e1f2a3b4   appnet    bridge    local
+</code></pre>
+<p><strong>Decoded failure:</strong> if <code>appnet</code> is missing, Step 1 did not succeed. Re-run it and read the message.</p>
+<h3>Step 3 — Run a server on your network</h3>
+<p><strong>Purpose:</strong> give the app a service name to reach.</p>
+<pre><code class="language-bash">docker run -d --name web --network appnet nginx
+</code></pre>
+<p><code>--network appnet</code> puts this container on the network we created, so its name <code>web</code> is registered in that network's DNS.</p>
+<p><strong>Success output:</strong> a container id.</p>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">Error response from daemon: network appnet not found
+</code></pre>
+<p>means the network name is misspelled or does not exist. Check <code>docker network ls</code> and match the name exactly.</p>
+<h3>Step 4 — Reach it by name</h3>
+<p><strong>Purpose:</strong> the whole point of this unit.</p>
+<pre><code class="language-bash">docker run --rm --network appnet alpine wget -qO- http://web
+</code></pre>
+<p>The second container is also on <code>appnet</code>, so Docker's DNS resolves the name <code>web</code> to its current IP. No published port is needed; this traffic stays inside the private network.</p>
+<p><strong>Expected output</strong> (abbreviated):</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+...
+&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+</code></pre>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">wget: bad address 'web'
+</code></pre>
+<p>means the client container is <strong>not on the same network</strong> as <code>web</code>, so Docker has no DNS entry for that name. A very common cause is forgetting <code>--network appnet</code> on one of the two <code>docker run</code> commands. Check both containers with <code>docker network inspect appnet</code>.</p>
+<h3>Step 5 — Prove <code>localhost</code> still fails</h3>
+<p><strong>Purpose:</strong> keep the two ideas separate: shared network <em>is not</em> the same as <code>localhost</code>.</p>
+<pre><code class="language-bash">docker run --rm --network appnet alpine wget -qO- http://localhost
+</code></pre>
+<p><strong>Expected output:</strong></p>
+<pre><code class="language-text">wget: can't connect to remote host (127.0.0.1): Connection refused
+</code></pre>
+<p><strong>Decoded meaning:</strong> <code>localhost</code> refers to the client container itself, not to <code>web</code>. Being on the same network does not change that. Use the name <code>web</code>, not <code>localhost</code>.</p>
+<h3>Step 6 — Add a database and prove the name resolves</h3>
+<p><strong>Purpose:</strong> model the real app + database pair.</p>
+<pre><code class="language-bash">docker run -d --name db --network appnet -v pgdata:/var/lib/postgresql/data -e POSTGRES_PASSWORD=devpass postgres:16-alpine
+</code></pre>
+<p>This starts PostgreSQL, keeps its data in the named volume <code>pgdata</code> (U17), and sets the database password (see the <code>-e</code> note above).</p>
+<p>Give it a few seconds to start, then confirm the name resolves from another container on the same network:</p>
+<pre><code class="language-bash">docker run --rm --network appnet alpine ping -c 1 db
+</code></pre>
+<p><strong>Expected output</strong> (address differs):</p>
+<pre><code class="language-text">PING db (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.1 ms
+--- db ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+</code></pre>
+<p>The name <code>db</code> resolved to an address. An app container would connect to host <code>db</code>, port <code>5432</code> — written in configuration as <code>db:5432</code>, never as <code>localhost:5432</code>.</p>
+<p><strong>Decoded failure:</strong> <code>ping: bad address 'db'</code> again means the client is not on <code>appnet</code>. A <code>Connection refused</code> (rather than <code>bad address</code>) when using a database client would mean the name resolved but the database was not ready yet — wait a few seconds and retry.</p>
+<h3>Step 7 — Look at the network's members</h3>
+<pre><code class="language-bash">docker network inspect appnet
+</code></pre>
+<p><strong>Expected output</strong> (abbreviated): under <code>"Containers"</code> you will see <code>web</code> and <code>db</code>, each with an <code>IPv4Address</code>:</p>
+<pre><code class="language-json">&quot;Containers&quot;: {
+    &quot;....&quot;: { &quot;Name&quot;: &quot;web&quot;, &quot;IPv4Address&quot;: &quot;172.18.0.2/16&quot; },
+    &quot;....&quot;: { &quot;Name&quot;: &quot;db&quot;,  &quot;IPv4Address&quot;: &quot;172.18.0.3/16&quot; }
+}
+</code></pre>
+<p><strong>Decoded failure:</strong> if <code>Containers</code> is empty, nothing is attached — check the <code>--network</code> flags.</p>
+<h3>Step 8 — Attach a running container with <code>docker network connect</code></h3>
+<p><strong>Purpose:</strong> add a container to a network without recreating it.</p>
+<p>Start a container that is <em>not</em> on <code>appnet</code>:</p>
+<pre><code class="language-bash">docker run -d --name late nginx
+</code></pre>
+<p>From <code>appnet</code>, the name <code>late</code> does not resolve yet. Attach it:</p>
+<pre><code class="language-bash">docker network connect appnet late
+</code></pre>
+<p><strong>Success:</strong> no output. Now, from a container on <code>appnet</code>, the name works:</p>
+<pre><code class="language-bash">docker run --rm --network appnet alpine ping -c 1 late
+</code></pre>
+<p><strong>Expected output:</strong> a ping reply, as in Step 6.</p>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">Error response from daemon: container ... is not connected to network appnet
+</code></pre>
+<p>would mean a typo in a name. In the other direction, <code>network appnet not found</code> means the network name is wrong.</p>
+<p>To detach later:</p>
+<pre><code class="language-bash">docker network disconnect appnet late
+</code></pre>
+<h3>Cleanup</h3>
+<p>Remove the containers before removing the network:</p>
+<pre><code class="language-bash">docker rm -f web db late
+docker network rm appnet
+docker volume rm pgdata
+</code></pre>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">Error response from daemon: error while removing network: network appnet ... has active endpoints
+</code></pre>
+<p>means containers are still attached. Remove or disconnect them first.</p>
+<h2>Common errors</h2>
+<h3>Error: one container forgot <code>--network</code></h3>
+<p><strong>What happens:</strong> <code>bad address 'web'</code> or <code>bad address 'db'</code>, even though the other container is clearly running.</p>
+<p><strong>Fix:</strong> Every container that must talk to the others has to be on the <strong>same</strong> network. Run <code>docker network inspect appnet</code> to see who is attached. Add missing containers with <code>docker network connect appnet &lt;name&gt;</code>.</p>
+<h3>Error: reaching the database at <code>localhost</code></h3>
+<p><strong>What happens:</strong> <code>Connection refused</code>, because <code>localhost</code> is the app container itself.</p>
+<p><strong>Fix:</strong> Use the database container's name (<code>db</code>) as the host, and the correct port (<code>5432</code>). Configuration reads <code>db:5432</code>, not <code>localhost:5432</code>.</p>
+<h3>Error: using the wrong hostname</h3>
+<p><strong>What happens:</strong> <code>bad address 'postgres'</code> when the container is actually named <code>db</code>.</p>
+<p><strong>Fix:</strong> The hostname is the container's name (or a network alias), exactly as given at run time. Check with <code>docker network inspect appnet</code>.</p>
+<h3>Error: removing a network that is still in use</h3>
+<p><strong>What happens:</strong> <code>network appnet has active endpoints</code>.</p>
+<p><strong>Fix:</strong> Remove or disconnect the containers attached to it, then remove the network.</p>
+<h3>Error: starting the database again and losing data</h3>
+<p><strong>What happens:</strong> A learner removes the database container and starts a new one with no volume, then finds the data gone.</p>
+<p><strong>Fix:</strong> Attach the same named volume, as in Step 6, so the data lives outside the container (U17). The name and network are separate concerns: the network is how containers find each other; the volume is how data survives.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What is the key difference between the default <code>bridge</code> network and a user-defined network?</li>
+<li>If a database container is named <code>db</code> and both it and the app are on the same user-defined network, what hostname does the app use to reach it?</li>
+<li>Why does <code>localhost</code> still fail between containers on a user-defined network?</li>
+<li>Which command attaches an already-running container to a network?</li>
+<li>Why does a name survive a container restart, while a hard-coded IP might not?</li>
+</ol>
+<p>If you can answer those, you are ready for the exercises.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Predict then run</h3>
+<p>Predict what this prints when <code>web</code> and the client are both on a user-defined network <code>appnet</code>:</p>
+<pre><code class="language-bash">docker run --rm --network appnet alpine ping -c 1 web
+</code></pre>
+<p>Then run it and compare. Then run the same command <em>without</em> <code>--network appnet</code> and compare again.</p>
+<h3>P2 — Change one value</h3>
+<p>Recreate the server with the name <code>site</code> on <code>appnet</code>. Change only the name. Reach it by name from another <code>appnet</code> container and confirm.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the command so the client joins the <code>appnet</code> network and reaches <code>db</code>:</p>
+<pre><code class="language-bash">docker run --rm ____ appnet alpine wget -qO- http://____:5432
+</code></pre>
+<p>(The database will not return a web page; the point is that the <strong>name resolves</strong>. Expect a <code>Connection refused</code> or a protocol error from PostgreSQL, not <code>bad address</code>.)</p>
+<h3>P4 — Read an inspect</h3>
+<p>Run <code>docker network inspect appnet</code>. List every container under <code>Containers</code>, with its <code>IPv4Address</code>. Explain in one sentence how Docker turns the name <code>db</code> into that address.</p>
+<h3>P5 — Fix the broken command</h3>
+<p>An app and a database both need to talk to each other. The learner's setup is:</p>
+<pre><code class="language-bash">docker network create appnet
+docker run -d --name db --network appnet -e POSTGRES_PASSWORD=devpass postgres:16-alpine
+docker run -d --name app --network webnet my-app:1.0
+</code></pre>
+<p>The app cannot reach <code>db</code>. In two sentences, name the problem and the exact fix.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No Compose (U21–U25). Compose creates the network and the names for you, using the same ideas.</li>
+<li>No environment variables deep dive (U24); <code>-e</code> is introduced only as far as the database example needs.</li>
+<li>No database client setup or SQL. We prove reachability, not queries.</li>
+<li>No custom DNS servers, network aliases in depth, or multiple network attachments beyond the one <code>connect</code> example.</li>
+<li>No cross-machine or overlay networking.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U21 — Why Compose exists</strong> (one file instead of several long <code>docker run</code> commands).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U20 Assignment — Connecting containers to each other</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U20-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs and bullet lists are both fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Why user-defined networks.</strong> In 4–6 lines, explain the key difference between the default <code>bridge</code> network and a network you create yourself. Say what the upgrade is, and why it matters for a two-service app.</li>
+<li><strong>Names vs localhost.</strong> A database container is named <code>db</code>. An app container is on the same user-defined network. Write the host and port the app should use to reach the database, and explain in 4–6 lines why <code>localhost:5432</code> fails.</li>
+<li><strong>DNS in plain words.</strong> In 3–5 lines, explain what Docker's embedded DNS does and why it means you do not need to know the database's IP address.</li>
+<li><strong>Predict, then check.</strong> Two containers, <code>api</code> and <code>cache</code>, are on a user-defined network <code>appnet</code>. Without running it, predict the result of:</li>
+</ol>
+<p><code>bash
+   docker run --rm alpine ping -c 1 cache</code></p>
+<p>Write your prediction first. Then create <code>appnet</code>, start <code>api</code> and <code>cache</code> on it, and run the command exactly as written. Paste the real output. If your prediction was wrong, explain what you missed (look carefully at which network the client container is on).<br />
+5. <strong>Decode a failure.</strong> A learner creates <code>appnet</code>, starts <code>db</code> on it, then starts the app with <code>--network appnet</code> but reaches it at <code>localhost</code>. The app logs <code>Connection refused</code>. Quote the likely line and explain, in your own words, the mistake and the fix.<br />
+6. <strong>Attaching later.</strong> In 3–4 lines, explain when you would use <code>docker network connect</code> instead of <code>--network</code>, and what you would use to undo it.<br />
+7. <strong>Still fuzzy.</strong> Name one part of this unit that still feels unclear. Write the exact question you would ask your trainer.</p>
+<h3>2. <code>transcript.md</code></h3>
+<p>Paste the exact commands and output for this experiment, in order, in one code block:</p>
+<ol>
+<li>Create a network named <code>appnet</code>.</li>
+<li>Start <code>nginx</code> named <code>web</code> on <code>appnet</code>.</li>
+<li>Reach <code>web</code> <strong>by name</strong> from a throwaway <code>alpine</code> container on <code>appnet</code> (show the HTML or a clear success line).</li>
+<li>Show the <code>localhost</code> failure from another <code>appnet</code> container.</li>
+<li>Start <code>postgres:16-alpine</code> named <code>db</code> on <code>appnet</code> with a named volume and the <code>POSTGRES_PASSWORD</code> variable, then confirm the name <code>db</code> resolves with a ping from another <code>appnet</code> container.</li>
+<li>Attach a container that was started <strong>without</strong> <code>--network</code> using <code>docker network connect</code>, and prove its name resolves afterwards.</li>
+</ol>
+<p>Your real output, not a retyped ideal version. Keep the HTML excerpt short.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the whole U20 README, not only the assignment.
+- [ ] I created a user-defined network with `docker network create`.
+- [ ] I reached one container from another by name.
+- [ ] I demonstrated that `localhost` still fails between containers.
+- [ ] I ran app and database containers on the same network.
+- [ ] I attached an already-running container with `docker network connect`.
+- [ ] I read the U20 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files are present with the exact names above.</li>
+<li><code>answers.md</code> answers all seven prompts in your own words.</li>
+<li><code>transcript.md</code> shows by-name success, the <code>localhost</code> failure, the database reachability check, and the <code>docker network connect</code> step.</li>
+<li>The Q4 prediction is written <em>before</em> the real output, and any mismatch is explained.</li>
+<li>The checklist is completed honestly (do not tick an item you did not do).</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U20 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explains the user-defined-network upgrade (embedded DNS)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Gives the correct host/port (<code>db:5432</code>) and why <code>localhost</code> fails</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains embedded DNS and why IPs are not needed</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Predicts the cross-network failure, runs it, and explains it</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Decodes the <code>localhost</code> connection failure and fixes it</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Explains when to use <code>docker network connect</code> and how to undo it</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Transcript shows by-name success, localhost failure, database reachability, and connect</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>transcript.md</code></td>
+</tr>
+<tr>
+<td>Reflects honestly on a remaining confusion</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award 2/4 if they say "you can use names" without mentioning Docker's embedded DNS being the reason the default bridge lacks it.</li>
+<li>Q2: award 2/4 if they give <code>db:5432</code> but cannot explain why <code>localhost:5432</code> fails. Award full only if the host/port is correct <strong>and</strong> the container-is-itself explanation is present.</li>
+<li>Q3: award 1/3 if they only say "DNS resolves names" without connecting it to not needing IPs.</li>
+<li>Q4: the written command omits <code>--network appnet</code>, so the honest real result is <code>ping: bad address 'cache'</code>. If the learner predicted success, the explanation should notice the missing <code>--network</code>. Award 1/3 if the prediction is absent but the run is present; award 0 if no run is shown.</li>
+<li>Q5: accept any sensible quoted log line; reward identifying that <code>localhost</code> is the app container and that the fix is to use the name <code>db</code>.</li>
+<li>Q6: key ideas: use <code>connect</code> when the container is already running; <code>docker network disconnect &lt;network&gt; &lt;container&gt;</code> undoes it.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or lesson text pasted back with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U19-container-networking/index.html">U19 Container networking basics</a>
+    <a class="next" href="../U21-why-compose-exists/index.html">U21 Why Compose exists</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

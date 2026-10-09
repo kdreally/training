@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U13 — .dockerignore and build context | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U13</div>
+    <h1>.dockerignore and build context</h1>
+    <span class="phase-badge ph3">Phase 3 — Building images</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U13 — .dockerignore and build context</h1>
+<p><strong>Phase 3 — Building images</strong></p>
+<h2>Where you are</h2>
+<p>U11 introduced the <strong>build context</strong> — the pile of files Docker receives when you build. U12 had you build a real app. This unit takes the next honest step: controlling exactly what goes into that pile. A small, deliberate <code>.dockerignore</code> file keeps your builds fast and stops secrets and junk from leaking into your image. This is a small unit with a big payoff.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what the build context is and what Docker does with it.</li>
+<li>Explain why a large or careless context is a problem (speed and secrets).</li>
+<li>Write a <code>.dockerignore</code> file using plain patterns, comments, and negations.</li>
+<li>Verify the effect of <code>.dockerignore</code> on a build.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11 — What a Dockerfile is.</strong> You need the build context idea and <code>docker build -t</code>.</li>
+<li><strong>U12 — Dockerfile instructions.</strong> You need <code>COPY</code>, <code>RUN</code>, and <code>CMD</code>.</li>
+<li><strong>U10 — Container lifecycle.</strong> You may run a container to prove a file was or was not copied in.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. No new commands are introduced; you use <code>docker build</code> and perhaps <code>docker run</code>. The thinking is the work here.</p>
+<h2>Why this exists</h2>
+<p>Every build starts by handing Docker a folder of files. If that folder contains a multi-gigabyte <code>node_modules</code>, an old <code>.git</code> history, or a <code>.env</code> file full of passwords, all of it is sent to the builder. Sometimes it even ends up inside your image where anyone who receives the image can read it. A <code>.dockerignore</code> file is the cheap, standard fix. Learn it early and it saves you from a slow build and, eventually, a scary security conversation.</p>
+<h2>Plain-language teaching</h2>
+<h3>What the build context really is</h3>
+<p>When you type:</p>
+<pre><code class="language-text">docker build -t myapp .
+</code></pre>
+<p>the trailing <code>.</code> means "this folder is the build context." Docker gathers the files under that folder and makes them available to the build. The Dockerfile's <code>COPY</code> lines can only reach files that are inside this gathered set — nothing outside it, ever.</p>
+<p>A useful picture: the context is a sealed box of your project files that you hand to the builder. The Dockerfile says which items from the box to place into the image. Items not in the box cannot be placed, no matter what the Dockerfile says.</p>
+<h3>Why context size matters</h3>
+<p>Two separate problems, and both are real.</p>
+<p><strong>1. Speed and memory.</strong> A large context takes longer to package and transfer to the build engine. A build that should take two seconds can take two minutes if it is dragging along a huge dependency folder or a long version-control history. Every build, every time, pays this cost.</p>
+<p><strong>2. Secrets and noise.</strong> Files you never intended to share can sit in the context. If any <code>COPY</code> instruction is broad — like <code>COPY . .</code> — those files land in the image. An image is easy to share and inspect, so a password file baked into a layer is a leak. Common offenders:</p>
+<ul>
+<li><code>.env</code> files with API keys and database passwords.</li>
+<li><code>.git</code> — your entire project history.</li>
+<li><code>node_modules</code>, <code>venv</code>, <code>__pycache__</code> — large, local, and rebuildable.</li>
+<li>Logs, editor settings, and local databases.</li>
+</ul>
+<h3><code>.dockerignore</code> — the guest list for the box</h3>
+<p>A <code>.dockerignore</code> file lives in the <strong>root of the build context</strong> (the same folder as your Dockerfile, usually). It tells Docker which files to leave out of the context. One pattern per line. It uses simple glob-like rules:</p>
+<ul>
+<li><code>node_modules</code> excludes that folder anywhere sensible in the context.</li>
+<li><code>*.log</code> excludes every file ending in <code>.log</code>.</li>
+<li><code>**/temp</code> excludes a <code>temp</code> folder at any depth (the <code>**</code> means "any subfolders").</li>
+<li><code>!important.log</code> is a <strong>negation</strong>: it re-includes a file that an earlier line excluded.</li>
+<li><code>#</code> starts a comment; blank lines are ignored.</li>
+</ul>
+<p>Order matters: a later <code>!</code> rule can bring back something an earlier line removed.</p>
+<h3><code>.dockerignore</code> is not the same as <code>COPY</code> control</h3>
+<p>You can also narrow what <code>COPY</code> brings in by copying specific files (<code>COPY app.py .</code>) instead of everything (<code>COPY . .</code>). That is good practice. But <code>.dockerignore</code> works one level earlier: it decides what enters the box at all. Use both — they solve different halves of the problem.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build context</td>
+<td>The set of files Docker receives when you build</td>
+<td>Not only the Dockerfile</td>
+</tr>
+<tr>
+<td><code>.dockerignore</code></td>
+<td>A file listing patterns to exclude from the context</td>
+<td>Not the same as <code>.gitignore</code> (different syntax and purpose)</td>
+</tr>
+<tr>
+<td>Pattern</td>
+<td>A line in <code>.dockerignore</code> describing files to exclude</td>
+<td>Not a Dockerfile instruction</td>
+</tr>
+<tr>
+<td>Glob</td>
+<td>A wildcard rule like <code>*.log</code> or <code>**/temp</code></td>
+<td>Not a regular expression</td>
+</tr>
+<tr>
+<td>Negation <code>!</code></td>
+<td>Re-includes a file excluded by an earlier line</td>
+<td>Not "important"; it means "except this one"</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>Sensitive data such as passwords or keys</td>
+<td>Frequently stored in <code>.env</code> files and leaked by broad COPY</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We reuse the <code>hello-flask</code> project from U12, then prove that <code>.dockerignore</code> changes what Docker receives.</p>
+<h3>Step 1 — Build without a <code>.dockerignore</code></h3>
+<p>Inside <code>hello-flask/</code>, run:</p>
+<pre><code class="language-text">docker build -t ignore-demo:before .
+</code></pre>
+<p><strong>What it does:</strong> builds the image and, before that, packages the context.</p>
+<p><strong>What success looks like.</strong> On classic builders you will see a line near the top reporting the size, for example:</p>
+<pre><code class="language-text">Sending build context to Docker daemon  62.4MB
+</code></pre>
+<p>On newer BuildKit builders the wording differs:</p>
+<pre><code class="language-text">[+] Building 1.2s (9/9) FINISHED
+ =&gt; transferring context: 62.4MB
+</code></pre>
+<p>Either way, note the number. That is what gets sent on every build.</p>
+<h3>Step 2 — Add junk to see the effect</h3>
+<p>Create a file that should never ship — for example a fake secret and a big dummy file:</p>
+<pre><code class="language-text"># macOS/Linux
+echo &quot;API_KEY=super-secret&quot; &gt; .env
+dd if=/dev/zero of=big.bin bs=1M count=50
+</code></pre>
+<pre><code class="language-powershell"># Windows PowerShell
+Set-Content -Path .env -Value &quot;API_KEY=super-secret&quot;
+fsutil file createnew big.bin 52428800
+</code></pre>
+<p>Rebuild and watch the reported context size jump by about 50 MB. That is the cost.</p>
+<h3>Step 3 — Write a <code>.dockerignore</code></h3>
+<p>Create a file named exactly <code>.dockerignore</code> in the same folder as the Dockerfile:</p>
+<pre><code class="language-text"># Version control and local history
+.git
+
+# Dependency folders rebuilt inside the image
+node_modules
+venv
+__pycache__
+
+# Secrets and local settings
+.env
+*.key
+
+# Logs and scratch files
+*.log
+big.bin
+</code></pre>
+<h3>Step 4 — Build again and compare</h3>
+<pre><code class="language-text">docker build -t ignore-demo:after .
+</code></pre>
+<p><strong>What success looks like:</strong> the reported size is back down to roughly the size of your real source files (a few kilobytes). The 50 MB dummy file and <code>.env</code> are gone from the box.</p>
+<h3>Step 5 — Prove a secret is not in the image</h3>
+<p>A dangerous mistake is to write <code>COPY . .</code> in the Dockerfile and assume the ignored files cannot get in. With <code>.dockerignore</code> in place, they genuinely cannot. To confirm, start a shell in the built image and list the working folder:</p>
+<pre><code class="language-text">docker run --rm --entrypoint sh ignore-demo:after -c &quot;ls -a&quot;
+</code></pre>
+<p><strong>What success looks like:</strong> a short listing of just your app files. <code>.env</code> and <code>big.bin</code> should not appear.</p>
+<p><strong>One decoded failure.</strong> If you see:</p>
+<pre><code class="language-text">docker: Error response from daemon: ... executable file not found in $PATH: &quot;sh&quot;: ...
+</code></pre>
+<p>then the base image does not contain a shell called <code>sh</code> (some minimal images omit it). That is not a <code>.dockerignore</code> problem; it means this particular image is too minimal for the inspection trick. Use a <code>python:3.12-slim</code> base and the command works.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>.dockerignore</code> in the wrong place</h3>
+<p><strong>What happens:</strong> The build still sends everything. Nothing is excluded.</p>
+<p><strong>Fix:</strong> <code>.dockerignore</code> must sit in the <strong>root of the build context</strong> — the folder you pass to <code>docker build</code>, next to the Dockerfile. A copy in a subfolder is not at the root and is ignored.</p>
+<h3>Error: expecting <code>.gitignore</code> rules to apply</h3>
+<p><strong>What happens:</strong> You assumed your <code>.gitignore</code> would keep files out of the image. It does not. Git and Docker read different files.</p>
+<p><strong>Fix:</strong> Write a <code>.dockerignore</code> even if a <code>.gitignore</code> exists. Some patterns look alike, but they are separate lists.</p>
+<h3>Error: <code>COPY . .</code> copying local dependencies over installed ones</h3>
+<p><strong>What happens:</strong> You installed dependencies inside the image with <code>RUN pip install ...</code>, then <code>COPY . .</code> copied your local <code>venv</code> or <code>node_modules</code> folder on top, and the app breaks with confusing native-module errors.</p>
+<p><strong>Fix:</strong> Add <code>node_modules</code>, <code>venv</code>, and <code>__pycache__</code> to <code>.dockerignore</code>. Let the image build its own dependencies. (U15 explains why the copy order also matters.)</p>
+<h3>Error: a secret is already in an image you shared</h3>
+<p><strong>What happens:</strong> You realize an old image contained a <code>.env</code> file.</p>
+<p><strong>Fix:</strong> Adding <code>.dockerignore</code> stops future builds from including it, but it does not remove it from images you already built and pushed. Rebuild and re-share. Rotation of the secret is the safe move. (Security habits get a full unit in U33.)</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What exactly is in the build context?</li>
+<li>Name two reasons a large context is a problem.</li>
+<li>Where must <code>.dockerignore</code> live, and why there?</li>
+<li>What does a line beginning with <code>!</code> do, and why does order matter?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Observe the number</h3>
+<p>Build a project with no <code>.dockerignore</code> and note the reported context size. Add three pointless files (a big dummy file, a log, a <code>.tmp</code> file), rebuild, and note the increase. Then add a <code>.dockerignore</code> and confirm the size drops.</p>
+<h3>P2 — Break it on purpose</h3>
+<p>Move your <code>.dockerignore</code> into a subfolder and rebuild. Confirm the exclusions stop working. Move it back to the context root and confirm they work again.</p>
+<h3>P3 — Write from scratch</h3>
+<p>For a Node project, write a <code>.dockerignore</code> that excludes <code>node_modules</code>, <code>.git</code>, <code>.env</code>, <code>npm-debug.log</code>, and any <code>dist</code> folder at any depth. Include at least one comment line.</p>
+<h3>P4 — Negation</h3>
+<p>Write a <code>.dockerignore</code> that excludes all <code>*.md</code> files but re-includes <code>README.md</code>. Explain in one sentence why the order of those two lines matters.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No layer or cache theory — that is <strong>U15</strong>, though context size and cache are cousins.</li>
+<li>No secrets-management tooling — that is <strong>U24</strong> and <strong>U33</strong>.</li>
+<li>No <code>docker buildx</code> or advanced builder configuration.</li>
+<li>No <code>.gitignore</code> tutorial; we only note it is a different file.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U14 — Tags and naming your images</strong> (naming images so humans and tools can tell them apart).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U13 Assignment — Slim down the build context</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U13-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>.dockerignore</code></h3>
+<p>A real <code>.dockerignore</code> file for the app you worked with in U11–U12 (or another small app of your choice). It must:<br />
+- Exclude at least <code>.git</code>, a dependency folder, and a secrets file.<br />
+- Include at least one comment line.<br />
+- Include at least one negation (<code>!</code>) rule.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Context definition.</strong> In 3–5 sentences, explain what the build context is. Include what <code>COPY</code> can and cannot reach.</li>
+<li><strong>Two costs.</strong> Name and explain two problems caused by a large or careless context.</li>
+<li><strong>Secrets.</strong> Explain how a <code>.env</code> file could end up inside a shared image, and what <code>.dockerignore</code> does and does not fix about that.</li>
+<li><strong>Placement.</strong> Explain where <code>.dockerignore</code> must live and why. Describe what happens if it lives in a subfolder.</li>
+<li><strong>Negation.</strong> Show your <code>!</code> rule and explain in 1–2 sentences why its position in the file matters.</li>
+<li><strong>Prove it.</strong> Describe (or show) one command you used to confirm a file was excluded from the context or absent from the image.</li>
+</ol>
+<h3>3. <code>evidence.md</code></h3>
+<p>Paste the reported build-context size from one build <strong>before</strong> you added <code>.dockerignore</code> and one <strong>after</strong>. The absolute numbers can differ from the lesson's; what matters is that they changed.</p>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy and mark <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U13 README fully (not only the assignment).
+- [ ] My `.dockerignore` is in the root of the build context.
+- [ ] I saw the reported context size change after adding it.
+- [ ] I can explain why a secret in a context can leak into an image.
+- [ ] I read the U13 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>.dockerignore</code>, <code>answers.md</code>, <code>evidence.md</code>, and <code>checklist.md</code> are present with those names.</li>
+<li>The <code>.dockerignore</code> includes a comment and a negation rule.</li>
+<li>Evidence shows context sizes before and after.</li>
+<li>Every answer is in your own words.</li>
+</ul>
+<h2>Submission format recap</h2>
+<pre><code class="language-text">U13-YourName/
+  .dockerignore
+  answers.md
+  evidence.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U13 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.dockerignore</code> present in the context root and syntactically sensible</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>.dockerignore</code></td>
+</tr>
+<tr>
+<td>Excludes <code>.git</code>, a dependency folder, and a secrets file</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>.dockerignore</code></td>
+</tr>
+<tr>
+<td>Includes a comment and a working negation (<code>!</code>) rule</td>
+<td>2</td>
+<td>No</td>
+<td><code>.dockerignore</code></td>
+</tr>
+<tr>
+<td>Build-context is defined correctly, including what <code>COPY</code> can reach</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Two costs of a large context explained accurately</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Secret-leak path and the limits of <code>.dockerignore</code> explained</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Placement rule explained, including the subfolder failure</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4 + Q5</td>
+</tr>
+<tr>
+<td>Before/after context-size evidence present</td>
+<td>1</td>
+<td>No</td>
+<td><code>evidence.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award 2/4 if they say "the files you copy" — that describes a symptom, not the context. Ask for a corrected version.</li>
+<li>Q2: award 1/3 for only one cost, or for "it is just slower" without connecting size to transfer or to secrets.</li>
+<li>Q3: award 1/2 if they know secrets can leak but claim <code>.dockerignore</code> removes them from images that already exist. It does not.</li>
+<li>Placement: the subfolder failure is the diagnostic. If they cannot say what happens, award 1/2.</li>
+<li>Evidence: accept any honest before/after numbers; do not compare to the lesson's exact figure.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li>Missing <code>.dockerignore</code> or a file that excludes nothing means the must-have rows fail.</li>
+<li>A correct <code>.dockerignore</code> with a cosmetic issue (for example, a pattern that excludes slightly too little) still passes; note it rather than failing.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or pasted lesson text.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U12-dockerfile-instructions/index.html">U12 Dockerfile instructions</a>
+    <a class="next" href="../U14-tags-and-naming/index.html">U14 Tags and naming your images</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

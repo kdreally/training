@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U31 — From image to service | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U31</div>
+    <h1>From image to service</h1>
+    <span class="phase-badge ph7">Phase 7 — Craft and capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U31 — From image to service</h1>
+<p><strong>Phase 7 — Craft and capstone</strong></p>
+<h2>Where you are</h2>
+<p>You have built images, run containers, kept data in volumes, published ports, and tied services together with Compose. Up to now the story has been "get this running on my laptop." This unit is about the next honest question: <strong>how does an image become something that keeps running for other people?</strong> That is what people loosely call "deploying." We will define it clearly and practise it locally — no cloud account, no credit card, no server rental required.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what "deploy" means for a container, in plain language.</li>
+<li>Name the three things every running service needs: a <strong>host</strong>, a <strong>runtime</strong>, and a <strong>process that stays up</strong>.</li>
+<li>Run an existing image as a long-lived service using a <strong>restart policy</strong>.</li>
+<li>Read a container's restart policy and restart count back with <code>docker inspect</code>.</li>
+<li>Distinguish "it is running because I am watching it" from "it is running because the machine keeps it running."</li>
+<li>Decode the most common "it keeps restarting" failures.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U06</strong> — Docker installed and verified.</li>
+<li><strong>U07–U10</strong> — running containers, lifecycle commands, <code>docker logs</code>, <code>docker exec</code>.</li>
+<li><strong>U11–U16</strong> — building images and multi-stage builds.</li>
+<li><strong>U17–U20</strong> — volumes, ports, and how containers talk to each other.</li>
+<li><strong>U21–U25</strong> — Compose basics (you will reuse <code>restart:</code> and <code>depends_on:</code> here).</li>
+<li><strong>U26–U27</strong> — registries (this unit assumes the image already exists locally or can be pulled).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. The ideas here are bigger than the commands. Read the "Why this exists" and "Plain-language teaching" sections slowly. Take a break before the practice exercises.</p>
+<h2>Why this exists</h2>
+<p>On your laptop, you start a container, you look at it, you close the terminal, and it is still there in the morning. So why does everyone talk about deployment like it is hard?</p>
+<p>Because your laptop is doing three invisible jobs at once. It is the <strong>machine</strong> that stays powered on. It is running the <strong>Docker engine</strong> that knows how to start containers. And there is a human — you — who notices when something dies and starts it again.</p>
+<p>A real service has none of your attention. Nobody is watching it at 3 a.m. So the service must be started by the machine, and restarted by the machine when it falls over. "Deploy" is the honest word for: <strong>take an image that runs, and arrange for a machine to run it, and keep running it, without a human standing there.</strong></p>
+<p>That is the whole idea. The rest of this unit is vocabulary and a handful of commands so the idea stops being vague.</p>
+<h2>Plain-language teaching</h2>
+<h3>The three ingredients of a running service</h3>
+<p>Every service, from a tiny notes app to a giant website, is made of the same three parts:</p>
+<ol>
+<li><strong>A host.</strong> A computer that is switched on and connected to a network. On your laptop, the host <em>is</em> your laptop. In a company, the host is usually a computer in a data centre that you never physically touch. A host is not magic; it is just a machine that stays on.</li>
+<li><strong>A runtime.</strong> The software on the host that knows how to turn an image into a running container. When the host runs Docker (or a compatible engine), Docker <strong>is</strong> the runtime. The host provides the electricity and the network; the runtime provides the container machinery.</li>
+<li><strong>A process that stays up.</strong> A container runs exactly one main process (the last <code>CMD</code> or <code>ENTRYPOINT</code> instruction from the image, U12). If that process exits, the container exits. A "service" is a container whose main process is written to run until it is told to stop — a web server, a queue worker, a database.</li>
+</ol>
+<p>If any one of the three is missing, nobody can use your service. Your laptop quietly supplies all three. A production setup has to supply them deliberately.</p>
+<h3>"Deploy" without cloud hype</h3>
+<p>To <strong>deploy</strong> is to make a built image into a running service on some host, in a way that survives you walking away. Nothing in that sentence requires a cloud provider. You can deploy to:</p>
+<ul>
+<li>your own laptop (fine for learning),</li>
+<li>a spare desktop in the corner,</li>
+<li>a small computer in your office,</li>
+<li>a rented server elsewhere (the "cloud" story).</li>
+</ul>
+<p>This course stays on the first option so nobody needs to spend money. The concepts are identical on all four.</p>
+<h3>Why a machine will not keep things running by default</h3>
+<p>When you run <code>docker run python:3.12-slim python -m http.server</code>, the container runs the web server. If that web server crashes, the container exits and Docker does nothing about it. Docker's default restart policy is <strong><code>no</code></strong>: "if it exits, leave it exited."</p>
+<p>That default is sensible. Many containers are meant to run a job and finish (a build, a backup, a migration). Restarting a finished job forever would be a bug. So Docker makes you <em>ask</em> for restart behavior, per container.</p>
+<h3>Restart policies, in plain words</h3>
+<p>A <strong>restart policy</strong> is an instruction attached to a container that tells the runtime what to do when the main process exits. You set it at run time with the <code>--restart</code> flag, or in Compose with the <code>restart:</code> key.</p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Plain meaning</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>no</code></td>
+<td>Do not restart. Leave it stopped.</td>
+<td>One-shot jobs, tests. This is the default.</td>
+</tr>
+<tr>
+<td><code>on-failure[:N]</code></td>
+<td>Restart only if it exits with a non-zero (error) code, at most <code>N</code> times.</td>
+<td>A service that should not loop forever on a permanent error.</td>
+</tr>
+<tr>
+<td><code>always</code></td>
+<td>Restart no matter how it exited, including after <code>docker stop</code>.</td>
+<td>A service that must always be up; a reboot starts it again.</td>
+</tr>
+<tr>
+<td><code>unless-stopped</code></td>
+<td>Like <code>always</code>, but if <em>you</em> stopped it, it stays stopped after a reboot.</td>
+<td>The usual friendly choice for a personal service.</td>
+</tr>
+</tbody>
+</table>
+<p>The difference between <code>always</code> and <code>unless-stopped</code> only shows after a machine reboot: <code>always</code> brings back a container you had stopped by hand; <code>unless-stopped</code> respects your decision.</p>
+<h3>What a "host" is <em>not</em></h3>
+<ul>
+<li>A host is <strong>not</strong> the same as a container. A host contains containers.</li>
+<li>A host is <strong>not</strong> necessarily powerful. A useful service can run on tiny hardware.</li>
+<li>A host is <strong>not</strong> "the cloud." The cloud is other people's hosts.</li>
+</ul>
+<h3>Desired state (the seed of the next unit)</h3>
+<p>When you say "this service should always be up," you are describing a <strong>desired state</strong>: the state you want the world to be in. A restart policy is the simplest possible version of that idea — one host, one container, "keep it up." In U32 you will meet tools that manage desired state across many hosts. Getting comfortable with the phrase now makes U32 much easier.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>A computer that stays on and runs your service</td>
+<td>Not the same as a container; not automatically "the cloud"</td>
+</tr>
+<tr>
+<td>Runtime</td>
+<td>Software on the host that turns images into containers (Docker here)</td>
+<td>Not the same as the app you are running</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>A container whose main process keeps running for others to use</td>
+<td>Not a Docker object you can list; it is a role</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Make a built image into a running service on a host</td>
+<td>Not "write code"; not "upload to the cloud"</td>
+</tr>
+<tr>
+<td>Daemon</td>
+<td>The background program (the runtime) that manages containers</td>
+<td>Not your app's process</td>
+</tr>
+<tr>
+<td>Restart policy</td>
+<td>Rule for what to do when a container's main process exits</td>
+<td>Not a health check; it does not look <em>inside</em> the app</td>
+</tr>
+<tr>
+<td>Exit code</td>
+<td>The number a process returns when it finishes (0 = success)</td>
+<td>Not always an error — read it, do not fear it</td>
+</tr>
+<tr>
+<td>Uptime</td>
+<td>How long something has been running without stopping</td>
+<td>Not a guarantee of correctness</td>
+</tr>
+<tr>
+<td>Disposable</td>
+<td>Able to be deleted and recreated safely</td>
+<td>Not "unimportant"</td>
+</tr>
+<tr>
+<td>Desired state</td>
+<td>The state you want (e.g. "this service is up")</td>
+<td>Not the current state; tools work to close the gap</td>
+</tr>
+<tr>
+<td>Restart count</td>
+<td>How many times the runtime has restarted this container</td>
+<td>Not the number of crashes of your app <em>logic</em> alone</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Goal:</strong> run a tiny web service that stays up by itself, prove it restarts when its process dies, and read the evidence back with <code>docker inspect</code>. Everything here runs on your own machine.</p>
+<p><strong>Step 1 — start the service with a restart policy.</strong></p>
+<p>This command runs the <code>python:3.12-slim</code> image, starts a small built-in web server, publishes port <code>8085</code> (outside) to <code>8085</code> (inside), names the container <code>demo-service</code> for easy reference, and asks the runtime to restart it unless you stop it by hand.</p>
+<pre><code class="language-bash">docker run -d --name demo-service --restart unless-stopped -p 8085:8085 python:3.12-slim python -m http.server 8085
+</code></pre>
+<ul>
+<li><code>-d</code> means <strong>detached</strong>: run in the background and give you your prompt back.</li>
+<li><code>--name demo-service</code> gives the container a stable name instead of a random one.</li>
+<li><code>-p 8085:8085</code> maps a port from the host to the container (U18). The left number is the host port; the right is the container port.</li>
+<li><code>--restart unless-stopped</code> is the restart policy from the table above.</li>
+<li>The final part after the image name is the command to run: <code>python -m http.server 8085</code>.</li>
+</ul>
+<p><strong>Success looks like:</strong> a long container ID printed, and your prompt back. Check with:</p>
+<pre><code class="language-bash">docker ps
+</code></pre>
+<p>You should see <code>demo-service</code> with <code>Up</code> and a few seconds in the <code>STATUS</code> column.</p>
+<p><strong>Step 2 — confirm it answers over the network.</strong></p>
+<p>On macOS/Linux:</p>
+<pre><code class="language-bash">curl http://localhost:8085
+</code></pre>
+<p>On Windows PowerShell, <code>curl</code> is an alias for <code>Invoke-WebRequest</code>. Either use the alias, or call the real curl explicitly:</p>
+<pre><code class="language-powershell">Invoke-WebRequest http://localhost:8085
+</code></pre>
+<p><strong>Success looks like:</strong> an HTML directory listing (the server has no files, so it shows an empty index). Any HTML back means the service is reachable.</p>
+<p><strong>Step 3 — kill the main process and watch the runtime bring it back.</strong></p>
+<p>This runs a command <em>inside</em> the running container. <code>kill 1</code> sends a termination signal to process number 1, which is the main process. When the main process dies, the container exits — and because of the restart policy, Docker starts it again.</p>
+<pre><code class="language-bash">docker exec demo-service kill 1
+</code></pre>
+<p><strong>Success looks like:</strong> no error, and a moment later:</p>
+<pre><code class="language-bash">docker ps
+</code></pre>
+<p>shows <code>demo-service</code> as <code>Up</code> again with a small uptime (for example <code>Up 3 seconds</code>). It restarted without you running <code>docker run</code> again.</p>
+<p><strong>Step 4 — read the evidence.</strong></p>
+<p>This prints just the restart count from the container's JSON description. The <code>-f</code> flag means "format the output using this Go template."</p>
+<pre><code class="language-bash">docker inspect -f &quot;{{.RestartCount}}&quot; demo-service
+</code></pre>
+<p>On bash you may prefer single quotes; PowerShell favours double quotes. Both work; if your shell mangles the braces, try the other.</p>
+<p><strong>Success looks like:</strong> a number greater than <code>0</code> (the kill in Step 3 caused at least one restart).</p>
+<p><strong>Step 5 — clean up.</strong></p>
+<p>Stopping with <code>docker stop</code> is you telling the runtime "stop." With <code>unless-stopped</code>, the runtime remembers that and does <strong>not</strong> bring it back.</p>
+<pre><code class="language-bash">docker stop demo-service
+docker rm demo-service
+</code></pre>
+<p><strong>Success looks like:</strong> the container ID printed twice, and <code>docker ps -a</code> no longer lists <code>demo-service</code>.</p>
+<h3>A wrong-on-purpose run, to see a restart loop</h3>
+<p>Run a container whose command fails instantly, with <code>--restart always</code>:</p>
+<pre><code class="language-bash">docker run -d --name will-loop --restart always alpine sh -c &quot;echo starting; exit 7&quot;
+</code></pre>
+<p><code>docker ps -a</code> will show <code>will-loop</code> in a <strong><code>Restarting</code></strong> state, and the restart count climbs. The point: a restart policy does not fix a broken command — it hides it in a loop. The fix is to read the logs:</p>
+<pre><code class="language-bash">docker logs will-loop
+</code></pre>
+<p>which shows <code>starting</code>, and then fix the command. Remove it when done:</p>
+<pre><code class="language-bash">docker rm -f will-loop
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: "The container is <code>Restarting</code> forever"</h3>
+<p><strong>What happens:</strong> <code>docker ps -a</code> shows <code>Restarting (1) 2 seconds ago</code> and the count grows. Your image's command keeps failing immediately.</p>
+<p><strong>Why:</strong> The restart policy faithfully restarts a process that keeps dying. It cannot tell you <em>why</em>.</p>
+<p><strong>Fix:</strong> Read the logs (<code>docker logs &lt;name&gt;</code>), check the exit code (<code>docker inspect -f "{{.State.ExitCode}}" &lt;name&gt;</code>), fix the command or configuration, then recreate the container. To stop the loop while you think, <code>docker rm -f &lt;name&gt;</code>.</p>
+<h3>Error: "I thought <code>-d</code> meant it stays up"</h3>
+<p><strong>What happens:</strong> You ran <code>docker run -d ...</code> without a restart policy, the process later exited, and it never came back.</p>
+<p><strong>Why:</strong> <code>-d</code> only means "do not hold my terminal." It says nothing about restarting. Without <code>--restart</code>, Docker's default is <code>no</code>.</p>
+<p><strong>Fix:</strong> Add <code>--restart unless-stopped</code> (or your chosen policy) when you run the container. You can also change it on an existing container with <code>docker update --restart unless-stopped &lt;name&gt;</code>.</p>
+<h3>Error: "port is already allocated"</h3>
+<p><strong>What happens:</strong> <code>docker: Error response from daemon: driver failed programming external connectivity ... port is already allocated.</code></p>
+<p><strong>Why:</strong> Another container (or a program on the host) already uses host port <code>8085</code>.</p>
+<p><strong>Fix:</strong> Pick a different host port, for example <code>-p 8090:8085</code>. Only the left number must change.</p>
+<h3>Error: "It restarted, so it must be healthy"</h3>
+<p><strong>What happens:</strong> A service restarts quietly in a loop and looks "up" if you glance at <code>docker ps</code>.</p>
+<p><strong>Why:</strong> A restart policy only notices that the <em>process</em> exited. It cannot see that the app answers requests incorrectly.</p>
+<p><strong>Fix:</strong> Add a <strong>health check</strong> (you have the tools from Compose, U23) and watch the restart count, not just the word <code>Up</code>.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Name the three ingredients a running service needs, and say which one your laptop supplies invisibly.</li>
+<li>What is the default restart policy, and why is that default reasonable?</li>
+<li>What is the practical difference between <code>always</code> and <code>unless-stopped</code> after a reboot?</li>
+<li>If a container says <code>Restarting</code> forever, what is your <em>first</em> diagnostic command, and why?</li>
+<li>Why is <code>-d</code> not the same as "keep it running"?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Feel the default</h3>
+<p>Run the worked example's service <strong>without</strong> any <code>--restart</code> flag. Kill its main process with <code>docker exec &lt;name&gt; kill 1</code>. Note what <code>docker ps -a</code> shows. Then delete it.</p>
+<h3>P2 — Change your mind without rebuilding</h3>
+<p>Start a simple container, then use <code>docker update --restart always &lt;name&gt;</code> to add a policy after the fact. Confirm with <code>docker inspect -f "{{.HostConfig.RestartPolicy.Name}}" &lt;name&gt;</code>. Then remove it.</p>
+<h3>P3 — Predict, then run</h3>
+<p>Before running anything: for a container started with <code>--restart unless-stopped</code>, predict what <code>docker ps -a</code> shows after you run <code>docker stop &lt;name&gt;</code>, and what it shows after <code>docker kill &lt;name&gt;</code>. Run both and compare. Write one sentence explaining the difference.</p>
+<h3>P4 — Read an exit code</h3>
+<p>Run <code>docker run --name codecheck alpine sh -c "exit 9"</code>. Then run <code>docker inspect -f "{{.State.ExitCode}}" codecheck</code>. Write down the number. Remove the container.</p>
+<h3>P5 — Write your own restart policy sentences</h3>
+<p>In one line each, describe a situation where you would choose <code>no</code>, <code>on-failure:3</code>, and <code>unless-stopped</code>. (No commands; this is about judgement.)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No cloud providers, no server rental, no accounts, no costs.</li>
+<li>No Kubernetes (that survey is U32).</li>
+<li>No new image-building techniques (those were U11–U16).</li>
+<li>No monitoring or alerting products.</li>
+<li>No deep security hardening (that is U33).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U32 — Where Kubernetes fits</strong> (a survey of orchestration, and when <em>not</em> to reach for it).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U31 Assignment — Your first "service" note</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U31-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs or bullet lists are fine. Do not paste the lesson text back unchanged.</p>
+<ol>
+<li><strong>Deploy.</strong> In 4–7 lines, explain what "deploy" means for a container. Use the words <em>host</em>, <em>runtime</em>, and <em>service</em> at least once each, correctly.</li>
+<li><strong>The three ingredients.</strong> Name the three things a running service needs. For each, say what could go wrong if it were missing.</li>
+<li><strong>Restart policy choice.</strong> For each policy below, give one realistic situation where it is the right choice and one sentence of justification:<br />
+   - <code>no</code><br />
+   - <code>on-failure:3</code><br />
+   - <code>unless-stopped</code></li>
+<li><strong>Prediction.</strong> You start a container with <code>--restart unless-stopped</code>, then run <code>docker stop &lt;name&gt;</code>. Later the host reboots. Predict what <code>docker ps -a</code> shows after the reboot, and explain why.</li>
+<li><strong>Bug hunt.</strong> A teammate says: "It restarts on its own, so the service must be healthy." Write 3–5 lines explaining why this is wrong, and what they should check instead.</li>
+<li><strong>Reflection.</strong> Name one thing about deployment that confused you before this unit and is now clear. Name one thing still fuzzy.</li>
+</ol>
+<h3>2. <code>evidence.txt</code></h3>
+<p>Paste the actual terminal transcript of the following, in order, with the command and its visible output:</p>
+<ol>
+<li>Start a service with a restart policy (any image and port you like; local only).</li>
+<li><code>docker ps</code> showing it <code>Up</code>.</li>
+<li>Deliberately kill its main process.</li>
+<li><code>docker ps</code> showing it <code>Up</code> again with a small uptime.</li>
+<li><code>docker inspect -f "{{.RestartCount}}" &lt;name&gt;</code> showing a number greater than <code>0</code>.</li>
+<li><code>docker stop</code> and <code>docker rm</code>.</li>
+</ol>
+<p>Label each step with a short comment line so the trainer can follow it.</p>
+<h3>3. <code>deploy-note.md</code></h3>
+<p>Write a short deployment note (half a page) for this service, as if handing it to a colleague. It must state:</p>
+<ul>
+<li>What the image is and where it came from (local build or a registry, U26).</li>
+<li>The exact command you used to run it, with every flag explained in one short phrase.</li>
+<li>The restart policy and the reason you chose it.</li>
+<li>Which machine is the <strong>host</strong> in your case, and one honest limitation of using that host.</li>
+</ul>
+<h2>Definition of done</h2>
+<ul>
+<li>Three files present with the names above.</li>
+<li><code>evidence.txt</code> shows a real restart count greater than <code>0</code>.</li>
+<li>Every flag in your run command is explained somewhere.</li>
+<li>Answers are in your own words, not copy-pasted.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U31 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correct plain-language explanation of "deploy" using host/runtime/service</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Three ingredients named and consequences of each missing</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Restart policy choices are sensible and justified</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Reboot prediction for <code>unless-stopped</code> is correct (stays stopped)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>"Restart ≠ healthy" reasoning is sound; suggests logs/health check</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Honest reflection (one clear, one fuzzy)</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Evidence transcript complete and shows <code>RestartCount</code> &gt; 0</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>evidence.txt</code></td>
+</tr>
+<tr>
+<td>Deploy note explains host, command, and flags; names a real limitation</td>
+<td>1</td>
+<td>No</td>
+<td><code>deploy-note.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award half if host/runtime/service appear but one is misused (for example calling a container a host).</li>
+<li>Q3: award 1 point per policy that has a valid situation; award 2/4 if situations are real but justifications are missing.</li>
+<li>Q4: the key idea is "<code>unless-stopped</code> respects a manual stop." No credit if they say it restarts anyway.</li>
+<li>Evidence: if they show a restart but never a count, award 1/2. If they never actually killed the process, award 0/2.</li>
+<li>Do not penalize imperfect English. Penalize empty or copy-pasted lesson text.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U30-image-scanning-and-size/index.html">U30 Image scanning and size hygiene</a>
+    <a class="next" href="../U32-where-kubernetes-fits/index.html">U32 Where Kubernetes fits</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

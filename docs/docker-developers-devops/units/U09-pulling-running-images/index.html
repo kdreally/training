@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U09 — Pulling and running existing images | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U09</div>
+    <h1>Pulling and running existing images</h1>
+    <span class="phase-badge ph2">Phase 2 — Docker basics</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U09 — Pulling and running existing images</h1>
+<p><strong>Phase 2 — Docker basics</strong></p>
+<h2>Where you are</h2>
+<p>You know image vs container (U08). Now you work with images from <strong>Docker Hub</strong> (public registry), understand <strong>tags</strong> (<code>latest</code> vs pinned), and run a real service image (like <code>nginx</code>) while being careful about trust.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what Docker Hub is (plain language) and why we use it.</li>
+<li>Explain <code>docker pull</code> and when it runs automatically with <code>docker run</code>.</li>
+<li>Explain image tags: <code>latest</code> vs a specific/pinned tag, and trade-offs.</li>
+<li>Run an existing image (e.g. <code>nginx</code>) and understand it starts a service.</li>
+<li>Explain basic trust: use official images and avoid running unknown images blindly.</li>
+<li>Decode common pull/run failures.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>U00–U08</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>30–50 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Most learning starts by reusing existing images. You need to know pulling, tags, and safe choices before building your own (U11+).</p>
+<h2>Plain-language teaching</h2>
+<h3>What is a registry? What is Docker Hub?</h3>
+<p>A <strong>registry</strong> is a place to store and share images (like a library). <strong>Docker Hub</strong> is a public registry many people use. Official images are published by projects/maintainers and marked "official" — easier to trust for learning.</p>
+<h3>docker pull vs docker run</h3>
+<ul>
+<li><code>docker pull &lt;image&gt;:&lt;tag&gt;</code> downloads the image only (no container started).</li>
+<li><code>docker run &lt;image&gt;:&lt;tag&gt;</code> will pull if not local, then create+start container.</li>
+</ul>
+<p>So pulling explicitly is optional but useful (see what you download, control timing).</p>
+<h3>Tags: latest vs pinned</h3>
+<p>A <strong>tag</strong> is a label for an image version (e.g. <code>nginx:1.27.2</code>, <code>nginx:latest</code>). <br />
+- <code>latest</code> means "the default tag" the publisher sets — convenient, but can change over time.<br />
+- <strong>Pinned tag</strong> (specific version) is more predictable/reproducible. For learning both are fine; be aware of difference.</p>
+<h3>Running a service image (nginx)</h3>
+<p><code>nginx</code> is a web server. When you run it in a container, it listens on ports inside the container. To reach it from your host, you need to map ports (covered in U18). For this unit, focus on: pull/run works and container stays running (detached idea introduced gently) or just observe it runs.</p>
+<h3>Trusting images</h3>
+<ul>
+<li>Prefer <strong>official</strong> images when learning (<code>nginx</code>, <code>redis</code>, <code>ubuntu</code> official).</li>
+<li>Do not blindly <code>docker run</code> random images from untrusted sources.</li>
+<li>This is hygiene, not paranoia.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registry</td>
+<td>Storage for images</td>
+<td>Docker Hub is one registry</td>
+</tr>
+<tr>
+<td>Docker Hub</td>
+<td>Public image registry</td>
+<td>Not the only one (GHCR, ECR etc.)</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>Name of app/image set</td>
+<td>e.g. <code>library/nginx</code> or <code>nginx</code></td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>Version label</td>
+<td><code>latest</code> is just a tag name</td>
+</tr>
+<tr>
+<td>Official image</td>
+<td>Verified publisher</td>
+<td>Looks safer for first steps</td>
+</tr>
+<tr>
+<td>Pull</td>
+<td>Download image</td>
+<td>Different from run</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<h3>Pull explicitly</h3>
+<p><strong>What it does:</strong> Downloads <code>nginx:latest</code> without starting container.<br />
+- All shells: <code>docker pull nginx:latest</code></p>
+<p><strong>Expected success:</strong> lines showing layers pulled/downloaded, ending with "Status: Downloaded newer image...".</p>
+<p><strong>Typical failure:</strong> network offline → timeout/error; or rate limits (rare for learning). Also daemon down.</p>
+<h3>Run nginx (observe it runs)</h3>
+<p><strong>What it does:</strong> Runs nginx container. Let us run in foreground briefly to see logs, or note it runs. For now:<br />
+- All shells: <code>docker run --name web-test nginx:latest</code></p>
+<p><strong>Expected:</strong> nginx starts and may print logs to terminal (foreground). To stop: <code>Ctrl+C</code> in that terminal (sends stop). Container exits.</p>
+<p><strong>Note:</strong> To run in background use <code>-d</code> (detached) — introduced in U10; here we focus on pull/run behavior.</p>
+<h3>Check with ps</h3>
+<p>After starting (and maybe stopping), run <code>docker ps -a</code> to see <code>web-test</code> from <code>nginx:latest</code>.</p>
+<p><strong>Typical failure:</strong> name conflict if <code>web-test</code> exists → remove or use different name (U10).</p>
+<h2>Common errors</h2>
+<h3>CE1 — Image not found</h3>
+<p><strong>Symptom:</strong> <code>manifest for ... not found</code>.<br />
+<strong>Why:</strong> Wrong name/tag or typo.<br />
+<strong>Fix:</strong> check spelling/tag exists on Docker Hub (mentally) or use correct name.</p>
+<h3>CE2 — Network issues</h3>
+<p><strong>Symptom:</strong> timeouts pulling.<br />
+<strong>Why:</strong> No internet or proxy.<br />
+<strong>Fix:</strong> verify connectivity, retry once.</p>
+<h3>CE3 — Using unknown images</h3>
+<p><strong>Symptom:</strong> Temptation to run arbitrary image.<br />
+<strong>Why:</strong> Risk unclear.<br />
+<strong>Fix:</strong> Prefer official images for learning.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is Docker Hub in plain words?</li>
+<li>Difference between <code>docker pull</code> and <code>docker run</code>?</li>
+<li><code>latest</code> vs pinned tag — trade-off?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Pull without run</h3>
+<p><code>docker pull redis:latest</code> and see it in <code>docker images</code>.</p>
+<h3>P2 — Run and see</h3>
+<p><code>docker run --name redis-test redis:latest</code> (foreground) then Ctrl+C; check <code>docker ps -a</code>.</p>
+<h3>P3 — Predict tag</h3>
+<p>Why might <code>nginx:1.27.2</code> behave more predictably than <code>nginx:latest</code> over months? Write 1–2 lines.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Port mapping (<code>-p</code>) details (U18)</li>
+<li>Detached mode deep dive except awareness (U10)</li>
+<li>Building/pushing to your own repo (U14, U27)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U10 — Container lifecycle</strong> (start, stop, logs, exec, rm, cleanup).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U09 Assignment — Pulling and running existing images</h1>
+<p>Submit: <code>U09-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>pulling-running.md</code></h3>
+<ol>
+<li><strong>Registry.</strong> What is a registry and what is Docker Hub? Why use it?</li>
+<li><strong>Pull vs run.</strong> Explain difference. Give example commands (conceptually) showing each.</li>
+<li><strong>Tags.</strong> What is a tag? Compare <code>latest</code> vs a pinned tag with pros/cons.</li>
+<li><strong>Proof.</strong> Show <code>docker pull nginx:latest</code> outcome (key line), <code>docker images</code> showing <code>nginx</code>, and <code>docker ps -a</code> after running/stopping <code>web-test</code>.</li>
+<li><strong>Trust.</strong> Why prefer official images when learning? Give one safe example.</li>
+<li><strong>Explain in your own words.</strong> Why might <code>docker run</code> pull automatically instead of failing?</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I pulled nginx explicitly and/or ran it.
+- [ ] I understand pull vs run.
+- [ ] I understand tags and trade-offs.
+- [ ] I read rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present.</li>
+<li>Answers in own words.</li>
+<li>Proof from runs or clearly labeled.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><p><em>No rubric file found.</em></p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U08-images-vs-containers/index.html">U08 Images vs containers</a>
+    <a class="next" href="../U10-container-lifecycle/index.html">U10 Container lifecycle</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

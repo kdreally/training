@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U07 — JavaScript: arrow functions, destructuring, and imports | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U07</div>
+    <h1>JavaScript: arrow functions, destructuring, and imports</h1>
+    <span class="phase-badge ph1">Phase 1 — Foundations</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U07 — JavaScript: arrow functions, destructuring, and imports</h1>
+<p><strong>Phase 1 — Foundations</strong></p>
+<h2>Where you are</h2>
+<p>This is the last JavaScript unit before you install tooling in Phase 2. It adds three pieces of everyday syntax that React code is written in almost everywhere: <strong>arrow functions</strong> (a shorter way to write a function), <strong>destructuring</strong> (pulling named values out of an object or array in one line), and <strong><code>export</code>/<code>import</code></strong> (how one file shares code with another). None of these is a new concept so much as a faster spelling of ideas you already have from U05 and U06.</p>
+<p>We keep the runnable examples to arrow functions and destructuring. Imports need a small setup to run in a browser, so in this unit you read and predict them, and you will actually run them once the dev server exists in U09. Knowing why that is, instead of being surprised by an error, is part of the lesson.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Rewrite a <code>function</code> as an arrow function, and say when the braces need an explicit <code>return</code>.</li>
+<li>Pull values out of an object with <code>{ }</code> destructuring and out of an array with <code>[ ]</code> destructuring.</li>
+<li>Explain what a module is and why code is split across files.</li>
+<li>Write and read a simple <code>export</code> and <code>import</code>.</li>
+<li>Recognise the classic "arrow with braces but no return" mistake and the "import outside a module" error.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05 — values, variables, and functions.</strong> You can define a function, use parameters, and <code>return</code> output.</li>
+<li><strong>U06 — arrays, objects, and <code>map</code>.</strong> You can build arrays of objects and transform them with <code>.map</code>. Arrows are used heavily as <code>.map</code> callbacks, so this unit builds directly on that.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>Plan <strong>90–120 minutes</strong>. The syntax is short; the <code>{</code> vs <code>(</code> trap in arrow functions deserves real attention. Do not rush the "predict then run" work in this unit; the reward is that React code stops looking cryptic.</p>
+<h2>Why this exists</h2>
+<p>Design tools have shorthands: a style you can apply in one click, a variant that changes only what differs, a library you drop into any file. JavaScript has the same pressures. Arrow functions remove ceremony from the small functions you write constantly. Destructuring removes repetitive <code>obj.this</code> and <code>obj.that</code>. Modules let a team keep one component or one set of tokens per file instead of one enormous document.</p>
+<p>When you open your first real React file in U11, it will start with <code>import</code> lines and contain arrow functions and destructuring. This unit is what makes that file readable instead of intimidating.</p>
+<h2>Plain-language teaching</h2>
+<h3>1. Arrow functions — a shorter function</h3>
+<p>In U05 you wrote functions like this:</p>
+<pre><code class="language-js">function double(n) {
+  return n * 2;
+}
+</code></pre>
+<p>An <strong>arrow function</strong> expresses the same thing with <code>=&gt;</code>:</p>
+<pre><code class="language-js">const double = (n) =&gt; n * 2;
+</code></pre>
+<p>Read it in order:</p>
+<ul>
+<li><code>const double =</code> — store the function in a variable named <code>double</code>. You now call it the same way: <code>double(4)</code>.</li>
+<li><code>(n)</code> — the parameters, exactly as before.</li>
+<li><code>=&gt;</code> — "this function produces…". The arrow is pronounced "goes to."</li>
+<li><code>n * 2</code> — the <strong>return value</strong>, written directly with no <code>return</code> keyword.</li>
+</ul>
+<p>When the body is a single expression, the arrow returns it automatically. This is called an <strong>implicit return</strong>. It is concise and common for small transformations, such as the callback you pass to <code>.map</code>.</p>
+<p>When a function needs more than one line, wrap the body in braces — and then you must write <code>return</code> yourself:</p>
+<pre><code class="language-js">const greeting = (name) =&gt; {
+  const message = &quot;Hello, &quot; + name + &quot;!&quot;;
+  return message;
+};
+</code></pre>
+<p>This is called a <strong>block body</strong>. With braces, there is no implicit return. Forgetting that is the single most common arrow-function bug, and we cause it on purpose below.</p>
+<p>You may write a single parameter without parentheses (<code>n =&gt; n * 2</code>). Many teams include the parentheses anyway for consistency, and this course does the same: <strong>always write <code>(n) =&gt;</code></strong>. Consistency beats saving one character.</p>
+<h3>2. Destructuring — unpacking named values</h3>
+<p><strong>Destructuring</strong> means pulling values out of an object or array and giving them names, in one line. It is not a new kind of data; it is a shortcut for reading.</p>
+<p><strong>Object destructuring</strong> pulls out values by key:</p>
+<pre><code class="language-js">const project = { title: &quot;Homepage redesign&quot;, likes: 12 };
+
+const { title, likes } = project;
+
+console.log(title); // Homepage redesign
+console.log(likes); // 12
+</code></pre>
+<p>Read the middle line as: "from <code>project</code>, take the values whose keys are <code>title</code> and <code>likes</code>, and create variables with those same names." Order does not matter, because keys are matched by name, not position.</p>
+<p>If you asked for a key that does not exist, you get <code>undefined</code>, exactly as with dot notation:</p>
+<pre><code class="language-js">const { height } = project; // undefined
+</code></pre>
+<p><strong>Array destructuring</strong> pulls out values by position:</p>
+<pre><code class="language-js">const palette = [&quot;#111111&quot;, &quot;#F5F5F5&quot;, &quot;#0A84FF&quot;];
+
+const [ink, paper] = palette;
+
+console.log(ink);   // #111111
+console.log(paper); // #F5F5F5
+</code></pre>
+<p>Here the names are yours to choose; what matters is position. The first name takes index <code>0</code>, the second takes index <code>1</code>, and the rest are ignored unless you name more.</p>
+<p>Design bridge: destructuring is asking for named properties off a layer — "give me the fill and the corner radius" — instead of reaching in every time you mention them. It keeps the following lines short and readable.</p>
+<h3>3. Modules — files that share code</h3>
+<p>A <strong>module</strong> is a file that can share some of its contents with other files and can use theirs. Two keywords do the sharing:</p>
+<ul>
+<li><code>export</code> marks something in a file as available to other files.</li>
+<li><code>import</code> brings those marked things into the current file.</li>
+</ul>
+<p>Before modules, everything lived in one giant script. Modules let you keep one job per file: <code>tokens.js</code> holds design values, <code>Button.js</code> holds a button, and a page imports both. If that sounds like a design-system library where you publish components and pull them into a screen, it is the same idea.</p>
+<p>Since U11's React preview, here is the shape you will see:</p>
+<pre><code class="language-js">// tokens.js
+export const spacing = 8;
+</code></pre>
+<pre><code class="language-js">// card.js
+import { spacing } from &quot;./tokens.js&quot;;
+
+console.log(spacing); // 8
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>export const spacing = 8;</code> declares a value and marks it for sharing. This is a <strong>named export</strong>: the name <code>spacing</code> travels with it.</li>
+<li><code>import { spacing } from "./tokens.js";</code> reads that named export into the current file. The braces mean "a named import." The <code>./</code> means "in the same folder"; <code>tokens.js</code> is the file name, including the extension.</li>
+<li>After importing, <code>spacing</code> behaves like any variable.</li>
+</ul>
+<p>There is also a <strong>default export</strong>, for the single main thing a file provides. A file can have at most one default export:</p>
+<pre><code class="language-js">// Button.js
+export default function Button() {
+  return &quot;a button, one day&quot;;
+}
+</code></pre>
+<pre><code class="language-js">// page.js
+import Button from &quot;./Button.js&quot;;
+</code></pre>
+<p>Notice the differences: the default export has no braces on import, and you may rename it. Named exports use braces and keep their names. React components are very often default exports.</p>
+<h3>4. Why imports cannot always run in this unit</h3>
+<p>To use <code>import</code> and <code>export</code>, the browser must treat your script as a module. In HTML, that means the script tag says <code>type="module"</code>:</p>
+<pre><code class="language-html">&lt;script type=&quot;module&quot;&gt;
+  import { spacing } from &quot;./tokens.js&quot;;
+&lt;/script&gt;
+</code></pre>
+<p>Even then, browsers block module imports that start from a plain <code>file://</code> address, for security reasons. You would see an error like "Failed to load module script" or a CORS message. The honest fix is to serve the files over a tiny local web address, which is exactly what the dev server in U09 sets up.</p>
+<p>So in this unit: run arrow functions and destructuring directly (they need no modules), and treat the import examples as read-and-predict. When U09 starts a dev server, the same import lines run.</p>
+<h3>5. How this prepares you for React files</h3>
+<p>Open any React file and you will see all three ideas at once:</p>
+<pre><code class="language-js">import { useState } from &quot;react&quot;;
+
+const Counter = () =&gt; {
+  const [count, setCount] = useState(0);
+  return count;
+};
+</code></pre>
+<p>You are not expected to understand every word yet. You are expected to recognise the parts: an <code>import</code>, a component written as an arrow function, and a line that looks like array destructuring (<code>const [count, setCount] = ...</code>). Those are U07 ideas in their native habitat. This preview is here only to show that the syntax you just learned is the same syntax React is built from.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arrow function</td>
+<td>A function written with <code>=&gt;</code></td>
+<td>Braces around the body disable the implicit return</td>
+</tr>
+<tr>
+<td>Implicit return</td>
+<td>A one-expression arrow returns automatically</td>
+<td>Only without braces</td>
+</tr>
+<tr>
+<td>Block body</td>
+<td>A function body wrapped in <code>{ }</code></td>
+<td>Requires an explicit <code>return</code></td>
+</tr>
+<tr>
+<td>Destructuring</td>
+<td>Pulling values out of an object or array by name or position</td>
+<td>Object uses keys; array uses position</td>
+</tr>
+<tr>
+<td>Module</td>
+<td>A file that can share code</td>
+<td>Needs <code>type="module"</code> to run in a browser</td>
+</tr>
+<tr>
+<td><code>export</code></td>
+<td>Mark something for other files to use</td>
+<td>Named vs default are different</td>
+</tr>
+<tr>
+<td><code>import</code></td>
+<td>Bring exported values into this file</td>
+<td>Named imports need braces</td>
+</tr>
+<tr>
+<td>Named export/import</td>
+<td>Shared by name; braces on import</td>
+<td>Name must match on both sides</td>
+</tr>
+<tr>
+<td>Default export/import</td>
+<td>A file's single main export; no braces</td>
+<td>Only one per file; may be renamed</td>
+</tr>
+<tr>
+<td>Relative path</td>
+<td><code>./tokens.js</code> means same folder</td>
+<td>The extension is required in the browser</td>
+</tr>
+<tr>
+<td><code>useState</code></td>
+<td>A React feature; preview only here</td>
+<td>Not taught in this unit</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<h3>Part A — arrow functions and destructuring (runnable)</h3>
+<p>Create <code>tokens.html</code> in your unit folder with this content:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;title&gt;U07 tokens&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Open the console to see the output&lt;/h1&gt;
+    &lt;script&gt;
+      const palette = [&quot;#111111&quot;, &quot;#F5F5F5&quot;, &quot;#0A84FF&quot;];
+      const project = { title: &quot;Homepage redesign&quot;, likes: 12, isPublic: true };
+
+      const [ink, paper] = palette;
+      const { title, likes } = project;
+
+      const double = (n) =&gt; n * 2;
+      const describe = (name, count) =&gt; {
+        const line = name + &quot; has &quot; + count + &quot; likes&quot;;
+        return line;
+      };
+
+      console.log(ink);
+      console.log(paper);
+      console.log(title);
+      console.log(double(likes));
+      console.log(describe(title, likes));
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>const palette = [...]</code> and <code>const project = {...}</code> set up the data, as in U06.</li>
+<li><code>const [ink, paper] = palette;</code> destructures the array by position: <code>ink</code> is index <code>0</code>, <code>paper</code> is index <code>1</code>.</li>
+<li><code>const { title, likes } = project;</code> destructures the object by key, creating <code>title</code> and <code>likes</code>.</li>
+<li><code>const double = (n) =&gt; n * 2;</code> is an arrow function with an implicit return.</li>
+<li><code>const describe = (name, count) =&gt; { ... };</code> is an arrow with a block body, so it uses an explicit <code>return</code>.</li>
+<li>The five <code>console.log</code> calls demonstrate each.</li>
+</ul>
+<p>How to run it: save the file, double-click it (on macOS, Control-click → "Open With" → your browser), open the console.</p>
+<p>Expected output:</p>
+<pre><code>#111111
+#F5F5F5
+Homepage redesign
+24
+Homepage redesign has 12 likes
+</code></pre>
+<h3>Part B — an import you will recognise later (read-only)</h3>
+<p>These two files cannot run from a double-clicked <code>file://</code> page; they run once the dev server exists in U09. Read them now and predict the output.</p>
+<p><code>tokens.js</code>:</p>
+<pre><code class="language-js">export const spacing = 8;
+export const radius = 4;
+</code></pre>
+<p><code>card.js</code>:</p>
+<pre><code class="language-js">import { spacing, radius } from &quot;./tokens.js&quot;;
+
+const cardWidth = 320;
+const cardHeight = spacing * 30;
+
+console.log(spacing);
+console.log(radius);
+console.log(cardWidth - spacing);
+console.log(cardHeight);
+</code></pre>
+<p>Predict before reading on: <code>spacing</code> is <code>8</code>, <code>radius</code> is <code>4</code>, <code>cardWidth - spacing</code> is <code>312</code>, and <code>cardHeight</code> is <code>240</code>. If you wrote those, you already read a module correctly.</p>
+<h2>Common errors</h2>
+<h3>Error 1: Arrow with braces but no <code>return</code></h3>
+<pre><code class="language-js">const double = (n) =&gt; { n * 2; };
+console.log(double(4));
+</code></pre>
+<p>Expected <code>8</code>; you get <code>undefined</code>.</p>
+<p><strong>What happened.</strong> The braces made this a block body, which has no implicit return, and you never wrote <code>return</code>. <strong>Fix.</strong> Either remove the braces (<code>(n) =&gt; n * 2</code>) or add <code>return</code> (<code>(n) =&gt; { return n * 2; }</code>).</p>
+<h3>Error 2: <code>Uncaught ReferenceError: title is not defined</code></h3>
+<p><strong>What happened.</strong> You used <code>title</code> as if it were a variable, but you never created it. This usually means you forgot to destructure, or you destructured a different object.</p>
+<pre><code class="language-js">const project = { title: &quot;Homepage redesign&quot; };
+console.log(title); // title was never created
+</code></pre>
+<p><strong>Fix.</strong> Destructure first (<code>const { title } = project;</code>), or read it directly (<code>project.title</code>).</p>
+<h3>Error 3: <code>Uncaught SyntaxError: Missing initializer in destructuring declaration</code></h3>
+<p><strong>What happened.</strong> You destructured without declaring the variables.</p>
+<pre><code class="language-js">{ title } = project; // no const/let → syntax error
+</code></pre>
+<p><strong>Fix.</strong> Always begin a destructuring statement with <code>const</code> or <code>let</code>: <code>const { title } = project;</code>.</p>
+<h3>Error 4: <code>Uncaught SyntaxError: Cannot use import statement outside a module</code></h3>
+<p><strong>What happened.</strong> You put an <code>import</code> in a script the browser is not treating as a module.</p>
+<pre><code class="language-html">&lt;script&gt;
+  import { spacing } from &quot;./tokens.js&quot;; // error: not a module
+&lt;/script&gt;
+</code></pre>
+<p><strong>Fix.</strong> Either add <code>type="module"</code> (<code>&lt;script type="module"&gt;</code>) and serve the page properly, or run that code after U09. The error is telling you the script is the wrong kind, not that <code>import</code> is wrong in general.</p>
+<h3>Error 5: <code>Failed to load module script</code> / a CORS message</h3>
+<p><strong>What happened.</strong> Your script is <code>type="module"</code>, but you opened the page by double-clicking, so the address begins with <code>file://</code>. Browsers block cross-file module loads from <code>file://</code> for safety. <strong>Fix.</strong> Run it after U09's dev server, which serves the files over <code>http://localhost</code>. This is an environment limitation, not a mistake in your code.</p>
+<h3>Reading an error — practice</h3>
+<pre><code class="language-js">const { width } = { height: 200 };
+console.log(width);
+</code></pre>
+<p>Output:</p>
+<pre><code>undefined
+</code></pre>
+<p>Decode it before reading on: there is no error text. The object has only a <code>height</code> key, so destructuring <code>width</code> produces <code>undefined</code>. <strong>Decoded:</strong> a missing key is silent, just like a typo with dot notation. <strong>Fix:</strong> destructure a key that exists (<code>const { height } = ...</code>) or accept <code>undefined</code> and handle it later. Reading <code>undefined</code> as a clue, rather than waiting for red text, is a habit that pays off in every future unit.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Rewrite <code>function half(n) { return n / 2; }</code> as an arrow function.</li>
+<li>When does an arrow function return automatically, and when do you need <code>return</code>?</li>
+<li>What is the difference between <code>const { title } = obj;</code> and <code>const [title] = arr;</code>?</li>
+<li>What does <code>./</code> mean in <code>import { spacing } from "./tokens.js";</code>?</li>
+<li>Why can a <code>type="module"</code> import fail when you open a file by double-clicking, and what will fix it in U09?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Without running, write what this prints. Then run it in the console and compare.</p>
+<pre><code class="language-js">const box = { w: 100, h: 200 };
+const { w, h } = box;
+const triple = (n) =&gt; n * 3;
+
+console.log(w);
+console.log(h);
+console.log(triple(w));
+</code></pre>
+<h3>P2 — Change one value</h3>
+<p>In <code>tokens.html</code>, change <code>likes</code> from <code>12</code> to <code>50</code> and reload. Which output lines change, and which stay the same? Explain why <code>double(likes)</code> changes but <code>ink</code> does not.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the destructuring and arrow so the three logs print <code>8</code>, <code>4</code>, and <code>16</code>.</p>
+<pre><code class="language-js">const tokens = { spacing: 8, radius: 4 };
+const { spacing, radius } = ____;
+const square = (n) =&gt; ____;
+
+console.log(spacing);
+console.log(radius);
+console.log(square(radius));
+</code></pre>
+<h3>P4 — Write from a spec</h3>
+<p>Given <code>const person = { name: "Nia", role: "Designer" };</code>, write an arrow function <code>label</code> that takes a person and returns <code>"Nia (Designer)"</code> using destructuring inside the function. Log <code>label(person)</code>.</p>
+<h3>P5 — Fix the broken snippet</h3>
+<p>This should log <code>8</code> but logs <code>undefined</code>. Find and fix the problem.</p>
+<pre><code class="language-js">const margin = (n) =&gt; { n + 4; };
+console.log(margin(4));
+</code></pre>
+<h3>P6 — Read a module</h3>
+<p>Given:</p>
+<pre><code class="language-js">// theme.js
+export const primary = &quot;#0A84FF&quot;;
+export const secondary = &quot;#FF9F0A&quot;;
+</code></pre>
+<pre><code class="language-js">// banner.js
+import { primary } from &quot;./theme.js&quot;;
+console.log(primary);
+</code></pre>
+<p>Predict what <code>banner.js</code> logs, and write one sentence explaining what the braces around <code>primary</code> mean.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No React, JSX, or components yet; the preview is recognition only.</li>
+<li>No <code>useState</code> or any hooks; not taught here.</li>
+<li>No running of <code>import</code>/<code>export</code> in a browser in this unit; that waits for U09's dev server.</li>
+<li>No advanced destructuring beyond named values and positions (no nested or default-value destructuring required).</li>
+<li>No installing anything; Node.js arrives in U08.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U08 — Installing Node.js safely, and verifying the install.</strong> You have finished the JavaScript essentials. Next you set up the tool that lets code run outside the browser, and you will verify the installation step by step before touching React.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U07 Assignment — Arrow functions, destructuring, and imports</h1>
+<p>Submit everything to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U07-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>tokens.html</code></h3>
+<p>Create this file from scratch. Do not copy the worked example; invent your own data (for example: a colour palette and a screen object). It must run in a browser and print to the console.</p>
+<p>Requirements:</p>
+<ul>
+<li>One array destructuring (at least two names, using <code>[ ]</code>).</li>
+<li>One object destructuring (at least two keys, using <code>{ }</code>).</li>
+<li>One arrow function with an <strong>implicit return</strong> (no braces).</li>
+<li>One arrow function with a <strong>block body</strong> that uses an explicit <code>return</code>.</li>
+<li>At least three <code>console.log</code> lines showing the destructured values and both arrow functions working.</li>
+</ul>
+<h3>2. <code>console-output.txt</code></h3>
+<p>Open <code>tokens.html</code>, open the console, and copy the exact output into this plain text file. Copy, do not retype.</p>
+<h3>3. <code>modules-answers.md</code></h3>
+<p>Imports cannot run by double-clicking, so this part is read-and-predict. Answer in your own words.</p>
+<ol>
+<li>
+<p><strong>Read the module.</strong> Given:<br />
+<code>js
+   // sizes.js
+   export const base = 16;
+   export const ratio = 1.5;</code><br />
+<code>js
+   // layout.js
+   import { base, ratio } from "./sizes.js";
+   console.log(base);
+   console.log(base * ratio);</code><br />
+   Write what <code>layout.js</code> prints. Then explain, in one or two sentences, what the braces around <code>base, ratio</code> mean on the import line.</p>
+</li>
+<li>
+<p><strong>Named vs default.</strong> A file has <code>export default function Button() {}</code>. Write the <code>import</code> line that brings it in as <code>Button</code>, and say how that differs from a named import.</p>
+</li>
+<li>
+<p><strong>Why modules.</strong> In 3–5 lines, explain why a team would split code into <code>tokens.js</code>, <code>Button.js</code>, and <code>page.js</code> instead of writing one large file. Use a design-library comparison if it helps.</p>
+</li>
+<li>
+<p><strong>Why it will not run yet.</strong> In two or three sentences, explain why opening a <code>type="module"</code> page by double-clicking can produce a "Failed to load module script" or CORS error, and what in U09 will fix it.</p>
+</li>
+</ol>
+<h3>4. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Explain it back.</strong> In 4–6 lines, explain to another designer what an arrow function is and how it differs from the <code>function</code> form, including the braces rule.</li>
+<li><strong>Destructuring.</strong> Explain the difference between <code>const { title } = obj;</code> and <code>const [first] = arr;</code> in your own words. Why does order matter for one and not the other?</li>
+<li><strong>Predict then run.</strong> Write what this prints, then run it and write the real output. Explain any difference.<br />
+<code>js
+   const [ink] = ["#111111", "#F5F5F5"];
+   const { name, copies } = { name: "Zine", copies: 3, size: "A5" };
+   const shout = (text) =&gt; text + "!";
+   const total = (n) =&gt; {
+     const bumped = n + copies;
+     return bumped;
+   };
+   console.log(ink);
+   console.log(name);
+   console.log(shout(name));
+   console.log(total(1));</code></li>
+<li><strong>Debug this broken snippet.</strong> This should log <code>16</code> but logs <code>undefined</code>. Write the fixed version and name the mistake.<br />
+<code>js
+   const area = (w) =&gt; { w * 4; };
+   console.log(area(4));</code></li>
+<li><strong>Read an error.</strong> You paste an <code>import</code> into a page opened by double-clicking and see:<br />
+<code>Uncaught SyntaxError: Cannot use import statement outside a module</code><br />
+   In two or three sentences, explain what the message means and name one thing to change.</li>
+</ol>
+<h3>5. <code>checklist.md</code></h3>
+<p>Copy this and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] `tokens.html` opens and the console shows my output.
+- [ ] I destructured an array with `[ ]`.
+- [ ] I destructured an object with `{ }`.
+- [ ] I wrote an arrow function with an implicit return (no braces).
+- [ ] I wrote an arrow function with a block body and an explicit `return`.
+- [ ] `console-output.txt` is the real copied output.
+- [ ] `modules-answers.md` answers all four prompts.
+- [ ] I read the U07 rubric before writing answers.md.
+- [ ] My answers are in my own words.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All five files present with the exact names above.</li>
+<li><code>tokens.html</code> runs and prints the required lines.</li>
+<li>The block-body arrow uses <code>return</code>; the implicit-return arrow does not use braces.</li>
+<li><code>console-output.txt</code> matches a real run.</li>
+<li>Both answer files cover every prompt in your own words.</li>
+<li>Checklist completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U07 Rubric</h1>
+<p>Visible to learners. Total <strong>28 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tokens.html</code> runs and prints to the console</td>
+<td>4</td>
+<td>Yes</td>
+<td>Open the file; console shows output</td>
+</tr>
+<tr>
+<td>Array destructuring with <code>[ ]</code> used correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>tokens.html</code> script</td>
+</tr>
+<tr>
+<td>Object destructuring with <code>{ }</code> used correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>tokens.html</code> script</td>
+</tr>
+<tr>
+<td>Arrow with implicit return (single expression, no braces) works</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>tokens.html</code> script</td>
+</tr>
+<tr>
+<td>Arrow with block body and explicit <code>return</code> works</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>tokens.html</code> script</td>
+</tr>
+<tr>
+<td><code>console-output.txt</code> matches a real run</td>
+<td>3</td>
+<td>Yes</td>
+<td>Compare to a fresh run</td>
+</tr>
+<tr>
+<td>Q1 (read the module) prints <code>16</code> and <code>24</code>; braces explained as named imports</td>
+<td>2</td>
+<td>No</td>
+<td><code>modules-answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Q2 (named vs default) correct import line and difference</td>
+<td>1</td>
+<td>No</td>
+<td><code>modules-answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Q3 (why modules) names separation, reuse, or clarity with a sensible comparison</td>
+<td>1</td>
+<td>No</td>
+<td><code>modules-answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Q4 (why it will not run) mentions <code>file://</code>/CORS and the U09 dev server</td>
+<td>1</td>
+<td>No</td>
+<td><code>modules-answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Q—explain-it-back covers the braces rule</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Q—destructuring explains name vs position</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Q—predict then run recorded before the real output, differences explained</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Q—debug snippet fixed (braces need <code>return</code>, or braces removed)</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Q—error decode explains "script is not a module" and gives a fix</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h2>What counts as "correct" for the tricky bits</h2>
+<ul>
+<li><strong>Implicit-return arrow:</strong> the body must be a single expression with no braces, e.g. <code>(n) =&gt; n * 2</code>. <code>(n) =&gt; { n * 2; }</code> is a block body and returns <code>undefined</code>.</li>
+<li><strong>Block-body arrow:</strong> must contain an explicit <code>return</code>. A block that only computes is the classic bug.</li>
+<li><strong>Q1 expected output:</strong> <code>16</code> then <code>24</code> (<code>base</code> is <code>16</code>; <code>base * ratio</code> is <code>16 * 1.5</code>).</li>
+<li><strong>Debug (Q4):</strong> either <code>const area = (w) =&gt; w * 4;</code> (no braces) or <code>const area = (w) =&gt; { return w * 4; };</code>. Both are correct; accepting only one would be unfair.</li>
+<li><strong>Q5:</strong> the message means the script is a classic script, not a module. A valid fix is adding <code>type="module"</code> <strong>and</strong> serving the page, or running it after U09. Merely saying "use a server" is acceptable at this stage.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Destructures correctly in <code>tokens.html</code> but never logs the values: award half on the two destructuring criteria, since the skill shows in code even if output is thin.</li>
+<li>Uses arrows everywhere but both are implicit, or both are block: award one of the two arrow criteria and note the missing form; both forms are outcomes of this unit.</li>
+<li>Q3 or Q4 answered with "it just does not work": award 0 for that prompt and correct in feedback; these are reasoning prompts.</li>
+<li>Imports attempted inside a double-clicked file and left broken: do not penalise. The unit explicitly says imports are read-only until U09. Reward the attempt if the syntax was right.</li>
+<li>Do not penalise imperfect English. Do penalise copy-pasted lesson prose on Q1–Q3 and the explain-it-back prompts.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Arrow functions written as <code>function</code> and labelled as arrows.</li>
+<li><code>const { title } = project;</code> confused with array destructuring (<code>const [title] = ...</code>), producing <code>undefined</code>.</li>
+<li>Forgetting <code>return</code> in the block-body arrow and concluding arrow functions "do not work."</li>
+<li>Import line written with braces for a default export (<code>import { Button } from "./Button.js"</code>), a named/default mix-up.</li>
+</ul>
+<h2>If the cohort struggles here</h2>
+<p>The main cliff is the braces rule. If many submissions return <code>undefined</code> from block-body arrows, re-run the side-by-side in U07 §1 and have them convert one function three ways: <code>function</code>, implicit arrow, block arrow. The secondary cliff is named vs default imports; a short table (braces or not, rename or not) clears it. Both must be solid before U11, whose starter files are full of imports.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U06-arrays-objects-and-map/index.html">U06 JavaScript: arrays, objects, and `map`</a>
+    <a class="next" href="../U08-installing-node/index.html">U08 Installing Node.js safely</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

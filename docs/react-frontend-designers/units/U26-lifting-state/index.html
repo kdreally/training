@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U26 — Lifting state | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U26</div>
+    <h1>Lifting state</h1>
+    <span class="phase-badge ph5">Phase 5 — Interaction and polish</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U26 — Lifting state</h1>
+<p><strong>Phase 5 — Interaction and polish</strong></p>
+<h2>Where you are</h2>
+<p>You can build components, pass them props, hold small pieces of changing data with <code>useState</code>, and render lists with <code>map</code>. Now you meet a very common design problem: <strong>two parts of the screen need to agree about the same piece of data</strong>. This unit shows the standard React answer — moving the data to their closest shared parent — and the vocabulary for it.</p>
+<p>This is the first unit of Phase 5. The ideas here repeat in every real interface you will build.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what "lifting state up" means and why it is necessary.</li>
+<li>Identify the <strong>closest common parent</strong> of two components that share data.</li>
+<li>Move a piece of <code>useState</code> from a child into a parent.</li>
+<li>Pass a value <strong>down</strong> to a child with a prop.</li>
+<li>Pass a <strong>callback function</strong> <strong>up</strong> to a child with a prop, so the child can ask the parent to change something.</li>
+<li>Build a search box that filters a list — the classic worked example of this pattern.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U13</strong> — props as component "design properties."</li>
+<li><strong>U14</strong> — composing components into a page.</li>
+<li><strong>U15</strong> — rendering lists with <code>map</code>.</li>
+<li><strong>U16</strong> — conditional rendering (show/hide by rule).</li>
+<li><strong>U17</strong> — events and state with <code>useState</code>.</li>
+<li><strong>U18</strong> — forms and controlled inputs.</li>
+</ul>
+<p>If any of those feel shaky, re-open that README's Vocabulary table first. This unit builds directly on all of them.</p>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>. This is the unit where "my data is in the wrong place" starts to make sense, and that click takes a little time. Take a break after the worked example. Confusion here is normal and expected.</p>
+<h2>Why this exists</h2>
+<p>In a design tool, two frames on the same page can show "the same thing" without any code thinking about it. On the web, each component literally holds its own separate copy of any data you give it. If a search box and a result list each held their own copy of "the search text," they could drift apart — the box shows one word, the list shows results for another.</p>
+<p>The human problem: <strong>shared data must live in one place so it cannot disagree with itself.</strong> Lifting state is how React keeps several parts of the screen in sync.</p>
+<p>Without this pattern, you would copy the data into every component, then write extra code to keep all the copies identical. That extra code is where bugs live. Lifting state removes the copies.</p>
+<h2>Plain-language teaching</h2>
+<h3>The setup: a search box and a list</h3>
+<p>Picture a simple screen:</p>
+<ul>
+<li>A <strong>search box</strong> at the top.</li>
+<li>A <strong>list of products</strong> below it.</li>
+</ul>
+<p>You want typing in the box to narrow the list. That means both parts depend on the same value: the current search text.</p>
+<p>If the search box holds the text in its own <code>useState</code>, the list has no way to see it. Components cannot reach sideways into each other and grab data. Data only travels through <strong>props</strong>, and props flow from parent to child.</p>
+<h3>The rule</h3>
+<blockquote>
+<p><strong>Whichever component owns the data must be a parent of every component that needs it.</strong></p>
+</blockquote>
+<p>The box and the list are siblings. The data cannot live in either one, because the other cannot see it. So we move the data <strong>up</strong> to the parent that contains both. That parent is their <strong>closest common parent</strong>.</p>
+<p>Then:</p>
+<ul>
+<li>The parent passes the value <strong>down</strong> to the list as a normal prop.</li>
+<li>The parent passes the value and a <strong>callback</strong> down to the box.</li>
+<li>When the box wants to change the value, it calls the callback. The parent's <code>useState</code> updates. The parent re-renders, and both children receive the new value.</li>
+</ul>
+<p>This "down with values, up with events" flow is often written as <strong>"data down, actions up."</strong></p>
+<h3>What a callback prop is</h3>
+<p>A <strong>callback</strong> is a function you pass to another piece of code so it can call it later. A <strong>callback prop</strong> is just that: you pass a function as a prop value, and the child calls it when something happens.</p>
+<p>You already use event handlers (<code>onClick={...}</code>). A callback prop is the same idea, except the function comes from the parent instead of being written inside the child.</p>
+<pre><code class="language-jsx">function SearchBox({ value, onValueChange }) {
+  return (
+    &lt;input
+      value={value}
+      onChange={(event) =&gt; onValueChange(event.target.value)}
+    /&gt;
+  );
+}
+</code></pre>
+<p>The child does not know or care <em>what</em> <code>onValueChange</code> does. It only knows to call it with the new text. This keeps the child reusable: the same <code>SearchBox</code> works for products, people, or messages, because the parent decides what the change means.</p>
+<h3>What "single source of truth" means</h3>
+<p><strong>Single source of truth</strong> means exactly one piece of code holds the real value. Everywhere else reads it through props.</p>
+<p>If a screen shows the same data in three places and each place keeps its own copy, you have three sources of truth and they will eventually disagree. One source, shown in three places, cannot disagree with itself.</p>
+<p>This is the same instinct as using one shared Color Style in a design tool instead of typing the hex value into forty layers. One variable, many readers.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lifting state up</td>
+<td>Moving <code>useState</code> from a child into a parent so several children can share it</td>
+<td>Not about "higher" on screen; it means higher in the component tree</td>
+</tr>
+<tr>
+<td>Closest common parent</td>
+<td>The nearest parent component that contains every component needing the data</td>
+<td>Not necessarily the top of your app</td>
+</tr>
+<tr>
+<td>Sibling components</td>
+<td>Components rendered side by side under the same parent</td>
+<td>They cannot pass data to each other directly</td>
+</tr>
+<tr>
+<td>Callback prop</td>
+<td>A function passed as a prop so a child can notify the parent</td>
+<td>Not an event handler written inside the child</td>
+</tr>
+<tr>
+<td>Data down, actions up</td>
+<td>Values flow to children; changes are requested back from children</td>
+<td>Not a law of physics — a convention that prevents tangled data</td>
+</tr>
+<tr>
+<td>Single source of truth</td>
+<td>Exactly one place stores the real value</td>
+<td>Not "one place draws it"; it may be drawn in many places</td>
+</tr>
+<tr>
+<td>Controlled component</td>
+<td>An input whose value comes from state and whose changes go back to that state</td>
+<td>Not a component you dragged with a mouse</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A complete, self-contained example. Three components: <code>App</code> (owns the state), <code>SearchBox</code> (reads and requests changes), and <code>ProductList</code> (reads the value).</p>
+<p><strong>File:</strong> <code>src/App.jsx</code></p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+import SearchBox from &quot;./SearchBox&quot;;
+import ProductList from &quot;./ProductList&quot;;
+
+const PRODUCTS = [
+  { id: 1, name: &quot;Desk lamp&quot; },
+  { id: 2, name: &quot;Desk mat&quot; },
+  { id: 3, name: &quot;Floor lamp&quot; },
+  { id: 4, name: &quot;Chair&quot; },
+];
+
+export default function App() {
+  const [query, setQuery] = useState(&quot;&quot;);
+
+  const visible = PRODUCTS.filter((product) =&gt;
+    product.name.toLowerCase().includes(query.toLowerCase())
+  );
+
+  return (
+    &lt;main&gt;
+      &lt;h1&gt;Products&lt;/h1&gt;
+      &lt;SearchBox value={query} onValueChange={setQuery} /&gt;
+      &lt;ProductList products={visible} /&gt;
+    &lt;/main&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/SearchBox.jsx</code></p>
+<pre><code class="language-jsx">export default function SearchBox({ value, onValueChange }) {
+  return (
+    &lt;label&gt;
+      Search
+      &lt;input
+        type=&quot;text&quot;
+        value={value}
+        onChange={(event) =&gt; onValueChange(event.target.value)}
+        placeholder=&quot;Type a product name&quot;
+      /&gt;
+    &lt;/label&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/ProductList.jsx</code></p>
+<pre><code class="language-jsx">export default function ProductList({ products }) {
+  if (products.length === 0) {
+    return &lt;p&gt;No products match that search.&lt;/p&gt;;
+  }
+
+  return (
+    &lt;ul&gt;
+      {products.map((product) =&gt; (
+        &lt;li key={product.id}&gt;{product.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p><strong>How to run it:</strong> in your project folder, start the dev server with <code>npm run dev</code>, then open the address it prints (usually <code>http://localhost:5173</code>). The command is the same on Windows, macOS, and Linux.</p>
+<h3>Why every line is where it is</h3>
+<ul>
+<li><code>const [query, setQuery] = useState("")</code> lives in <code>App</code> because <code>App</code> is the parent of both children. This is the single source of truth.</li>
+<li><code>PRODUCTS</code> is a plain array. It does not change, so it does not need state.</li>
+<li><code>visible</code> is <strong>derived</strong> data — it is computed from <code>query</code> and <code>PRODUCTS</code> every render. We do not store it in state. Storing derived data in state would create a second source of truth that can fall out of date. If this idea is new, that is fine: the rule for now is "if you can calculate it from existing state, do not make it its own state."</li>
+<li><code>&lt;SearchBox value={query} onValueChange={setQuery} /&gt;</code> passes the current text <strong>down</strong> as <code>value</code>, and the setter <strong>down</strong> as <code>onValueChange</code>. Passing <code>setQuery</code> directly is allowed; we could also wrap it in a new function.</li>
+<li>In <code>SearchBox</code>, <code>onChange</code> fires on every keystroke. It calls <code>onValueChange</code> with the typed text. The child never stores the text itself — it asks the parent to.</li>
+<li>In <code>ProductList</code>, we receive the already-filtered <code>products</code>. The list does no filtering; it just draws what it is given.</li>
+</ul>
+<p><strong>What success looks like:</strong> the page shows a heading, a search box, and four products. Typing <code>de</code> leaves "Desk lamp" and "Desk mat." Typing <code>zzz</code> shows "No products match that search." The input always shows exactly what you typed.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>Warning: A component is changing an uncontrolled input to be controlled</code></h3>
+<p><strong>When it happens:</strong> you set <code>value={query}</code> on the input, but <code>query</code> starts as <code>undefined</code> (perhaps you wrote <code>useState()</code> with no starting value, or forgot to pass <code>value</code> from the parent).</p>
+<p><strong>Decoded:</strong> React is saying the input started with no value (uncontrolled) and then suddenly received one (controlled). It refuses to guess which you meant.</p>
+<p><strong>Fix:</strong> give the state an honest starting value, typically an empty string: <code>useState("")</code>. And check the prop name matches on both sides.</p>
+<h3>Error: <code>setQuery is not a function</code></h3>
+<p><strong>When it happens:</strong> you passed the value down but forgot the callback, or you named the prop differently in the two files.</p>
+<p><strong>Decoded:</strong> inside <code>SearchBox</code>, <code>onValueChange</code> is <code>undefined</code>, so calling it fails. Usually a spelling mismatch: parent passes <code>onChange</code> but child reads <code>onValueChange</code>.</p>
+<p><strong>Fix:</strong> make the prop name identical in the parent's JSX and the child's parameter list. Pick one name and use it in both places.</p>
+<h3>Error: typing does nothing, no error shown</h3>
+<p><strong>When it happens:</strong> the input is <code>value={value}</code> but you never pass <code>onValueChange</code>, or the parent never uses the new value.</p>
+<p><strong>Decoded:</strong> a controlled input with no way to send changes back is frozen. It shows the state, but nothing updates the state. This is called a <strong>read-only input</strong>.</p>
+<p><strong>Fix:</strong> confirm the callback prop is passed and that it calls the state setter.</p>
+<h3>Error: the list still shows everything</h3>
+<p><strong>When it happens:</strong> you filter in the wrong component, or you pass the full <code>PRODUCTS</code> array to the list instead of <code>visible</code>.</p>
+<p><strong>Decoded:</strong> the list faithfully draws whatever it is handed. If it is handed everything, it draws everything.</p>
+<p><strong>Fix:</strong> confirm the filter runs in the parent and the <em>filtered</em> array is the prop. Add a temporary <code>console.log(visible)</code> to see what the parent computed.</p>
+<h2>Checkpoints</h2>
+<p>Answer these before the assignment. If you can answer all four, you are ready.</p>
+<ol>
+<li>Why can't the search box own the search text if the list also needs it?</li>
+<li>In the worked example, which component holds the single source of truth? Why that one?</li>
+<li>What does the child send upward, and what does the parent send downward?</li>
+<li>Why is <code>visible</code> calculated every render instead of stored in <code>useState</code>?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Without running anything, look at the worked example and predict the list when the box contains <code>"la"</code>. Then check against the code. Which products match, and why? (Hint: "lamp" contains "la"; "mat" does not.)</p>
+<h3>P2 — Change one value</h3>
+<p>Add a fifth product to <code>PRODUCTS</code>. Predict whether the search still filters correctly, then run it. Explain in one sentence why no other code changed.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>A <code>SearchBox</code> below has a gap. Write the missing line so typing updates the parent's state.</p>
+<pre><code class="language-jsx">export default function SearchBox({ value, onValueChange }) {
+  return (
+    &lt;input
+      type=&quot;text&quot;
+      value={value}
+      onChange={(event) =&gt; __________}
+    /&gt;
+  );
+}
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Write a <code>Toggle</code> child that receives <code>isOn</code> and <code>onToggle</code> as props and shows a button labelled <code>"On"</code> or <code>"Off"</code>. The parent stores <code>isOn</code> in <code>useState</code>. You write both parent and child. This is the same pattern as search, with a boolean instead of a string.</p>
+<h3>P5 — Fix a broken example</h3>
+<pre><code class="language-jsx">export default function App() {
+  return (
+    &lt;div&gt;
+      &lt;SearchBox /&gt;
+      &lt;ProductList products={PRODUCTS} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function SearchBox() {
+  const [query, setQuery] = useState(&quot;&quot;);
+  function handleChange(event) {
+    setQuery(event.target.value);
+  }
+  return &lt;input value={query} onChange={handleChange} /&gt;;
+}
+</code></pre>
+<p>This runs, but typing does not change the list. Fix the broken example. Write down each problem you found and how you knew.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. The rubric is not a secret; read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No <code>useContext</code> yet — that is <strong>U27</strong>.</li>
+<li>No custom hooks yet — that is <strong>U28</strong>.</li>
+<li>No animation, transitions, or <code>useEffect</code>.</li>
+<li>We do not cover global state libraries (Redux, Zustand, and similar). This course does not need them.</li>
+<li>We do not cover "render props" or other advanced sharing patterns.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U27 — Context (light)</strong> — when you would otherwise pass a prop through many layers of components that do not care about it.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U26 Assignment — Lifting state</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U26-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>What you are building</h2>
+<p>A small screen with <strong>two sibling components that share one piece of data</strong>:</p>
+<ul>
+<li>A <strong>text field</strong> (for example, a search box or a "filter by name" box).</li>
+<li>A <strong>list</strong> that changes based on what the field contains.</li>
+</ul>
+<p>You choose the subject (products, books, team members, coffee orders). Keep it to 4–8 items. The point is not the topic; the point is that the state lives in the right place.</p>
+<h2>Files to submit</h2>
+<h3>1. Your project files</h3>
+<p>Include the component files you wrote or changed. At minimum:</p>
+<ul>
+<li>The parent component that owns the state.</li>
+<li>The child that contains the input.</li>
+<li>The child that renders the list.</li>
+</ul>
+<p>If your project has many files, include only the ones you touched and say so in <code>answers.md</code>.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs or bullet lists are both fine. Do not paste lesson text back unchanged.</p>
+<ol>
+<li><strong>Explain lifting state.</strong> In 3–6 sentences, explain to another designer what "lifting state up" means and why the search box cannot hold the shared value by itself.</li>
+<li><strong>Name the owner.</strong> Quote the one line of code where the shared value is created (your <code>useState</code>). Explain why that component is the closest common parent.</li>
+<li><strong>Down, then up.</strong> Describe, in your own words, what travels <em>down</em> to the input and what travels <em>up</em> back to the parent.</li>
+<li><strong>Predict then run.</strong> Before running, write down which items you expect to see when the field contains a specific letter or word. Then run it and record what actually appeared. If they differ, explain why.</li>
+<li><strong>Derived data.</strong> Is your filtered list stored in <code>useState</code> or calculated every render? Explain in one or two sentences why.</li>
+<li><strong>Debug this snippet.</strong> The snippet below runs without crashing but the list never changes. Explain what is wrong and give the corrected version.</li>
+</ol>
+<p><code>jsx
+   function FilterBox({ value, onValueChange }) {
+     return &lt;input value={value} onChange={(event) =&gt; onValueChange} /&gt;;
+   }</code></p>
+<ol start="7">
+<li><strong>Design bridge.</strong> Describe a place in your design work where several frames or components must stay consistent (for example, a color style, a shared header, or a set of card variants). In two or three sentences, connect that to "single source of truth."</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My shared value lives in one parent, not in two components.
+- [ ] The input reads its value from a prop, not from its own `useState`.
+- [ ] The input can send changes back up through a callback prop.
+- [ ] The list receives the already-filtered data, or visibly reflects the shared value.
+- [ ] The page still works after I refresh it.
+- [ ] I read the U26 rubric before I wrote answers.md.
+- [ ] I ran the app and watched it behave, not only read the code.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>One working screen where a single piece of state in a parent drives both children.</li>
+<li>The three component files (or the touched ones) present.</li>
+<li><code>answers.md</code> present and in your own words.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+<li>No errors in the browser console while the page is open.</li>
+</ul>
+<h2>Submission format</h2>
+<p>Put everything inside one folder named <code>U26-YourName</code>. Compress it only if your trainer asks for a zip. If a file name differs from the suggestions above, list your actual file names at the top of <code>answers.md</code>.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U26 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working screen where one parent <code>useState</code> drives both an input and a list</td>
+<td>6</td>
+<td>Yes</td>
+<td>submitted project files</td>
+</tr>
+<tr>
+<td>Shared value is genuinely lifted to the closest common parent (not duplicated in two children)</td>
+<td>4</td>
+<td>Yes</td>
+<td>code + <code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Value travels down as a prop; a callback travels up</td>
+<td>4</td>
+<td>Yes</td>
+<td>code + <code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Filtered/derived list is calculated from state, not stored as separate state</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5 + code</td>
+</tr>
+<tr>
+<td>Explains lifting state in own words, aimed at a fellow designer</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Predict-then-run is concrete and compares prediction to reality</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Debug snippet correctly diagnosed and fixed</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Design bridge names a real, reused element and connects it to single source of truth</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest; console free of errors</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure + runtime</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>If the screen works but both children keep their own copy of the value, award the working points but 0–2 for "genuinely lifted." This is the central skill being tested.</li>
+<li>Q1: full credit requires the idea that siblings cannot share data directly and a parent must own it. A definition that only says "put state higher up" without the reason gets partial.</li>
+<li>Q3: a common wrong-but-thoughtful answer is "the child sends the new value down to the parent." Direction words are easy to flip. Award full if the <em>roles</em> are right (child requests a change; parent owns the value), even if they use "down/up" loosely.</li>
+<li>Q5: if they stored the filtered list in state, this is a real conceptual gap. Award 0 but note it clearly; it often still "works" but can drift out of sync.</li>
+<li>Q6: the bug is <code>onValueChange</code> is called without the new value (<code>onChange={(event) =&gt; onValueChange}</code> calls the function with an event or nothing rather than passing text). Accept any fix that passes <code>event.target.value</code>.</li>
+<li>Do not penalize imperfect English. Do penalize copied lesson text with no personalization on Q1 and Q7.</li>
+</ul>
+<h3>What to look for (assessor pointer)</h3>
+<p>The single most important evidence is <strong>where the shared <code>useState</code> lives</strong>. If it is in the parent that renders both children, the core outcome is met.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U25-assets-images-icons-fonts/index.html">U25 Assets: images, icons, fonts</a>
+    <a class="next" href="../U27-context/index.html">U27 Context (light)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

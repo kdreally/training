@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U27 — Context (light) | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U27</div>
+    <h1>Context (light)</h1>
+    <span class="phase-badge ph5">Phase 5 — Interaction and polish</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U27 — Context (light)</h1>
+<p><strong>Phase 5 — Interaction and polish</strong></p>
+<h2>Where you are</h2>
+<p>In U26 you moved a shared value to the closest common parent and passed it down as props. That works beautifully for two or three components. This unit covers the case where the value is needed by <strong>many components at different depths</strong>, and passing it down prop by prop becomes noise. We introduce React's built-in answer: <strong>context</strong>.</p>
+<p>We keep this unit deliberately light. Context is useful, and it is also easy to overuse. You will learn the one situation where it clearly helps and, just as importantly, when to reach for props instead.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Describe the problem called <strong>prop drilling</strong> and when it hurts.</li>
+<li>Create a context with <code>createContext</code>.</li>
+<li>Wrap part of your app in a context <strong>provider</strong> and give it a value.</li>
+<li>Read that value anywhere below with <code>useContext</code>.</li>
+<li>Build a light/dark <strong>theme</strong> that several components read, with one button that flips it.</li>
+<li>Explain at least two situations where context is the <em>wrong</em> tool.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U13</strong> — props as component "design properties."</li>
+<li><strong>U14</strong> — composing components into a page.</li>
+<li><strong>U17</strong> — events and state with <code>useState</code>.</li>
+<li><strong>U26</strong> — lifting state, closest common parent, data down / actions up.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>70–100 minutes</strong>. The syntax is short. The judgment — when to use this — is the real lesson and takes thinking time.</p>
+<h2>Why this exists</h2>
+<p>Imagine your app has this shape:</p>
+<pre><code>App
+ └── Page
+      └── Layout
+           └── Header
+                └── ThemeToggleButton
+</code></pre>
+<p>Suppose the user's chosen theme (light or dark) is stored in <code>App</code>. The <code>ThemeToggleButton</code> five levels down needs to read it and change it. To use props alone, every component in that chain — <code>Page</code>, <code>Layout</code>, <code>Header</code> — must accept <code>theme</code> and forward it, even though none of them displays a theme or cares about it.</p>
+<p>Those components become <strong>couriers</strong> for a value that is not theirs. Add a second shared value and each courier must pass two. This is <strong>prop drilling</strong>, and it is how a simple screen turns into a hallway of passing.</p>
+<p>The human problem: <strong>a value that the whole area needs should not have to be handed person-to-person down a chain.</strong> Context lets a subtree read a value directly.</p>
+<h2>Plain-language teaching</h2>
+<h3>What prop drilling is (and is not)</h3>
+<p><strong>Prop drilling</strong> means passing a prop through components that do not use it, only to reach a descendant that does. You saw a glimpse in U26: the parent handed data to children. Here the chain is longer and the middle components are innocent bystanders.</p>
+<p>A short amount of prop passing is not a problem. Lifting state (U26) is still the correct default. Prop drilling only becomes a real annoyance when:</p>
+<ul>
+<li>the same value is needed by many components at several depths, and</li>
+<li>it is a value that feels "global" to a region of the screen — a theme, the current language, a signed-in user, a set of design tokens that must reach deep components.</li>
+</ul>
+<h3>The smallest honest definition</h3>
+<p><strong>Context</strong> is a way to make one value available to a whole subtree without passing it as a prop at every level.</p>
+<p>Think of it as a radio broadcast with one station and many receivers, scoped to the region where you turn it on. Components inside the region can tune in directly. Components outside hear nothing.</p>
+<h3>The three pieces</h3>
+<ol>
+<li><strong><code>createContext(defaultValue)</code></strong> — makes the "station." It returns a context object. The default value is only used if a component reads the context where no provider exists above it.</li>
+<li><strong><code>&lt;MyContext.Provider value={...}&gt;</code></strong> — turns on the broadcast for everything inside it. Every component nested within can read <code>value</code>.</li>
+<li><strong><code>useContext(MyContext)</code></strong> — tunes in. Returns the current value from the nearest provider above.</li>
+</ol>
+<h3>The theme example, in words</h3>
+<ul>
+<li><code>App</code> holds <code>theme</code> in <code>useState</code> — the single source of truth, exactly as in U26.</li>
+<li><code>App</code> wraps its JSX in <code>&lt;ThemeContext.Provider value={theme}&gt;</code>.</li>
+<li>Deep inside, <code>ThemeToggleButton</code> calls <code>useContext(ThemeContext)</code> to read <code>theme</code> — no props passed through <code>Page</code>, <code>Layout</code>, or <code>Header</code>.</li>
+<li>To change the theme, the same context can also carry the setter, or a named <code>toggleTheme</code> function. That keeps the "actions up" idea from U26, just delivered by broadcast instead of by props.</li>
+</ul>
+<h3>What context is <em>not</em></h3>
+<ul>
+<li><strong>Not a replacement for props.</strong> Ordinary configuration that a component clearly owns should still be a prop. Context is for values shared across a region.</li>
+<li><strong>Not global state by default.</strong> It only reaches components inside the provider. That is a feature: you can scope it to one page.</li>
+<li><strong>Not a performance tool.</strong> Changing a context value re-renders all readers. It does not make things faster; it makes passing cleaner.</li>
+<li><strong>Not state itself.</strong> Context stores <em>whatever value you give it</em>, including a value from <code>useState</code>, but the state still lives where you created it.</li>
+</ul>
+<h3>When NOT to use context</h3>
+<p>Reach for props first when:</p>
+<ol>
+<li>Only one or two components need the value. Lifting state (U26) is simpler and more obvious.</li>
+<li>The components are parent and child, or close. Passing one prop is clearer than opening a broadcast.</li>
+<li>You want to re-use a component in a different place. A prop makes the dependency visible; context hides it, which makes the component harder to understand on its own.</li>
+</ol>
+<p>The design analogy: context is like a File-level style that every layer in the file inherits. Powerful — and dangerous if you really meant "only this card." Used carelessly, everything starts reacting to a change you intended to be local.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prop drilling</td>
+<td>Passing a prop through components that do not use it</td>
+<td>Not any prop passing; only the wasteful kind</td>
+</tr>
+<tr>
+<td>Context</td>
+<td>A way to share one value with a whole subtree</td>
+<td>Not the same as "global variable" — it is scoped to the provider</td>
+</tr>
+<tr>
+<td><code>createContext</code></td>
+<td>Creates the context object (the "station")</td>
+<td>Does not hold a value by itself; the provider does</td>
+</tr>
+<tr>
+<td>Provider</td>
+<td>A component that supplies the value to everything inside it</td>
+<td>Not required at the very top of the app; can wrap one page</td>
+</tr>
+<tr>
+<td><code>useContext</code></td>
+<td>Reads the current value from the nearest provider above</td>
+<td>Returns the default if no provider exists</td>
+</tr>
+<tr>
+<td>Default value</td>
+<td>What <code>useContext</code> returns when no provider is above</td>
+<td>Not the initial state; it is a fallback</td>
+</tr>
+<tr>
+<td>Reader / consumer</td>
+<td>Any component that calls <code>useContext</code> on that context</td>
+<td>A reader re-renders when the value changes</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A complete light/dark theme, with a deep button that flips it. Notice the button is two components below the toggle's owner and receives <strong>no theme props</strong>.</p>
+<p><strong>File:</strong> <code>src/ThemeContext.js</code></p>
+<pre><code class="language-js">import { createContext } from &quot;react&quot;;
+
+export const ThemeContext = createContext(&quot;light&quot;);
+</code></pre>
+<p><strong>File:</strong> <code>src/App.jsx</code></p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+import { ThemeContext } from &quot;./ThemeContext&quot;;
+import Page from &quot;./Page&quot;;
+
+export default function App() {
+  const [theme, setTheme] = useState(&quot;light&quot;);
+
+  function toggleTheme() {
+    setTheme((current) =&gt; (current === &quot;light&quot; ? &quot;dark&quot; : &quot;light&quot;));
+  }
+
+  return (
+    &lt;ThemeContext.Provider value={{ theme, toggleTheme }}&gt;
+      &lt;Page /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/Page.jsx</code></p>
+<pre><code class="language-jsx">export default function Page() {
+  return (
+    &lt;section&gt;
+      &lt;h1&gt;My app&lt;/h1&gt;
+      &lt;div className=&quot;card&quot;&gt;
+        &lt;CardBody /&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/CardBody.jsx</code></p>
+<pre><code class="language-jsx">import { useContext } from &quot;react&quot;;
+import { ThemeContext } from &quot;./ThemeContext&quot;;
+
+export default function CardBody() {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  return (
+    &lt;div className={theme}&gt;
+      &lt;p&gt;Current theme: {theme}&lt;/p&gt;
+      &lt;button onClick={toggleTheme}&gt;Switch theme&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/App.css</code> (add to your stylesheet)</p>
+<pre><code class="language-css">.light {
+  background: #ffffff;
+  color: #1a1a1a;
+  padding: 1rem;
+}
+
+.dark {
+  background: #1a1a1a;
+  color: #f5f5f5;
+  padding: 1rem;
+}
+</code></pre>
+<p><strong>How to run it:</strong> start the dev server with <code>npm run dev</code> in your project folder, then open the printed address. Same command on Windows, macOS, and Linux.</p>
+<h3>Why every line is where it is</h3>
+<ul>
+<li><code>createContext("light")</code> makes the station. <code>"light"</code> is only a fallback for the unusual case of reading the context with no provider above.</li>
+<li>In <code>App</code>, <code>theme</code> lives in <code>useState</code> — still the single source of truth. Context does <strong>not</strong> move the state; it distributes it.</li>
+<li><code>value={{ theme, toggleTheme }}</code> shares both the value and the way to change it. The <code>{ }</code> inside <code>value={ }</code> is the start of a JavaScript object; the doubled braces are simply "an object literal inside a JSX attribute."</li>
+<li><code>Page</code> and its markup receive <strong>no theme prop</strong>. That is the point: the middle of the chain is untouched.</li>
+<li><code>CardBody</code> reads the context directly with <code>useContext</code>. It does not know or care where the provider is.</li>
+<li><code>toggleTheme</code> uses the function form <code>setTheme((current) =&gt; ...)</code>. This reads the latest value safely. It is a good habit and avoids stale-value bugs.</li>
+</ul>
+<p><strong>What success looks like:</strong> the page shows "Current theme: light" on a white card. Clicking "Switch theme" changes the text to "dark" and the card becomes dark with light text. No theme prop appears anywhere except the provider.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>Cannot read properties of undefined (reading 'theme')</code></h3>
+<p><strong>When it happens:</strong> you call <code>useContext(ThemeContext)</code> but destructure as if a value exists, while no provider is above — so you get the default. If the default is <code>"light"</code> (a string), then <code>{ theme }</code> on a string gives <code>undefined</code>.</p>
+<p><strong>Decoded:</strong> the context was read outside its provider, or the default does not match the shape you expect.</p>
+<p><strong>Fix:</strong> make sure the component that reads is <em>inside</em> <code>&lt;ThemeContext.Provider&gt;</code>. If you want a safe default, set the default to an object: <code>createContext({ theme: "light", toggleTheme: () =&gt; {} })</code>. Note a no-op function: it does nothing, which is safer than <code>undefined</code>.</p>
+<h3>Error: click does nothing, no crash</h3>
+<p><strong>When it happens:</strong> the value object contains <code>theme</code> but not <code>toggleTheme</code>, or the button calls a name that is not in the object.</p>
+<p><strong>Decoded:</strong> <code>toggleTheme</code> is <code>undefined</code>; clicking a button with <code>onClick={undefined}</code> does nothing and reports no error.</p>
+<p><strong>Fix:</strong> confirm the provider's <code>value</code> includes the function and that the name matches exactly in both files.</p>
+<h3>Error: everything re-renders and feels slow</h3>
+<p><strong>When it happens:</strong> you placed the provider very high, or you pass a brand-new object every render to many readers.</p>
+<p><strong>Decoded:</strong> every reader re-renders whenever the provider's <code>value</code> changes. A new object literal is created on every parent render, so readers see a "new" value even when nothing meaningful changed.</p>
+<p><strong>Fix:</strong> for this course's scope, keep providers small and scoped to the region that needs them. Do not put a rapidly changing value (like mouse position) in a top-level context.</p>
+<h3>Error: <code>ThemeContext is not defined</code></h3>
+<p><strong>When it happens:</strong> you forgot to import the context in a file that uses it.</p>
+<p><strong>Decoded:</strong> a plain missing-import error. The file exists, but this file has not been told about it.</p>
+<p><strong>Fix:</strong> add <code>import { ThemeContext } from "./ThemeContext";</code> at the top. Check the path if the file lives in a subfolder.</p>
+<h2>Checkpoints</h2>
+<p>Answer before the assignment. Four yeses means you are ready.</p>
+<ol>
+<li>What is prop drilling, and what makes it <em>worth</em> fixing?</li>
+<li>Which of the three pieces (<code>createContext</code>, <code>Provider</code>, <code>useContext</code>) stores the actual value?</li>
+<li>Where does the theme state live in the worked example — in the context, or in a component?</li>
+<li>Name one case where passing a normal prop is better than using context.</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>In the worked example, <code>Page</code> renders <code>CardBody</code>. Predict what <code>CardBody</code> would show if <code>App</code> did <strong>not</strong> wrap <code>Page</code> in the provider. Then explain why in one sentence.</p>
+<h3>P2 — Change one value</h3>
+<p>Change the default value in <code>createContext</code> from <code>"light"</code> to <code>"sepia"</code>. Run the app with the provider still in place. Does anything change? Explain why or why not. This proves the default is only a fallback.</p>
+<h3>P3 — Fill in the blank</h3>
+<pre><code class="language-jsx">function Badge() {
+  const { theme } = ______________(ThemeContext);
+  return &lt;span className={theme}&gt;New&lt;/span&gt;;
+}
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Add a second piece of shared value through the <strong>same</strong> context: the user's <code>displayName</code>. Store it in <code>App</code> with <code>useState</code>, add it to the provider's value, and show it in <code>CardBody</code>. Do not pass any props through <code>Page</code>.</p>
+<h3>P5 — Fix a broken example</h3>
+<pre><code class="language-jsx">const ThemeContext = createContext(&quot;light&quot;);
+
+function App() {
+  const [theme, setTheme] = useState(&quot;light&quot;);
+  return (
+    &lt;&gt;
+      &lt;ThemeContext value={theme}&gt;
+        &lt;Page /&gt;
+      &lt;/ThemeContext&gt;
+      &lt;CardBody /&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+<p>Two problems hide here. One prevents <code>Page</code> from seeing the theme; the other lets <code>CardBody</code> render without the theme. Find both, write them down, and fix them.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is visible by design; read it before you build.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No state-management libraries (Redux, Zustand, MobX, and similar). This course does not use them.</li>
+<li>No <code>useReducer</code>, no context performance tuning, no splitting one context into many.</li>
+<li>No server data or authentication context. That is beyond this course's scope.</li>
+<li>We do not treat context as a general replacement for props. If you leave thinking "context is for everything," this unit has failed its main goal.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U28 — Custom hooks</strong> — giving a reusable behavior a name, so you stop copying the same state logic between components.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U27 Assignment — Context (light)</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U27-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>What you are building</h2>
+<p>A small app with a <strong>shared value that several components read directly</strong>, without prop drilling. The recommended build is a <strong>theme</strong> (light/dark), but you may choose another "region-wide" value if you prefer: a language, a text-size setting, or a "compact / comfortable" density. Keep the subject small.</p>
+<p>Requirements:</p>
+<ul>
+<li>At least <strong>three components below the provider</strong> read the same value.</li>
+<li>At least <strong>one of those components is two or more levels below</strong> the provider, so the "no drilling" benefit is real.</li>
+<li>One control (a button, a select, or a toggle) changes the shared value.</li>
+<li>The value is stored in a component's <code>useState</code> (the single source of truth), not invented inside the context file.</li>
+</ul>
+<h2>Files to submit</h2>
+<h3>1. Your project files</h3>
+<p>Include:</p>
+<ul>
+<li>The context file (for example <code>ThemeContext.js</code>).</li>
+<li>The component that owns the state and renders the provider.</li>
+<li>The components that read the context.</li>
+<li>Any CSS you added.</li>
+</ul>
+<p>If your project has many files, include only the ones you touched and say so in <code>answers.md</code>.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Do not paste lesson text back unchanged.</p>
+<ol>
+<li><strong>Explain prop drilling.</strong> In 3–6 sentences, explain to another designer what prop drilling is and the specific moment it becomes worth solving.</li>
+<li><strong>Map your tree.</strong> Draw or describe your component tree from the provider down to each reader as indented text. Mark which components receive the shared value as a prop (you should be able to mark none, or very few).</li>
+<li><strong>Name the pieces.</strong> Point to the three pieces in your own code: the line that creates the context, the provider, and at least one <code>useContext</code> call.</li>
+<li><strong>State vs context.</strong> In one or two sentences, say where the actual state lives and what context is doing. Use the phrase "single source of truth" correctly.</li>
+<li><strong>Predict then run.</strong> Before running, predict what a reader shows if the provider is removed (or if a reader is moved outside the provider). Then test it and record the result.</li>
+<li><strong>When NOT to use it.</strong> Give two concrete situations from your own experience where passing a normal prop would be the better choice. Explain why for each.</li>
+<li><strong>Debug this snippet.</strong> Explain why the button below does nothing, then fix it.</li>
+</ol>
+<p>```jsx<br />
+   const ThemeContext = createContext({ theme: "light", toggleTheme: () =&gt; {} });</p>
+<p>function App() {<br />
+     const [theme, setTheme] = useState("light");<br />
+     return (<br />
+       <ThemeContext.Provider value={{ theme }}><br />
+         <Page /><br />
+       </ThemeContext.Provider><br />
+     );<br />
+   }<br />
+   ```</p>
+<ol start="8">
+<li><strong>Design bridge.</strong> Name a style or component property you have set at "file" or "global" level in a design tool. In two or three sentences, connect that choice to placing a provider around a region of the app rather than the whole file/app.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My shared value is stored in one component's `useState`.
+- [ ] The provider wraps the region that needs the value.
+- [ ] At least three components read the value with `useContext`.
+- [ ] At least one reader is nested two or more levels deep.
+- [ ] No intermediate component receives the value as a prop just to forward it.
+- [ ] I wrote down when I would *not* use context.
+- [ ] I read the U27 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>A working app where one control changes a value read by three or more components.</li>
+<li>The three context pieces are present and named in <code>answers.md</code>.</li>
+<li>At least one honest "do not use context here" example.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+<li>No errors in the browser console while the page is open.</li>
+</ul>
+<h2>Submission format</h2>
+<p>Put everything inside one folder named <code>U27-YourName</code>. Compress it only if your trainer asks. If your file names differ from the suggestions, list them at the top of <code>answers.md</code>.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U27 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working app: one control changes a value read by three or more components</td>
+<td>5</td>
+<td>Yes</td>
+<td>submitted project files</td>
+</tr>
+<tr>
+<td>At least one reader is nested two or more levels below the provider (real drilling avoided)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2 + code</td>
+</tr>
+<tr>
+<td><code>createContext</code>, <code>Provider</code>, and <code>useContext</code> all used correctly and named</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3 + code</td>
+</tr>
+<tr>
+<td>State lives in a component's <code>useState</code>; context distributes it rather than owning it</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4 + code</td>
+</tr>
+<tr>
+<td>Explains prop drilling in own words, including when it is worth fixing</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Two concrete "when NOT to use context" situations with reasons</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Predict-then-run is concrete and compares prediction to reality</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Debug snippet correctly diagnosed and fixed</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Design bridge connects a file/global design property to scoping a provider</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: full credit requires both halves — what drilling is <em>and</em> the threshold (many readers / deep / region-wide). A definition only, with no "when it hurts," gets partial.</li>
+<li>Q3/Q4: watch for the common misconception that context "holds" the state. It holds <em>a value you give it</em>; the state lives in a component. If a learner says the context is the source of truth, this is the key misreading to correct.</li>
+<li>Q6: this question protects against overuse. Award full only for concrete, sensible cases (one or two components, parent-child, a component meant to be reusable elsewhere). Vague "when it's simpler" gets partial. Zero if they claim context is always better.</li>
+<li>Q7: the bug is the provider's <code>value={{ theme }}</code> omits <code>toggleTheme</code>, so the button's <code>onClick</code> is <code>undefined</code>. A fix adds <code>toggleTheme</code> to the value object (or provides it another way). Accept any correct fix.</li>
+<li>Q5: removing the provider should show the default value, not a crash, if the default is shaped correctly. This is the point of that exercise.</li>
+<li>Do not penalize imperfect English. Do penalize copied lesson text with no personalization on Q1, Q6, and Q8.</li>
+</ul>
+<h3>What to look for (assessor pointer)</h3>
+<p>Two central outcomes: (1) a real multi-level reader that would otherwise need drilling, and (2) evidence the learner understands <strong>when not</strong> to use context. A working theme alone, with no sign of restraint, is incomplete.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U26-lifting-state/index.html">U26 Lifting state</a>
+    <a class="next" href="../U28-custom-hooks/index.html">U28 Custom hooks</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U08 — Images vs containers | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U08</div>
+    <h1>Images vs containers</h1>
+    <span class="phase-badge ph2">Phase 2 — Docker basics</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U08 — Images vs containers</h1>
+<p><strong>Phase 2 — Docker basics</strong></p>
+<h2>Where you are</h2>
+<p>You saw containers run (U07). Now we make the distinction precise: <strong>image = recipe/template</strong>; <strong>container = running instance</strong>. One image can produce many containers.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain image vs container with a plain analogy and precise terms.</li>
+<li>Say why images are read-only and containers have a writable layer.</li>
+<li>Use <code>docker images</code> to list local images.</li>
+<li>Use <code>docker ps</code> and <code>docker ps -a</code> to list containers (running vs all).</li>
+<li>Tell how many containers come from one image.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>U00–U07</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>20–40 minutes</strong>. Mostly reading + listing commands.</p>
+<h2>Why this exists</h2>
+<p>Mixing image/container causes confusion ("I deleted the image but container still there?"). Clear separation prevents that.</p>
+<h2>Plain-language teaching</h2>
+<h3>Recipe vs cake</h3>
+<p>An <strong>image</strong> is the recipe (ingredients + instructions). A <strong>container</strong> is one cake baked from that recipe. You can bake many cakes from same recipe. You cannot "run" a recipe — you run an instance.</p>
+<h3>Read-only image + writable container layer</h3>
+<p>Images are read-only. When you start a container, Docker adds a thin <strong>writable layer</strong> on top. Files you create/change inside the container live in that writable layer. Stop/remove container and that layer is gone (unless volumes used later). This is why containers feel disposable.</p>
+<h3>Seeing images</h3>
+<p><code>docker images</code> shows local images: repository, tag, image ID, size, etc. If nothing pulled, list may be short.</p>
+<h3>Seeing containers</h3>
+<ul>
+<li><code>docker ps</code> → only <strong>running</strong> containers.</li>
+<li><code>docker ps -a</code> → <strong>all</strong> containers (running + exited/stopped + created).</li>
+</ul>
+<p>Flags: <code>-a</code> = "all states".</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image</td>
+<td>Immutable template/recipe</td>
+<td>Called "container" sometimes</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>Runtime instance of an image</td>
+<td>Not same as image</td>
+</tr>
+<tr>
+<td>Writable layer</td>
+<td>Thin layer for changes inside container</td>
+<td>People think changes persist after rm</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>Collection of images (often same app, different tags)</td>
+<td>Registry vs repo</td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>Version label (e.g. <code>latest</code>, <code>24.04</code>)</td>
+<td>"latest" not always newest in a safe sense</td>
+</tr>
+<tr>
+<td>ID</td>
+<td>Unique identifier (short/long)</td>
+<td>Names vs IDs</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<h3>List images</h3>
+<p><strong>What it does:</strong> Shows images stored locally.<br />
+- Windows (PowerShell): <code>docker images</code><br />
+- macOS (Terminal): <code>docker images</code><br />
+- Linux (Terminal): <code>docker images</code></p>
+<p><strong>Expected success:</strong> table with REPOSITORY, TAG, IMAGE ID, CREATED, SIZE. After U07 you may see <code>ubuntu</code> and <code>hello-world</code>.</p>
+<p><strong>Typical failure:</strong> daemon not running → <code>Cannot connect to Docker daemon</code>.</p>
+<h3>List containers</h3>
+<p><strong>Running only:</strong><br />
+- All shells: <code>docker ps</code></p>
+<p><strong>All states:</strong><br />
+- All shells: <code>docker ps -a</code></p>
+<p><strong>Expected success:</strong> headers show CONTAINER ID, IMAGE, COMMAND, CREATED, STATUS, PORTS, NAMES. <code>ps</code> may be empty if nothing running; <code>ps -a</code> shows exited ones.</p>
+<p><strong>Typical failure:</strong> same daemon issue.</p>
+<h2>Common errors</h2>
+<h3>CE1 — Deleting image while container exists</h3>
+<p><strong>Symptom:</strong> <code>image is being used by stopped container</code>.<br />
+<strong>Why:</strong> Container depends on image layers. Remove container first (U10).</p>
+<h3>CE2 — Confusing ps vs ps -a</h3>
+<p><strong>Symptom:</strong> "Where is my container?" — it exited, so <code>ps</code> hides it.<br />
+<strong>Fix:</strong> use <code>ps -a</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Image vs container: explain with recipe/cake in your own words.</li>
+<li>Why are images read-only but containers can write?</li>
+<li>Difference between <code>docker ps</code> and <code>docker ps -a</code>?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Inspect your state</h3>
+<p>Run <code>docker images</code> and <code>docker ps -a</code>. Count how many images vs containers.</p>
+<h3>P2 — One image, two containers (conceptual + optional)</h3>
+<p>Conceptually: run <code>ubuntu</code> twice with different <code>--name</code> (if you want) and see two containers from same image in <code>ps -a</code>. (Optional; not required.)</p>
+<h3>P3 — Name the IDs</h3>
+<p>Pick one container and one image from output; identify which is which.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Removing images/containers (U10)</li>
+<li>Digging into layers (U15)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U09 — Pulling and running existing images</strong> (Docker Hub, tags like <code>latest</code> vs pinned).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U08 Assignment — Images vs containers</h1>
+<p>Submit: <code>U08-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>images-vs-containers.md</code></h3>
+<ol>
+<li><strong>Distinction.</strong> Explain image vs container using your own analogy (or recipe/cake) with precision.</li>
+<li><strong>Read-only + writable layer.</strong> Why can you change files inside a container but the image stays same?</li>
+<li><strong>Proof.</strong> Paste output of <code>docker images</code> (or relevant lines). Paste output of <code>docker ps</code> and <code>docker ps -a</code> (relevant lines). Label each.</li>
+<li><strong>States.</strong> From your <code>ps -a</code> output, pick one container: state (running/exited/created) and which image it came from.</li>
+<li><strong>One→many.</strong> If you have one <code>ubuntu</code> image, how many containers can you create from it? Explain.</li>
+<li><strong>Explain in your own words.</strong> Why does <code>docker ps</code> not show stopped containers?</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I ran `docker images`, `docker ps`, `docker ps -a`.
+- [ ] I can explain image vs container clearly.
+- [ ] I know why changes don't persist in image.
+- [ ] I read rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present.</li>
+<li>Answers in own words.</li>
+<li>Proof from actual runs or clearly labeled.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><p><em>No rubric file found.</em></p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U07-your-first-container/index.html">U07 Your first container</a>
+    <a class="next" href="../U09-pulling-running-images/index.html">U09 Pulling and running existing images</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

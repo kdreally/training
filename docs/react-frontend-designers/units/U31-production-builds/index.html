@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U31 — Production builds explained | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U31</div>
+    <h1>Production builds explained</h1>
+    <span class="phase-badge ph6">Phase 6 — Shipping and craft</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U31 — Production builds explained</h1>
+<p><strong>Phase 6 — Shipping and craft</strong></p>
+<h2>Where you are</h2>
+<p>Every unit so far has run your app with the <strong>development server</strong> — the live, editable version you see at <code>http://localhost:5173</code>. That version is built for <em>you</em>, the person making it. It carries extra tools, extra files, and extra warnings so you can change things quickly.</p>
+<p>This unit explains the <strong>production build</strong>: the version we hand to the world. You already ran <code>npm run dev</code> in U09. Now you will run its sibling, <code>npm run build</code>, understand what it creates, and preview the result the same way a visitor would experience it.</p>
+<p>Nothing here changes your React code. You are not learning a new component idea. You are learning what happens to code you already wrote when it leaves the workshop.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain, in plain words, the difference between a <strong>development server</strong> and a <strong>production build</strong>.</li>
+<li>Run <code>npm run build</code> and read the output it prints.</li>
+<li>Find and describe the files inside the generated <code>dist/</code> folder.</li>
+<li>Define <strong>bundling</strong>, <strong>minification</strong>, and <strong>content hashing</strong> without hand-waving.</li>
+<li>Run <code>npm run preview</code> to view the built page locally.</li>
+<li>Decode at least one real build error and say what it means.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U08</strong> — Node.js installed and verified.</li>
+<li><strong>U09</strong> — npm, the dev server, and a Vite project.</li>
+<li><strong>U10</strong> — the project folder tour (<code>src/</code>, <code>public/</code>, <code>package.json</code>).</li>
+<li><strong>U30</strong> — a small finished page to build. Any working project is fine.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. The commands are quick; the reading is the real work. If the word "bundle" makes your shoulders rise, that is a normal reaction — we will slow down on exactly that. Take a break between the build and the preview.</p>
+<h2>Why this exists</h2>
+<p>In a design tool you keep a <strong>working file</strong> (the <code>.fig</code>, <code>.psd</code>, or <code>.ai</code>) that holds every layer, every hidden guide, every unused swatch. You never hand that to a client or a printer. You <strong>export</strong>: flattened, sized, compressed, and delivered as PNG, SVG, or PDF. The working file is for building; the export is for delivery.</p>
+<p>A React app has the same split, and the same reason. The development server is your working file: helpful, heavy, full of notes meant for you. The production build is the export: lean, compressed, and ready to be served to strangers. If you skip this step and try to host the working version, your page will be slow, and some of it will not work at all. This unit is the export step.</p>
+<h2>Plain-language teaching</h2>
+<h3>The same app, two modes</h3>
+<p>Your app in U30 has two ways of being turned into something a browser can display.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Command</th>
+<th>Who it is for</th>
+<th>What it includes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Development</td>
+<td><code>npm run dev</code></td>
+<td>You, while building</td>
+<td>Hot reload, readable error overlays, source maps, no compression</td>
+</tr>
+<tr>
+<td>Production</td>
+<td><code>npm run build</code></td>
+<td>Visitors</td>
+<td>Small, compressed, squashed-together files, no dev tools</td>
+</tr>
+</tbody>
+</table>
+<p>Think of the development server as a light table where every layer is visible. The production build is what leaves the studio.</p>
+<p><strong>What it is <em>not</em>:</strong> the production build is not a different app. Same components, same CSS, same design. Only the wrapping changes.</p>
+<h3>What "build" means</h3>
+<p><strong>Build</strong> here is a verb meaning: <em>take all the separate files you wrote and turn them into the fewest, smallest files a browser can download quickly.</em></p>
+<p>Your project might have fifty files:</p>
+<pre><code class="language-text">src/
+  App.jsx
+  main.jsx
+  components/Button.jsx
+  components/Card.jsx
+  components/Card.css
+  ...and more
+</code></pre>
+<p>The browser does not want to make fifty separate requests. The build steps combine them. The combined, finished result is written into a new folder called <strong><code>dist/</code></strong> (short for "distribution" — the things you distribute).</p>
+<p><strong>What it is <em>not</em>:</strong> <code>dist/</code> is generated. You do not edit files inside it by hand. If you change your <code>src/</code>, you build again and it is regenerated.</p>
+<h3>Bundling, minification, and hashing</h3>
+<p>Three words get thrown around at this step. Here they are in order of what happens.</p>
+<ul>
+<li><strong>Bundling:</strong> combining many files into a small number of files. Your fifty files become roughly two or three: one JavaScript bundle, one CSS file, and <code>index.html</code>. Fewer downloads, faster page.</li>
+<li><strong>Minification:</strong> removing everything a human does not need but a machine does not either — extra spaces, line breaks, comments, and long variable names shrunk to short ones. The code still means the same thing; it is just packed tight. This is why built files look like gibberish if you open them.</li>
+<li><strong>Content hashing:</strong> renaming each built file to include a short fingerprint of its contents, like <code>index-5b6e9a0f.js</code>. If you change that file, the fingerprint changes. This lets a browser safely keep the <em>old</em> file cached until the content actually changes. You do not manage this; Vite does.</li>
+</ul>
+<p>All three happen automatically when you run the build. You are reading them so the output below makes sense.</p>
+<h3>The <code>dist/</code> folder</h3>
+<p>After a successful build you get:</p>
+<pre><code class="language-text">dist/
+  index.html
+  assets/
+    index-5b6e9a0f.js
+    index-8f3a1c2d.css
+</code></pre>
+<p><code>dist/</code> is the entire deliverable. It holds no <code>src/</code>, no <code>node_modules/</code>, no dev server. When we host the app in <strong>U32</strong>, <code>dist/</code> is the folder we send.</p>
+<h3>Running the build</h3>
+<p>Open your terminal in your project folder (U09 showed how). Run:</p>
+<pre><code class="language-bash">npm run build
+</code></pre>
+<p><strong>What this does:</strong> <code>npm</code> reads the <code>build</code> line inside your <code>package.json</code> scripts. In a Vite project it runs <code>vite build</code>, which performs the bundling, minification, and hashing described above.</p>
+<p><strong>Success looks like this</strong> (yours will differ — versions and file names change):</p>
+<pre><code class="language-text">vite v5.4.2 building for production...
+✓ 34 modules transformed.
+dist/index.html                   0.46 kB │ gzip:  0.30 kB
+dist/assets/index-8f3a1c2d.css    1.24 kB │ gzip:  0.65 kB
+dist/assets/index-5b6e9a0f.js   142.51 kB │ gzip: 45.83 kB
+✓ built in 1.21s
+</code></pre>
+<p>Read that output as a report, not noise:</p>
+<ul>
+<li><code>✓ 34 modules transformed</code> — Vite found and processed 34 of your source files.</li>
+<li><code>dist/...</code> — each file it wrote, with its real size (<code>kB</code>) and its compressed size after the server gzips it (<code>gzip:</code>). The gzip number is closer to what a visitor actually downloads.</li>
+<li><code>✓ built in 1.21s</code> — it finished. The word "built" with a checkmark is your "it worked."</li>
+</ul>
+<h3>Previewing the build</h3>
+<p>Here is a subtle trap. After building, <code>npm run dev</code> still shows the <em>development</em> version. To see the production files, run a different command:</p>
+<pre><code class="language-bash">npm run preview
+</code></pre>
+<p><strong>What this does:</strong> <code>vite preview</code> starts a tiny local static server that serves the contents of <code>dist/</code> — the real build — over a local web address. It is for checking your export, not for editing.</p>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">  ➜  Local:   http://localhost:4173/
+  ➜  Network: use --host to expose
+</code></pre>
+<p>Open <code>http://localhost:4173/</code> in your browser. The page should look and behave like it did in the dev server. If it does, your export is healthy.</p>
+<p><strong>A common mix-up:</strong> <code>npm run dev</code> uses port <strong>5173</strong>; <code>npm run preview</code> uses port <strong>4173</strong>. If a page looks stale, check which port you are actually on.</p>
+<h3>Read the errors, do not fear them</h3>
+<p>A failed build stops and prints a message, usually the file and line where it got confused. The screen turns red — that is the tool doing its job, not a verdict on you. We decode one below.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Development server</td>
+<td>The live, editable running version of your app (<code>npm run dev</code>)</td>
+<td>Not the version visitors see</td>
+</tr>
+<tr>
+<td>Production build</td>
+<td>The optimized export of your app (<code>npm run build</code>)</td>
+<td>Not a different app; same design, packed differently</td>
+</tr>
+<tr>
+<td><code>dist/</code></td>
+<td>The generated folder holding the finished, shippable files</td>
+<td>Not something you edit by hand; it is an output</td>
+</tr>
+<tr>
+<td>Bundling</td>
+<td>Combining many files into a few</td>
+<td>Not deleting your source files; those stay in <code>src/</code></td>
+</tr>
+<tr>
+<td>Minification</td>
+<td>Shrinking code by removing spaces, comments, and long names</td>
+<td>Not breaking the code; it still runs identically</td>
+</tr>
+<tr>
+<td>Content hash</td>
+<td>A short fingerprint added to a built file name</td>
+<td>Not random; it changes only when the file changes</td>
+</tr>
+<tr>
+<td><code>npm run preview</code></td>
+<td>Serves the built <code>dist/</code> locally to check it</td>
+<td>Not the dev server; not for editing</td>
+</tr>
+<tr>
+<td>Build error</td>
+<td>A message saying the code could not be packed</td>
+<td>Not a personal failure; it names a fixable file/line</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> Build and preview the small page you finished in U30.</p>
+<p><strong>Step 1 — Confirm your scripts exist.</strong> Open <code>package.json</code> at the top of your project. It should contain:</p>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;dev&quot;: &quot;vite&quot;,
+  &quot;build&quot;: &quot;vite build&quot;,
+  &quot;preview&quot;: &quot;vite preview&quot;
+}
+</code></pre>
+<p>Every line justified: <code>dev</code> starts the development server (U09); <code>build</code> creates the production export; <code>preview</code> serves that export locally. If <code>build</code> is missing, this project was not created the way U09 taught and you should say so to your trainer.</p>
+<p><strong>Step 2 — Build.</strong></p>
+<pre><code class="language-bash">npm run build
+</code></pre>
+<p>Expected: the <code>dist/</code> report shown earlier, ending in <code>✓ built in</code>. <strong>Do not</strong> worry if the size numbers differ from the example; sizes depend on your page.</p>
+<p><strong>Step 3 — Look inside <code>dist/</code>.</strong></p>
+<pre><code class="language-bash"># macOS / Linux
+ls -R dist
+
+# Windows PowerShell
+Get-ChildItem -Recurse dist
+</code></pre>
+<p>Expected: an <code>index.html</code> and an <code>assets/</code> folder with a <code>.js</code> and usually a <code>.css</code> file, each with a hash in its name.</p>
+<p><strong>Step 4 — Preview.</strong></p>
+<pre><code class="language-bash">npm run preview
+</code></pre>
+<p>Open <code>http://localhost:4173/</code>. Expected: your page, looking exactly as designed. Press <code>Ctrl+C</code> in the terminal to stop it.</p>
+<p><strong>Step 5 — Compare.</strong> Open the built JavaScript file in a text editor. It will look like one enormous line of scrambled names. That is minification working. You are not meant to read it.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — A file cannot be found (missing import)</h3>
+<pre><code class="language-text">Could not resolve &quot;./components/Card&quot; from &quot;src/App.jsx&quot;
+</code></pre>
+<p><strong>Decoded:</strong> Vite was reading <code>src/App.jsx</code> and found a line asking for <code>./components/Card</code>, but no file by that name exists at that path.</p>
+<p><strong>Typical causes and fixes:</strong><br />
+- The file is named <code>card.jsx</code> but you imported <code>./Card</code>. Match the exact name.<br />
+- The file lives in <code>src/components/</code> but you wrote <code>./Card</code> (same folder). Fix the path to <code>./components/Card</code>.<br />
+- You renamed or deleted the file and forgot the import. Remove or correct the import.<br />
+- You forgot the extension on a CSS import: <code>import './Card.css'</code>.</p>
+<h3>Error 2 — Works on your computer, fails later (case sensitivity)</h3>
+<pre><code class="language-text">Could not resolve &quot;./Button&quot; from &quot;src/App.jsx&quot;
+</code></pre>
+<p>…yet the file <code>button.jsx</code> is right there.</p>
+<p><strong>Decoded:</strong> Windows and macOS file systems usually ignore capitalization; Linux build servers, including the ones used by many hosts, do not. <code>Button</code> and <code>button</code> are different names to a Linux machine. This is why a build that works on your laptop can fail the moment you deploy.</p>
+<p><strong>Fix:</strong> Rename imports to match files exactly — same letters, same capitals. Get in the habit now; it will save you a confusing afternoon in U32.</p>
+<h3>Error 3 — A typo in JSX</h3>
+<pre><code class="language-text">[plugin:vite:react-babel] Unexpected token, expected &quot;&lt;/&quot;
+</code></pre>
+<p><strong>Decoded:</strong> You opened a tag and it was never closed, or a brace or bracket is unbalanced. The build cannot continue.</p>
+<p><strong>Fix:</strong> Go to the file and line named above the message. Look for a missing closing tag (<code>&lt;/div&gt;</code>), a stray <code>}</code>, or a comment that swallowed later code. Fixing one character usually clears it.</p>
+<h3>Error 4 — "Not an error" warning</h3>
+<pre><code class="language-text">(!) Some chunks are larger than 500 kB after minification.
+</code></pre>
+<p><strong>Decoded:</strong> This is yellow, not red — a hint, not a failure. It means one built file is big. For a small capstone page you can ignore it. It becomes relevant only with very large apps and heavy libraries.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before moving to practice:</p>
+<ol>
+<li>What is the practical difference between <code>npm run dev</code> and <code>npm run build</code>?</li>
+<li>Where do the finished, shippable files go, and do you edit them by hand?</li>
+<li>In one sentence each, what are bundling and minification?</li>
+<li>Which command shows you the <em>built</em> page locally, and on what port?</li>
+</ol>
+<p>If you can answer all four without re-reading, you are ready.</p>
+<h2>Practice exercises</h2>
+<p>These are ungraded. Struggle is expected and useful.</p>
+<h3>P1 — Read and predict</h3>
+<p>Before running anything, write your prediction: "After <code>npm run build</code>, I expect the <code>dist/</code> folder to contain ____." Then run the build and compare. Were you right? What surprised you?</p>
+<h3>P2 — Change one value; observe</h3>
+<p>Edit the <code>&lt;h1&gt;</code> text in your U30 page to a new sentence. Build again. Look at the built JavaScript file name in <code>dist/assets/</code>. Did its <strong>hash</strong> change? Change the text back and build once more. What happened to the hash? Write one sentence explaining why.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>In your own notes, complete: "The development server is like a <strong><em>_ in a design tool, and the production build is like an </em></strong>_, because ____."</p>
+<h3>P4 — Debug this broken project</h3>
+<p>A classmate's <code>App.jsx</code> starts like this, and their build fails with <code>Could not resolve "./components/Footer"</code>:</p>
+<pre><code class="language-jsx">import Header from './components/Header'
+import Footer from './components/Footer'
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Header /&gt;
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default App
+</code></pre>
+<p>They insist the file exists and is spelled <code>Footer.jsx</code>. List <strong>three</strong> things you would check, in order, and say what each would confirm.</p>
+<h3>P5 — Decode a failure</h3>
+<p>Write out, in your own words, what Error 2 (case sensitivity) means and why it can appear only <em>after</em> you move your project to a server.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start; there are no hidden criteria.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No hosting yet. Putting <code>dist/</code> on the internet is <strong>U32</strong>.</li>
+<li>No Git, GitHub Actions, or continuous deployment.</li>
+<li>No performance tuning beyond noticing the file sizes.</li>
+<li>No changes to your React components or styling.</li>
+<li>No alternative build tools (Vite is the course default).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U32 — Hosting a static React app</strong> (taking the <code>dist/</code> folder you just built and giving it a public web address, using GitHub Pages).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U31 Assignment — Build it, look inside, preview it</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U31-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs or bullet lists are both fine. Do not paste this file back unchanged.</p>
+<ol>
+<li><strong>Two modes.</strong> In 4–6 lines, explain the difference between the development server (<code>npm run dev</code>) and the production build (<code>npm run build</code>). Include <em>who each one is for</em>.</li>
+<li><strong>The export folder.</strong> What is <code>dist/</code>, what does it contain, and why must you not edit it by hand?</li>
+<li><strong>Three words.</strong> Define <strong>bundling</strong>, <strong>minification</strong>, and <strong>content hashing</strong> in one sentence each. Then explain why the content hash is useful.</li>
+<li><strong>Build output.</strong> Paste the real output of your <code>npm run build</code> (the lines from <code>vite ...</code> to <code>✓ built in ...</code>). Then answer: how many modules were transformed, and what was the gzipped size of your JavaScript file?</li>
+<li><strong>Preview.</strong> Paste the line your terminal printed when you ran <code>npm run preview</code>, including the local address and port. Confirm in one sentence that the page looked correct.</li>
+<li><strong>Decode a failure.</strong> Copy this message and explain what it means and one likely fix:</li>
+</ol>
+<p><code>text
+   Could not resolve "./components/Card" from "src/App.jsx"</code><br />
+7. <strong>Explain in your own words.</strong> A friend says: "I'll just show my client the link to my <code>npm run dev</code> page." Give two honest reasons why that is a bad plan.</p>
+<h3>2. <code>build-report.md</code></h3>
+<p>Include this short report with your submission, built from your own project:</p>
+<pre><code class="language-markdown"># Build report — &lt;your page name&gt;
+
+- Dev command used: npm run dev
+- Build command used: npm run build
+- Preview command used: npm run preview
+- Preview port: &lt;e.g. 4173&gt;
+
+## Files produced in dist/
+&lt;list the files and folders you saw, e.g. index.html, assets/...&gt;
+
+## Module count and sizes
+- Modules transformed: &lt;number&gt;
+- JS size: &lt;kB&gt; (gzip: &lt;kB&gt;)
+- CSS size: &lt;kB&gt; (gzip: &lt;kB&gt;)
+
+## One change I made and re-built
+- I changed: &lt;what&gt;
+- The file name in dist/assets changed like this: &lt;before&gt; -&gt; &lt;after&gt;
+- Why the name changed: &lt;one sentence about hashing&gt;
+</code></pre>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I ran `npm run build` and saw `✓ built in` with no red error.
+- [ ] I located the generated `dist/` folder on my computer.
+- [ ] I found both a `.js` and a `.css` file inside `dist/assets/`.
+- [ ] I ran `npm run preview` and saw my page at localhost:4173.
+- [ ] I stopped the preview server with Ctrl+C when finished.
+- [ ] I re-built once after a small change and noticed the hash.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the names above.</li>
+<li><code>answers.md</code> and <code>build-report.md</code> use your own project's real output, not the lesson's example numbers.</li>
+<li>The error in Q6 is explained, not merely copied.</li>
+<li>Checklist completed honestly.</li>
+</ul>
+<h2>A note on honest reporting</h2>
+<p>If your build failed, do <strong>not</strong> hide it and do not give up. Run the stuck protocol from U00, paste the exact error into <code>answers.md</code> under Q4, write what you tried, and submit anyway. A decoded failure is worth more to your trainer than a copied success.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U31 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correctly contrasts dev server vs production build (audience + purpose)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains <code>dist/</code> as generated output not to be hand-edited</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Defines bundling, minification, and hashing correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Pastes real build output and reads module count + gzip size accurately</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4; <code>build-report.md</code></td>
+</tr>
+<tr>
+<td>Confirms <code>npm run preview</code> on the correct port (4173)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5; <code>build-report.md</code></td>
+</tr>
+<tr>
+<td>Decodes the "Could not resolve" error with a plausible fix</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Gives two honest reasons dev-server links are not for clients</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Re-built after a change and connects the hash change to content</td>
+<td>1</td>
+<td>No</td>
+<td><code>build-report.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q3: award 1 point per correct definition; award the fourth only if hashing is tied to caching or content change, not "random string."</li>
+<li>Q4: award full only if the pasted output matches the learner's project (numbers differ from the lesson example). If they paste the lesson's example verbatim, award 0–1 and ask them to re-run.</li>
+<li>Q5: award 1/2 if they previewed but reports <code>5173</code> (they likely ran <code>npm run dev</code> by mistake).</li>
+<li>Q6: award full for any concrete fix (create the file, fix path, fix capitalization, add extension). Vague "check your files" gets 1/3.</li>
+<li>Q7: two distinct reasons (dev server is not hosted on a public address / not built for performance / runs only while terminal is open / may contain dev-only behavior). Overlapping reasons count once.</li>
+</ul>
+<h3>Common weak submissions</h3>
+<ul>
+<li>Copies the lesson's build output and numbers instead of running the build.</li>
+<li>Says <code>dist/</code> is "where my source code goes."</li>
+<li>Confuses minification with bundling (calls both "combining files").</li>
+<li>Reports a green build but never actually opened <code>localhost:4173</code>.</li>
+<li>Treats the size warning (chunk &gt; 500 kB) as a fatal error and stops.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U30-building-a-small-page/index.html">U30 Building a small page, end to end</a>
+    <a class="next" href="../U32-hosting-a-static-react-app/index.html">U32 Hosting a static React app</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

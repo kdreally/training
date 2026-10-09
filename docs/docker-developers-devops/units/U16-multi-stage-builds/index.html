@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U16 — Multi-stage builds | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U16</div>
+    <h1>Multi-stage builds</h1>
+    <span class="phase-badge ph3">Phase 3 — Building images</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U16 — Multi-stage builds</h1>
+<p><strong>Phase 3 — Building images</strong></p>
+<h2>Where you are</h2>
+<p>This is the last unit of Phase 3. You can build images, control their contents, name them, and exploit the build cache. Now you meet the technique that separates a beginner's Dockerfile from a production one: <strong>multi-stage builds</strong>. The idea is to use throwaway stages for building and keep only the small result in the final image. It is the natural next step after layers and cache, and it gives you your smallest, cleanest images so far.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why a final image should not contain build tools or caches.</li>
+<li>Use <code>AS &lt;name&gt;</code> to label a stage and <code>COPY --from=&lt;name&gt;</code> to move results between stages.</li>
+<li>Tell the difference between a <strong>build stage</strong> and a <strong>runtime stage</strong>.</li>
+<li>Build a single-stage and a multi-stage version of the same app and compare their sizes.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12 — Dockerfile instructions.</strong> You need <code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, <code>RUN</code>, <code>CMD</code>, <code>EXPOSE</code>.</li>
+<li><strong>U14 — Tags and naming.</strong> You need <code>docker images</code> and the idea of pinning versions.</li>
+<li><strong>U15 — Layers and build cache.</strong> Multi-stage builds are layers with a deliberate discard at the end.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>75–105 minutes</strong>. You will build two images and compare them. The first build downloads a base image, so allow a few minutes.</p>
+<h2>Why this exists</h2>
+<p>A normal Dockerfile uses one base image for everything: it installs compilers, package managers, test tools, and helper files just to produce the app. All of that stays in the final image. The image is large (slow to download everywhere), and it carries tools an attacker could use. Multi-stage builds separate "the kitchen" from "the plate": you do messy work in one stage, then copy only the finished dish into a clean final stage. Smaller, safer, and usually not much harder to write.</p>
+<h2>Plain-language teaching</h2>
+<h3>The problem with one stage</h3>
+<p>Consider a Python app whose dependencies include a package that must be <em>compiled</em> from source. To compile it you need a C compiler and development headers. If you install those in the same stage as the app, they stay in the final image forever, even though the app only needs the compiled result.</p>
+<p>The final image then contains:</p>
+<ul>
+<li>the app and its dependencies (wanted),</li>
+<li>the compiler and headers (unwanted),</li>
+<li>package-manager caches (unwanted),</li>
+<li>build-time scripts and temporary files (unwanted).</li>
+</ul>
+<p>None of that is needed to <em>run</em> the app. Multi-stage builds let you throw it away.</p>
+<h3>Stages, named with <code>AS</code></h3>
+<p>A Dockerfile can contain more than one <code>FROM</code>. Each <code>FROM</code> starts a new <strong>stage</strong>. You give a stage a name with <code>AS</code>:</p>
+<pre><code class="language-dockerfile">FROM python:3.12 AS builder
+</code></pre>
+<p>Now the word <code>builder</code> refers to that stage. A stage is a full, temporary image used <em>during the build</em>. Stages that are not the last one are thrown away at the end unless something is copied out of them.</p>
+<ul>
+<li><strong>Build stage</strong> — where you install everything needed to prepare the app. May be large and full of tools.</li>
+<li><strong>Runtime stage</strong> — the final stage, where only what is needed to run the app remains. Should be small.</li>
+</ul>
+<h3><code>COPY --from=&lt;stage&gt;</code> — moving the result across</h3>
+<p>You move files from an earlier stage into the final stage with <code>--from</code>:</p>
+<pre><code class="language-dockerfile">COPY --from=builder /venv /venv
+</code></pre>
+<p>Read it as: "copy the folder <code>/venv</code> from the stage named <code>builder</code> into <code>/venv</code> here." You can also copy from an external image (<code>COPY --from=nginx:latest ...</code>), but stages are the common case.</p>
+<p>Only the final <code>FROM</code> stage becomes the image you get. Everything before it is scaffolding.</p>
+<h3>A note on <code>ENV</code></h3>
+<p>The Python example below needs the copied virtual environment to be found. We set that with <code>ENV PATH="/venv/bin:$PATH"</code>. <code>ENV</code> sets an <strong>environment variable</strong> inside the image. Environment variables get a full unit later (U24); here it means "look for programs in <code>/venv/bin</code> first." You are not expected to invent this line — copy it once and understand its purpose.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stage</td>
+<td>One <code>FROM</code> section of a Dockerfile</td>
+<td>Not a build phase label; it is a base image context</td>
+</tr>
+<tr>
+<td><code>AS &lt;name&gt;</code></td>
+<td>Names the current stage</td>
+<td>Not related to SQL <code>AS</code></td>
+</tr>
+<tr>
+<td>Build stage</td>
+<td>A temporary stage where preparation happens</td>
+<td>Not the image you ship</td>
+</tr>
+<tr>
+<td>Runtime stage</td>
+<td>The final stage; the one that becomes the image</td>
+<td>Not necessarily the first stage</td>
+</tr>
+<tr>
+<td><code>COPY --from=</code></td>
+<td>Copies files from another stage (or image)</td>
+<td>Not a host path</td>
+</tr>
+<tr>
+<td>Virtual environment (venv)</td>
+<td>A self-contained folder of installed Python packages</td>
+<td>Not the system Python</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>Build flag choosing which Dockerfile to use</td>
+<td>Not the same as the context dot</td>
+</tr>
+<tr>
+<td>Final image</td>
+<td>The result of the last stage only</td>
+<td>Not the sum of all stages</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We build the same <code>hello-flask</code> app two ways and compare sizes. We use a virtual environment to keep the installed packages in one folder that is easy to copy between stages.</p>
+<h3>The single-stage Dockerfile (<code>Dockerfile.single</code>)</h3>
+<pre><code class="language-dockerfile">FROM python:3.12
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+EXPOSE 8000
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>This uses the full <code>python:3.12</code> image, which includes a compiler toolchain and many extras. Everything stays in the final image.</p>
+<h3>The multi-stage Dockerfile (<code>Dockerfile.multistage</code>)</h3>
+<pre><code class="language-dockerfile">FROM python:3.12 AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN python -m venv /venv &amp;&amp; /venv/bin/pip install --no-cache-dir -r requirements.txt
+
+FROM python:3.12-slim AS runtime
+WORKDIR /app
+COPY --from=builder /venv /venv
+COPY app.py .
+ENV PATH=&quot;/venv/bin:$PATH&quot;
+EXPOSE 8000
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>Read it stage by stage:</p>
+<ul>
+<li><strong><code>builder</code></strong> starts from the full <code>python:3.12</code> image, creates a virtual environment at <code>/venv</code>, and installs the dependencies there. This stage is allowed to be large; it will be discarded.</li>
+<li><strong><code>runtime</code></strong> starts fresh from the much smaller <code>python:3.12-slim</code>. It copies the finished <code>/venv</code> folder out of <code>builder</code> and copies the app code. It never includes a compiler.</li>
+<li><code>ENV PATH</code> makes the copied environment findable. <code>EXPOSE</code> and <code>CMD</code> are as before.</li>
+</ul>
+<p>Notice that <code>runtime</code> does not inherit anything from <code>builder</code> except what <code>COPY --from</code> explicitly brings over. The scaffolding stays behind.</p>
+<h3>Build both</h3>
+<p>The <code>-f</code> flag chooses which Dockerfile to build when it is not named <code>Dockerfile</code>:</p>
+<p><strong>What it does:</strong> builds the single-stage image.</p>
+<pre><code class="language-text">docker build -f Dockerfile.single -t hello-single:1.0 .
+</code></pre>
+<p><strong>What it does:</strong> builds the multi-stage image.</p>
+<pre><code class="language-text">docker build -f Dockerfile.multistage -t hello-multi:1.0 .
+</code></pre>
+<p><strong>What success looks like:</strong> both end with a success line. The multi-stage build shows two <code>FROM</code> sections in its output, often labelled with the stage names.</p>
+<p><strong>One decoded failure.</strong> If you see:</p>
+<pre><code class="language-text">ERROR: failed to solve: failed to compute cache key: ... &quot;/venv&quot;: not found
+</code></pre>
+<p>Docker could not find <code>/venv</code> when running <code>COPY --from=builder /venv /venv</code>. The usual causes are a misspelled stage name (the <code>AS</code> name and the <code>--from</code> name must match exactly, including case) or the copy source path does not exist in that stage. Check both names and confirm the builder actually created the folder.</p>
+<h3>Compare the sizes</h3>
+<p><strong>What it does:</strong> lists your images with their sizes.</p>
+<pre><code class="language-text">docker images
+</code></pre>
+<p><strong>What success looks like</strong> (your exact numbers will vary):</p>
+<pre><code class="language-text">REPOSITORY     TAG    IMAGE ID       CREATED          SIZE
+hello-single   1.0    111aaa222bbb   1 minute ago     1.03GB
+hello-multi    1.0    333ccc444ddd   1 minute ago     178MB
+</code></pre>
+<p>The multi-stage image is dramatically smaller. Most of the saving is that it starts from <code>python:3.12-slim</code> instead of <code>python:3.12</code>; the point is that the build work lives in a discarded stage, so the final image holds only the virtual environment and your code.</p>
+<p><strong>One decoded failure.</strong> If the two sizes are nearly identical, check that the final stage is <code>runtime</code> (the last <code>FROM</code>) and that you did not accidentally copy the whole builder. A <code>COPY --from=builder . .</code> would drag the scaffolding back in. Copy only what you need.</p>
+<h3>Run the multi-stage image</h3>
+<pre><code class="language-text">docker run -d -p 8001:8000 --name hello-multi hello-multi:1.0
+</code></pre>
+<p>Then reach it at <code>http://localhost:8001</code> (or <code>curl.exe http://localhost:8001</code> in Windows PowerShell). Port 8001 avoids clashing with anything still on 8000.</p>
+<p><strong>What success looks like:</strong> <code>Hello from inside a container!</code> — the same app, from a much smaller image.</p>
+<pre><code class="language-text">docker stop hello-multi
+docker rm hello-multi
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: stage name mismatch</h3>
+<p><strong>What happens:</strong> <code>COPY --from=build /venv /venv</code> fails because the stage was named <code>builder</code>.</p>
+<p><strong>Fix:</strong> Use the same name in <code>AS</code> and <code>--from</code>. Names are case-sensitive.</p>
+<h3>Error: copying the whole builder</h3>
+<p><strong>What happens:</strong> <code>COPY --from=builder . .</code> brings build junk into the runtime stage, and the size advantage vanishes.</p>
+<p><strong>Fix:</strong> Copy only the specific folders or files the app needs at run time (for example, the virtual environment and the source).</p>
+<h3>Error: forgetting <code>ENV PATH</code> after copying a venv</h3>
+<p><strong>What happens:</strong> the container starts but cannot find <code>python</code> from the virtual environment, or the app cannot import its packages.</p>
+<p><strong>Fix:</strong> Set <code>ENV PATH="/venv/bin:$PATH"</code> in the runtime stage so the copied environment is used. (U24 explains environment variables fully.)</p>
+<h3>Error: expecting intermediate stages in <code>docker images</code></h3>
+<p><strong>What happens:</strong> you look for the <code>builder</code> image and cannot find it.</p>
+<p><strong>Fix:</strong> intermediate stages are discarded. Only the final stage is tagged and listed. That is the design, not a bug.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Why does a final image ideally not contain compilers or package caches?</li>
+<li>What does <code>AS builder</code> do, and what does <code>COPY --from=builder</code> do?</li>
+<li>Which stage becomes your image if a Dockerfile has three <code>FROM</code> lines?</li>
+<li>Name two reasons a multi-stage image is better than a single-stage one.</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Two sizes</h3>
+<p>Build the single-stage and multi-stage versions and record both sizes. Write one sentence explaining where the size difference comes from.</p>
+<h3>P2 — Break it on purpose</h3>
+<p>Rename the <code>builder</code> stage to <code>buildstage</code> but leave <code>COPY --from=builder</code>. Build and read the error. Fix it and confirm success.</p>
+<h3>P3 — Trim further</h3>
+<p>Starting from the multi-stage Dockerfile, remove anything the runtime stage does not need. Write down what you removed and why. (Keep the app working.)</p>
+<h3>P4 — Predict then run</h3>
+<p>Predict whether the <code>builder</code> stage will appear in <code>docker images</code> after a build. Then run <code>docker images</code> and confirm. Explain the result.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No push to a registry, and no <code>buildx</code> or platform targeting — that is Phase 6.</li>
+<li>No environment-variable deep dive — that is <strong>U24</strong>.</li>
+<li>No image-scanning tools — that is <strong>U30</strong>.</li>
+<li>No orchestration or deployment — that is Phase 7.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U17 — Volumes: keeping data alive beyond a container</strong> (the first unit of Phase 4, Data and networking).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U16 Assignment — Shrink the image with stages</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U16-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>Dockerfile.single</code> and <code>Dockerfile.multistage</code></h3>
+<p>Two Dockerfiles for the same small app:<br />
+- <code>Dockerfile.single</code> uses one <code>FROM</code> stage.<br />
+- <code>Dockerfile.multistage</code> uses a named build stage and a smaller runtime stage, with <code>COPY --from=</code>.</p>
+<p>Both must build and both must run the same app successfully.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Why stages.</strong> In 3–5 sentences, explain the problem multi-stage builds solve. Include what the single-stage image carries that it does not need.</li>
+<li><strong><code>AS</code> and <code>--from</code>.</strong> Explain what <code>AS builder</code> does and what <code>COPY --from=builder /venv /venv</code> does. Why must the two names match?</li>
+<li><strong>Build vs runtime.</strong> Describe the difference between a build stage and a runtime stage in your own words.</li>
+<li><strong>Final image.</strong> If a Dockerfile has three <code>FROM</code> lines, which stage becomes the image, and what happens to the others?</li>
+<li><strong>Sizes.</strong> State the two image sizes you measured. Explain, in your own words, the main sources of the difference.</li>
+<li><strong>Trim.</strong> Name one thing you could remove from a runtime stage that a build stage needed, and why the app still works without it.</li>
+</ol>
+<h3>3. <code>evidence.md</code></h3>
+<p>Paste, in order:<br />
+- The build command and success line for both Dockerfiles.<br />
+- <code>docker images</code> output showing both images and their sizes side by side.<br />
+- A run command and the app's response from the multi-stage image.<br />
+- The error you saw (or would see) from a stage-name mismatch, and the fix.</p>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy and mark <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U16 README fully (not only the assignment).
+- [ ] Both Dockerfiles build successfully.
+- [ ] I used `AS` to name a stage and `COPY --from=` to move a result.
+- [ ] I measured and compared the two image sizes.
+- [ ] I ran the multi-stage image and reached the app.
+- [ ] I read the U16 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both Dockerfiles are present and build.</li>
+<li>The multi-stage image is smaller than the single-stage one.</li>
+<li>The app runs from the multi-stage image and responds.</li>
+<li><code>answers.md</code>, <code>evidence.md</code>, and <code>checklist.md</code> are present with those names.</li>
+<li>Every answer is in your own words.</li>
+</ul>
+<h2>Submission format recap</h2>
+<pre><code class="language-text">U16-YourName/
+  Dockerfile.single
+  Dockerfile.multistage
+  app.py
+  requirements.txt
+  answers.md
+  evidence.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U16 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Both Dockerfiles present and building</td>
+<td>3</td>
+<td>Yes</td>
+<td>files + <code>evidence.md</code></td>
+</tr>
+<tr>
+<td>Multi-stage Dockerfile uses a named stage and <code>COPY --from=</code> correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>Dockerfile.multistage</code></td>
+</tr>
+<tr>
+<td>Multi-stage image is measurably smaller than single-stage</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>evidence.md</code> (<code>docker images</code>)</td>
+</tr>
+<tr>
+<td>App runs correctly from the multi-stage image</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>evidence.md</code></td>
+</tr>
+<tr>
+<td>Why stages exist explained, including what single-stage carries unnecessarily</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td><code>AS</code> and <code>--from</code> explained; name-matching explained</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Build vs runtime stage explained</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Final-stage rule and discarded stages explained</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>The diagnostic task is the size comparison. If the two sizes are equal, the multi-stage file is not actually discarding the build work; award Q2/Q3 partial and direct them back.</li>
+<li>Q1: award 2/3 if they know "smaller" but cannot name <em>what</em> is being removed (toolchains, caches, intermediate files).</li>
+<li>Q2: award 1/2 if they use <code>--from</code> but cannot explain why the names must match.</li>
+<li>Q4: award 0/1 for claiming all stages become images.</li>
+<li>Accept a Node, Go, or other app as long as the same multi-stage principles are demonstrated. A compiled-language example (where the final stage copies a binary) is excellent evidence.</li>
+<li>Do not penalize a runtime stage that is only modestly smaller if the explanation of <em>why</em> is sound; the pedagogy is the pattern, not a specific percentage.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li>A multi-stage image that is not smaller, or an app that does not run, means the core task is incomplete.</li>
+<li>Q3 and Q4 are nice-to-have; they deepen understanding without gating progress.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or pasted lesson text.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U15-layers-and-build-cache/index.html">U15 Layers and build cache</a>
+    <a class="next" href="../U17-volumes/index.html">U17 Volumes</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

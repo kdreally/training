@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U23 — A two-service app | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U23</div>
+    <h1>A two-service app</h1>
+    <span class="phase-badge ph5">Phase 5 — Docker Compose</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U23 — A two-service app</h1>
+<p><strong>Phase 5 — Docker Compose</strong></p>
+<h2>Where you are</h2>
+<p>One service was a warm-up. Real apps are a web process plus a database, at minimum. This unit adds a second service, teaches how the two find each other by name, and shows why a database needs a volume or your data disappears every time you stop. You will bring the app up and actually reach it.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write a <code>compose.yaml</code> with two services: a web app and a database.</li>
+<li>Explain <code>depends_on</code> and its honest limits.</li>
+<li>Pass database connection settings into a container with <code>environment:</code>.</li>
+<li>Explain why the database's data needs a named volume (U17).</li>
+<li>Bring the app up and confirm the web service can reach the database.</li>
+<li>Decode an "app cannot find database" failure.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U17</strong> — volumes keep data beyond a container's life.</li>
+<li><strong>U18</strong> — ports.</li>
+<li><strong>U19–U20</strong> — container networking; services reach each other by name on a shared network.</li>
+<li><strong>U22</strong> — services, <code>build</code>, <code>image</code>, <code>ports</code>, <code>environment</code>, <code>docker compose up</code> / <code>down</code>.</li>
+</ul>
+<p>Docker must be running.</p>
+<h2>Time and energy</h2>
+<p>About <strong>85–120 minutes</strong>. The database image is larger than the app image, so the first <code>up</code> may take a few minutes to download. That wait is normal.</p>
+<h2>Why this exists</h2>
+<p>A web app with no database forgets everything. A database with no volume forgets everything when its container is recreated. A two-service app is the smallest realistic shape of real software — and the point at which manual <code>docker run</code> commands stop being reasonable. This unit is where Compose earns its keep.</p>
+<h2>Plain-language teaching</h2>
+<h3>Two services, one file</h3>
+<p>A database is just another service. It uses a public image (U09) instead of a local build. Compose treats both the same way: reads the description, creates a container, connects them to the project network.</p>
+<h3>How the app finds the database: the service name</h3>
+<p>Here is the single most important idea in this unit. Inside the project network, each service is reachable by <strong>its service name</strong> (U20). If the database service is named <code>db</code>, then from inside the web container the hostname <code>db</code> resolves to the database container.</p>
+<p>So the app does <strong>not</strong> connect to <code>localhost</code>. Inside a container, <code>localhost</code> means <em>that same container</em>. The database is a different container. It connects to <code>db</code>.</p>
+<p>This trips up almost everyone once. It is not a sign you are bad at this; it is the whole reason U20 exists.</p>
+<h3><code>depends_on</code>: start order, not readiness</h3>
+<p><code>depends_on</code> tells Compose which services must be <strong>started</strong> before another. Two honest facts:</p>
+<ol>
+<li>It controls <strong>order of starting</strong>, not <strong>readiness</strong>. A database container may be "started" before the database inside it is ready to accept connections.</li>
+<li>It does <strong>not</strong> restart your app when the database becomes ready.</li>
+</ol>
+<p>In this unit we dodge the timing problem by having the app check the database <strong>on every request</strong>. That way the first request might say "not ready yet," and a moment later it says "OK." In later courses this is solved with health checks and retries; here, checking per request keeps the lesson honest and simple.</p>
+<h3>Databases need volumes</h3>
+<p>The PostgreSQL image stores its data inside the container at <code>/var/lib/postgresql/data</code>. Containers are disposable. If you do not mount a <strong>named volume</strong> there, then <code>docker compose down</code> removes the container and the data goes with it (U17).</p>
+<p>A named volume is a piece of storage Docker manages for you and keeps until you explicitly remove it. We will use one called <code>db-data</code>.</p>
+<h3>Should the database have a published port?</h3>
+<p>Usually <strong>no</strong>, and not here. The web app reaches <code>db</code> over the project network. Your browser does not need to talk to the database. Leaving the database unpublished means it is not reachable from your machine's network at all — a smaller, safer surface (U18/U19). We publish only the web port.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Service name</td>
+<td>The label you give a service; also its hostname on the project network</td>
+<td>Not the image name; not <code>localhost</code></td>
+</tr>
+<tr>
+<td><code>depends_on</code></td>
+<td>Start these services first</td>
+<td>Does <strong>not</strong> wait until they are ready</td>
+</tr>
+<tr>
+<td>Connection settings</td>
+<td>Host, port, user, password, database name</td>
+<td>Not the same as publishing a port</td>
+</tr>
+<tr>
+<td>Named volume</td>
+<td>Docker-managed storage that survives <code>down</code></td>
+<td>Removed by <code>docker compose down -v</code> (U25)</td>
+</tr>
+<tr>
+<td><code>POSTGRES_*</code> variables</td>
+<td>Settings the Postgres image reads on first startup</td>
+<td>Only applied when initializing a fresh data directory</td>
+</tr>
+<tr>
+<td>Project network</td>
+<td>Private network Compose creates for the project</td>
+<td>You do not create it by hand</td>
+</tr>
+<tr>
+<td>Pull</td>
+<td>Downloading an image from a registry</td>
+<td>Postgres image is large; first pull is slow</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Create a new folder, for example <code>u23</code>, with four files.</p>
+<h3>File 1: <code>app.py</code></h3>
+<p>This app checks that it can open a network connection to the database, then reports the result. It uses only Python's standard library, so there is nothing extra to install.</p>
+<pre><code class="language-python">import os
+import socket
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+DB_HOST = os.environ.get(&quot;DB_HOST&quot;, &quot;db&quot;)
+DB_PORT = int(os.environ.get(&quot;DB_PORT&quot;, &quot;5432&quot;))
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        try:
+            with socket.create_connection((DB_HOST, DB_PORT), timeout=2):
+                status = f&quot;OK: reached database at {DB_HOST}:{DB_PORT}&quot;
+        except OSError as exc:
+            status = f&quot;FAIL: could not reach {DB_HOST}:{DB_PORT} ({exc})&quot;
+        body = (status + &quot;\n&quot;).encode(&quot;utf-8&quot;)
+        self.send_response(200)
+        self.send_header(&quot;Content-Type&quot;, &quot;text/plain; charset=utf-8&quot;)
+        self.send_header(&quot;Content-Length&quot;, str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+if __name__ == &quot;__main__&quot;:
+    HTTPServer((&quot;0.0.0.0&quot;, 8000), Handler).serve_forever()
+</code></pre>
+<p>It reads <code>DB_HOST</code> and <code>DB_PORT</code> from the environment — those come from the Compose file.</p>
+<h3>File 2: <code>Dockerfile</code></h3>
+<pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+COPY app.py .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>Same shape as U22. No dependencies, so no <code>RUN pip install</code>.</p>
+<h3>File 3: <code>compose.yaml</code></h3>
+<pre><code class="language-yaml">services:
+  web:
+    build: .
+    ports:
+      - &quot;8080:8000&quot;
+    environment:
+      DB_HOST: db
+      DB_PORT: &quot;5432&quot;
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: appdb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>web:</code> — our app. <code>build: .</code> builds it from the Dockerfile.</li>
+<li><code>ports: - "8080:8000"</code> — publishes only the web port to the host (U18).</li>
+<li><code>environment:</code> under <code>web</code> sets <code>DB_HOST: db</code> (the database's service name) and <code>DB_PORT: "5432"</code>.</li>
+<li><code>depends_on: - db</code> — start <code>db</code> before <code>web</code>.</li>
+<li><code>db:</code> — the database. <code>image: postgres:16-alpine</code> pulls the official Postgres image (U09).</li>
+<li><code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code> — settings the image uses <strong>the first time</strong> it initializes its data directory. We are using a plain-text password here only to keep the lesson focused. U24 will show how to keep such values out of the file, and U33 covers doing this properly.</li>
+<li><code>volumes: - db-data:/var/lib/postgresql/data</code> — mount the named volume <code>db-data</code> at Postgres's data directory so the data survives (U17).</li>
+<li><code>volumes:</code> at the <strong>top level</strong> declares the named volume <code>db-data</code> so Compose knows to create and manage it.</li>
+</ul>
+<p>Note the shape: <code>web</code> uses <code>build</code>, <code>db</code> uses <code>image</code>; both use <code>environment</code>. The top-level <code>volumes:</code> block is separate from the per-service <code>volumes:</code> list.</p>
+<h3>Bringing it up and reaching it</h3>
+<p><strong>Command:</strong></p>
+<pre><code class="language-text">docker compose up
+</code></pre>
+<p><strong>What it does:</strong> builds <code>web</code>, pulls <code>postgres:16-alpine</code> if needed, creates the project network and the <code>db-data</code> volume, then starts <code>db</code> (because of <code>depends_on</code>) and <code>web</code>, and attaches to the combined logs.</p>
+<p><strong>Success looks like this</strong> (abbreviated; the Postgres lines may appear a few seconds late):</p>
+<pre><code class="language-text">[+] Building 3.8s (8/8) FINISHED
+[+] Running 3/3
+ ✔ Network u23_default    Created
+ ✔ Volume &quot;u23_db-data&quot;   Created
+ ✔ Container u23-db-1     Started
+ ✔ Container u23-web-1    Started
+db-1   | database system is ready to accept connections
+</code></pre>
+<p><strong>Reach the app:</strong> in a browser or a second terminal, open <code>http://localhost:8080</code> (or <code>curl http://localhost:8080</code>). You should see a line like:</p>
+<pre><code class="language-text">OK: reached database at db:5432
+</code></pre>
+<p>If the very first request says <code>FAIL</code>, wait a few seconds and refresh. That is <code>depends_on</code> starting the container before the database inside is ready — the lesson described above, happening live.</p>
+<p><strong>To stop and clean up:</strong></p>
+<pre><code class="language-text">docker compose down
+</code></pre>
+<p><strong>Success looks like this:</strong></p>
+<pre><code class="language-text">[+] Running 3/3
+ ✔ Container u23-web-1  Removed
+ ✔ Container u23-db-1   Removed
+ ✔ Network u23_default  Removed
+</code></pre>
+<p>Notice the volume is <strong>not</strong> listed — <code>down</code> keeps named volumes by default. Your data stays. (Removing it is U25, and you usually should not.)</p>
+<h3>Reaching the database's data is not required here</h3>
+<p>You do not need a database client on your machine. The web app is your evidence that the network path works. If you <em>do</em> have <code>psql</code> installed, note this: the database port is not published, so <code>psql -h localhost</code> will not connect. That is intentional. We will inspect the database from inside its container later, in U25.</p>
+<h3>A note on operating systems</h3>
+<ul>
+<li>Commands are identical on Windows, macOS, and Linux.</li>
+<li>On Windows/macOS, Docker Desktop must be running and have enough memory for the Postgres image. If Docker reports a memory error, increase the memory limit in Docker Desktop settings, then try again.</li>
+<li>On Linux with Docker Engine, the Compose v2 plugin must be present (same as U22).</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: The app reports it cannot reach the database</h3>
+<p><strong>What you see</strong> at <code>http://localhost:8080</code>:</p>
+<pre><code class="language-text">FAIL: could not reach localhost:5432 (Connection refused)
+</code></pre>
+<p><strong>What it means:</strong> the app is looking for the database at <code>localhost</code>, which inside the web container is the web container itself. Someone set <code>DB_HOST: localhost</code> in the Compose file.</p>
+<p><strong>Fix:</strong> set <code>DB_HOST: db</code> — the database's <strong>service name</strong>. Compose's network resolves <code>db</code> to the database container (U20).</p>
+<h3>Error: "FAIL" on the first request, then "OK"</h3>
+<p><strong>What you see:</strong> the very first request reports failure; a refresh a few seconds later reports success.</p>
+<p><strong>What it means:</strong> <code>depends_on</code> started the <code>db</code> container, but Postgres was still initializing its data directory. The connection was refused until it finished.</p>
+<p><strong>Fix:</strong> nothing is broken. Wait and try again. This is exactly why <code>depends_on</code> is described as order, not readiness. (In real projects you add health checks so the app waits; that is out of scope here.)</p>
+<h3>Error: Data vanishes after a restart</h3>
+<p><strong>What it means:</strong> the <code>db</code> service has no <code>volumes:</code> mount, or the mount points somewhere other than <code>/var/lib/postgresql/data</code>. When the container is recreated, Postgres starts with an empty data directory.</p>
+<p><strong>Fix:</strong> mount a named volume at <code>/var/lib/postgresql/data</code> exactly as in the example, and declare the volume under the top-level <code>volumes:</code> key.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why does the web service use <code>db</code> instead of <code>localhost</code> to reach the database?</li>
+<li>What does <code>depends_on</code> guarantee, and what does it <em>not</em> guarantee?</li>
+<li>After <code>docker compose down</code>, is the data in <code>db-data</code> gone? Why?</li>
+</ol>
+<p>If those are clear, you are ready.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Predict then run</h3>
+<p>Before running anything, predict what the page shows if you change <code>DB_HOST: db</code> to <code>DB_HOST: database</code>. Run it and check. Explain the result in one or two sentences.</p>
+<h3>P2 — Change one value</h3>
+<p>Change the host port from <code>"8080:8000"</code> to <code>"8082:8000"</code> and the <code>DB_PORT</code> from <code>"5432"</code> to <code>"5433"</code>. Predict which one breaks the app and which one only changes your browser URL. Then run and confirm.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>The <code>db</code> service is missing its volume mount. Write the two lines you would add (one under <code>db:</code>, one at the top level).</p>
+<h3>P4 — Write from a specification</h3>
+<p>Write a <code>compose.yaml</code> with a service <code>cache</code> that runs <code>redis:7-alpine</code> and a service <code>web</code> that builds locally, depends on <code>cache</code>, publishes host 8090 to container 8000, and sets <code>CACHE_HOST=cache</code> and <code>CACHE_PORT=6379</code>. Do not run it yet.</p>
+<h3>P5 — Debug this broken snippet</h3>
+<p>Explain why this file fails to keep the database data, and give the corrected <code>db</code> service:</p>
+<pre><code class="language-yaml">  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - db-data:/data
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No <code>.env</code> files or <code>${VAR}</code> interpolation (U24).</li>
+<li>No lifecycle commands such as <code>up -d</code>, <code>logs</code>, <code>ps</code>, or <code>exec</code> (U25).</li>
+<li>No health checks or retry logic (later craft work).</li>
+<li>No secrets management (YAML keeps a plain password for now; U24 introduces the problem, U33 goes deeper).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U24 — Environment variables and .env files</strong> (keeping configuration out of the Compose file and secrets out of Git).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U23 Assignment — A two-service app</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U23-YourName</code></p>
+<h2>What to build</h2>
+<p>A working two-service Compose project based on the worked example, with the deliberate changes listed below, started and verified. Put your project in a subfolder named <code>project/</code>.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>project/app.py</code></h3>
+<p>The <code>app.py</code> from the README. You may keep it unchanged.</p>
+<h3>2. <code>project/Dockerfile</code></h3>
+<p>The <code>Dockerfile</code> from the README.</p>
+<h3>3. <code>project/compose.yaml</code></h3>
+<p>A Compose file that:</p>
+<ul>
+<li>names the app service <code>web</code> and the database service <code>database</code> (<strong>not</strong> <code>db</code>),</li>
+<li>builds <code>web</code> locally and publishes host port <strong>8083</strong> to container port <strong>8000</strong>,</li>
+<li>passes <code>DB_HOST</code> set to the database's service name and <code>DB_PORT</code> set to <code>"5432"</code> into <code>web</code>,</li>
+<li>makes <code>web</code> start after <code>database</code> using <code>depends_on</code>,</li>
+<li>runs <code>postgres:16-alpine</code> for <code>database</code>,</li>
+<li>sets a database name, user, and password of your choosing,</li>
+<li>stores the database data in a named volume mounted at <code>/var/lib/postgresql/data</code>.</li>
+</ul>
+<h3>4. <code>evidence.txt</code></h3>
+<p>Paste exactly what you did and saw, in this order:</p>
+<ul>
+<li>The command that started the project.</li>
+<li>The <code>docker compose up</code> lines showing the network, volume, and both containers starting.</li>
+<li>The command used to reach the app and the response proving it reached the database (for example <code>OK: reached database at database:5432</code>).</li>
+<li>The command and output for <code>docker compose down</code>.</li>
+</ul>
+<h3>5. <code>answers.md</code></h3>
+<ol>
+<li><strong>Service name as hostname.</strong> Explain, in your own words, why <code>web</code> connects to <code>database</code> and not to <code>localhost</code>. Mention what <code>localhost</code> means inside a container.</li>
+<li><strong><code>depends_on</code>.</strong> State what <code>depends_on</code> guarantees and one thing it does <em>not</em> guarantee. Give one sentence of reasoning for each.</li>
+<li><strong>Why a volume.</strong> Explain why the database needs the named volume. What happens to the data if the mount is missing and the containers are recreated?</li>
+<li><strong>Published ports.</strong> Why does the database service have no <code>ports:</code> entry? What is the benefit?</li>
+<li><strong>Predict then run.</strong> If you renamed the database service to <code>database</code> but forgot to change <code>DB_HOST</code> from <code>db</code> to <code>database</code>, what would the app report? Run it if you can and paste the result.</li>
+<li><strong>Debug this.</strong> The snippet below loses all data every time the project is cleaned up. Explain why and give the corrected <code>db</code> service.</li>
+</ol>
+<p><code>yaml
+     db:
+       image: postgres:16-alpine
+       environment:
+         POSTGRES_PASSWORD: changeme
+       volumes:
+         - db-data:/data</code></p>
+<ol start="7">
+<li><strong>Explain in your own words.</strong> In 3–5 lines, describe the roles of the top-level <code>volumes:</code> key versus a service's <code>volumes:</code> list.</li>
+</ol>
+<h3>6. <code>checklist.md</code></h3>
+<p>Copy and complete:</p>
+<pre><code class="language-markdown">- [ ] I read the U23 README fully (not only the assignment).
+- [ ] The app reported it reached the database at `database:5432`.
+- [ ] The database data lives in a named volume mounted at `/var/lib/postgresql/data`.
+- [ ] `docker compose down` removed the containers and network but kept the volume.
+- [ ] I read the U23 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>project/</code> contains <code>app.py</code>, <code>Dockerfile</code>, and <code>compose.yaml</code> as specified.</li>
+<li>The app was actually reached and reported a successful database connection.</li>
+<li><code>answers.md</code> is in your own words; Q6 fixes the volume correctly.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+</ul>
+<h2>Submission format</h2>
+<p>One folder or zip named <code>U23-YourName</code> containing <code>project/</code>, <code>evidence.txt</code>, <code>answers.md</code>, and <code>checklist.md</code>, with names exactly as written.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U23 Rubric</h1>
+<p>Visible to learners. Total <strong>25 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compose.yaml</code> has two services named <code>web</code> and <code>database</code> with valid YAML</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>web</code> builds locally; <code>database</code> uses <code>postgres:16-alpine</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>web</code> maps host 8083 → container 8000</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>DB_HOST</code> points at the service name; <code>DB_PORT</code> is <code>"5432"</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>depends_on</code> makes <code>web</code> start after <code>database</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td>Named volume mounted at <code>/var/lib/postgresql/data</code>; declared top-level</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td>Project starts and the app reports a successful DB connection</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>evidence.txt</code></td>
+</tr>
+<tr>
+<td>Correct explanation of service name vs <code>localhost</code></td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td><code>depends_on</code> order-not-readiness explained accurately</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains why the database is not published</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Debug task correctly identifies the wrong mount path and fixes it</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Top-level vs per-service <code>volumes:</code> distinguished</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Connection evidence (5 pts): award 3 if the project starts and the web page loads but the DB-reached message is absent; award 0 if there is no run evidence.</li>
+<li>Q6: the bug is the mount path <code>/data</code> instead of <code>/var/lib/postgresql/data</code>. Award 3 for a correct fix with explanation; 2 if the fix is right but explanation is missing; 1 if they only say "wrong path" without the correct path.</li>
+<li>Q1: award 1/2 if they say "use the service name" without explaining that <code>localhost</code> means the current container.</li>
+<li>Q2: award 1/2 if they only state the order guarantee and omit the readiness limitation.</li>
+<li>Q7: award 1/2 if they can say the top-level key "defines" the volume but not that the service list "mounts" it.</li>
+<li>Accept any reasonable user/DB/password values; only path, service names, and wiring are graded.</li>
+</ul>
+<h2>Evidence the assessor should look for</h2>
+<ul>
+<li><code>evidence.txt</code> should show <code>Container ... database ... Started</code> (or similar) and a response containing <code>OK: reached database at database:5432</code>.</li>
+<li>The <code>down</code> output should remove containers and network but <strong>not</strong> the named volume.</li>
+<li>A first-request <code>FAIL</code> followed by a later <code>OK</code> is acceptable evidence if the learner explains the readiness gap.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U22-first-compose-file/index.html">U22 Your first compose file</a>
+    <a class="next" href="../U24-env-vars-and-dotenv/index.html">U24 Environment variables and .env files</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

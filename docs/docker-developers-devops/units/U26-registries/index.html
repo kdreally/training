@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U26 — Registries | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U26</div>
+    <h1>Registries</h1>
+    <span class="phase-badge ph6">Phase 6 — Registries and automation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U26 — Registries</h1>
+<p><strong>Phase 6 — Registries and automation</strong></p>
+<h2>Where you are</h2>
+<p>You can already build an image on your own machine (U11–U16), keep data with volumes (U17), and stitch services together with Compose (U21–U25). But every image you have made lives <em>only</em> on your laptop. This unit introduces the <strong>registry</strong>: the online catalog where images are stored so they can travel to other machines and other people. We build the mental model first; the actual pushing and pulling happens in U27.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a registry is and what problem it solves for a team.</li>
+<li>Tell the difference between a registry, a repository, a namespace, an image, and a tag.</li>
+<li>Say what Docker Hub is, and name at least two other registries teams use.</li>
+<li>Explain what <code>docker login</code> is for, in plain language, without running it blindly.</li>
+<li>Read an image name like <code>ghcr.io/acme/shopping-list:1.2</code> and say where each part points.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U09</strong> — pulling and running existing images from Docker Hub.</li>
+<li><strong>U14</strong> — tags and naming your images.</li>
+<li><strong>U16</strong> — multi-stage builds (referenced when we discuss image size).</li>
+<li><strong>U25</strong> — Compose lifecycle (so you know how services are run locally).</li>
+</ul>
+<p>If any of those feel shaky, a five-minute reread of their vocabulary tables is worth it before continuing.</p>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>. Most of this unit is reading and thinking, not typing. There is one login command near the end; everything before it explains what that command is doing.</p>
+<h2>Why this exists</h2>
+<p>Right now, sharing your work means sending a folder of code and hoping the other person can rebuild the exact same image. If you later run that image on a server, the server needs a way to <em>fetch</em> it. A registry is how images leave your laptop. Without one, every deployment would be "copy these files and pray the build matches." Teams also use registries as a single source of truth: the image a tester runs is the very same bytes a server runs.</p>
+<h2>Plain-language teaching</h2>
+<h3>The problem, stated plainly</h3>
+<p>An <strong>image</strong> is a finished, frozen snapshot: your app plus everything it needs to run (U08). It lives inside your local Docker storage, on one computer.</p>
+<p>That is fine until you want one of these:</p>
+<ul>
+<li>A teammate to run your exact image.</li>
+<li>A test server to run it without a developer sitting there.</li>
+<li>A production server in another building to run it.</li>
+</ul>
+<p>At that point "the image is on my laptop" becomes the whole problem. You cannot email a multi-hundred-megabyte snapshot, and even if you could, the other machine would still need Docker to load it.</p>
+<h3>What a registry is</h3>
+<p>A <strong>registry</strong> is a server that stores images and hands them out on request. Think of it as an app store or a library catalog for images: images go in with a name, and come out again by that same name.</p>
+<p>That is the smallest honest definition. Everything else is detail.</p>
+<p><strong>What a registry is <em>not</em>:</strong></p>
+<ul>
+<li>It is <strong>not</strong> a running container. A registry stores snapshots; it does not execute your app.</li>
+<li>It is <strong>not</strong> only Docker Hub. Docker Hub is <em>one</em> registry, the popular default. Many others exist.</li>
+<li>It is <strong>not</strong> magic. When you <code>docker pull</code>, your Docker client is really just making an HTTP request to a registry and downloading layers (U15).</li>
+</ul>
+<h3>The parts of an image name</h3>
+<p>Every name you will push or pull has up to four parts. We met tags in U14; now we add the registry and namespace at the front.</p>
+<pre><code class="language-text">ghcr.io   /   acme   /   shopping-list   :   1.2
+----------     ----       -------------      ---
+registry       namespace  repository        tag
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Plain meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registry</td>
+<td>The server that hosts the image</td>
+<td><code>ghcr.io</code>, <code>docker.io</code></td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td>The account or organization that owns it</td>
+<td><code>acme</code>, a username, <code>library</code></td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>The name of this one image, across versions</td>
+<td><code>shopping-list</code></td>
+</tr>
+<tr>
+<td>Tag</td>
+<td>Which version of that repository</td>
+<td><code>1.2</code>, <code>latest</code></td>
+</tr>
+</tbody>
+</table>
+<p>When you leave the registry out, Docker assumes <strong>Docker Hub</strong> (<code>docker.io</code>). When you leave the tag out, Docker assumes <strong><code>latest</code></strong>.</p>
+<p>So <code>ubuntu:24.04</code> really means <code>docker.io/library/ubuntu:24.04</code>. The <code>library</code> namespace is where Docker Hub keeps its official, curated images (U09). Your own images go under <em>your</em> username instead.</p>
+<h3>Registry vs repository: the confusion to kill now</h3>
+<p>These two words sound alike and trip people up for years.</p>
+<ul>
+<li>A <strong>registry</strong> is the whole building — Docker Hub, for example.</li>
+<li>A <strong>repository</strong> is one shelf in that building, holding every version of one image.</li>
+</ul>
+<p>Docker Hub is a registry. <code>docker.io/library/nginx</code> is a repository inside it. You can have a thousand repositories in one registry.</p>
+<h3>Docker Hub</h3>
+<p><strong>Docker Hub</strong> is the default registry. It is run by Docker, it is where the images in U09 came from unless you said otherwise, and it has a generous free tier for public images.</p>
+<ul>
+<li><strong>Public repository:</strong> anyone can pull it. Good for open projects and learning.</li>
+<li><strong>Private repository:</strong> only you and the people you invite can pull it.</li>
+</ul>
+<p>The free tier has limits — for example, a cap on how many pulls anonymous users get per window of time. If you ever see a new error mentioning rate limits, it is almost always this. We will decode that exact error later.</p>
+<h3>Other registries you will meet</h3>
+<p>You do not have to use Docker Hub. Different organizations run their own registries, often for privacy or because it integrates with where their code already lives:</p>
+<ul>
+<li><strong>GHCR</strong> (GitHub Container Registry, <code>ghcr.io</code>) — tied to GitHub. Free for public images. Useful in U29 because the code and the image can live in the same place.</li>
+<li><strong>GitLab Container Registry</strong> — tied to GitLab.</li>
+<li><strong>Amazon ECR, Azure Container Registry (ACR), Google Artifact Registry</strong> — cloud providers' registries.</li>
+<li><strong>Harbor</strong> — software you can run yourself if a company wants its own private registry.</li>
+</ul>
+<p>For this course we use <strong>Docker Hub</strong> in examples because it needs only a free account and no cloud provider.</p>
+<h3>Why teams bother with a registry</h3>
+<ul>
+<li><strong>One artifact, many places.</strong> Build the image once; every environment pulls the same bytes.</li>
+<li><strong>Reproducibility.</strong> The server does not rebuild from source and guess; it pulls a fixed, tagged image.</li>
+<li><strong>Access control.</strong> Private images stay private; you decide who can pull.</li>
+<li><strong>Speed.</strong> Layers already stored in a registry are reused, so pulls and pushes are often fast (U15).</li>
+<li><strong>Automation.</strong> Pipelines can push image versions automatically, which is exactly what U28 and U29 are about.</li>
+</ul>
+<h3>What <code>docker login</code> does (concept first)</h3>
+<p>A registry will not accept your image from just anyone. To push to <em>your</em> namespace, Docker needs to prove who you are.</p>
+<p><code>docker login</code> is the command that proves it. In plain words: <strong>it sends your username and a secret to the registry, and if they are correct, the registry gives your Docker client permission for this session.</strong> Docker then stores proof locally so you do not type the secret again every time.</p>
+<p>You do <strong>not</strong> need to log in to pull public images — that is why U09 worked with no account. You <em>do</em> need to log in to push, or to pull a private image.</p>
+<p>A key modern detail: <strong>Docker Hub no longer accepts your account password for command-line logins.</strong> You create an <strong>access token</strong> (a long, one-purpose password generated on the Docker Hub website) and use <em>that</em> as the password. This is safer: if a token leaks, you delete just that token instead of changing your real password.</p>
+<p>Where the proof is stored depends on your system:</p>
+<ul>
+<li><strong>Windows (Docker Desktop):</strong> the Windows Credential Manager.</li>
+<li><strong>macOS (Docker Desktop):</strong> the macOS Keychain.</li>
+<li><strong>Linux:</strong> a helper such as <code>pass</code>, or a plaintext file at <code>~/.docker/config.json</code> if no helper is set.</li>
+</ul>
+<h3>Command: <code>docker login</code></h3>
+<p><strong>What it does:</strong> prompts for a username and secret (an access token for Docker Hub), then asks the registry to grant this machine permission.</p>
+<p>Run it by itself for Docker Hub, or name another registry:</p>
+<pre><code class="language-bash">docker login
+docker login ghcr.io
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong><br />
+<code>text
+  Login Succeeded</code></li>
+<li><strong>One decoded failure:</strong><br />
+<code>text
+  Error response from daemon: Get "https://registry-1.docker.io/v2/":
+  unauthorized: incorrect username or password</code><br />
+<strong>Decoded:</strong> the registry did not accept the pair you typed. The most common cause is using your Docker Hub <em>account password</em> instead of an <strong>access token</strong>. Second most common: a typo in the username, or a trailing space when pasting the token. Create a fresh access token on the Docker Hub website and paste it as the password.</li>
+</ul>
+<h3>Command: <code>docker logout</code></h3>
+<p><strong>What it does:</strong> removes the stored credential for a registry, ending that machine's logged-in state.</p>
+<pre><code class="language-bash">docker logout
+docker logout ghcr.io
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong><br />
+<code>text
+  Removing login credentials for https://index.docker.io/v1/</code></li>
+<li><strong>One decoded failure:</strong> running it when you were never logged in does not fail loudly; it prints the same "Removing login credentials" line. That is not an error — it means there was nothing to remove. If you expected to still be logged in and you are not, check whether a helper overwrote or cleared <code>~/.docker/config.json</code>.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registry</td>
+<td>A server that stores and serves images</td>
+<td>Not the same as a single image or a running container</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>One named image inside a registry, across versions</td>
+<td>Not the whole registry; not a Git repository</td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td>The account/org that owns repositories</td>
+<td>Confused with the username itself</td>
+</tr>
+<tr>
+<td>Docker Hub</td>
+<td>The default public registry, <code>docker.io</code></td>
+<td>Not the only registry; not required to run Docker</td>
+</tr>
+<tr>
+<td>GHCR</td>
+<td>GitHub's registry, <code>ghcr.io</code></td>
+<td>A GitHub <em>repo</em> is code; GHCR is images</td>
+</tr>
+<tr>
+<td>Private registry</td>
+<td>A registry with restricted access</td>
+<td>Not "a registry only for big companies"</td>
+</tr>
+<tr>
+<td>Access token</td>
+<td>A generated, revocable password for tools</td>
+<td>Not your account password</td>
+</tr>
+<tr>
+<td><code>docker login</code></td>
+<td>Proves identity so you can push/pull private images</td>
+<td>Not needed to pull public images</td>
+</tr>
+<tr>
+<td>Null/dangling image</td>
+<td>An image with no tag or no container using it</td>
+<td>Comes up again in U30</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> Your teammate Priya wants the small <code>shopping-list</code> web app you containerized last week. You do not want to send source code. You want to point her at one name.</p>
+<p>For this unit we will only <em>read</em> names and log in — no push yet. That happens in U27.</p>
+<p><strong>Step 1 — see what images you already have.</strong></p>
+<pre><code class="language-bash">docker image ls
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> lists the images stored locally, with repository, tag, image id, and size.</li>
+<li><strong>Success looks like:</strong> a table. One line might read:<br />
+<code>text
+  REPOSITORY          TAG       IMAGE ID       CREATED         SIZE
+  shopping-list       1.0       9f2c1ab77d10   2 hours ago     148MB</code></li>
+<li><strong>One decoded failure:</strong> <code>Cannot connect to the Docker daemon</code> — decoded: Docker Desktop or the Docker Engine is not running. Start it (U06) and try again.</li>
+</ul>
+<p><strong>Step 2 — translate that local name into a registry name.</strong></p>
+<p>The local line above says <code>shopping-list:1.0</code>. That name has no registry part, so it means "local only, Docker Hub implied but not addressed." To share it as Priya, the name becomes:</p>
+<pre><code class="language-text">priya-hub-user/shopping-list:1.0
+</code></pre>
+<p>Read it aloud: "on Docker Hub, in Priya's namespace, the shopping-list repository, tag 1.0." Before any network operation, you can check you understand the name. If you can explain each part, you are ready for U27.</p>
+<p><strong>Step 3 — log in (only when you are ready to push).</strong></p>
+<pre><code class="language-bash">docker login
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> asks Docker Hub to grant this machine permission; stores the proof locally.</li>
+<li><strong>Success looks like:</strong> <code>Login Succeeded</code>.</li>
+<li><strong>One decoded failure:</strong> the <code>unauthorized: incorrect username or password</code> text above — decoded: use an access token, not your password.</li>
+</ul>
+<p><strong>Step 4 — confirm who you are.</strong></p>
+<pre><code class="language-bash">docker logout
+</code></pre>
+<p>Logging straight back out is a harmless way to prove the login really worked and to leave your machine tidy.</p>
+<p><strong>Everywhere it differs by OS:</strong> the <em>text</em> of these commands is identical on Windows PowerShell, macOS, and Linux. Only the credential <em>storage</em> differs (Credential Manager / Keychain / helper). Docker handles that for you.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>unauthorized: incorrect username or password</code></h3>
+<p><strong>What happens:</strong> you typed your Docker Hub account password instead of an access token, or the token has a typo or extra space.</p>
+<p><strong>Fix:</strong> open Docker Hub in a browser, create an access token, and paste <em>that</em> as the password. Delete the bad token so it cannot be misused.</p>
+<h3>Error: <code>toomanyrequests: You have reached your pull rate limit</code></h3>
+<p><strong>What happens:</strong> too many pulls of public images were made from your network or account in a short window, so Docker Hub paused you.</p>
+<p><strong>Fix:</strong> log in (logged-in users get a higher free limit), wait for the window to reset, or pull a specific private image instead of re-pulling public ones. This error is about <em>volume</em>, not about your images being wrong.</p>
+<h3>Error: <code>Cannot connect to the Docker daemon</code></h3>
+<p><strong>What happens:</strong> the Docker engine is not running.</p>
+<p><strong>Fix:</strong> start Docker Desktop (Windows/macOS) or the engine service (Linux), wait for the whale icon to settle, then retry. This is the same failure you first met in U06.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What problem does a registry solve that a local image cannot?</li>
+<li>In <code>ghcr.io/acme/shopping-list:1.2</code>, name the registry, namespace, repository, and tag.</li>
+<li>Why is <code>ubuntu:24.04</code> the same as <code>docker.io/library/ubuntu:24.04</code>?</li>
+<li>Why does pulling a public image not require <code>docker login</code>, but pushing does?</li>
+</ol>
+<p>If those four feel comfortable, you are ready to practise.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Name decoding</h3>
+<p>Write out the registry, namespace, repository, and tag for each name:</p>
+<ul>
+<li><code>nginx:1.27</code></li>
+<li><code>docker.io/library/postgres:16</code></li>
+<li><code>ghcr.io/team-alpha/inventory:2.4</code></li>
+<li><code>shopping-list</code></li>
+</ul>
+<h3>P2 — Predict, then run</h3>
+<p>Predict what <code>docker login</code> prints when you type a <strong>wrong</strong> password on purpose, then run it with a made-up username and see. Which error do you get? Does it match the decoded failure above? (Running it with wrong details is safe; it fails harmlessly.)</p>
+<h3>P3 — Change one thing</h3>
+<p>Take any local image from <code>docker image ls</code> and write the <em>registry-ready</em> name it would need for a Docker Hub user called <code>student-demo</code>. Do not push — just write the name and read it back aloud.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. It is short and visible on purpose.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No <code>docker push</code> or <code>docker tag</code> yet — that is U27.</li>
+<li>No private-registry setup, server hosting, or cloud accounts.</li>
+<li>No access-token creation walkthrough beyond "generate one on Docker Hub."</li>
+<li>No pricing or enterprise features beyond "there is a free tier."</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U27 — Pushing and pulling images</strong> (tag for a registry, push, pull, and decode <code>denied</code>).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U26 Assignment — Registries</h1>
+<p>Submit everything in <strong>one folder or zip</strong> named:</p>
+<p><code>U26-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words. Short paragraphs or bullets are fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>The problem.</strong> In 4–6 lines, explain why an image that only exists on your laptop causes trouble for a team. Name at least two consequences.</li>
+<li><strong>Definitions.</strong> Define each in one sentence: registry, repository, namespace, tag.</li>
+<li><strong>Name decoding.</strong> For <code>ghcr.io/acme/shopping-list:1.2</code>, state the registry, namespace, repository, and tag. Then write what <code>nginx:1.27</code> expands to in full.</li>
+<li><strong>Registries compared.</strong> Name Docker Hub and two other registries. For each, write one sentence on when a team would choose it.</li>
+<li><strong>Login, explained.</strong> In your own words, what does <code>docker login</code> actually prove, and why is an access token used instead of an account password? Why is login unnecessary for pulling public images?</li>
+<li><strong>Predict then explain.</strong> Read this name: <code>docker.io/team-alpha/inventory</code>. A teammate says "that is a registry." Correct them in two sentences.</li>
+</ol>
+<h3>2. <code>registry-map.md</code></h3>
+<p>Make a small table with columns <strong>Name | Registry | Namespace | Repository | Tag | Local or remote?</strong> and fill it for these five names:</p>
+<pre><code class="language-text">ubuntu:24.04
+student-demo/shopping-list:1.0
+ghcr.io/team-alpha/inventory:2.4
+postgres:16
+docker.io/library/nginx:1.27
+</code></pre>
+<p>For "Local or remote?" write whether the name <em>could</em> address a registry (remote) or only ever a local image. One word or short phrase per cell is fine.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy and mark <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U26 README fully (not only the assignment).
+- [ ] I can name the four parts of an image name.
+- [ ] I can explain why a registry exists.
+- [ ] I understand login is for pushing, not for pulling public images.
+- [ ] I read the U26 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the names above.</li>
+<li>Answers are in your own words.</li>
+<li>The registry map is complete and readable.</li>
+<li>Checklist completed honestly.</li>
+</ul>
+<h2>Definition of <em>not</em> done</h2>
+<ul>
+<li>Filling <code>registry-map.md</code> by pasting a search engine answer without being able to explain it.</li>
+<li>Saying "Docker Hub" for every registry column.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U26 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>. "Must-have" criteria decide pass/fail; nice-to-have criteria improve the mark but do not sink it.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explains the local-only problem with at least two concrete consequences</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correctly defines registry, repository, namespace, tag</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Decodes <code>ghcr.io/acme/shopping-list:1.2</code> and expands <code>nginx:1.27</code> correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Names Docker Hub plus two other registries with a sensible use case each</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Explains login + access token + why public pulls need no login</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Corrects the "registry" misconception about a repository/name</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Registry map complete and correct for all five names</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>registry-map.md</code></td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>0</td>
+<td>Yes</td>
+<td>folder/zip structure</td>
+</tr>
+</tbody>
+</table>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Q2: award 2/4 if registry and repository are right but namespace/tag are blurred.</li>
+<li>Q3: award 2/4 if the ghcr name is decoded but <code>nginx:1.27</code> is not expanded to include <code>docker.io/library</code>.</li>
+<li>Q5: award 1/3 if they say "login is how you use Docker" without the identity/permission idea.</li>
+<li>Registry map: <code>nginx:1.27</code> and <code>ubuntu:24.04</code> are the tell — both are remote (<code>docker.io/library/...</code>).</li>
+<li>Do not penalize imperfect English. Penalize copy-pasted definitions with no personalization.</li>
+</ul>
+<h2>Common wrong-but-thoughtful answers</h2>
+<ul>
+<li>Calling <code>docker.io</code> a "website" rather than a registry — partial credit if the rest is right.</li>
+<li>Believing <code>latest</code> is always the newest image — understandable (U14 covers this); do not mark down here, but note it for U27.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U25-compose-lifecycle/index.html">U25 Compose lifecycle</a>
+    <a class="next" href="../U27-push-and-pull/index.html">U27 Pushing and pulling images</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U04 — Apps and their environments | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U04</div>
+    <h1>Apps and their environments</h1>
+    <span class="phase-badge ph1">Phase 1 — Why containers exist</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U04 — Apps and their environments</h1>
+<p><strong>Phase 1 — Why containers exist</strong></p>
+<h2>Where you are</h2>
+<p>In U02 you saw that two machines with "the same app" can behave differently. In U03 you learned to move around a terminal. Now we look closely at <strong>what a program actually needs in order to run</strong>. Understanding this list is essential: containers work by packaging exactly these things and carrying them along.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>List everything a small app needs in order to run.</li>
+<li>Explain, in plain language, what a runtime, a library, a package manager, a configuration value, an environment variable, and a port are.</li>
+<li>Explain why two machines running "the same app" can still drift apart.</li>
+<li>Recognize a missing-module error and a port-already-in-use error, and say what each means.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong></li>
+<li><strong>U01 — What we are building toward.</strong></li>
+<li><strong>U02 — The works-on-my-machine problem.</strong> You need the idea of an environment and version drift. This unit is the precise follow-up to that one.</li>
+<li><strong>U03 — The terminal, deliberately.</strong> You need to be comfortable reading command output.</li>
+</ul>
+<p>You do <strong>not</strong> need Docker in this unit.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–80 minutes</strong>. This unit is a little list-heavy. Take it one item at a time. The goal is that when someone says "runtime" or "environment variable" later, you have a concrete picture, not a vague feeling.</p>
+<h2>Why this exists</h2>
+<p>Containers promise the same behaviour everywhere because they carry the environment with the app. That promise is meaningless until you know what "environment" contains. This unit turns the fuzzy word from U02 into a checklist you can actually reason about.</p>
+<h2>Plain-language teaching</h2>
+<h3>An app is more than its code</h3>
+<p>When we say "the app," we often mean the folder of code. But the code is only the recipe. To actually run, three more kinds of things must be present, plus two ways of behaving. Let us name them one at a time.</p>
+<h3>The runtime</h3>
+<p>A <strong>runtime</strong> is the engine that executes your code. Different languages use different runtimes:</p>
+<ul>
+<li>Python code runs on the <strong>Python interpreter</strong>.</li>
+<li>JavaScript (outside a browser) runs on <strong>Node.js</strong>.</li>
+<li>Java code runs on the <strong>Java Virtual Machine</strong> (JVM).</li>
+<li>C# runs on the <strong>.NET runtime</strong>.</li>
+</ul>
+<p>Without the runtime, the code is just text. Crucially, the runtime has a <strong>version</strong> (for example, Python 3.11 vs 3.12), and code written for one version can break on another.</p>
+<h3>Libraries, packages, and dependencies</h3>
+<p>A <strong>library</strong> is code someone else wrote that your app uses. A web framework, a date-parsing tool, a database driver — all libraries.</p>
+<p>A <strong>package</strong> is a library (or tool) bundled up so it can be installed and shared. A <strong>package manager</strong> installs packages for you: <code>pip</code> for Python, <code>npm</code> for JavaScript, <code>apt</code> for Linux system packages, <code>brew</code> for macOS. You do not need to run any of these in this unit; you only need to know the term.</p>
+<p>A <strong>dependency</strong> is the general word for anything the app depends on to run — the runtime, its libraries, or a system tool. Dependencies are usually declared in a <strong>manifest</strong> file: <code>requirements.txt</code> for Python, <code>package.json</code> for Node.js. A <strong>lockfile</strong> is a companion file that records the <em>exact</em> versions that were installed, so they can be reproduced later.</p>
+<h3>Operating-system bits</h3>
+<p>Beyond the runtime and libraries, code sometimes relies on things the operating system provides:</p>
+<ul>
+<li><strong>System libraries</strong>, shared by many programs on the machine.</li>
+<li><strong>File paths and separators</strong>, which differ between Windows (<code>\</code>) and macOS/Linux (<code>/</code>).</li>
+<li><strong>File permissions</strong>, which behave differently across systems.</li>
+<li><strong>Line endings</strong>, which are invisible characters at the end of text lines and differ between Windows and Unix.</li>
+</ul>
+<p>These OS bits are easy to forget and hard to see, which makes them a classic source of "works on my machine."</p>
+<h3>Configuration and environment variables</h3>
+<p><strong>Configuration</strong> is the set of settings a program reads from outside its code, so the same code can run in different places. A common form is the <strong>environment variable</strong>: a named value stored in the environment the program starts in, which the program can read.</p>
+<p>You have likely seen environment variables without knowing the name:</p>
+<pre><code class="language-text">DATABASE_URL=postgres://localhost:5432/todo
+PORT=5000
+DEBUG=false
+</code></pre>
+<ul>
+<li><code>DATABASE_URL</code> tells the app where its database lives.</li>
+<li><code>PORT</code> tells the app which network door to listen on.</li>
+<li><code>DEBUG</code> turns friendly debug behaviour on or off.</li>
+</ul>
+<p>If an environment variable is missing, the program may fall back to a default — or crash. That unpredictability is exactly what containers help remove.</p>
+<h3>Ports: how apps listen</h3>
+<p>A <strong>port</strong> is a numbered door on a computer that network traffic can arrive at. When an app "listens" on a port, it is waiting for connections at that door. A single computer has many ports (numbered 0–65535), so several apps can listen at once, each on its own number.</p>
+<p>When you visit a website, your browser connects to a <strong>host</strong> (a machine) at a <strong>port</strong> (a door on that machine). The default web port is 80 (or 443 for secure traffic). Small apps often use higher numbers such as 3000, 5000, or 8000 to avoid clashing with system services.</p>
+<p>The word <strong>port</strong> will get a precise Docker unit later (U18). For now the picture is: <em>a numbered door an app listens at.</em></p>
+<h3>Why environments drift</h3>
+<p>Put it together. Two machines can differ in any of these ways:</p>
+<pre><code class="language-text">runtime version  -&gt;  Python 3.11 vs 3.12
+library versions -&gt;  numpy 1.24 vs 1.26
+OS bits          -&gt;  different line endings, permissions
+configuration    -&gt;  DATABASE_URL set on one, missing on the other
+ports            -&gt;  port 3000 free on one, taken by another tool on the other
+</code></pre>
+<p>That is five independent ways to break. This is why "install the same thing" from U02 is not enough: the environment is not one thing. It is a whole set of things, each with its own version and state.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runtime</td>
+<td>The engine that executes code (Python, Node.js, JVM, .NET)</td>
+<td>Not the same as the operating system</td>
+</tr>
+<tr>
+<td>Library</td>
+<td>Ready-made code the app uses</td>
+<td>People call every library a "dependency"</td>
+</tr>
+<tr>
+<td>Package</td>
+<td>A library or tool bundled for installation</td>
+<td>Not the same as a raw source file</td>
+</tr>
+<tr>
+<td>Package manager</td>
+<td>A tool that installs packages (<code>pip</code>, <code>npm</code>, <code>apt</code>)</td>
+<td><code>apt</code> manages system packages, not Python ones</td>
+</tr>
+<tr>
+<td>Dependency</td>
+<td>Anything the app needs to run</td>
+<td>Broader than "external package"</td>
+</tr>
+<tr>
+<td>Manifest</td>
+<td>A file listing wanted dependencies (<code>requirements.txt</code>)</td>
+<td>Not the same as a lockfile</td>
+</tr>
+<tr>
+<td>Lockfile</td>
+<td>A file recording the exact versions installed</td>
+<td>Easily ignored, which causes drift</td>
+</tr>
+<tr>
+<td>Environment variable</td>
+<td>A named value passed to a program from outside</td>
+<td>Not the same as a shell variable set and forgotten</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>Settings the app reads from outside its code</td>
+<td>Includes but is not limited to environment variables</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>A numbered door where an app listens for traffic</td>
+<td>Not a physical socket; a number</td>
+</tr>
+<tr>
+<td>Host</td>
+<td>The machine you connect to</td>
+<td>Often "localhost," meaning this computer</td>
+</tr>
+<tr>
+<td>Listening</td>
+<td>An app waiting for connections on a port</td>
+<td>Not the same as a finished request</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Consider a tiny web app. You are not required to run it; read what it needs. If you have Python installed and want to try it, that is optional and safe.</p>
+<p><strong>File: <code>app.py</code></strong></p>
+<pre><code class="language-python">import os
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route(&quot;/&quot;)
+def home():
+    return &quot;todo app is running&quot;
+
+if __name__ == &quot;__main__&quot;:
+    port = int(os.environ.get(&quot;PORT&quot;, &quot;5000&quot;))
+    app.run(host=&quot;0.0.0.0&quot;, port=port)
+</code></pre>
+<p><strong>File: <code>requirements.txt</code></strong></p>
+<pre><code class="language-text">flask==3.0.0
+</code></pre>
+<p>Now list everything this app needs:</p>
+<pre><code class="language-text">Runtime            Python 3 (a specific version, e.g. 3.11)
+Library            flask (and everything flask itself needs)
+Manifest           requirements.txt
+Configuration      the PORT environment variable (defaults to 5000)
+Port               listens on 5000 unless told otherwise
+OS bits            needs to read environment variables and open a network port
+</code></pre>
+<p>Every line is justified:</p>
+<ul>
+<li><code>import os</code> and <code>os.environ.get("PORT", "5000")</code> — the app reads configuration from the environment; the <code>"5000"</code> is the fallback if <code>PORT</code> is unset.</li>
+<li><code>from flask import Flask</code> — the app needs the <code>flask</code> library to be installed.</li>
+<li><code>app.run(host="0.0.0.0", port=port)</code> — the app listens on the chosen port; <code>0.0.0.0</code> means "all network interfaces," which matters for containers later.</li>
+<li><code>requirements.txt</code> — declares the library so a package manager can install it.</li>
+</ul>
+<p>Now the failure modes this environment can produce.</p>
+<h3>Failure A — missing library</h3>
+<p>If <code>flask</code> is not installed, the app prints:</p>
+<pre><code class="language-text">ModuleNotFoundError: No module named 'flask'
+</code></pre>
+<p><strong>Decoding it:</strong> the Python runtime started fine, then tried to import <code>flask</code> and could not find it. The runtime is present; a <strong>library</strong> is missing. The fix is to install from the manifest (<code>pip install -r requirements.txt</code>), but you do not need to run this in this unit.</p>
+<h3>Failure B — port already in use</h3>
+<p>If another program is already listening on port 5000, the app prints something like:</p>
+<pre><code class="language-text">OSError: [Errno 98] Address already in use
+</code></pre>
+<p><strong>Decoding it:</strong> the app asked to listen on port 5000, but that door is already occupied. This is a <strong>port</strong> conflict, not a code bug. The fix is to stop the other program or choose a different <code>PORT</code>. You will meet this again in the Docker ports unit (U18).</p>
+<h2>Common errors</h2>
+<h3>Error: assuming "installed" means "the right version"</h3>
+<p><strong>What happens:</strong> A library is present but at a different version; the app behaves oddly with a confusing error.</p>
+<p><strong>Fix:</strong> Check versions, not just presence. This is why lockfiles exist. Drift is about versions, not existence.</p>
+<h3>Error: forgetting an environment variable</h3>
+<p><strong>What happens:</strong> The app falls back to a default that is wrong for this machine (for example, a local database address that does not exist here).</p>
+<p><strong>Fix:</strong> List the environment variables the app reads and confirm each is set. Write them down; do not rely on memory.</p>
+<h3>Error: treating a port clash as a code bug</h3>
+<p><strong>What happens:</strong> You debug the code for hours when the real problem is another program occupying the door.</p>
+<p><strong>Fix:</strong> Read the error. "Address already in use" names the resource, not the code. Find what is using the port before touching the app.</p>
+<h2>Checkpoints</h2>
+<p>Answer before the assignment:</p>
+<ol>
+<li>Name the runtime, one library, one configuration value, and one port for a small app of your choice.</li>
+<li>Why does "install the same thing" fail to guarantee the same environment? (Use the word version.)</li>
+<li>What does <code>ModuleNotFoundError: No module named 'flask'</code> tell you, and what does it <em>not</em> tell you?</li>
+</ol>
+<p>If you can answer these, you are ready.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded, increasing difficulty.</p>
+<h3>P1 — Read and predict</h3>
+<p>Given the <code>app.py</code> above, predict what happens if you run it (a) with <code>flask</code> installed and <code>PORT</code> unset, and (b) with <code>flask</code> not installed and <code>PORT</code> set to 5000. Write your predictions before checking the worked example.</p>
+<h3>P2 — Change one value</h3>
+<p>Imagine you change <code>"5000"</code> in the code to <code>"8000"</code>. Write one sentence about what changes for the app, and one sentence about what does <strong>not</strong> change.</p>
+<h3>P3 — Fill in the blanks</h3>
+<p>Complete the environment list for a Node.js web app:</p>
+<pre><code class="language-text">Runtime:            ________
+Manifest:           package.json
+Library example:    ________
+Configuration:      the ________ environment variable
+Port:               often 3000 by convention
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Write a one-page "environment spec" for any app you have used: name its runtime, two libraries, one manifest or lockfile, two configuration values, and the port it listens on. Use headings.</p>
+<h3>P5 — Fix the broken reasoning</h3>
+<p>A teammate says: "The app crashes, so I reinstalled everything. It still crashes, so the code must be broken." Write two or three sentences explaining the flaw in that reasoning and what to check instead.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No Docker commands; not installed or used.</li>
+<li>No installing package managers or running <code>pip</code>/<code>npm</code>.</li>
+<li>No container networking or port mapping (U18 covers ports in Docker).</li>
+<li>No data persistence or volumes (U17).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U05 — Virtual machines vs containers</strong> (the two ways to package an environment, and the honest trade-offs).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U04 Assignment — The environment spec</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U04-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>environment-spec.md</code></h3>
+<p>Choose one small app: the <code>app.py</code> from the lesson, or any small app you have used (a to-do list, a calculator, a static site generator). Write an <strong>environment spec</strong> for it. Use these headings and fill each one in:</p>
+<pre><code class="language-text">Runtime:              (name + version, e.g. Python 3.11)
+Libraries:            (at least two)
+Manifest / lockfile:  (the file that lists dependencies)
+Configuration:        (at least two settings or environment variables)
+Port:                 (the number the app listens on, or &quot;does not listen&quot;)
+OS bits:              (one OS-level thing the app relies on)
+</code></pre>
+<p>Below the spec, answer these prompts in your own words:</p>
+<ol>
+<li><strong>Explain in your own words.</strong> Define <em>runtime</em>, <em>dependency</em>, <em>environment variable</em>, and <em>port</em> as if to a friend who is not technical.</li>
+<li><strong>Predict then read.</strong> A teammate runs the app and sees <code>ModuleNotFoundError: No module named 'flask'</code>. Write your prediction of what went wrong <em>before</em> re-reading the lesson. Then write what the lesson says it means. Note whether you matched.</li>
+<li><strong>Two failures.</strong> Describe one failure caused by a <strong>missing library</strong> and one caused by a <strong>port already in use</strong>. For each, write the kind of error message you would expect and the first thing you would check.</li>
+<li><strong>Why drift happens.</strong> In 3–5 lines, explain why two machines running "the same app" can still behave differently. Use at least three of the five environment parts from the lesson.</li>
+<li><strong>The flawed reasoning.</strong> A teammate says, "It crashes, so I reinstalled everything; it still crashes, so the code is broken." Write two or three sentences explaining what is wrong with that reasoning.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the whole U04 README, not only the assignment.
+- [ ] My environment spec names a runtime and at least two libraries.
+- [ ] I can explain runtime, dependency, environment variable, and port.
+- [ ] I wrote my Q2 prediction before re-reading the lesson.
+- [ ] I read the U04 rubric before writing environment-spec.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present with the exact names above.</li>
+<li>The spec is complete: runtime, two libraries, a manifest, two configuration values, a port, and one OS bit.</li>
+<li><code>environment-spec.md</code> answers all five prompts in your own words.</li>
+<li>The prediction in Q2 appears before its explanation.</li>
+<li>The checklist is completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U04 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment spec complete (runtime, two libraries, manifest, two config values, port, one OS bit)</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>environment-spec.md</code> spec block</td>
+</tr>
+<tr>
+<td>Runtime, dependency, environment variable, port defined correctly and plainly</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Prediction recorded, compared, and meaning of the error correct</td>
+<td>3</td>
+<td>No</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Missing-library and port-in-use failures both described with expected messages</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Drift explained using three or more environment parts</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Flawed reasoning identified (presence vs version / mismatch, not code)</td>
+<td>3</td>
+<td>Yes</td>
+<td>Q5</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>0 (gate)</td>
+<td>Yes</td>
+<td>folder / zip structure</td>
+</tr>
+</tbody>
+</table>
+<p>The last row is a <strong>gate</strong>, not points. Flag missing or misnamed files to the learner without reducing the total out of 24.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Spec: award 1 point per complete line (maximum 6). A line naming a value with no version earns half. "Does not listen" on Port is a valid answer for non-web apps.</li>
+<li>Q1: award 3/4 if three of four terms are correct; 0 if definitions are copied verbatim from the vocabulary table.</li>
+<li>Q2: award 1/3 if a prediction exists but is vague; award full for a wrong-but-reasoned prediction. The key marker is that the error is about a <strong>missing library</strong>, not about the runtime being absent.</li>
+<li>Q3: port-in-use is the commonly confused one. Full marks only if the learner says another program is occupying the door, not that the code is buggy.</li>
+<li>Q4: award 2/4 if only one or two environment parts are used.</li>
+<li>Q5: award 1/3 if they say "they should reinstall again" without naming versions.</li>
+<li>Do not penalize imperfect English. Penalize pasted lesson text with no personalization.</li>
+</ul>
+<h3>Platform note</h3>
+<p>Accept any runtime, libraries, manifest, and port the learner chooses, as long as the spec is internally consistent. A Node.js app with <code>package.json</code>, port 3000, and <code>npm</code> libraries is as valid as the Python example.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U03-the-terminal/index.html">U03 The terminal, deliberately</a>
+    <a class="next" href="../U05-vms-vs-containers/index.html">U05 Virtual machines vs containers</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

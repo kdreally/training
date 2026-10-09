@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U06 — JavaScript: arrays, objects, and `map` | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U06</div>
+    <h1>JavaScript: arrays, objects, and `map`</h1>
+    <span class="phase-badge ph1">Phase 1 — Foundations</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U06 — JavaScript: arrays, objects, and <code>map</code></h1>
+<p><strong>Phase 1 — Foundations</strong></p>
+<h2>Where you are</h2>
+<p>In U05 you stored single values — one string, one number, one boolean — in variables. Real interfaces rarely deal with one of anything. A project gallery has many projects; a card has several named properties. This unit gives you two containers for that: <strong>arrays</strong> (an ordered list of values) and <strong>objects</strong> (a set of named values). Then it teaches <code>.map</code>, which transforms every item in an array and gives you back a new array.</p>
+<p><code>.map</code> is the single most important JavaScript idea for React before React itself. Every list of cards, menu items, or comments you ever render in React will rest on this idea. We introduce it here in plain JavaScript, so that when it reappears in U15 it is old news.</p>
+<p>The design bridge is exact: an array is a stack of layers; an object is a frame with named properties; <code>.map</code> is "duplicate this element for every item and swap in that item's content."</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create an array and read items from it using an index, remembering that the first index is <code>0</code>.</li>
+<li>Use <code>.length</code> to count how many items an array holds.</li>
+<li>Create an object and read its named values with dot and bracket notation.</li>
+<li>Nest objects inside arrays, and read a value out of that structure.</li>
+<li>Use <code>.map</code> to transform every item and explain why the original array is unchanged.</li>
+<li>Read an error about <code>undefined</code> or "not a function" and connect it to a shape mistake.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05 — JavaScript: values, variables, and functions.</strong> You can declare <code>const</code>/<code>let</code>, use types, and write a function that returns output. <code>.map</code> uses functions, so this matters.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>Plan <strong>90–120 minutes</strong>. <code>.map</code> is one short line with a lot behind it. When it feels like it "clicked and then slipped away," that is normal — re-run the worked example once more. Take a break before the assignment.</p>
+<h2>Why this exists</h2>
+<p>Draw a card once, duplicate it across a screen, and change the text in each. That is how you work in a design tool. Code needs a way to say "here are many items; do the same thing to each." Without that, you would copy one line per item, and adding a tenth project would mean rewriting code by hand.</p>
+<p>Arrays and objects describe <em>the data</em>. <code>.map</code> describes <em>what to do with each item</em>. Together they are the machine that turns a list into a repeated piece of interface.</p>
+<h2>Plain-language teaching</h2>
+<h3>1. Arrays — an ordered list</h3>
+<p>An <strong>array</strong> is an ordered list of values, written inside square brackets and separated by commas:</p>
+<pre><code class="language-js">const palette = [&quot;#111111&quot;, &quot;#F5F5F5&quot;, &quot;#0A84FF&quot;];
+</code></pre>
+<p>Read it as: "a list with three items, in this order." Arrays can hold any values, including mixed kinds and other arrays, but a list of same-kind values is the clearest.</p>
+<p>Each item has an <strong>index</strong> — its position number. The first position is <code>0</code>, not <code>1</code>. This trips up nearly everyone once, so we will cause it on purpose shortly.</p>
+<ul>
+<li><code>palette[0]</code> is <code>"#111111"</code> (the first item).</li>
+<li><code>palette[2]</code> is <code>"#0A84FF"</code> (the third item).</li>
+</ul>
+<p>The square brackets here mean "get the item at this position." We call this <strong>bracket notation</strong>.</p>
+<p>An array's <strong>length</strong> is how many items it holds:</p>
+<pre><code class="language-js">console.log(palette.length); // 3
+</code></pre>
+<p>Note <code>.length</code> has no parentheses; it is a property, not a function you call.</p>
+<p>Reading a position that does not exist gives <code>undefined</code> — not an error:</p>
+<pre><code class="language-js">console.log(palette[3]); // undefined
+</code></pre>
+<p>That silence is dangerous: nothing crashes, but you get <code>undefined</code> and later code may fail confusingly. Keep the valid range in mind: a length-3 array has positions <code>0</code>, <code>1</code>, and <code>2</code>.</p>
+<h3>2. Objects — named values</h3>
+<p>An <strong>object</strong> is a set of <strong>key–value pairs</strong>, written inside curly braces. A key is a name; a value is whatever that name holds:</p>
+<pre><code class="language-js">const artboard = {
+  title: &quot;Homepage&quot;,
+  width: 1440,
+  isDark: false,
+};
+</code></pre>
+<p>Read it as: "an object with a <code>title</code> of <code>Homepage</code>, a <code>width</code> of <code>1440</code>, and an <code>isDark</code> of <code>false</code>." This should feel like a layer or frame in your design tool: one thing with several named properties.</p>
+<p>You read a value in two ways:</p>
+<ul>
+<li><strong>Dot notation:</strong> <code>artboard.title</code> → <code>"Homepage"</code>.</li>
+<li><strong>Bracket notation:</strong> <code>artboard["width"]</code> → <code>1440</code>.</li>
+</ul>
+<p>Use dot notation when you know the key name in advance. Use bracket notation when the key is stored in a variable, or when it contains spaces or unusual characters. Keys are case-sensitive.</p>
+<p>If you ask for a key that does not exist, you get <code>undefined</code>:</p>
+<pre><code class="language-js">console.log(artboard.height); // undefined
+</code></pre>
+<p>Again, no crash — just a silent <code>undefined</code>. Typo in a key name is the most common cause.</p>
+<h3>3. Nesting — objects inside arrays</h3>
+<p>This is the shape you will meet constantly in React: an array of objects, each object describing one item.</p>
+<pre><code class="language-js">const projects = [
+  { title: &quot;Homepage redesign&quot;, likes: 12 },
+  { title: &quot;Icon set&quot;, likes: 7 },
+  { title: &quot;Onboarding flow&quot;, likes: 19 },
+];
+</code></pre>
+<p>Read it as: "a list of three projects; each project has a <code>title</code> and a <code>likes</code> count." To read one value, go in two steps:</p>
+<pre><code class="language-js">console.log(projects[0].title); // &quot;Homepage redesign&quot;
+</code></pre>
+<p>Decode the chain left to right: <code>projects</code> is the list → <code>[0]</code> takes the first item (an object) → <code>.title</code> reads its <code>title</code> key. This left-to-right reading order is exactly how you should decode any chain of dots and brackets.</p>
+<p>A common trap: <code>projects.title</code> (missing the index) is <code>undefined</code>, because the <em>list</em> has no key called <code>title</code>; only the objects inside it do.</p>
+<h3>4. <code>.map</code> — do something to every item</h3>
+<p><code>.map</code> takes an array, runs a function on every item, and gives back a <strong>new array</strong> of the results. Same number of items in, same number out, each one transformed.</p>
+<pre><code class="language-js">const titles = projects.map(function (project) {
+  return project.title;
+});
+
+console.log(titles);
+</code></pre>
+<p>Output:</p>
+<pre><code>[&quot;Homepage redesign&quot;, &quot;Icon set&quot;, &quot;Onboarding flow&quot;]
+</code></pre>
+<p>Read the <code>.map</code> line piece by piece:</p>
+<ul>
+<li><code>projects.map(...)</code> — "go through every item in <code>projects</code>."</li>
+<li><code>function (project) { ... }</code> — the job to do to each item. Here the parameter <code>project</code> is the current item; the function runs once per item.</li>
+<li><code>return project.title;</code> — the transformed result for that item. Because the callback <strong>returns</strong>, <code>.map</code> collects the returns into a new array.</li>
+</ul>
+<p>The function you pass to <code>.map</code> is called a <strong>callback</strong>: a function you hand to another function to use. It is not run by you directly; <code>.map</code> runs it, once per item.</p>
+<p>Two facts to hold on to:</p>
+<ol>
+<li><code>.map</code> returns a <strong>new</strong> array. The original <code>projects</code> is unchanged. We call this being <strong>non-destructive</strong>; it is why <code>.map</code> is safe and predictable.</li>
+<li>Your callback must <code>return</code> something. If it only prints, <code>.map</code> collects <code>undefined</code> for every item and you get an array full of <code>undefined</code>.</li>
+</ol>
+<p>Design bridge: <code>.map</code> is "for each item in this list, produce a version of the thing with that item's content filled in." In U15 this becomes rendering one <code>&lt;ProjectCard&gt;</code> per project. The shape is identical; only the output changes from text to UI.</p>
+<h3>5. Why <code>.length</code> and indexes matter together</h3>
+<p><code>.length</code> tells you how many items exist; indexes let you reach a specific one. The valid indexes run from <code>0</code> to <code>.length - 1</code>. For <code>projects</code>, <code>.length</code> is <code>3</code>, so valid indexes are <code>0</code>, <code>1</code>, <code>2</code>. Index <code>3</code> is out of range and yields <code>undefined</code>. Keep that arithmetic in your head; it prevents a large family of bugs.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Array</td>
+<td>An ordered list of values</td>
+<td>First position is <code>0</code>, not <code>1</code></td>
+</tr>
+<tr>
+<td>Index</td>
+<td>An item's position number</td>
+<td>Last valid index is <code>.length - 1</code></td>
+</tr>
+<tr>
+<td>Bracket notation</td>
+<td><code>list[0]</code> or <code>obj["key"]</code></td>
+<td>For arrays it is a position, not a name</td>
+</tr>
+<tr>
+<td><code>.length</code></td>
+<td>How many items an array holds</td>
+<td>No parentheses; it is a property</td>
+</tr>
+<tr>
+<td>Object</td>
+<td>A set of named values (key–value pairs)</td>
+<td>Curly braces, not square brackets</td>
+</tr>
+<tr>
+<td>Key</td>
+<td>The name in a key–value pair</td>
+<td>Case-sensitive; typos give <code>undefined</code></td>
+</tr>
+<tr>
+<td>Value</td>
+<td>What a key or position holds</td>
+<td>Can itself be an array or object</td>
+</tr>
+<tr>
+<td>Dot notation</td>
+<td><code>obj.title</code></td>
+<td>Fails silently to <code>undefined</code> on a bad key</td>
+</tr>
+<tr>
+<td>Nesting</td>
+<td>Putting objects inside arrays or vice versa</td>
+<td>Read chains left to right</td>
+</tr>
+<tr>
+<td><code>.map</code></td>
+<td>Transform every item into a new array</td>
+<td>The original array is not changed</td>
+</tr>
+<tr>
+<td>Callback</td>
+<td>A function you pass to another function</td>
+<td><code>.map</code> runs it once per item</td>
+</tr>
+<tr>
+<td>Non-destructive</td>
+<td>Does not alter the original data</td>
+<td>Returning a new array, not editing in place</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will store a small gallery of projects as an array of objects, read from it, count it, and transform it with <code>.map</code>. Type each part into the console, or save the whole thing in a file as shown in Part B.</p>
+<h3>Part A — the console version</h3>
+<pre><code class="language-js">const projects = [
+  { title: &quot;Homepage redesign&quot;, likes: 12 },
+  { title: &quot;Icon set&quot;, likes: 7 },
+  { title: &quot;Onboarding flow&quot;, likes: 19 },
+];
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>const projects = [</code> opens a list named <code>projects</code>.</li>
+<li>Each line <code>{ title: "...", likes: ... },</code> is one object item: a title string and a likes number. The commas separate items.</li>
+<li><code>];</code> closes the list.</li>
+</ul>
+<p>Now read from it:</p>
+<pre><code class="language-js">console.log(projects.length);        // 3
+console.log(projects[0].title);      // Homepage redesign
+console.log(projects[2].likes);      // 19
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>.length</code> counts the items → <code>3</code>.</li>
+<li><code>projects[0]</code> is the first object, <code>.title</code> reads its title → <code>Homepage redesign</code>.</li>
+<li><code>projects[2]</code> is the third object, <code>.likes</code> reads its likes → <code>19</code>.</li>
+</ul>
+<p>Now transform every item with <code>.map</code>:</p>
+<pre><code class="language-js">const summaries = projects.map(function (project) {
+  return project.title + &quot; (&quot; + project.likes + &quot; likes)&quot;;
+});
+
+console.log(summaries);
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>projects.map(...)</code> walks the list.</li>
+<li><code>function (project)</code> runs once per item, with <code>project</code> as that item.</li>
+<li><code>return project.title + " (" + project.likes + " likes)";</code> builds a joined string for that item and hands it back. The parentheses and spaces are literal characters inside the strings, so the output reads cleanly.</li>
+<li><code>.map</code> gathers the three returns into a new array named <code>summaries</code>.</li>
+</ul>
+<p>Expected output:</p>
+<pre><code>[&quot;Homepage redesign (12 likes)&quot;, &quot;Icon set (7 likes)&quot;, &quot;Onboarding flow (19 likes)&quot;]
+</code></pre>
+<p>Check that <code>projects</code> is unchanged:</p>
+<pre><code class="language-js">console.log(projects.length); // still 3
+console.log(projects[0].title); // still Homepage redesign
+</code></pre>
+<p>That is the point of non-destructive transformation: the source data survives, and the new array is a fresh result.</p>
+<h3>Part B — save it in a file</h3>
+<p>Create <code>gallery.html</code> in your unit folder with this content:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;title&gt;U06 gallery&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Open the console to see the gallery&lt;/h1&gt;
+    &lt;script&gt;
+      const projects = [
+        { title: &quot;Homepage redesign&quot;, likes: 12 },
+        { title: &quot;Icon set&quot;, likes: 7 },
+        { title: &quot;Onboarding flow&quot;, likes: 19 },
+      ];
+
+      console.log(&quot;Total projects: &quot; + projects.length);
+
+      const summaries = projects.map(function (project) {
+        return project.title + &quot; (&quot; + project.likes + &quot; likes)&quot;;
+      });
+
+      console.log(summaries);
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>How to run it: save the file, double-click it (on macOS, Control-click → "Open With" → your browser), open the console, and look for the two output lines.</p>
+<p>Expected output:</p>
+<pre><code>Total projects: 3
+[&quot;Homepage redesign (12 likes)&quot;, &quot;Icon set (7 likes)&quot;, &quot;Onboarding flow (19 likes)&quot;]
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error 1: <code>Uncaught TypeError: Cannot read properties of undefined (reading 'title')</code></h3>
+<p><strong>What happened.</strong> You asked for <code>.title</code> on something that is <code>undefined</code>. In an array of objects, this almost always means the index is out of range or the object you reached has no such key.</p>
+<pre><code class="language-js">console.log(projects[3].title); // projects[3] is undefined
+</code></pre>
+<p><strong>Fix.</strong> Check the index against <code>.length</code>. For a length-3 array, the last valid index is <code>2</code>. If the index is right, check the key spelling.</p>
+<h3>Error 2: <code>.title</code> on the list itself</h3>
+<pre><code class="language-js">console.log(projects.title);
+</code></pre>
+<p>Expected output <code>undefined</code> (no crash). <strong>What happened.</strong> You forgot <code>[0]</code> (or another index). The <em>list</em> has no <code>title</code>; only the objects inside it do. <strong>Fix.</strong> Add the index: <code>projects[0].title</code>.</p>
+<h3>Error 3: <code>Uncaught TypeError: projects.map is not a function</code></h3>
+<p><strong>What happened.</strong> <code>projects</code> is not an array. Often it is a single object, a string, or <code>undefined</code>.</p>
+<pre><code class="language-js">const projects = { title: &quot;Homepage redesign&quot; };
+projects.map(function (p) { return p.title; });
+</code></pre>
+<p><strong>Fix.</strong> Confirm your data is inside square brackets <code>[ ... ]</code>. An object <code>{ ... }</code> has no <code>.map</code>. This error names the exact thing that is not an array, which usually points straight to the mistake.</p>
+<h3>Error 4: <code>.map</code> gives an array of <code>undefined</code></h3>
+<pre><code class="language-js">const titles = projects.map(function (project) {
+  project.title; // no return
+});
+</code></pre>
+<p>Output: <code>[undefined, undefined, undefined]</code>.</p>
+<p><strong>What happened.</strong> The callback calculated <code>project.title</code> but never returned it, so <code>.map</code> collected <code>undefined</code> for each item. This is the same <code>return</code> lesson from U05, showing up in a new place. <strong>Fix.</strong> Write <code>return project.title;</code>.</p>
+<h3>Error 5: <code>Uncaught SyntaxError: Unexpected token</code> in the array</h3>
+<p><strong>What happened.</strong> Usually a missing comma between items, or a trailing comma in an older browser, or a missing quote.</p>
+<pre><code class="language-js">const palette = [&quot;#111111&quot; &quot;#F5F5F5&quot;]; // missing comma
+</code></pre>
+<p><strong>Fix.</strong> Put a comma between every pair of items. Read the error's line number — the browser often points at the item right after the missing comma.</p>
+<h3>Reading an error — practice</h3>
+<pre><code class="language-js">const palette = [&quot;#111111&quot;, &quot;#F5F5F5&quot;, &quot;#0A84FF&quot;];
+console.log(palette[0]);
+console.log(palette[3]);
+</code></pre>
+<pre><code>#111111
+undefined
+</code></pre>
+<p>Decode it before reading on: no error text appears at all. The first line works. The second prints <code>undefined</code> because <code>.length</code> is <code>3</code>, so the valid indexes are <code>0</code>, <code>1</code>, <code>2</code>. <strong>Decoded:</strong> <code>index 3</code> is out of range and yields <code>undefined</code> instead of throwing. <strong>Fix:</strong> use an index below <code>.length</code>. Learning that <code>undefined</code> output is itself a signal — not a crash, but a clue — is a key skill for the next units.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why is <code>palette[0]</code> the first item and not the second?</li>
+<li>If an array has 5 items, what is the last valid index? What does <code>array[5]</code> give?</li>
+<li>What are the two ways to read a key from an object, and when do you prefer each?</li>
+<li>In <code>projects[0].title</code>, what does each part do, reading left to right?</li>
+<li>What does <code>.map</code> return, and does it change the original array?</li>
+<li>Why does a <code>.map</code> callback that only prints give you an array of <code>undefined</code>?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Without running, write what each line prints. Then run and compare.</p>
+<pre><code class="language-js">const ratings = [5, 4, 5, 3];
+console.log(ratings.length);
+console.log(ratings[0]);
+console.log(ratings[4]);
+</code></pre>
+<h3>P2 — Change one value</h3>
+<p>In <code>gallery.html</code>, change the second project's <code>likes</code> from <code>7</code> to <code>21</code> and reload. Which output changes? Does the count change? Explain why.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the <code>.map</code> so <code>console.log(names)</code> prints <code>["Ink", "Paper"]</code>.</p>
+<pre><code class="language-js">const swatches = [
+  { name: &quot;Ink&quot;, hex: &quot;#111111&quot; },
+  { name: &quot;Paper&quot;, hex: &quot;#F5F5F5&quot; },
+];
+
+const names = swatches.map(function (swatch) {
+  return ____;
+});
+</code></pre>
+<h3>P4 — Write from a spec</h3>
+<p>Given:</p>
+<pre><code class="language-js">const tasks = [
+  { label: &quot;Wireframe&quot;, done: true },
+  { label: &quot;Hi-fi mockup&quot;, done: false },
+];
+</code></pre>
+<p>Write code that creates a new array <code>labels</code> containing only the <code>label</code> values, then log it. Then write code that logs the number of tasks.</p>
+<h3>P5 — Fix the broken snippet</h3>
+<p>This should log <code>"Poster (1)"</code> and <code>"Banner (2)"</code> but does not. Find and fix every problem.</p>
+<pre><code class="language-js">const assets = [
+  { name: &quot;Poster&quot; likes: 1 },
+  { name: &quot;Banner&quot;, likes: 2 }
+]
+
+const labels = assets.map(function (asset) {
+  asset.name + &quot; (&quot; + asset.likes + &quot;)&quot;
+});
+
+console.log(labels);
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No arrow functions, destructuring, or imports — those come in U07. We use <code>function (item) { ... }</code> here on purpose so the shape is visible.</li>
+<li>No <code>.filter</code>, <code>.find</code>, <code>.forEach</code>, or <code>.reduce</code>; one array tool is enough for now.</li>
+<li>No rendering to the page yet. In this unit <code>.map</code> produces data; in U15 it produces UI.</li>
+<li>No installing anything; Node.js arrives in U08.</li>
+<li>No modifying arrays in place (<code>push</code>, <code>pop</code>, <code>splice</code>); we only read and transform.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U07 — JavaScript: arrow functions, destructuring, and imports.</strong> You will learn the shorter <code>=&gt;</code> function syntax, how to pull named values out of an object in one line, and how files share code with <code>export</code> and <code>import</code> — the last JavaScript ideas before you install Node.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U06 Assignment — Arrays, objects, and <code>map</code></h1>
+<p>Submit everything to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U06-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>gallery.html</code></h3>
+<p>Create this file from scratch. Do not reuse the worked example's project titles; invent your own list (for example: playlists, recipes, travel stops, fonts, or archive items). It must run in a browser and print to the console.</p>
+<p>Requirements:</p>
+<ul>
+<li>An array of <strong>at least three objects</strong>. Each object has at least a text property and a number property.</li>
+<li>One <code>console.log</code> that prints the array's <code>.length</code> with a readable label.</li>
+<li>One <code>.map</code> that transforms every item, using <code>function (item) { ... }</code> syntax (not arrows), with a <code>return</code>.</li>
+<li>One <code>console.log</code> of the array returned by <code>.map</code>.</li>
+<li>At least one direct read that uses an index, such as <code>items[0].someKey</code>, logged with a label.</li>
+</ul>
+<h3>2. <code>console-output.txt</code></h3>
+<p>Open <code>gallery.html</code>, open the console, and copy the exact output into this plain text file. Copy, do not retype.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Explain it back.</strong> In 4–6 lines, explain the difference between an array and an object, using a design example for each.</li>
+<li><strong>Indexes.</strong> Why does <code>array[0]</code> give the first item, and what does <code>array[array.length]</code> give? Explain in two or three sentences.</li>
+<li><strong>Dot vs bracket.</strong> Give one reason to use <code>obj["key"]</code> (bracket notation) instead of <code>obj.key</code> (dot notation).</li>
+<li><strong>Read the code.</strong> Given:<br />
+<code>js
+   const stops = [
+     { city: "Lagos", days: 3 },
+     { city: "Lisbon", days: 5 },
+   ];
+   console.log(stops[1].city);</code><br />
+   Write down what prints, then explain the chain <code>stops[1].city</code> left to right.</li>
+<li><strong>Predict then run.</strong> Write what this prints, then run it and write the real output. Explain any difference.<br />
+<code>js
+   const scores = [10, 20, 30];
+   const higher = scores.map(function (score) {
+     return score + 5;
+   });
+   console.log(scores);
+   console.log(higher);
+   console.log(scores.length);</code></li>
+<li><strong>Debug this broken snippet.</strong> It should log <code>["A4", "A3"]</code> but does not. Write the fixed version and name each fault.<br />
+   ```js<br />
+   const papers = [<br />
+     { size: "A4", }<br />
+     { size: "A3" }<br />
+   ]</li>
+</ol>
+<p>const sizes = papers.map(function (paper) {<br />
+     paper.size<br />
+   });</p>
+<p>console.log(sizes);<br />
+<code>7. **Read an error.** You run a line and see:</code><br />
+   Uncaught TypeError: papers.map is not a function<br />
+<code>``
+   In two or three sentences, what does this tell you about</code>papers`, and what would you check?</p>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy this and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] `gallery.html` opens and the console shows my output.
+- [ ] My array has three or more objects.
+- [ ] Each object has a text property and a number property.
+- [ ] I logged `.length` with a label.
+- [ ] My `.map` uses `function (item) { ... }` and has a `return`.
+- [ ] I logged the result of `.map`.
+- [ ] I read a value with an index, like `items[0].title`.
+- [ ] `console-output.txt` is the real copied output.
+- [ ] I read the U06 rubric before writing answers.md.
+- [ ] My answers are in my own words.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All four files present with the exact names above.</li>
+<li><code>gallery.html</code> runs and prints the required lines.</li>
+<li>The <code>.map</code> callback returns a value (not just prints).</li>
+<li><code>console-output.txt</code> matches a real run.</li>
+<li><code>answers.md</code> covers all seven prompts in your own words.</li>
+<li>Checklist completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U06 Rubric</h1>
+<p>Visible to learners. Total <strong>26 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gallery.html</code> runs and prints to the console</td>
+<td>4</td>
+<td>Yes</td>
+<td>Open the file; console shows output</td>
+</tr>
+<tr>
+<td>Array contains 3+ objects, each with a text and a number property</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>gallery.html</code> script</td>
+</tr>
+<tr>
+<td>Logs <code>.length</code> with a readable label</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>gallery.html</code> script</td>
+</tr>
+<tr>
+<td><code>.map</code> uses <code>function (item) { ... }</code>, returns a value, and works</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>gallery.html</code> script; output array is populated, not <code>undefined</code></td>
+</tr>
+<tr>
+<td>Direct indexed read (e.g. <code>items[0].key</code>) is correct and logged</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>gallery.html</code> script</td>
+</tr>
+<tr>
+<td><code>console-output.txt</code> matches a real run</td>
+<td>3</td>
+<td>Yes</td>
+<td>Compare to a fresh run</td>
+</tr>
+<tr>
+<td>Q1 (array vs object) explained with a design example each</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Q2 (indexes) explains 0-based counting and that <code>array[length]</code> is out of range</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Q3 (dot vs bracket) gives a real reason (dynamic or unusual key)</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Q4 (read the code) prints <code>Lisbon</code> and explains the chain</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Q5 (predict then run) prediction recorded; both arrays and length correct or explained</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Q6 (debug) fixes missing comma, missing <code>return</code>, and missing brace/paren; output <code>["A4","A3"]</code></td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Q7 (error decode) explains <code>papers</code> is not an array and names what to check</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h2>What counts as "correct" for the tricky bits</h2>
+<ul>
+<li><strong><code>.map</code> must return.</strong> A callback that only prints gives <code>[undefined, ...]</code>. That fails the 5-point criterion down to partial (2).</li>
+<li><strong><code>array[array.length]</code> is out of range.</strong> The correct observation is that it is always one past the end, so it is <code>undefined</code>. <code>array[array.length - 1]</code> is the last item.</li>
+<li><strong>Q5 expected output:</strong><br />
+<code>[10, 20, 30]
+  [15, 25, 35]
+  3</code><br />
+  The original <code>scores</code> is unchanged; <code>higher</code> is new.</li>
+<li><strong>Q6 faults:</strong> (1) missing comma after the first object; (2) missing <code>return</code> in the callback; (3) the array is closed with <code>)</code> instead of <code>]</code> / braces are mismatched as written. Accept any fix producing <code>["A4", "A3"]</code>.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Array is present but all items are plain strings (<code>["A", "B", "C"]</code>) instead of objects: award 1/4. This misses the "objects with named properties" outcome, which U13/U15 depend on.</li>
+<li><code>.map</code> works but uses an arrow function (from outside this unit): do not penalise correctness. Note that U07 is where arrows are taught; full marks still apply if it returns a value, but gently mention the intended syntax.</li>
+<li>Logs <code>items[0]</code> (the whole object) instead of <code>items[0].key</code>: award 1/2 on the indexed-read criterion; ask them to go one step further into a property.</li>
+<li><code>console-output.txt</code> shows <code>[Object object]</code>-style or retyped content: award 0–1/3 and ask them to copy the real console output.</li>
+<li>Do not penalise imperfect English. Do penalise copy-pasted lesson prose on Q1–Q4.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li><code>projects.title</code> (no index) yielding <code>undefined</code>, with the learner concluding the array is broken.</li>
+<li><code>.map</code> callback named <code>function</code> with no <code>return</code>, producing an array of <code>undefined</code>.</li>
+<li>Using <code>.length()</code> (with parentheses), which throws, instead of <code>.length</code>.</li>
+<li>Confusing <code>.map</code> (returns a new array) with a loop that prints.</li>
+</ul>
+<h2>If the cohort struggles here</h2>
+<p>The usual cliff in U06 is the chain <code>array[i].key</code> and the idea that a callback must return. If many submissions show <code>[undefined, undefined, undefined]</code>, pause before U07 and re-run a two-line side-by-side: a callback that returns versus one that logs. Do not proceed to U07 until <code>.map</code> with <code>return</code> is solid, because U07 rewrites exactly this callback into arrow syntax and U15 renders it.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U05-js-values-variables-functions/index.html">U05 JavaScript: values, variables, and functions</a>
+    <a class="next" href="../U07-arrow-functions-destructuring-imports/index.html">U07 JavaScript: arrow functions, destructuring, and imports</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

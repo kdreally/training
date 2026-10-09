@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U17 — Volumes | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U17</div>
+    <h1>Volumes</h1>
+    <span class="phase-badge ph4">Phase 4 — Data and networking</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U17 — Volumes</h1>
+<p><strong>Phase 4 — Data and networking</strong></p>
+<h2>Where you are</h2>
+<p>You have installed Docker (U06), run containers (U07–U10), and built your own images (U11–U16). You know a <strong>container</strong> is a running instance of an <strong>image</strong>, and that removing a container cleans up after it. This unit starts Phase 4 by fixing a problem you may have already felt: stop or remove a container and the work inside it is gone. We fix that with <strong>volumes</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why a container's own filesystem is temporary.</li>
+<li>Tell a <strong>named volume</strong> apart from a <strong>bind mount</strong>, and say when to use each.</li>
+<li>Create, list, inspect, and remove a volume.</li>
+<li>Attach a volume to a container and prove the data survives removing the container.</li>
+<li>Decode a "permissions denied" volume error and a "my data disappeared" surprise.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U06–U10</strong> — install Docker, run containers, images vs containers, container lifecycle.</li>
+<li>Recall from <strong>U08</strong>: an image is a recipe; a container is the cake made from it.</li>
+</ul>
+<p>We use the small <strong><code>alpine</code></strong> image in examples. You pulled images before in <strong>U09</strong>. Alpine is a tiny Linux distribution; it is convenient because it downloads fast and includes a shell.</p>
+<h2>Time and energy</h2>
+<p>About <strong>75–110 minutes</strong>. The idea of a volume is simple; permissions are the part that bites people. Take a break before you start the assignment. If a red error message appears, that is expected material in this unit, not a sign you are doing it wrong.</p>
+<h2>Why this exists</h2>
+<p>Containers are meant to be thrown away. That is a feature: you can start ten identical containers and delete them with no residue. But real software keeps things: uploaded files, database rows, logs, user sessions. If everything a container writes vanishes when the container is removed, your data vanishes with it.</p>
+<p>Picture a database. If its data lived only inside the container, then <code>docker rm</code> would erase every record. No real team ships that. A <strong>volume</strong> is how you say "this part is not throwaway." The container stays disposable; the data stays put.</p>
+<h2>Plain-language teaching</h2>
+<h3>Containers are disposable (that is the point)</h3>
+<p>A container has its own small, private filesystem. When you remove the container with <code>docker rm</code> (U10), that private filesystem goes away with it — like a whiteboard wiped after a meeting.</p>
+<p>This is deliberate. It is what makes containers clean and repeatable. But it means anything you write <em>inside</em> the container is temporary unless you take an extra step.</p>
+<p>The part of disk a running container writes to is called its <strong>writable layer</strong>. It lives and dies with the container. In U15 you saw layers used to build images; the writable layer is the extra layer placed on top when a container starts.</p>
+<h3>The problem, shown plainly</h3>
+<p>Imagine a notes app that writes to <code>/data/notes.txt</code> inside its container. You write a note, remove the container, start a fresh one from the same image, and the note is gone. The image never contained it; only the disposable writable layer did.</p>
+<h3>The idea: keep data outside the container</h3>
+<p>A <strong>volume</strong> is storage that Docker manages separately from a container's disposable disk. It has a name and a lifetime you control. You attach it to a container at a <strong>mount point</strong> — a folder path inside the container, such as <code>/data</code>. The container sees a normal folder. In reality the bytes are stored by Docker, outside the container's writable layer.</p>
+<p>Because the volume is not part of the container, removing the container does not remove the volume. Start a new container, attach the same volume, and your data is there.</p>
+<p>A <strong>mount point</strong> is a folder path inside the container where outside storage becomes visible. "Mount" means "make this outside storage appear here."</p>
+<h3>Named volumes vs bind mounts</h3>
+<p>There are two common ways to give a container outside storage. They solve different human problems.</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>What it is</th>
+<th>Good for</th>
+<th>Who chooses the folder on your computer?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Named volume</strong></td>
+<td>Docker-managed storage with a name such as <code>notes-data</code></td>
+<td>Keeping data (databases, uploads) where Docker should own the location</td>
+<td>Docker</td>
+</tr>
+<tr>
+<td><strong>Bind mount</strong></td>
+<td>A specific folder on <em>your</em> computer mapped into the container</td>
+<td>Live-editing source code, or using a folder you already have</td>
+<td>You</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>named volume</strong> is created and stored by Docker. You refer to it by name. You usually do not care where on the host it physically sits.</p>
+<p>A <strong>bind mount</strong> points at a folder you choose, such as <code>C:\projects\myapp</code> or <code>/home/me/myapp</code>. The container sees that exact folder. Change a file on your laptop and the container sees the change immediately.</p>
+<p>Rule of thumb: <strong>named volume for data you want Docker to look after; bind mount when you must point at a specific folder you already own.</strong></p>
+<h3>Anonymous volumes</h3>
+<p>If you write <code>-v /data</code> (a container path with no name and no host path), Docker creates an <strong>anonymous volume</strong>: a volume with a random name. It works, but it is hard to find later, which is why named volumes are preferred when you intend to reuse data.</p>
+<h3>The flag</h3>
+<p><code>-v</code> is the shorthand flag on <code>docker run</code> that attaches storage. Its value is two paths joined by a colon:</p>
+<pre><code class="language-text">-v   source : destination
+</code></pre>
+<ul>
+<li><strong>Named volume:</strong> the source is a volume name, e.g. <code>notes-data:/data</code>.</li>
+<li><strong>Bind mount:</strong> the source is a host folder path, e.g. <code>/home/me/project:/app</code>.</li>
+</ul>
+<p>The left side is <em>outside</em> the container; the right side is <em>inside</em> the container. On Windows the host path uses backslashes on disk (<code>C:\projects</code>), but inside <code>docker run</code> you can usually write it with forward slashes for Docker to understand.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Writable layer</td>
+<td>The disposable disk a running container writes to</td>
+<td>Not the image; it disappears with the container</td>
+</tr>
+<tr>
+<td>Ephemeral</td>
+<td>Temporary; gone when the container is removed</td>
+<td>Not "slow" — it means short-lived</td>
+</tr>
+<tr>
+<td>Persist</td>
+<td>To keep existing after the container stops or is removed</td>
+<td>Not the same as "running"</td>
+</tr>
+<tr>
+<td>Volume</td>
+<td>Docker-managed storage that outlives a container</td>
+<td>Not a folder baked into the image</td>
+</tr>
+<tr>
+<td>Named volume</td>
+<td>A volume you gave a name such as <code>notes-data</code></td>
+<td>The name is not a file path</td>
+</tr>
+<tr>
+<td>Anonymous volume</td>
+<td>A volume Docker names randomly</td>
+<td>Easy to lose track of</td>
+</tr>
+<tr>
+<td>Bind mount</td>
+<td>A host folder mapped into the container</td>
+<td>Not managed by Docker; you choose the path</td>
+</tr>
+<tr>
+<td>Mount / mount point</td>
+<td>The folder inside the container where outside storage appears</td>
+<td>The container path, not the host path</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>The <code>docker run</code> flag that attaches storage</td>
+<td>Short for "volume" but also used for bind mounts</td>
+</tr>
+<tr>
+<td>Driver</td>
+<td>The plugin that stores a volume; <code>local</code> is the default</td>
+<td>Not a piece of hardware</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We use the <code>alpine</code> image. Every command below shows what it does, its expected output, and one failure you might meet.</p>
+<h3>Step 1 — Watch data vanish without a volume</h3>
+<p><strong>Purpose:</strong> prove that a container's own disk is temporary.</p>
+<pre><code class="language-bash">docker run --name ephemeral alpine sh -c &quot;echo important &gt; /notes.txt&quot;
+</code></pre>
+<p>This starts a container named <code>ephemeral</code>, runs a shell that writes the word <code>important</code> into <code>/notes.txt</code> inside the container, then exits. (U07 introduced <code>--name</code>.)</p>
+<p>Then remove the container:</p>
+<pre><code class="language-bash">docker rm ephemeral
+</code></pre>
+<p><strong>Success:</strong> <code>docker rm</code> prints the container name:</p>
+<pre><code class="language-text">ephemeral
+</code></pre>
+<p>Now start a brand-new container from the same image and try to read the file:</p>
+<pre><code class="language-bash">docker run --rm alpine cat /notes.txt
+</code></pre>
+<p><strong>Expected output:</strong></p>
+<pre><code class="language-text">cat: /notes.txt: No such file or directory
+</code></pre>
+<p>That is not a bug. The file lived only in the removed container's writable layer. (<code>--rm</code> tells Docker to remove the container automatically when it exits — handy for throwaway checks.)</p>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">docker: Error response from daemon: Conflict. The container name &quot;/ephemeral&quot; is already in use
+</code></pre>
+<p>This means step 1's container still exists. Run <code>docker rm ephemeral</code> first; the name must be free before you can reuse it.</p>
+<h3>Step 2 — Create a named volume</h3>
+<p><strong>Purpose:</strong> ask Docker to make a piece of storage we can reuse.</p>
+<pre><code class="language-bash">docker volume create notes-data
+</code></pre>
+<p><strong>Success output</strong> (the name alone):</p>
+<pre><code class="language-text">notes-data
+</code></pre>
+<p><strong>Decoded failure:</strong> </p>
+<pre><code class="language-text">Error response from daemon: ... &quot;notes-data&quot; already exists
+</code></pre>
+<p>The volume is already there. That is harmless — you do not need to create it twice. Many current Docker versions instead print the name again without complaining.</p>
+<h3>Step 3 — Write data into the volume</h3>
+<p><strong>Purpose:</strong> attach the volume at the container path <code>/data</code> and write a file there.</p>
+<pre><code class="language-bash">docker run --rm -v notes-data:/data alpine sh -c &quot;echo important &gt; /data/notes.txt&quot;
+</code></pre>
+<p><code>-v notes-data:/data</code> means: attach the volume named <code>notes-data</code> (left of the colon) at the folder <code>/data</code> inside the container (right of the colon).</p>
+<p><strong>Success:</strong> no output. Command-line tools stay quiet when they work. "No news is good news" is normal in Docker.</p>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">docker: Error response from daemon: ... volume name is too short
+</code></pre>
+<p>Check the spelling of the volume name between <code>-v</code> and the colon. Volume names must be at least two characters.</p>
+<h3>Step 4 — Prove the data survived</h3>
+<p><strong>Purpose:</strong> with a brand-new container, read the file from the same volume.</p>
+<pre><code class="language-bash">docker run --rm -v notes-data:/data alpine cat /data/notes.txt
+</code></pre>
+<p><strong>Expected output:</strong></p>
+<pre><code class="language-text">important
+</code></pre>
+<p>The first container is long gone, yet the text is here. That is <strong>persistence</strong>.</p>
+<p><strong>Decoded failure:</strong> <code>cat: /data/notes.txt: No such file or directory</code> usually means a different volume name was used (for example <code>notesdata</code> versus <code>notes-data</code>). Volume names are exact.</p>
+<h3>Step 5 — List and inspect volumes</h3>
+<p><strong>Purpose:</strong> see what volumes exist and where Docker stores them on the host.</p>
+<pre><code class="language-bash">docker volume ls
+</code></pre>
+<p><strong>Expected output</strong> (yours will differ):</p>
+<pre><code class="language-text">DRIVER    VOLUME NAME
+local     notes-data
+</code></pre>
+<pre><code class="language-bash">docker volume inspect notes-data
+</code></pre>
+<p><strong>Expected output</strong> (paths differ by operating system):</p>
+<pre><code class="language-json">[
+    {
+        &quot;CreatedAt&quot;: &quot;2026-01-01T00:00:00Z&quot;,
+        &quot;Driver&quot;: &quot;local&quot;,
+        &quot;Labels&quot;: {},
+        &quot;Mountpoint&quot;: &quot;/var/lib/docker/volumes/notes-data/_data&quot;,
+        &quot;Name&quot;: &quot;notes-data&quot;,
+        &quot;Options&quot;: {},
+        &quot;Scope&quot;: &quot;local&quot;
+    }
+]
+</code></pre>
+<p><code>Mountpoint</code> is the folder on the host where the bytes really live. With Docker Desktop on Windows or macOS, that path is inside Docker's own virtual machine, which is why you cannot browse it directly from File Explorer or Finder. That is normal.</p>
+<p><strong>Decoded failure:</strong> <code>Error: No such volume: notes-data</code> means the name does not exist yet. Create it, or check the spelling.</p>
+<h3>Step 6 — Remove the volume</h3>
+<p><strong>Purpose:</strong> delete storage you no longer need. Volumes are not cleaned up automatically.</p>
+<pre><code class="language-bash">docker volume rm notes-data
+</code></pre>
+<p><strong>Success output:</strong></p>
+<pre><code class="language-text">notes-data
+</code></pre>
+<p><strong>Decoded failure:</strong></p>
+<pre><code class="language-text">Error response from daemon: remove notes-data: volume is in use - [&lt;container-id&gt;]
+</code></pre>
+<p>A container (running or stopped) still uses this volume. List containers with <code>docker ps -a</code> (U10), remove the one shown, then try again.</p>
+<h3>Step 7 — A bind mount, briefly</h3>
+<p><strong>Purpose:</strong> see the other style, where <em>you</em> pick the host folder.</p>
+<p>On macOS or Linux (bash), from inside a folder that contains a file:</p>
+<pre><code class="language-bash">docker run --rm -v &quot;$(pwd)&quot;:/app alpine ls /app
+</code></pre>
+<p>On Windows (PowerShell), from your project folder:</p>
+<pre><code class="language-powershell">docker run --rm -v ${PWD}:/app alpine ls /app
+</code></pre>
+<p><strong>Expected output:</strong> the list of files in your current folder.</p>
+<p><code>$(pwd)</code> (bash) and <code>${PWD}</code> (PowerShell) both mean "my current folder." The mapping <code>…:/app</code> says "make my current folder appear as <code>/app</code> in the container." On Windows, Docker Desktop may ask you to allow file sharing for that drive the first time; accept it.</p>
+<p><strong>Decoded failure</strong> (Linux/macOS): if the container reports it cannot read or write files, see the permissions error below.</p>
+<h2>Common errors</h2>
+<h3>Error: "My data disappeared"</h3>
+<p><strong>What happens:</strong> You wrote data inside the container (for example, <code>docker exec</code> writing to a normal folder) and removed the container. The data was in the writable layer.</p>
+<p><strong>Fix:</strong> Attach a named volume at the folder you write to. Confirm with <code>docker volume ls</code> that the volume exists, and reuse the same name next time.</p>
+<h3>Error: <code>permission denied</code> writing to a volume</h3>
+<p><strong>What happens:</strong> On Linux, a named volume or bind mount is owned by a host user's numeric id, while the process inside the container may run as a different user. The container prints:</p>
+<pre><code class="language-text">sh: can't create /data/notes.txt: Permission denied
+</code></pre>
+<p><strong>Why it surprises people:</strong> the folder exists, but the container user is not allowed to write to it.</p>
+<p><strong>Fix options:</strong> For learning, run the container as the matching user with <code>--user</code> (for example <code>--user "$(id -u):$(id -g)"</code> on Linux/macOS). For a durable fix, set ownership when you build your image (U33 covers this). On Docker Desktop for Windows and macOS, permissions are usually handled for you, so this error is most common on native Linux.</p>
+<h3>Error: <code>... is already in use</code></h3>
+<p><strong>What happens:</strong> You tried to reuse a <code>--name</code>, or remove a volume a container still uses.</p>
+<p><strong>Fix:</strong> Run <code>docker ps -a</code> to find the container, then <code>docker rm</code> it before reusing the name or removing the volume.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Why does a file written inside a container disappear when the container is removed?</li>
+<li>What is the difference between a named volume and a bind mount?</li>
+<li>In <code>-v notes-data:/data</code>, which side is the volume and which side is the path inside the container?</li>
+<li>Where does a named volume physically live, and why might you not see it in your file manager?</li>
+<li>Which refresh keeps a database's data alive across container restarts, and which one does not?</li>
+</ol>
+<p>If you can answer those, you are ready for the exercises.</p>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Predict then run</h3>
+<p>Predict what this prints, then run it:</p>
+<pre><code class="language-bash">docker run --rm alpine sh -c &quot;echo hi &gt; /tmp/f; cat /tmp/f&quot;
+</code></pre>
+<p>Run it once more. Did the second run see the first run's file? Explain in one sentence why or why not.</p>
+<h3>P2 — Change one value</h3>
+<p>Redo the worked example using the volume name <code>my-journal</code> instead of <code>notes-data</code>. Change only the name. Confirm <code>docker volume ls</code> shows it and that the read step prints your text.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the command so it writes <code>hello</code> into a volume named <code>greetings</code>:</p>
+<pre><code class="language-bash">docker run --rm -v ____:/data alpine sh -c &quot;echo hello &gt; /data/hi.txt&quot;
+</code></pre>
+<h3>P4 — Inspect and decode</h3>
+<p>Run <code>docker volume inspect</code> on your <code>my-journal</code> volume. Write down the <code>Mountpoint</code> value. Then try to open that path in your file manager. What happens, and why (see Step 5)?</p>
+<h3>P5 — Fix the broken command</h3>
+<p>This command is meant to save data that survives removal, but the author forgot to attach storage:</p>
+<pre><code class="language-bash">docker run --name keeper alpine sh -c &quot;echo saved &gt; /data/out.txt&quot;
+</code></pre>
+<p>Rewrite it so <code>/data</code> is backed by a named volume <code>keeper-data</code>. Run your fixed version and prove the text survives by removing the container and reading it back from a fresh one.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No Compose volumes yet (U21–U25). Compose gives volumes a shorter syntax, but the idea is identical.</li>
+<li>No backing up or migrating volumes between machines.</li>
+<li>No full live-reload development workflow for an app (that arrives with Compose).</li>
+<li>No volume drivers other than the default <code>local</code> driver.</li>
+<li>No permissions hardening beyond the one fix shown here (U33).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U18 — Ports</strong> (letting the outside reach your container).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U17 Assignment — Volumes</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U17-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs and bullet lists are both fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Why data disappears.</strong> In 4–6 lines, explain why a file written inside a container is gone after you remove the container. Use the phrase <em>writable layer</em> correctly at least once.</li>
+<li><strong>Two kinds of storage.</strong> Explain the difference between a <strong>named volume</strong> and a <strong>bind mount</strong>. Then state one situation where you would choose each, and why.</li>
+<li><strong>Predict, then check.</strong> Read this sequence without running it:</li>
+</ol>
+<p><code>bash
+   docker volume create demo
+   docker run --rm -v demo:/data alpine sh -c "echo hello &gt; /data/hello.txt"
+   docker run --rm -v demo:/data alpine cat /data/hello.txt</code></p>
+<p>Write what the third command prints. Then run the three commands yourself and paste the real third-command output under your prediction. If your prediction was wrong, write one sentence explaining what you missed.<br />
+4. <strong>Decode a failure.</strong> A learner runs the two commands below and the second one fails:</p>
+<p><code>bash
+   docker volume create logs
+   docker run --rm -v logs:/var/log alpine sh -c "echo test &gt; /var/log/app.txt"</code></p>
+<p>Give <strong>one</strong> plausible decoded error message and explain, in your own words, what you would check first. (Hint: it may be a permissions problem or a name problem — pick one and justify it.)<br />
+5. <strong>Database use case.</strong> A teammate runs a database container <strong>without</strong> a volume, stores data, then removes and recreates the container. In 4–6 lines, explain what happens to the data, and how adding a named volume at the database's data folder changes the outcome. You do not need to run a database for this answer.<br />
+6. <strong>Still fuzzy.</strong> Name one part of this unit that still feels unclear. Write the exact question you would ask your trainer.</p>
+<h3>2. <code>transcript.md</code></h3>
+<p>Paste the exact commands you ran for <strong>Practice P5</strong> (the fixed command that proves data survives removal) and their output, in order. Include the <code>docker rm</code> step and the final read-back step. Use a code block. Your actual output, not a retyped ideal version.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the whole U17 README, not only the assignment.
+- [ ] I can explain what a writable layer is.
+- [ ] I can say when to use a named volume and when to use a bind mount.
+- [ ] I created a named volume and proved data survived removing the container.
+- [ ] I ran `docker volume ls` and `docker volume inspect`.
+- [ ] I read the U17 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files are present with the exact names above.</li>
+<li><code>answers.md</code> answers all six prompts in your own words.</li>
+<li><code>transcript.md</code> shows a real command transcript where data survives a container removal.</li>
+<li>The prediction in Q3 is written <em>before</em> the real output, and any mismatch is explained.</li>
+<li>The checklist is completed honestly (do not tick an item you did not do).</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U17 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explains why container data is temporary, using <em>writable layer</em> correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Distinguishes named volume from bind mount and gives a fitting use for each</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Predicts the read-back output correctly and runs it; explains any mismatch</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Decodes one plausible failure and names a sensible first check</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Explains the database case and how a volume changes it</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Transcript shows a real run where data survives container removal</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>transcript.md</code></td>
+</tr>
+<tr>
+<td>Reflects honestly on a remaining confusion</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award 2/4 if they only say "containers are temporary" without connecting it to the container's own filesystem/writable layer.</li>
+<li>Q2: award 2/4 if they describe the two correctly but cannot give a realistic situation for either.</li>
+<li>Q3: award 1/3 if the prediction is absent but the run and output are present; award 0 if no real run is shown.</li>
+<li>Q4: any plausible error is acceptable <strong>if</strong> the reasoning is sound (for example, <code>Permission denied</code> → check which user the container runs as; or <code>No such volume: logs</code> → check the name was created). Do not require a specific error; reward correct reasoning.</li>
+<li>Q5: the key idea is that data in the writable layer is destroyed on <code>docker rm</code>, while a named volume at the data folder preserves it. Award full marks only if both halves are present.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or lesson text pasted back with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U16-multi-stage-builds/index.html">U16 Multi-stage builds</a>
+    <a class="next" href="../U18-ports/index.html">U18 Ports</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

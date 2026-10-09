@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U35 — Capstone: containerize a real app | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U35</div>
+    <h1>Capstone: containerize a real app</h1>
+    <span class="phase-badge ph7">Phase 7 — Craft and capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U35 — Capstone: containerize a real app</h1>
+<p><strong>Phase 7 — Craft and capstone</strong></p>
+<h2>Where you are</h2>
+<p>This is the capstone. You are going to take a small but real application — code plus a database — and package it so that anyone can run it with a couple of commands on their own machine. Along the way you will use almost everything from the course: a multi-stage Dockerfile (U16), <code>.dockerignore</code> (U13), Compose (U21–U25), a volume for the database (U17), an environment file for configuration (U24), a non-root user (U33), and calm debugging when it does not cooperate (U34).</p>
+<p>The worked example below is a complete, runnable reference. Your assignment is to produce the <strong>same kind of deliverable</strong> for an app of your own (a starter is provided), with a README a stranger could follow.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Design a small multi-container application with an app and a database.</li>
+<li>Write a multi-stage Dockerfile that keeps the final image lean.</li>
+<li>Write a <code>.dockerignore</code> so secrets and junk do not enter the build context.</li>
+<li>Write a <code>compose.yaml</code> that wires app and database together with a health check.</li>
+<li>Persist database data with a named volume across <code>compose down</code> and <code>up</code>.</li>
+<li>Keep configuration out of the image using an environment file, and commit only an example file.</li>
+<li>Document the whole thing so another person can run it.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11–U16</strong> — Dockerfiles, <code>.dockerignore</code>, layers, multi-stage builds.</li>
+<li><strong>U17</strong> — volumes (the database needs one).</li>
+<li><strong>U18–U20</strong> — ports and container-to-container networking.</li>
+<li><strong>U21–U25</strong> — Compose files, two-service apps, <code>.env</code>, and the Compose lifecycle.</li>
+<li><strong>U26–U27</strong> — registries and tags (optional here; everything runs locally).</li>
+<li><strong>U31</strong> — services and restart policies.</li>
+<li><strong>U33</strong> — non-root users and keeping secrets out of images.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>2–4 hours</strong>, ideally split over two sittings. The first half is understanding the reference; the second half is building your own. Take the break when the reference version runs. This unit is meant to feel like a small real project, not a quiz.</p>
+<h2>Why this exists</h2>
+<p>Every earlier unit taught one tool. Real work never asks for one tool; it asks for a <strong>working thing</strong>. The gap between "I know each command" and "I can ship a small app" is where many learners get stuck. This capstone closes that gap on purpose, on a project small enough to finish and real enough to be worth finishing.</p>
+<p>When you are done, you will have a folder you can zip, send to a colleague, and say: "run these two commands." That is the practical proof the course promised.</p>
+<h2>Plain-language teaching</h2>
+<h3>What makes a project "containerized" rather than "works on my laptop"</h3>
+<p>A containerized project has three honest properties:</p>
+<ol>
+<li><strong>Its environment travels with it.</strong> The Dockerfile names the exact base image and installs the exact dependencies (U11–U16).</li>
+<li><strong>Its configuration is supplied at run time.</strong> Passwords and settings come from an environment file, not from inside the image (U24, U33).</li>
+<li><strong>Its data has a home outside the container.</strong> A volume keeps the database alive when containers are replaced (U17).</li>
+</ol>
+<p>If all three are true, a fresh machine can run your project with only Docker installed. That is the bar.</p>
+<h3>Why two services (app and database)</h3>
+<p>A web app that stores data needs a database. In Compose, each becomes a <strong>service</strong> in one file (U23). Compose gives them a shared network, so the app can reach the database by its service name — here, <code>db</code> — without you managing IP addresses (U19–U20).</p>
+<h3>Why the app must wait for the database</h3>
+<p>The app starts at roughly the same moment as the database. PostgreSQL takes a few seconds to accept connections. If the app tries to connect too early, it crashes (U34's "exits immediately"). Two habits fix this:</p>
+<ul>
+<li>A <strong>health check</strong> on the database tells Compose how to test whether it is ready.</li>
+<li><code>depends_on</code> with <code>condition: service_healthy</code> makes the app wait for that check.</li>
+</ul>
+<p>Even with the health check, a small <strong>retry loop</strong> in the app code is wise, because "ready" and "ready right now" are not the same thing on a busy machine.</p>
+<h3>Why a multi-stage build for a small app</h3>
+<p>Our app is Python. We install its dependencies in a <strong>builder</strong> stage and copy only the installed packages into a clean <strong>runtime</strong> stage (U16). Build tools do not ship to production. The final image is smaller and has a smaller attack surface (U33).</p>
+<h3>Why non-root, and why <code>.dockerignore</code> still matters</h3>
+<p>The runtime stage creates an unprivileged user and switches to it with <code>USER</code> (U33). And <code>.dockerignore</code> keeps the real <code>.env</code> (with the real password) out of the <strong>build context</strong>, so it can never be copied into a layer by accident (U13, U33).</p>
+<h3>The shape of the whole project</h3>
+<pre><code class="language-text">counter-app/
+  app.py
+  requirements.txt
+  Dockerfile
+  .dockerignore
+  compose.yaml
+  .env.example        # committed (safe placeholder)
+  .env                # NOT committed (real values)
+  README.md
+</code></pre>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capstone</td>
+<td>A final project combining the whole course</td>
+<td>Not a separate new topic</td>
+</tr>
+<tr>
+<td>Multi-stage build</td>
+<td>A Dockerfile with more than one <code>FROM</code>, where later stages copy from earlier ones</td>
+<td>Not the same as "multiple containers"</td>
+</tr>
+<tr>
+<td>Health check</td>
+<td>A command Compose runs to decide if a service is ready</td>
+<td>Not the same as "the container is running"</td>
+</tr>
+<tr>
+<td><code>depends_on</code></td>
+<td>Ordering between services in Compose</td>
+<td>It does not guarantee readiness unless paired with a condition</td>
+</tr>
+<tr>
+<td>Named volume</td>
+<td>Storage Docker manages and can reuse by name</td>
+<td>Not a folder on your host that you edit directly</td>
+</tr>
+<tr>
+<td>Env file</td>
+<td>A file of <code>KEY=value</code> lines passed to a container</td>
+<td>Not a safe place to commit secrets</td>
+</tr>
+<tr>
+<td>Retry loop</td>
+<td>Code that tries again a few times before giving up</td>
+<td>Not a restart policy (that is the runtime's job, U31)</td>
+</tr>
+<tr>
+<td>Build context</td>
+<td>The files sent to the builder</td>
+<td>Not the whole disk; only what is not ignored</td>
+</tr>
+<tr>
+<td>Deliverable</td>
+<td>The set of files you hand in</td>
+<td>Not just "it runs on my machine"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a tiny <strong>counter</strong> service: a Flask app that keeps a count in PostgreSQL. Each visit increments the count; the count survives restarts because the database uses a volume. You may type these files yourself or copy them into a folder named <code>counter-app</code>.</p>
+<h3><code>app.py</code></h3>
+<pre><code class="language-python">import os
+import time
+
+import psycopg2
+from flask import Flask
+
+app = Flask(__name__)
+
+
+def connect():
+    for attempt in range(10):
+        try:
+            return psycopg2.connect(
+                host=os.environ[&quot;DB_HOST&quot;],
+                dbname=os.environ[&quot;DB_NAME&quot;],
+                user=os.environ[&quot;DB_USER&quot;],
+                password=os.environ[&quot;DB_PASSWORD&quot;],
+            )
+        except psycopg2.OperationalError:
+            time.sleep(2)
+    raise RuntimeError(&quot;could not reach the database after 10 tries&quot;)
+
+
+def init(conn):
+    with conn, conn.cursor() as cur:
+        cur.execute(
+            &quot;CREATE TABLE IF NOT EXISTS counter (id int PRIMARY KEY, value int)&quot;
+        )
+        cur.execute(
+            &quot;INSERT INTO counter (id, value) VALUES (1, 0) &quot;
+            &quot;ON CONFLICT (id) DO NOTHING&quot;
+        )
+
+
+@app.route(&quot;/&quot;)
+def index():
+    conn = connect()
+    with conn, conn.cursor() as cur:
+        cur.execute(
+            &quot;UPDATE counter SET value = value + 1 WHERE id = 1 RETURNING value&quot;
+        )
+        value = cur.fetchone()[0]
+    conn.close()
+    return f&quot;Count: {value}\n&quot;
+
+
+@app.route(&quot;/health&quot;)
+def health():
+    return &quot;ok\n&quot;
+
+
+if __name__ == &quot;__main__&quot;:
+    startup = connect()
+    init(startup)
+    startup.close()
+    app.run(host=&quot;0.0.0.0&quot;, port=int(os.environ.get(&quot;PORT&quot;, &quot;8000&quot;)))
+</code></pre>
+<p>Two lines matter beyond the obvious: <code>host="0.0.0.0"</code> (otherwise the app is unreachable, U34) and the <code>connect()</code> retry loop (otherwise it crashes while the database warms up).</p>
+<h3><code>requirements.txt</code></h3>
+<pre><code class="language-text">flask==3.0.3
+psycopg2-binary==2.9.9
+</code></pre>
+<p>Pinning exact versions is a habit from U33: the build is reproducible.</p>
+<h3><code>Dockerfile</code></h3>
+<pre><code class="language-dockerfile">FROM python:3.12-slim AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY --from=builder /install /usr/local
+COPY app.py .
+RUN useradd --create-home --uid 10001 appuser
+USER appuser
+EXPOSE 8000
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<ul>
+<li><code>AS builder</code> names the first stage so the second can copy from it.</li>
+<li><code>--prefix=/install</code> puts the Python packages in one folder we can copy wholesale.</li>
+<li><code>COPY --from=builder /install /usr/local</code> brings only the dependencies forward; pip and compilers do not come along.</li>
+<li><code>useradd</code> and <code>USER appuser</code> run the app unprivileged.</li>
+<li><code>EXPOSE 8000</code> documents the port; the actual mapping happens in Compose.</li>
+</ul>
+<h3><code>.dockerignore</code></h3>
+<pre><code class="language-text">.env
+__pycache__/
+*.pyc
+.git
+.gitignore
+*.md
+</code></pre>
+<p>The critical line is <code>.env</code>. It must never enter the build context (U13, U33).</p>
+<h3><code>.env.example</code> (committed)</h3>
+<pre><code class="language-text">POSTGRES_DB=counter
+POSTGRES_USER=counter
+POSTGRES_PASSWORD=change-me-locally
+DB_HOST=db
+DB_NAME=counter
+DB_USER=counter
+DB_PASSWORD=change-me-locally
+</code></pre>
+<p>Copy this to <code>.env</code> and change the password if you like. Commit <code>.env.example</code>; never commit <code>.env</code>.</p>
+<h3><code>compose.yaml</code></h3>
+<pre><code class="language-yaml">services:
+  app:
+    build: .
+    ports:
+      - &quot;8000:8000&quot;
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - counter-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U counter -d counter&quot;]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  counter-data:
+</code></pre>
+<p>Reading it aloud: the <code>app</code> service builds from this folder, publishes port 8000, reads <code>.env</code>, waits for a healthy <code>db</code>, and restarts unless stopped (U31). The <code>db</code> service uses a pinned PostgreSQL image, reads the same <code>.env</code> (which supplies <code>POSTGRES_*</code>), stores its data in the named volume <code>counter-data</code>, and reports its own health with <code>pg_isready</code>.</p>
+<h3>Running it</h3>
+<p><strong>Build and start in the background:</strong></p>
+<pre><code class="language-bash">docker compose up --build -d
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> build the app image, start both services, and return your prompt.</li>
+<li><strong>Success looks like:</strong> lines mentioning <code>Creating network</code>, <code>Creating volume</code>, <code>Creating counter-app_db_1</code>, <code>Creating counter-app_app_1</code>, all <code>Started</code> or <code>Running</code>. Then <code>docker compose ps</code> shows both services <code>running</code>, and <code>db</code> (or <code>app</code>, depending on timing) eventually <code>healthy</code>.</li>
+<li><strong>One decoded failure:</strong> <code>Bind for 0.0.0.0:8000 failed: port is already allocated</code> means host port 8000 is busy (U18, U34). Change the left side to <code>"8001:8000"</code> in <code>compose.yaml</code> and rerun.</li>
+</ul>
+<p><strong>Check the services:</strong></p>
+<pre><code class="language-bash">docker compose ps
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> see the state of each service.</li>
+<li><strong>Success looks like:</strong> two rows, <code>app</code> running and <code>db</code> running/healthy.</li>
+<li><strong>One decoded failure:</strong> <code>no configuration file provided: not found</code> means you are not in the project folder.</li>
+</ul>
+<p><strong>Follow the app logs:</strong></p>
+<pre><code class="language-bash">docker compose logs -f app
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> watch the app's output live (U10, U34).</li>
+<li><strong>Success looks like:</strong> startup lines and a request log line each time you visit. Stop with <code>Ctrl+C</code> — this does not stop the containers.</li>
+<li><strong>One decoded failure:</strong> errors about <code>could not reach the database</code> mean the DB was not ready or the credentials do not match; check <code>docker compose logs db</code>.</li>
+</ul>
+<p><strong>Use the service:</strong></p>
+<pre><code class="language-bash">curl http://localhost:8000/
+</code></pre>
+<p>On Windows PowerShell:</p>
+<pre><code class="language-powershell">Invoke-WebRequest http://localhost:8000/
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> make one request, which increments the counter.</li>
+<li><strong>Success looks like:</strong> <code>Count: 1</code> (and <code>Count: 2</code> on the next request).</li>
+<li><strong>One decoded failure:</strong> <code>Empty reply</code> or a hang usually means the app is not actually up yet, or it bound to the wrong interface (U34). Check <code>docker compose ps</code> and the logs.</li>
+</ul>
+<h3>Proving the data persists (the whole point of the volume)</h3>
+<p>Stop everything <strong>without</strong> deleting volumes:</p>
+<pre><code class="language-bash">docker compose down
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> stop and remove the containers and network, but keep named volumes.</li>
+<li><strong>Success looks like:</strong> lines mentioning <code>Removing</code> and <code>Stopping</code>, and the containers gone. The named volume remains.</li>
+<li><strong>One decoded failure:</strong> <code>warning: ... the volume may still be in use</code> is usually harmless if containers are stopping.</li>
+</ul>
+<p>Start again:</p>
+<pre><code class="language-bash">docker compose up -d
+</code></pre>
+<p>Now request the counter again:</p>
+<pre><code class="language-bash">curl http://localhost:8000/
+</code></pre>
+<p><strong>Success looks like:</strong> the count continues from where it was (for example <code>Count: 3</code>), not from <code>1</code>. The database data survived because it lives in the <code>counter-data</code> volume.</p>
+<p>See the volume:</p>
+<pre><code class="language-bash">docker volume ls
+</code></pre>
+<p><strong>Success looks like:</strong> a line ending in <code>counter-app_counter-data</code> (Compose prefixes the project name).</p>
+<h3>Cleaning up completely</h3>
+<pre><code class="language-bash">docker compose down -v
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> stop everything <strong>and delete the named volumes</strong>.</li>
+<li><strong>Warning:</strong> <code>-v</code> destroys your data. Use it only when you truly want a fresh start.</li>
+<li><strong>Success looks like:</strong> lines removing containers, network, and <code>counter-app_counter-data</code>.</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: The app exits immediately with a database error</h3>
+<p><strong>Symptom:</strong> <code>app</code> shows <code>Exited (1)</code> and the logs mention connection refused.</p>
+<p><strong>Why:</strong> the app started before PostgreSQL accepted connections. The health check usually prevents this; a retry loop in the app covers the rest.</p>
+<p><strong>Fix:</strong> ensure the <code>db</code> healthcheck is present and <code>app</code> has <code>depends_on: db: condition: service_healthy</code>. Confirm <code>docker compose ps</code> shows <code>db</code> as <code>healthy</code>.</p>
+<h3>Error: Credentials do not match</h3>
+<p><strong>Symptom:</strong> authentication failed for user, or database does not exist.</p>
+<p><strong>Why:</strong> <code>POSTGRES_*</code> values (used to <em>create</em> the database) and <code>DB_*</code> values (used by the app to <em>connect</em>) disagree in <code>.env</code>.</p>
+<p><strong>Fix:</strong> make <code>POSTGRES_DB</code>/<code>POSTGRES_USER</code>/<code>POSTGRES_PASSWORD</code> match <code>DB_NAME</code>/<code>DB_USER</code>/<code>DB_PASSWORD</code>. If you changed the password after the volume was created, PostgreSQL keeps the old one; run <code>docker compose down -v</code> for a clean start.</p>
+<h3>Error: I committed my <code>.env</code></h3>
+<p><strong>Symptom:</strong> the real password is in version control.</p>
+<p><strong>Why:</strong> <code>.env</code> was not ignored.</p>
+<p><strong>Fix:</strong> rotate the password, delete the file from history or start a fresh commit, and rely on <code>.env.example</code>. Also confirm <code>.dockerignore</code> lists <code>.env</code>.</p>
+<h3>Error: The final image still contains build tools</h3>
+<p><strong>Symptom:</strong> the image is large, or <code>pip</code> and compilers are present in the runtime.</p>
+<p><strong>Why:</strong> the Dockerfile copied the whole environment instead of just the installed packages.</p>
+<p><strong>Fix:</strong> copy only the <code>--prefix</code> folder from the builder, as in the worked example.</p>
+<h3>Error: "It works, but only on my machine"</h3>
+<p><strong>Symptom:</strong> a teammate cannot reproduce it.</p>
+<p><strong>Why:</strong> a dependency, a version, or a secret was not pinned or documented.</p>
+<p><strong>Fix:</strong> pin versions, provide <code>.env.example</code>, and make the README start with the two exact commands to run.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Name the three properties that make a project truly containerized.</li>
+<li>Why does the app need to wait for the database, and what two mechanisms handle that?</li>
+<li>What does the <code>--prefix</code> trick in the builder stage let you copy?</li>
+<li>Why must <code>.env</code> be in <code>.dockerignore</code> even though the app reads it at run time?</li>
+<li>Which command proves the volume works, and which command destroys the volume?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Run the reference</h3>
+<p>Get the counter app running exactly as shown. Take a screenshot or paste output of <code>Count: 1</code>, then <code>docker compose down &amp;&amp; docker compose up -d</code>, then <code>Count: 2</code>.</p>
+<h3>P2 — Break the password</h3>
+<p>Change only <code>DB_PASSWORD</code> in <code>.env</code> so it no longer matches <code>POSTGRES_PASSWORD</code>. Restart and watch the app fail. Read the logs, explain what you see, then fix it.</p>
+<h3>P3 — Remove the health check</h3>
+<p>Delete the <code>healthcheck</code> block and the <code>condition: service_healthy</code> line. Restart. Observe whether the app still starts (the retry loop may save it). Write two sentences on what the health check added.</p>
+<h3>P4 — Shrink the image</h3>
+<p>Build the reference as-is, then temporarily convert the Dockerfile to a single stage. Compare image sizes with <code>docker images</code>. Restore the multi-stage version.</p>
+<h3>P5 — Add a health endpoint test</h3>
+<p>Confirm <code>curl http://localhost:8000/health</code> returns <code>ok</code>. Explain why a dedicated health endpoint is useful to a runtime (connect to U31's restart and U33's habits).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No cloud deployment, no paid services, no domain names.</li>
+<li>No Kubernetes (U32 was a survey).</li>
+<li>No CI pipeline setup (U28–U29 covered the idea).</li>
+<li>No production monitoring, backups, or scaling.</li>
+<li>No advanced database tuning or migrations frameworks.</li>
+</ul>
+<h2>Next unit</h2>
+<p>There is no U36. You have reached the end of the course. Your next step is to take the capstone folder, run it on a different machine if you can, and explain every file to someone — or to your trainer — out loud. If you can do that, you have finished well.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U35 Assignment — Capstone deliverable</h1>
+<p>This is the graded capstone. You will containerize a small app with a database and hand in a folder a stranger could run.</p>
+<p>Submit <strong>one folder or zip</strong> named:</p>
+<p><code>U35-YourName</code></p>
+<h2>The app</h2>
+<p>Containerize the <strong>shopping list</strong> app below (a Python/Flask service that stores items in PostgreSQL). If you would rather containerize a small app you wrote yourself, you may — but it must use one app plus one database and meet every requirement below. The starter is provided so the work is about containerization, not about writing a web app.</p>
+<h3><code>app.py</code></h3>
+<pre><code class="language-python">import os
+import time
+
+import psycopg2
+from flask import Flask, request
+
+app = Flask(__name__)
+
+
+def connect():
+    for _ in range(10):
+        try:
+            return psycopg2.connect(
+                host=os.environ[&quot;DB_HOST&quot;],
+                dbname=os.environ[&quot;DB_NAME&quot;],
+                user=os.environ[&quot;DB_USER&quot;],
+                password=os.environ[&quot;DB_PASSWORD&quot;],
+            )
+        except psycopg2.OperationalError:
+            time.sleep(2)
+    raise RuntimeError(&quot;could not reach the database after 10 tries&quot;)
+
+
+def init(conn):
+    with conn, conn.cursor() as cur:
+        cur.execute(
+            &quot;CREATE TABLE IF NOT EXISTS items (&quot;
+            &quot;id serial PRIMARY KEY, name text NOT NULL)&quot;
+        )
+
+
+@app.route(&quot;/&quot;)
+def index():
+    conn = connect()
+    with conn, conn.cursor() as cur:
+        cur.execute(&quot;SELECT name FROM items ORDER BY id&quot;)
+        rows = [row[0] for row in cur.fetchall()]
+    conn.close()
+    listing = &quot;\n&quot;.join(f&quot;- {name}&quot; for name in rows)
+    return f&quot;Shopping list:\n{listing}\n&quot;
+
+
+@app.route(&quot;/add&quot;)
+def add():
+    name = request.args.get(&quot;item&quot;, &quot;&quot;).strip()
+    conn = connect()
+    with conn, conn.cursor() as cur:
+        cur.execute(&quot;INSERT INTO items (name) VALUES (%s)&quot;, (name,))
+    conn.close()
+    return f&quot;added: {name}\n&quot;
+
+
+@app.route(&quot;/health&quot;)
+def health():
+    return &quot;ok\n&quot;
+
+
+if __name__ == &quot;__main__&quot;:
+    startup = connect()
+    init(startup)
+    startup.close()
+    app.run(host=&quot;0.0.0.0&quot;, port=int(os.environ.get(&quot;PORT&quot;, &quot;8000&quot;)))
+</code></pre>
+<h3><code>requirements.txt</code></h3>
+<pre><code class="language-text">flask==3.0.3
+psycopg2-binary==2.9.9
+</code></pre>
+<h2>Files to submit</h2>
+<p>Your folder must contain:</p>
+<h3>1. <code>app/Dockerfile</code></h3>
+<p>A <strong>multi-stage</strong> Dockerfile that:</p>
+<ul>
+<li>Uses a minimal, pinned base image (not <code>latest</code>).</li>
+<li>Installs dependencies in a builder stage and copies only what is needed into the final stage.</li>
+<li>Copies <code>app.py</code> and runs it with <code>CMD ["python", "app.py"]</code>.</li>
+<li>Creates a non-root user and switches to it with <code>USER</code>.</li>
+<li>Does <strong>not</strong> contain any secret values.</li>
+</ul>
+<h3>2. <code>app/.dockerignore</code></h3>
+<p>Must exclude at least <code>.env</code>, <code>__pycache__/</code>, <code>*.pyc</code>, and <code>.git</code>.</p>
+<h3>3. <code>app/app.py</code> and <code>app/requirements.txt</code></h3>
+<p>The provided files (or your own app plus its dependency list).</p>
+<h3>4. <code>compose.yaml</code></h3>
+<p>Must define two services, <code>app</code> and <code>db</code>, and:</p>
+<ul>
+<li>Build <code>app</code> from <code>./app</code>.</li>
+<li>Publish the app on a host port of your choice.</li>
+<li>Give <code>app</code> and <code>db</code> the environment they need from an env file.</li>
+<li>Put the database data in a <strong>named volume</strong>.</li>
+<li>Include a <code>healthcheck</code> for <code>db</code> and make <code>app</code> wait for it with <code>depends_on</code> and <code>condition: service_healthy</code>.</li>
+<li>Set a sensible <code>restart:</code> policy (U31).</li>
+</ul>
+<p>Use the pinned image <code>postgres:16-alpine</code> for the database.</p>
+<h3>5. <code>.env.example</code> (committed)</h3>
+<p>Contains safe placeholder values for: <code>POSTGRES_DB</code>, <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>DB_HOST</code>, <code>DB_NAME</code>, <code>DB_USER</code>, <code>DB_PASSWORD</code>. The real <code>.env</code> must <strong>not</strong> be included in your submission.</p>
+<h3>6. <code>README.md</code></h3>
+<p>A short README that a stranger can follow. It must include:</p>
+<ul>
+<li>One sentence on what the app does.</li>
+<li>The exact commands to run it (and to stop it).</li>
+<li>The URL to visit and an example request.</li>
+<li>A "Files" section listing each file and one line on its purpose.</li>
+<li>A "What I would do differently" paragraph.</li>
+</ul>
+<h3>7. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>The three properties.</strong> Name the three properties that make a project truly containerized, and point to the exact file/line that delivers each in your project.</li>
+<li><strong>Multi-stage.</strong> Explain what your builder stage does that the runtime stage does not, and why that keeps the final image lean.</li>
+<li><strong>Volume.</strong> Explain what would happen to the shopping list if you ran <code>docker compose down</code> and then <code>docker compose up</code> <strong>without</strong> the named volume, and why.</li>
+<li><strong>Secrets.</strong> Explain why the app reads <code>DB_PASSWORD</code> at run time instead of having it in the Dockerfile. Mention the word <em>layer</em>.</li>
+<li><strong>Waiting for the database.</strong> Explain the two mechanisms that keep the app from crashing while PostgreSQL starts, and what each one contributes.</li>
+<li><strong>Debugging.</strong> Describe one real problem you hit while building this and how you used the U34 method to fix it.</li>
+<li><strong>Reflection.</strong> Which earlier unit did you lean on most, and which skill still feels shaky?</li>
+</ol>
+<h3>8. <code>evidence.txt</code></h3>
+<p>Paste a real transcript showing, in order:</p>
+<ol>
+<li><code>docker compose up --build -d</code>.</li>
+<li><code>docker compose ps</code> with both services up/healthy.</li>
+<li>Add two items (<code>/add</code>) and list them (<code>/</code>).</li>
+<li><code>docker compose down</code>.</li>
+<li><code>docker compose up -d</code>.</li>
+<li>List the items again — showing they <strong>persisted</strong>.</li>
+<li><code>docker compose down -v</code> to clean up.</li>
+</ol>
+<p>Label each command with a short comment.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>All files above are present with the names given.</li>
+<li><code>docker compose up --build</code> works from a clean copy (no <code>.env</code> in the submission; a copy of <code>.env.example</code> to <code>.env</code> is the only setup step).</li>
+<li>Items persist across <code>docker compose down</code> then <code>up</code>.</li>
+<li>The Dockerfile is multi-stage, uses a pinned base, and runs as a non-root user.</li>
+<li>No real secret appears anywhere in the submission.</li>
+<li><code>README.md</code> and <code>answers.md</code> are in your own words.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U35 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>. This is the capstone; the criteria reward a deliverable that actually runs.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Folder structure and file names match the assignment</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission tree</td>
+</tr>
+<tr>
+<td>Dockerfile is multi-stage (two <code>FROM</code> lines, copies from builder)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>app/Dockerfile</code></td>
+</tr>
+<tr>
+<td>Base image is pinned and minimal (not <code>latest</code>)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>app/Dockerfile</code></td>
+</tr>
+<tr>
+<td>Non-root user created and used (<code>USER</code>)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>app/Dockerfile</code></td>
+</tr>
+<tr>
+<td>No secret values anywhere in the image definition</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>app/Dockerfile</code></td>
+</tr>
+<tr>
+<td><code>.dockerignore</code> excludes <code>.env</code>, <code>__pycache__/</code>, <code>*.pyc</code>, <code>.git</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>app/.dockerignore</code></td>
+</tr>
+<tr>
+<td><code>compose.yaml</code> defines <code>app</code> and <code>db</code> services</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>app</code> builds from <code>./app</code> and publishes a host port</td>
+<td>1</td>
+<td>Yes</td>
+<td><code>compose.yaml</code></td>
+</tr>
+<tr>
+<td>Database data stored in a named volume</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>db</code> healthcheck plus <code>depends_on</code> with <code>condition: service_healthy</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>compose.yaml</code></td>
+</tr>
+<tr>
+<td>Sensible <code>restart:</code> policy set</td>
+<td>1</td>
+<td>No</td>
+<td><code>compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>.env.example</code> complete; no real <code>.env</code> submitted</td>
+<td>2</td>
+<td>Yes</td>
+<td>files present</td>
+</tr>
+<tr>
+<td><code>README.md</code> gives run/stop commands, URL, file list, reflection</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>README.md</code></td>
+</tr>
+<tr>
+<td>Explanations correct (properties, multi-stage, volume, secrets, DB wait)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code></td>
+</tr>
+<tr>
+<td>Evidence transcript proves data persisted across <code>down</code>/<code>up</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>evidence.txt</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong>Fast score (≈3 minutes):</strong> open <code>compose.yaml</code> and confirm <code>app</code> + <code>db</code>, a <code>volumes:</code> entry, a <code>healthcheck</code>, and <code>depends_on ... service_healthy</code>. Open <code>app/Dockerfile</code> and confirm two <code>FROM</code> lines, a pinned base, and <code>USER</code>.</li>
+<li>Multi-stage: award 1 if there are two <code>FROM</code> lines but the runtime stage still installs build tools; 0 if single-stage.</li>
+<li>Secrets: search the whole submission for the password string from <code>.env.example</code>; if a real secret is present, award 0 and flag it.</li>
+<li>Volume: award 2 if a named volume is mounted at <code>/var/lib/postgresql/data</code>. Award 1 if a bind mount is used but data still persists.</li>
+<li>Healthcheck: award 1 if a healthcheck exists but <code>depends_on</code> is missing the condition; 2 only if both are present.</li>
+<li><code>answers.md</code>: 0.8 per correct item (five items, cap 4). The volume answer must say data would be lost because the container's writable layer is disposable (U17).</li>
+<li>Evidence: award 2 only if the second listing shows items added before <code>docker compose down</code>. Award 1 if the transcript is complete but truncated before the persistence check.</li>
+<li>Do not penalise OS-specific differences (PowerShell vs bash) in commands.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U34-debugging-containers/index.html">U34 Debugging containers calmly</a>
+    
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

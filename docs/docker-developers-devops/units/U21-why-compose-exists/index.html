@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U21 — Why Compose exists | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U21</div>
+    <h1>Why Compose exists</h1>
+    <span class="phase-badge ph5">Phase 5 — Docker Compose</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U21 — Why Compose exists</h1>
+<p><strong>Phase 5 — Docker Compose</strong></p>
+<h2>Where you are</h2>
+<p>You now know how to run one container, keep its data in a volume, open a port, and connect two containers over a network (U17–U20). That knowledge is real, but using it for a whole app means typing long commands and juggling several terminals. This unit explains the human problem that Compose solves. We will not read a full Compose file line by line yet — that is U22. Here we build the <em>why</em>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Describe the pain of starting a multi-container app with individual <code>docker run</code> commands.</li>
+<li>Explain what it means for a file to be <strong>declarative</strong>.</li>
+<li>Say what a <strong>Compose service</strong> is, in plain words.</li>
+<li>Recognize both <code>compose.yaml</code> and <code>docker-compose.yml</code> as the same idea.</li>
+<li>Run <code>docker compose version</code> and read its output.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U17</strong> — volumes (data that survives a container).</li>
+<li><strong>U18</strong> — ports (letting the outside reach a container).</li>
+<li><strong>U20</strong> — connecting containers to each other (service names on a user-defined network).</li>
+<li>Basic comfort in a terminal (U03).</li>
+</ul>
+<p>You do <strong>not</strong> need to have memorized every flag. We will re-state what we use.</p>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>. This unit is mostly reading and thinking, with exactly one command to run. Take a break after the "Plain-language teaching" section if your head feels full.</p>
+<h2>Why this exists</h2>
+<p>Real applications are rarely one container. A typical small app is a web process, a database, maybe a cache. Starting them by hand means remembering every flag, starting them in the right order, and attaching them to the same network. Miss one flag and the app silently cannot reach the database. These materials exist so you never have to carry that in your head again.</p>
+<h2>Plain-language teaching</h2>
+<h3>The problem, made concrete</h3>
+<p>Suppose your app has two pieces: a small web app image you built (U11–U16) and a PostgreSQL database image from Docker Hub (U09).</p>
+<p>Without Compose, starting them looks something like this. Read it, but do <strong>not</strong> type it yet — we are showing the pain, not asking you to repeat it.</p>
+<pre><code class="language-text">docker network create appnet
+docker run -d --name db --network appnet -e POSTGRES_PASSWORD=changeme -v db-data:/var/lib/postgresql/data postgres:16-alpine
+docker run -d --name web --network appnet -p 8080:8000 -e DB_HOST=db my-web-image:1.0
+</code></pre>
+<p>Four commands. Two long ones. If you close your terminal, will you remember them tomorrow? If a teammate clones your project, do they know the network name is <code>appnet</code>? What if you need a third service? What if the database must start before the web app?</p>
+<h3>The pain, named honestly</h3>
+<ol>
+<li><strong>Repetition.</strong> Every start is the same long command, remembered by hand.</li>
+<li><strong>Order and timing.</strong> Containers must start in a sensible order.</li>
+<li><strong>Implicit knowledge.</strong> The network name, the volume name, the environment values — all live in your memory, not in your project.</li>
+<li><strong>Many terminals.</strong> Watching logs from three processes means three windows.</li>
+<li><strong>Onboarding.</strong> "How do I run this?" has no single answer to keep in the repository.</li>
+</ol>
+<h3>What Compose is</h3>
+<p><strong>Docker Compose</strong> is a tool that reads <strong>one file</strong> describing all your containers and runs them as a group. The file is a plain text file, usually named <code>compose.yaml</code>. When you run one command, Compose creates the network, starts the containers, applies the ports and volumes and environment variables, and shows you the combined logs.</p>
+<p>The smallest honest definition: <strong>Compose is a recipe for your whole app, written down once, that Docker can execute for you.</strong></p>
+<h3>Declarative vs imperative</h3>
+<p>This is the one new idea this unit asks you to hold.</p>
+<ul>
+<li><strong>Imperative</strong> means you describe <em>the steps</em>: "create a network, then run the db, then run the web." Our four <code>docker run</code> commands were imperative.</li>
+<li><strong>Declarative</strong> means you describe <em>the result</em>: "there is a web service and a db service; the web maps port 8080 and talks to db." You do not list the steps. Compose works out the steps.</li>
+</ul>
+<p>Why this matters: declarative files can be reviewed, version-controlled, and shared. Anyone who reads the file sees the whole app at a glance. The steps become an implementation detail Docker handles.</p>
+<h3>What Compose is <em>not</em></h3>
+<ul>
+<li>It is <strong>not</strong> a replacement for Dockerfiles. A Dockerfile still builds one image (U11). Compose <em>uses</em> those images — and can even ask Docker to build them.</li>
+<li>It is <strong>not</strong> Kubernetes, and it is <strong>not</strong> for production orchestration at scale. Compose is for local development and simple single-machine runs. (We discuss bigger tools much later, U32.)</li>
+<li>It is <strong>not</strong> magic that fixes a broken app. If your image is wrong, Compose will faithfully run a wrong image.</li>
+</ul>
+<h3>The two file names, and the two commands</h3>
+<p>You will see two file names in the wild:</p>
+<table>
+<thead>
+<tr>
+<th>File name</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compose.yaml</code></td>
+<td>The modern, preferred name. <code>docker compose</code> looks for it automatically.</td>
+</tr>
+<tr>
+<td><code>compose.yml</code></td>
+<td>Same as above, shorter extension.</td>
+</tr>
+<tr>
+<td><code>docker-compose.yml</code></td>
+<td>The older, extremely common name. Still fully supported today.</td>
+</tr>
+</tbody>
+</table>
+<p>They contain the same kind of content. If you find <code>docker-compose.yml</code> in an old project, you do not need to rename it. You only need to be consistent inside one project.</p>
+<p>There are also two ways to <em>run</em> Compose, and this matters:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it is</th>
+<th>Use it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker compose version</code></td>
+<td>Compose <strong>v2</strong>, a plugin built into modern Docker. One command, a space.</td>
+<td><strong>Yes — this course uses this.</strong></td>
+</tr>
+<tr>
+<td><code>docker-compose version</code></td>
+<td>Compose <strong>v1</strong>, a separate old binary with a hyphen.</td>
+<td>Only to recognize it in old tutorials.</td>
+</tr>
+</tbody>
+</table>
+<p>The course defaults to <code>docker compose</code> (space). Same idea, newer engine.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compose</td>
+<td>A tool that runs a multi-container app from one file</td>
+<td>Not the same as a Dockerfile, and not Kubernetes</td>
+</tr>
+<tr>
+<td><code>compose.yaml</code> / <code>docker-compose.yml</code></td>
+<td>The file describing your services</td>
+<td>Not a program; it is data Docker reads</td>
+</tr>
+<tr>
+<td>Declarative</td>
+<td>You describe the result, not the steps</td>
+<td>Not "less powerful"; it is a different style</td>
+</tr>
+<tr>
+<td>Imperative</td>
+<td>You describe the steps, one by one</td>
+<td>What <code>docker run</code> commands are</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>One container's worth of description inside the Compose file</td>
+<td>Not a "Windows service"; not a running container itself until you start it</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>The group of services Compose manages together (named after the folder by default)</td>
+<td>Not a Git project, though they often align</td>
+</tr>
+<tr>
+<td><code>docker compose</code></td>
+<td>The v2 plugin command</td>
+<td>Distinct from the legacy <code>docker-compose</code> binary</td>
+</tr>
+<tr>
+<td>Network (Compose)</td>
+<td>The private network Compose creates so services can reach each other by name</td>
+<td>You no longer create it by hand (U20)</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Goal:</strong> confirm your Docker and Compose v2 are installed and talking.</p>
+<p><strong>Command:</strong></p>
+<pre><code class="language-text">docker compose version
+</code></pre>
+<p><strong>What it does:</strong> asks the Compose v2 plugin to print its version. It starts nothing.</p>
+<p><strong>Success looks like this</strong> (your exact number will differ):</p>
+<pre><code class="language-text">Docker Compose version v2.27.0
+</code></pre>
+<p><strong>A typical failure, decoded:</strong></p>
+<pre><code class="language-text">docker: 'compose' is not a docker command.
+</code></pre>
+<p><strong>What it means:</strong> your Docker installation does not have the Compose v2 plugin available. This is not an error in your project file — there is no file yet. On Docker Desktop (Windows/macOS), Compose v2 is included, so this usually means Docker Desktop is not running or not fully installed (U06). On Linux, the plugin may live in a package such as <code>docker-compose-plugin</code>; if you installed the Docker Engine without it, the plugin is missing. <strong>Fix:</strong> start Docker Desktop, or install the Compose plugin through your distribution's package manager, then run the command again. If instead you typed the old hyphenated command and got "command not found," you used v1 syntax that is not installed — use <code>docker compose</code> (with a space).</p>
+<h2>Common errors</h2>
+<h3>Error: Thinking Compose replaces your Dockerfile</h3>
+<p><strong>What happens:</strong> A learner deletes their Dockerfile, expecting <code>compose.yaml</code> to build an image from source. Compose has nothing to build from and the app cannot start.</p>
+<p><strong>Fix:</strong> Keep the Dockerfile. Compose describes <em>services</em>; a Dockerfile describes <em>how to build one image</em>. U22 shows the <code>build:</code> key that connects the two.</p>
+<h3>Error: Renaming files and commands randomly</h3>
+<p><strong>What happens:</strong> A project has both <code>compose.yaml</code> and <code>docker-compose.yml</code>. Compose picks one and ignores the other, so your edits "do nothing." Or you run <code>docker-compose</code> on a machine that only has v2.</p>
+<p><strong>Fix:</strong> Keep one file per project. Prefer <code>compose.yaml</code>. Use <code>docker compose</code> (space) consistently.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words:</p>
+<ol>
+<li>Name three specific pains of starting several containers with individual <code>docker run</code> commands.</li>
+<li>What is the difference between "imperative" and "declarative"?</li>
+<li>Is Compose a replacement for the Dockerfile? Why or why not?</li>
+</ol>
+<p>If you can answer those three, you are ready for the exercises.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Look again at the four-command example above. Write one sentence naming the command that would fail first if you accidentally used the network name <code>app-net</code> when starting <code>web</code> instead of <code>appnet</code>. (Prediction only; you do not need to run it.)</p>
+<h3>P2 — Translate the pain</h3>
+<p>Choose any small app you have run before (a website, a dashboard, a script with a database). In 5–8 lines, list the pieces you would have to start and the settings you would have to remember. This is exactly what a Compose file will hold.</p>
+<h3>P3 — Name the file</h3>
+<p>A teammate sends you a project containing <code>docker-compose.yml</code> and nothing else. Will the command <code>docker compose up</code> read that file? Write your answer and one sentence of reasoning.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. The rubric is short and visible on purpose.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No reading a Compose file line by line (that is U22).</li>
+<li>No <code>docker compose up</code> yet (U22).</li>
+<li>No environment variables or <code>.env</code> files (U24).</li>
+<li>No lifecycle commands such as <code>logs</code>, <code>ps</code>, or <code>exec</code> (U25).</li>
+<li>No production orchestration (U32).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U22 — Your first compose file</strong> (services, <code>image</code>/<code>build</code>, <code>ports</code>, <code>volumes</code>, <code>environment</code>, then <code>docker compose up</code> and <code>down</code>).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U21 Assignment — Why Compose exists</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U21-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs and honest lists are both fine. Do not paste this lesson back unchanged.</p>
+<ol>
+<li><strong>The pain.</strong> In your own words, describe the problem of starting a two-container app with separate <code>docker run</code> commands. Name at least three specific pains (for example: repetition, ordering, memory, terminals).</li>
+<li><strong>Declarative in plain language.</strong> Explain "declarative" to a friend who has never written a Compose file. Use one analogy from daily life (a recipe card, a packing list, a set of instructions, etc.) and say why it fits.</li>
+<li><strong>What Compose is not.</strong> State two things Compose is <em>not</em>. For each, one sentence of reasoning.</li>
+<li><strong>Files and commands.</strong> In a few lines, explain the difference between <code>compose.yaml</code> and <code>docker-compose.yml</code>, and between <code>docker compose</code> and <code>docker-compose</code>.</li>
+<li><strong>Before and after.</strong> Imagine a tiny app: one web service and one database. Write the two <code>docker run</code> commands you would use (approximate is fine), then describe in two or three sentences what a single Compose file would save you.</li>
+<li><strong>Explain in your own words.</strong> Finish this sentence and justify it in 2–3 lines: "A Compose file is <em>declarative</em>, which means …"</li>
+</ol>
+<h3>2. <code>version-output.txt</code></h3>
+<p>Paste the exact output of running:</p>
+<pre><code class="language-text">docker compose version
+</code></pre>
+<p>If the command failed, paste the exact error message and write two sentences explaining what you tried (for example, starting Docker Desktop). A decoded failure is acceptable evidence if you explain it.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U21 README fully (not only the assignment).
+- [ ] I can explain imperative vs declarative in my own words.
+- [ ] I know Compose does not replace my Dockerfile.
+- [ ] I know `docker compose` (v2) is the command this course uses.
+- [ ] I read the U21 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the names above.</li>
+<li><code>answers.md</code> is in your own words, with at least one original analogy in Q2.</li>
+<li><code>version-output.txt</code> contains real output or a decoded error, not a guess.</li>
+<li>Checklist completed honestly.</li>
+</ul>
+<h2>Submission format</h2>
+<p>One folder or zip named <code>U21-YourName</code>, containing <code>answers.md</code>, <code>version-output.txt</code>, and <code>checklist.md</code> at the top level. If your trainer asked for a different channel, follow their instruction and keep the same file names.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U21 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names three or more concrete pains of manual <code>docker run</code> startup</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains "declarative" accurately with a reasonable analogy</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2, Q6</td>
+</tr>
+<tr>
+<td>States two correct "Compose is not…" items with reasoning</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Distinguishes file names and command versions correctly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>"Before and after" shows two sensible <code>docker run</code> commands and a clear saving</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Real <code>docker compose version</code> output or decoded failure provided</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>version-output.txt</code>, <code>checklist.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q2/Q6: award full credit only if the analogy genuinely maps to "describe the result, not the steps." A vague "it's simpler" earns 1/4.</li>
+<li>Q4: award 2/4 if they know the file names but confuse the command versions (or vice versa).</li>
+<li>Q3: award 1/3 per correct item; accept "not a Dockerfile replacement" and "not Kubernetes" as the strongest answers.</li>
+<li>Do not penalize imperfect English. Do penalize a plainly copy-pasted lesson restatement with no personalization on Q1 or Q2.</li>
+<li><code>version-output.txt</code> showing a well-explained failure is full credit — we are testing understanding, not luck.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U20-connecting-containers/index.html">U20 Connecting containers to each other</a>
+    <a class="next" href="../U22-first-compose-file/index.html">U22 Your first compose file</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

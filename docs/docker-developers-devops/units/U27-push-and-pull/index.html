@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U27 — Pushing and pulling images | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U27</div>
+    <h1>Pushing and pulling images</h1>
+    <span class="phase-badge ph6">Phase 6 — Registries and automation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U27 — Pushing and pulling images</h1>
+<p><strong>Phase 6 — Registries and automation</strong></p>
+<h2>Where you are</h2>
+<p>In U26 you learned what a registry is and how to read an image name. Now you actually move an image across the wire. You will build a small image, give it a <strong>registry-ready name</strong>, <strong>push</strong> it to Docker Hub, <strong>pull</strong> it back as if you were a different machine, and run it. We also cover the <code>denied</code> messages that scare people, and why a smaller image is a kinder image to push.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain the difference between a local image name and a registry-ready name.</li>
+<li>Use <code>docker tag</code> to give an existing image a name that points at a registry.</li>
+<li>Use <code>docker push</code> and <code>docker pull</code> and know what success output looks like.</li>
+<li>Decode <code>denied</code>, <code>unauthorized</code>, and <code>manifest unknown</code> failures.</li>
+<li>Name three concrete ways to make an image smaller <em>before</em> pushing it.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11–U14</strong> — Dockerfiles, <code>build</code>, and tags/naming.</li>
+<li><strong>U15</strong> — layers and why pushes reuse layers.</li>
+<li><strong>U16</strong> — multi-stage builds (referenced when slimming images).</li>
+<li><strong>U26</strong> — what a registry, repository, namespace, and tag are; <code>docker login</code>.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>, and it needs an internet connection. Most of the effort is one push and one pull. Allow extra time for the first push; uploading layers over a slow connection is normal and not a sign anything is broken.</p>
+<h2>Why this exists</h2>
+<p>A shared registry is only useful if you can put images <em>in</em> and take them <em>out</em>. <code>docker push</code> is how your work leaves your laptop; <code>docker pull</code> is how another machine receives the exact same artifact. Once you can do both, "it works on my machine" loses much of its power: the other machine runs your <em>image</em>, not a rebuild that might drift.</p>
+<h2>Plain-language teaching</h2>
+<h3>Local names versus registry names</h3>
+<p>An image can have several names. All of them point at the same bytes; the names are just labels.</p>
+<p>A <strong>local name</strong> like <code>shopping-list:1.0</code> is useful only to you. It has no registry part, so Docker will not try to push it anywhere.</p>
+<p>A <strong>registry-ready name</strong> puts a registry and namespace at the front:</p>
+<pre><code class="language-text">&lt;username&gt;/shopping-list:1.0
+</code></pre>
+<p>That slash between the username and the image name is doing important work. It says: "this name belongs in a registry, under this account." When you push, Docker reads that name and sends the image to the matching registry and namespace.</p>
+<p><strong>Important:</strong> you do not rename the image's bytes; you <em>add a second name</em>. The old local name stays too. That is why <code>docker image ls</code> can show the same image id under two repository names.</p>
+<h3>Command: <code>docker tag</code></h3>
+<p><strong>What it does:</strong> copies a name (not the image data) so an existing image also answers to a new name — here, a registry-ready one.</p>
+<p>General shape: <code>docker tag &lt;source&gt; &lt;target&gt;</code>.</p>
+<pre><code class="language-bash">docker tag shopping-list:1.0 student-demo/shopping-list:1.0
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong> no output at all. That silence is success. Confirm with <code>docker image ls</code>, which now shows:<br />
+<code>text
+  REPOSITORY                      TAG       IMAGE ID       SIZE
+  shopping-list                   1.0       9f2c1ab77d10   148MB
+  student-demo/shopping-list      1.0       9f2c1ab77d10   148MB</code><br />
+  Same image id, two names.</li>
+<li><strong>One decoded failure:</strong><br />
+<code>text
+  Error response from daemon: No such image: shopping-list:1.0</code><br />
+<strong>Decoded:</strong> the <em>source</em> name does not exist locally. Either you have not built it, or the tag is different from what you remember. Run <code>docker image ls</code> and copy the exact name and tag.</li>
+</ul>
+<h3>Command: <code>docker push</code></h3>
+<p><strong>What it does:</strong> uploads an image (its layers plus its manifest) to the registry named in the tag. Layers the registry already has are skipped, which is why a second push of a nearly identical image is fast (U15).</p>
+<pre><code class="language-bash">docker push student-demo/shopping-list:1.0
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong> a progress report that ends with a digest:<br />
+<code>text
+  The push refers to repository [docker.io/student-demo/shopping-list]
+  5f70bf18a086: Pushed
+  1c2b3d4e5f60: Pushed
+  1.0: digest: sha256:ab12cd34... size: 1357</code><br />
+  The <code>digest</code> line is the receipt. That <code>sha256:...</code> is the exact content of the image you pushed.</li>
+<li><strong>One decoded failure:</strong><br />
+<code>text
+  denied: requested access to the resource is denied</code><br />
+<strong>Decoded:</strong> you are authenticated, but not allowed to write to <em>that</em> namespace. Almost always the namespace does not match the account you logged in as — you pushed <code>someone-elses-name/...</code>, or you are logged in as <code>sam</code> but tagged under <code>student-demo</code>. Fix the tag to match your own username, and make sure you ran <code>docker login</code> (U26).</li>
+</ul>
+<p>Two more push failures we decode fully in "Common errors": <code>unauthorized: authentication required</code> and <code>name must be lowercase</code>.</p>
+<h3>Command: <code>docker pull</code></h3>
+<p><strong>What it does:</strong> downloads an image from a registry to your local storage. This is the same command you used in U09; now you understand that it is talking to a registry.</p>
+<pre><code class="language-bash">docker pull student-demo/shopping-list:1.0
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong><br />
+<code>text
+  Pulling from student-demo/shopping-list
+  Digest: sha256:ab12cd34...
+  Status: Downloaded newer image for student-demo/shopping-list:1.0</code><br />
+  If the image is already fully local, you will see <code>Status: Image is up to date for ...</code> instead. Both are success.</li>
+<li><strong>One decoded failure:</strong><br />
+<code>text
+  Error response from daemon: manifest unknown</code><br />
+<strong>Decoded:</strong> the registry does not have that exact repository/tag. A typo in the name or tag is the usual cause. Check for a missing tag (it defaults to <code>latest</code>, which may not exist) or a misspelling. It is not a connection problem.</li>
+</ul>
+<h3>Verifying a pull by running it</h3>
+<p>Pulling proves the image arrived. Running it proves the image still works.</p>
+<pre><code class="language-bash">docker run --rm student-demo/shopping-list:1.0
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> starts a container from the pulled image and removes it (<code>--rm</code>) when it exits, so you leave no clutter.</li>
+<li><strong>Success looks like:</strong> whatever your app prints, ending back at your prompt because <code>--rm</code> cleaned up.</li>
+<li><strong>One decoded failure:</strong> <code>Unable to find image '...' locally</code> followed by a pull attempt — decoded: the name you typed does not exactly match what you pushed, so Docker tried (and failed) to fetch it fresh.</li>
+</ul>
+<h3>Keeping images small before pushing</h3>
+<p>A push copies every layer the registry does not already have. Big images mean slow pushes, slow pulls by whoever deploys next, and a larger attack surface (U30 goes deeper). Three concrete moves, all built on units you already did:</p>
+<ol>
+<li><strong>Use a smaller base image.</strong> <code>python:3.12</code> is roughly 1 GB; <code>python:3.12-slim</code> is far smaller and <code>python:3.12-alpine</code> smaller still. Choose the smallest base that still supports your app's native needs.</li>
+<li><strong>Use a multi-stage build (U16).</strong> Build/compile in one stage, then copy only the finished artifacts into a tiny final stage. Build tools never reach the pushed image.</li>
+<li><strong>Respect <code>.dockerignore</code> (U13).</strong> Every file in the build context can end up copied into a layer. Ignore <code>.git</code>, virtual environments, <code>node_modules</code>, logs, and test data you do not need at runtime.</li>
+</ol>
+<p>A quick sanity check before any push:</p>
+<pre><code class="language-bash">docker image ls student-demo/shopping-list
+</code></pre>
+<p>Read the <code>SIZE</code> column. If it surprises you, slim it <em>before</em> pushing — fixing a bloated image costs one rebuild; re-pushing an already-published bloat costs everyone who pulls it.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local name</td>
+<td>A name only your machine uses</td>
+<td>Cannot be pushed as-is</td>
+</tr>
+<tr>
+<td>Registry-ready name</td>
+<td><code>username/image:tag</code> naming a registry destination</td>
+<td>Not a rename of the data</td>
+</tr>
+<tr>
+<td><code>docker tag</code></td>
+<td>Adds a second name to an existing image</td>
+<td>Does not copy the image bytes</td>
+</tr>
+<tr>
+<td><code>docker push</code></td>
+<td>Uploads image layers + manifest to a registry</td>
+<td>May skip layers already there; not always a full upload</td>
+</tr>
+<tr>
+<td><code>docker pull</code></td>
+<td>Downloads an image from a registry</td>
+<td>"Up to date" is success, not a failure</td>
+</tr>
+<tr>
+<td>Digest</td>
+<td>The <code>sha256:...</code> fingerprint of exact image content</td>
+<td>Not a tag; a tag can move, a digest does not</td>
+</tr>
+<tr>
+<td><code>denied</code></td>
+<td>Authenticated but not permitted</td>
+<td>Not the same as "not logged in"</td>
+</tr>
+<tr>
+<td><code>manifest unknown</code></td>
+<td>The registry has no such repository/tag</td>
+<td>Usually a typo, sometimes a missing tag</td>
+</tr>
+<tr>
+<td>Dangling image</td>
+<td>An untagged image with no name</td>
+<td>Cleaned up in U30</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> Sam wrote a tiny "shopping list" script and containerized it. Sam will publish it to Docker Hub under the account <code>sam-demo</code> and prove it can be pulled back.</p>
+<p><strong>File 1 — <code>app.py</code></strong> (the whole app):</p>
+<pre><code class="language-python">print(&quot;Shopping list service is running.&quot;)
+</code></pre>
+<p>Why only this? Because the point of this unit is the <em>push</em>, not the app. A one-line program keeps the lesson about registries.</p>
+<p><strong>File 2 — <code>Dockerfile</code></strong>:</p>
+<pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+COPY app.py .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<ul>
+<li><code>FROM python:3.12-slim</code> — a small Python base; slimmer than the full image.</li>
+<li><code>WORKDIR /app</code> — all later paths are relative to <code>/app</code>.</li>
+<li><code>COPY app.py .</code> — puts the script into <code>/app</code>.</li>
+<li><code>CMD ["python", "app.py"]</code> — the command run when a container starts.</li>
+</ul>
+<p><strong>Step 1 — build with a local name.</strong></p>
+<pre><code class="language-bash">docker build -t shopping-list:1.0 .
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> reads <code>Dockerfile</code> in the current directory (the <code>.</code>) and produces an image tagged <code>shopping-list:1.0</code>.</li>
+<li><strong>Success looks like:</strong> build steps ending with <code>Successfully tagged shopping-list:1.0</code> (newer Docker may say <code>naming to ...shopping-list:1.0</code>).</li>
+<li><strong>One decoded failure:</strong> <code>failed to read dockerfile: open Dockerfile: no such file or directory</code> — decoded: you ran the build from the wrong folder, or spelled the file <code>dockerfile</code>. Change into the folder that contains <code>Dockerfile</code>, or pass <code>-f path/to/Dockerfile</code>.</li>
+</ul>
+<p><strong>Step 2 — log in (from U26).</strong></p>
+<pre><code class="language-bash">docker login
+</code></pre>
+<p>Success: <code>Login Succeeded</code>. Failure: <code>unauthorized: incorrect username or password</code> → use an access token as the password.</p>
+<p><strong>Step 3 — add a registry-ready name.</strong></p>
+<pre><code class="language-bash">docker tag shopping-list:1.0 sam-demo/shopping-list:1.0
+</code></pre>
+<p>Silent success. <code>docker image ls</code> now shows the same image id under both names.</p>
+<p><strong>Step 4 — push.</strong></p>
+<pre><code class="language-bash">docker push sam-demo/shopping-list:1.0
+</code></pre>
+<p>Ends with a <code>digest: sha256:...</code> line — your receipt.</p>
+<p><strong>Step 5 — prove it as if you were elsewhere.</strong></p>
+<p>Remove the local tags and pull the name fresh:</p>
+<pre><code class="language-bash">docker rmi shopping-list:1.0 sam-demo/shopping-list:1.0
+docker pull sam-demo/shopping-list:1.0
+docker run --rm sam-demo/shopping-list:1.0
+</code></pre>
+<ul>
+<li><strong>What <code>docker rmi</code> does:</strong> removes local image names/tags (and the image if nothing else references it).</li>
+<li><strong>Success:</strong> the pull reports <code>Downloaded newer image</code> and the run prints <code>Shopping list service is running.</code></li>
+</ul>
+<p><strong>OS note:</strong> the commands are identical in PowerShell, macOS Terminal, and Linux. PowerShell users: if a name is ambiguous, quote it — <code>docker tag "shopping-list:1.0" "sam-demo/shopping-list:1.0"</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>denied: requested access to the resource is denied</code></h3>
+<p><strong>What happens:</strong> you are logged in, but the namespace in your tag is not yours to write to.</p>
+<p><strong>Fix:</strong> the namespace before the first slash must be your Docker Hub username (or an org you belong to). Re-tag with your own username and push again.</p>
+<h3>Error: <code>unauthorized: authentication required</code></h3>
+<p><strong>What happens:</strong> you never logged in (or your stored login expired), and you tried to push or to pull a private image.</p>
+<p><strong>Fix:</strong> run <code>docker login</code>, then retry. Pulling <em>public</em> images never needs this.</p>
+<h3>Error: <code>invalid reference format: repository name must be lowercase</code></h3>
+<p><strong>What happens:</strong> repository names may not contain uppercase letters. <code>Sam-Demo/Shopping-List</code> is rejected.</p>
+<p><strong>Fix:</strong> lowercase the repository and namespace parts. Tags and usernames follow the same rule — lowercase them. <code>sam-demo/shopping-list:1.0</code> is valid.</p>
+<h3>Error: <code>manifest unknown</code></h3>
+<p><strong>What happens:</strong> the pull asked for a repository or tag the registry does not have.</p>
+<p><strong>Fix:</strong> check spelling and the exact tag. Remember that leaving off a tag means <code>latest</code>, which you may never have pushed.</p>
+<h3>Error: push is extremely slow, then the connection drops</h3>
+<p><strong>What happens:</strong> large layers over a weak connection.</p>
+<p><strong>Fix:</strong> slim the image first (smaller base, multi-stage, <code>.dockerignore</code>), push on a stable network, and retry — already-uploaded layers are not sent twice.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why does <code>docker tag</code> print nothing, and how do you confirm it worked?</li>
+<li>What is the difference between <code>unauthorized</code> and <code>denied</code>?</li>
+<li>Why can a second push of a barely-changed image be much faster than the first?</li>
+<li>Name three ways to make an image smaller before pushing.</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Predict then run</h3>
+<p>Predict what <code>docker image ls</code> shows immediately after <code>docker tag shopping-list:1.0 sam-demo/shopping-list:1.0</code>. Run it. Were there one or two lines? Why?</p>
+<h3>P2 — Change one value</h3>
+<p>Push a second tag, <code>sam-demo/shopping-list:1.1</code>, built from the same Dockerfile. Compare the push output with the <code>1.0</code> push. Which layers say <code>Layer already exists</code>?</p>
+<h3>P3 — Fix a broken name</h3>
+<p>Here is a failing command. Fix it and explain the error in your own words:</p>
+<pre><code class="language-bash">docker push Student-Demo/Shopping-List:1.0
+</code></pre>
+<h3>P4 — Write from a spec</h3>
+<p>Given a local image <code>notes-app:2.0</code> and Docker Hub user <code>aisha-dev</code>, write the exact <code>docker tag</code> and <code>docker push</code> lines you would use.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No private-repository creation walkthrough (the concept appeared in U26).</li>
+<li>No registry other than Docker Hub in the walkthrough.</li>
+<li>No CI or automation — that is U28 and U29.</li>
+<li>No image scanning or vulnerability analysis — that is U30.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U28 — Why automate image builds</strong> (the manual push you just did is exactly what a pipeline will do for you).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U27 Assignment — Pushing and pulling images</h1>
+<p>Submit everything in <strong>one folder or zip</strong> named:</p>
+<p><code>U27-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>evidence.md</code></h3>
+<p>Document one complete round trip: build → tag → push → pull → run. Use the <code>shopping-list</code> app from the README, or your own tiny app (a one-line program is fine).</p>
+<p>Copy the table and fill it in. Paste the <strong>real</strong> output lines you saw.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Command you ran</th>
+<th>The one output line that proves success</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Tag</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Push</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Remove local names</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Pull</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Run</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Then add a short paragraph: what did the <code>digest: sha256:...</code> line tell you?</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Two names, one image.</strong> Explain why <code>docker image ls</code> can show the same IMAGE ID under two different repository names after <code>docker tag</code>.</li>
+<li><strong>denied vs unauthorized.</strong> A teammate pushed and got <code>denied: requested access to the resource is denied</code>. You got <code>unauthorized: authentication required</code>. Explain what is different about these two situations.</li>
+<li><strong>Speed.</strong> Explain why the second push of a nearly identical image is usually much faster than the first. Use the word <em>layer</em> correctly.</li>
+<li><strong>Slimming.</strong> Name three concrete ways to reduce image size before pushing and say what each one removes.</li>
+<li><strong>Predict then explain.</strong> During the practice exercise you pushed a second tag <code>1.1</code> from the same Dockerfile. Predict which layers the registry reported as <code>Pushed</code> and which as <code>Layer already exists</code>, then explain the pattern.</li>
+<li><strong>Fix this.</strong> This command failed. Correct it and explain the failure:</li>
+</ol>
+<p><code>bash
+   docker pull Sam-Demo/shopping-list:1.0</code></p>
+<p>(Assume it should be public. If your reasoning depends on whether it is public or private, say so.)</p>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I ran a real push to Docker Hub (or my trainer approved an alternative registry).
+- [ ] I ran a real pull and run of the pushed image.
+- [ ] I read the U27 README fully.
+- [ ] I can tell `denied` from `unauthorized`.
+- [ ] I read the U27 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>evidence.md</code>, <code>answers.md</code>, and <code>checklist.md</code> present with the names above.</li>
+<li>Evidence table contains real output, not invented text.</li>
+<li>Answers are in your own words.</li>
+</ul>
+<h2>If you cannot reach a registry</h2>
+<p>If a firewall blocks Docker Hub, tell your trainer and agree on an alternative before doing the assignment. Do not fake the evidence — say what you tried and what the error was.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U27 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>. Must-have criteria decide pass/fail.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real build → tag → push → pull → run round trip completed</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>evidence.md</code> table</td>
+</tr>
+<tr>
+<td>Evidence output is genuine and matches commands</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>evidence.md</code> table</td>
+</tr>
+<tr>
+<td>Explains that <code>docker tag</code> adds a name, not data</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correctly distinguishes <code>denied</code> (permission) from <code>unauthorized</code> (not authenticated)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains push speed using layers correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Names three valid slimming techniques with what each removes</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Predict-then-explain on second push is reasoned, not guessed</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Corrects the broken pull command and explains why</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+</tbody>
+</table>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Evidence: award 3/6 if the round trip is attempted and honestly reported but blocked by a documented network error.</li>
+<li>Q2: award 2/4 if they say "one is login" without the distinction between <em>being</em> authenticated and <em>being permitted</em>.</li>
+<li>Q3: require the word "layer" to be used in a way that is actually true (matching layers are reused). Vague "Docker caches things" gets 1/3.</li>
+<li>Q4: any three of — smaller base (<code>slim</code>/<code>alpine</code>), multi-stage build, <code>.dockerignore</code>, removing caches, combining RUN steps.</li>
+<li>Q6: the uppercase namespace is the core error (<code>repository name must be lowercase</code>); accept the "if it is private I also need to log in" caveat.</li>
+</ul>
+<h2>Common wrong-but-thoughtful answers</h2>
+<ul>
+<li>"<code>denied</code> means the server is down" — confused, but shows they read the word literally; explain and do not penalize twice.</li>
+<li>Thinking <code>docker tag</code> copies the whole image and wastes disk — a very common, reasonable assumption; correct it in feedback.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U26-registries/index.html">U26 Registries</a>
+    <a class="next" href="../U28-why-automate-image-builds/index.html">U28 Why automate image builds</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

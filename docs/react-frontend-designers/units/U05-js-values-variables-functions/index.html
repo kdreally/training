@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U05 — JavaScript: values, variables, and functions | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U05</div>
+    <h1>JavaScript: values, variables, and functions</h1>
+    <span class="phase-badge ph1">Phase 1 — Foundations</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U05 — JavaScript: values, variables, and functions</h1>
+<p><strong>Phase 1 — Foundations</strong></p>
+<h2>Where you are</h2>
+<p>You know a page is made of elements (U02), that HTML gives those elements structure (U03), and that CSS gives them their look (U04). HTML and CSS describe a page, but they cannot <em>decide</em> anything. They cannot remember a number, compare two values, or do the same small job in several places. JavaScript is the language that adds that behaviour.</p>
+<p>This unit is the first time you write real instructions to the browser. It is small on purpose. You will create values, store them in variables, and write functions that take input and give back output. Everything runs in the browser console, so there is nothing to install.</p>
+<p>If your stomach tightens at the phrase "writing code," that is normal and expected here. We start in a scratchpad, not a project. Nothing you type can break your computer.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain, in one or two sentences, what JavaScript adds that HTML and CSS cannot.</li>
+<li>Open the browser's <strong>console</strong> and run a line of JavaScript.</li>
+<li>Create and name the three basic value types: <strong>string</strong>, <strong>number</strong>, <strong>boolean</strong>.</li>
+<li>Store a value in a variable using <code>let</code> and <code>const</code>, and choose between them.</li>
+<li>Write a function that takes input and gives back output with <code>return</code>.</li>
+<li>Read a short error message and say what it means in plain language.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U02 — What a web page is made of.</strong> You know a page is a tree of elements.</li>
+<li><strong>U03 — HTML as structure.</strong> You know pages are written as files with tags.</li>
+<li><strong>U04 — CSS as presentation.</strong> You know CSS styles those elements.</li>
+<li>No prior programming experience is required. This is the first code unit.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>Plan for <strong>90–120 minutes</strong>, likely across two sittings. The concepts are short but new, and new names need a night to settle. Take a break between the worked example and the assignment. Being tired and confused at the same time helps nobody.</p>
+<h2>Why this exists</h2>
+<p>Imagine a card in your design tool. It shows a project title, a like count, and a "Featured" label. If you wanted fifty of these with different content, you would not redraw fifty cards by hand. You would make it reusable and feed it different content.</p>
+<p>Code works the same way. HTML and CSS give you one fixed page. JavaScript gives you the ability to store content, do a small job on it, and reuse that job everywhere. A variable is the "content slot." A function is the "reusable job." Almost every React skill later in this course is built out of these two ideas.</p>
+<h2>Plain-language teaching</h2>
+<h3>1. What JavaScript is for</h3>
+<p>A web page has three jobs:</p>
+<ul>
+<li><strong>Structure</strong> — what things are (a heading, a button, a list). That is HTML.</li>
+<li><strong>Presentation</strong> — how those things look (colour, spacing, size). That is CSS.</li>
+<li><strong>Behaviour</strong> — what happens and what is remembered. That is JavaScript.</li>
+</ul>
+<p>Without JavaScript, every page is a poster. It can look beautiful, but it cannot react, count, or change. JavaScript is the part that runs instructions.</p>
+<p>JavaScript also has a <strong>console</strong>, which is the tool you will use to run one line at a time. Think of it as a scratchpad attached to the browser.</p>
+<h3>2. The console: your scratchpad</h3>
+<p><strong>What it is.</strong> The console is a text area in your browser where you can type a line of JavaScript, press Enter, and see the result immediately. It does not save anything when you close the browser, which is exactly what makes it safe for practice.</p>
+<p><strong>What problem it solves.</strong> It lets you try an instruction and see what it does without creating a file, a project, or a build. You can be wrong as often as you like.</p>
+<p><strong>How to open it.</strong> Open any page in your browser (a blank tab is fine). Then use one of these:</p>
+<table>
+<thead>
+<tr>
+<th>Browser</th>
+<th>Windows / Linux</th>
+<th>macOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chrome</td>
+<td><code>F12</code>, or <code>Ctrl</code> + <code>Shift</code> + <code>J</code></td>
+<td><code>Cmd</code> + <code>Option</code> + <code>J</code></td>
+</tr>
+<tr>
+<td>Edge</td>
+<td><code>F12</code>, or <code>Ctrl</code> + <code>Shift</code> + <code>J</code></td>
+<td><code>Cmd</code> + <code>Option</code> + <code>J</code></td>
+</tr>
+<tr>
+<td>Firefox</td>
+<td><code>F12</code>, or <code>Ctrl</code> + <code>Shift</code> + <code>K</code></td>
+<td><code>Cmd</code> + <code>Option</code> + <code>K</code></td>
+</tr>
+<tr>
+<td>Safari</td>
+<td>Enable Develop menu first; then <code>Option</code> + <code>Cmd</code> + <code>C</code></td>
+<td>same</td>
+</tr>
+</tbody>
+</table>
+<p>You can also right-click almost anywhere on a page and choose <strong>Inspect</strong>, then click the <strong>Console</strong> tab. On Safari, the Develop menu is hidden until you turn it on in Settings → Advanced → "Show features for web developers."</p>
+<p><strong>What success looks like.</strong> A panel opens, usually on the right or bottom. You see a <code>&gt;</code> sign (the prompt) waiting for you to type. There is a cursor after it.</p>
+<p><strong>What failure looks like.</strong> You press <code>F12</code> and nothing happens. On many laptops the top row of keys is a media/volume row by default, so <code>F12</code> is captured by the keyboard. Hold the <code>Fn</code> key and press <code>F12</code> together. If a panel opens but shows only a Network tab, click the <strong>Console</strong> tab.</p>
+<p>Type this and press Enter:</p>
+<pre><code>1 + 1
+</code></pre>
+<p>The console prints <code>2</code> on the next line. You have run JavaScript. That is the whole ceremony.</p>
+<p>If you want to clear the console later, type <code>clear()</code> and press Enter. That empties the output so you can start fresh; it does not change anything you typed earlier.</p>
+<h3>3. Values and types</h3>
+<p>A <strong>value</strong> is a single piece of data. JavaScript cares what <em>kind</em> of value it is, because different kinds behave differently. The three kinds you need now are:</p>
+<ul>
+<li><strong>String</strong> — text. You write strings inside quotes: <code>"Hello"</code>, <code>'sam@example.com'</code>. The quotes are not part of the value; they mark where the text begins and ends.</li>
+<li><strong>Number</strong> — a numeric value: <code>42</code>, <code>0</code>, <code>3.5</code>. No quotes. Numbers can be added, subtracted, compared.</li>
+<li><strong>Boolean</strong> — exactly two possibilities: <code>true</code> or <code>false</code>. No quotes. Used for yes/no facts, like "is this featured?".</li>
+</ul>
+<p>There is also a special value called <code>undefined</code>, which means "there is no value here yet." You will mostly meet it in error messages, so it is worth knowing the word now. It is not the same as the string <code>"undefined"</code>.</p>
+<p>The type matters because <code>"2" + "2"</code> and <code>2 + 2</code> give different answers. Quotes change meaning:</p>
+<pre><code>&quot;2&quot; + &quot;2&quot;   // &quot;22&quot;   (joins the text)
+2 + 2       // 4      (adds the numbers)
+</code></pre>
+<h3>4. Variables: <code>let</code> and <code>const</code></h3>
+<p>A <strong>variable</strong> is a named slot that holds a value. Naming a value once lets you use it in many places and change it in one place. If that sounds like a design <strong>token</strong> (a colour or spacing value defined once and reused everywhere), you already understand the point.</p>
+<p>You create a variable with one of two keywords:</p>
+<ul>
+<li><code>const</code> — the slot points to this value and will not be reassigned. Use it by default.</li>
+<li><code>let</code> — the slot may be reassigned later. Use it only when a value must change.</li>
+</ul>
+<pre><code class="language-js">const courseName = &quot;React for Designers&quot;;
+let completedUnits = 4;
+</code></pre>
+<p>Read the first line as: "create a slot named <code>courseName</code>, and it holds the text <code>React for Designers</code>." The <code>=</code> sign means "put the value on the right into the name on the left." In code we call <code>=</code> <strong>assignment</strong>; it is not a question of equality.</p>
+<p><code>const</code> is the safer default because it prevents accidental changes. When you truly need a value to change, <code>let</code> lets you:</p>
+<pre><code class="language-js">let completedUnits = 4;
+completedUnits = 5;
+</code></pre>
+<p>A variable name is not a value; it is the label on the slot. When the browser sees <code>completedUnits</code>, it looks up whatever is currently in that slot. We call looking it up <strong>reading</strong> the variable.</p>
+<h3>5. Naming</h3>
+<p>Variable names should be readable. A few simple rules and one habit:</p>
+<ul>
+<li>Start with a letter, <code>_</code>, or <code>$</code>. Not a digit.</li>
+<li>No spaces. If you need two words, join them in <strong>camelCase</strong>: <code>likeCount</code>, <code>isFeatured</code>, <code>backgroundColor</code>.</li>
+<li>Names are case-sensitive: <code>likeCount</code> and <code>likecount</code> are different slots.</li>
+<li>Name the <em>meaning</em>, not the type. <code>likeCount</code> is better than <code>n</code>. <code>isFeatured</code> is better than <code>flag</code>.</li>
+</ul>
+<p>You are not expected to invent great names yet. You are expected to make them readable enough that future-you is not annoyed.</p>
+<h3>6. Functions: input → output</h3>
+<p>A <strong>function</strong> is a reusable set of instructions. You give it input, it does its job, and it gives back output. Think of a component in your design tool that you reuse on many screens: you drop in new content and it produces a new instance. A function is the code version of that.</p>
+<p>Two pieces of vocabulary matter here:</p>
+<ul>
+<li><strong>Parameter</strong> — a named input slot written in the function's definition.</li>
+<li><strong>Argument</strong> — the actual value you pass in when you use the function.</li>
+</ul>
+<p>A <strong>function declaration</strong> looks like this:</p>
+<pre><code class="language-js">function greeting(name) {
+  return &quot;Hello, &quot; + name + &quot;!&quot;;
+}
+</code></pre>
+<p>Read it in order:</p>
+<ul>
+<li><code>function</code> — "I am defining a function."</li>
+<li><code>greeting</code> — the name you will use to call it later.</li>
+<li><code>(name)</code> — one input slot, called <code>name</code>.</li>
+<li><code>{ ... }</code> — the body: the instructions that run when the function is used.</li>
+<li><code>return</code> — the output. Whatever you put after <code>return</code> is handed back to whoever called the function.</li>
+</ul>
+<p>The line inside builds a string by joining <code>"Hello, "</code>, the value of <code>name</code>, and <code>"!"</code>. The <code>+</code> between strings <strong>concatenates</strong> (joins) them.</p>
+<p>To <strong>call</strong> (use) the function, write its name followed by parentheses containing the argument:</p>
+<pre><code class="language-js">console.log(greeting(&quot;Sam&quot;));
+</code></pre>
+<p>Here <code>"Sam"</code> is the argument; inside the function it arrives as the parameter <code>name</code>, and the function returns <code>"Hello, Sam!"</code>. <code>console.log</code> then prints it.</p>
+<p>A function only produces output when you actually <code>return</code> something. A function without <code>return</code> gives back <code>undefined</code>. That surprises almost everyone once, so we will cause it on purpose in the common-errors section.</p>
+<h3>7. <code>console.log</code></h3>
+<p><code>console.log(...)</code> is an instruction that prints whatever is inside the parentheses to the console. It is how you <em>see</em> a value while you work. It does not change the value or the page; it only reports.</p>
+<p>When you type a plain expression like <code>1 + 1</code> into the console, the console helpfully prints the result. Inside a saved file, nothing prints on its own — you call <code>console.log</code> to make it print. Keep that difference in mind: the console's automatic printing is a convenience of the console, not a feature of the language.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JavaScript</td>
+<td>The language that adds behaviour and memory to a page</td>
+<td>Not Java; the names are only similar</td>
+</tr>
+<tr>
+<td>Console</td>
+<td>A scratchpad in the browser for running lines of code</td>
+<td>Not the same as the Elements/Inspector tab</td>
+</tr>
+<tr>
+<td>Value</td>
+<td>A single piece of data</td>
+<td>A value is the data itself, not its name</td>
+</tr>
+<tr>
+<td>String</td>
+<td>Text, written inside quotes</td>
+<td>The quotes are markers, not part of the text</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>A numeric value, written without quotes</td>
+<td><code>"2"</code> is a string, not a number</td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td><code>true</code> or <code>false</code></td>
+<td>Write it lowercase; <code>True</code> is not defined</td>
+</tr>
+<tr>
+<td><code>undefined</code></td>
+<td>"No value here yet"</td>
+<td>Not the same as the text <code>"undefined"</code></td>
+</tr>
+<tr>
+<td>Variable</td>
+<td>A named slot holding a value</td>
+<td>The name is not the value</td>
+</tr>
+<tr>
+<td><code>const</code></td>
+<td>A slot that will not be reassigned</td>
+<td>Not "cannot change the value's insides"</td>
+</tr>
+<tr>
+<td><code>let</code></td>
+<td>A slot that may be reassigned</td>
+<td>You do not need <code>let</code> for everything</td>
+</tr>
+<tr>
+<td>camelCase</td>
+<td>Joining words with capital letters</td>
+<td>Case matters; names are case-sensitive</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>A reusable set of instructions</td>
+<td>Not the same as running it</td>
+</tr>
+<tr>
+<td>Parameter</td>
+<td>An input slot named in the definition</td>
+<td>Filled with an argument when called</td>
+</tr>
+<tr>
+<td>Argument</td>
+<td>The actual value passed in when calling</td>
+<td>Different from the parameter name</td>
+</tr>
+<tr>
+<td>Return</td>
+<td>The output a function hands back</td>
+<td>A function without <code>return</code> gives <code>undefined</code></td>
+</tr>
+<tr>
+<td>Concatenate</td>
+<td>Join values into one, often with <code>+</code></td>
+<td><code>+</code> adds numbers but joins strings</td>
+</tr>
+<tr>
+<td><code>console.log</code></td>
+<td>Prints a value to the console</td>
+<td>Does not change anything; only reports</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a tiny "course progress" snippet. First in the console, then saved into a file.</p>
+<h3>Part A — the console version</h3>
+<p>Type these lines into the console, one at a time, pressing Enter after each. (You can paste the whole block if your browser allows it; if the console refuses multi-line paste, do one line at a time.)</p>
+<pre><code class="language-js">const courseName = &quot;React for Designers&quot;;
+let completedUnits = 4;
+const isEnrolled = true;
+
+console.log(courseName);
+console.log(completedUnits);
+console.log(isEnrolled);
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>const courseName = "React for Designers";</code> creates a text slot. <code>const</code> because the course name will not change.</li>
+<li><code>let completedUnits = 4;</code> creates a number slot. <code>let</code> because you will move this number up as you progress.</li>
+<li><code>const isEnrolled = true;</code> creates a boolean slot. <code>const</code> because your enrolment status is a fact, not a number you increment.</li>
+<li>Each <code>console.log(...)</code> prints the current value of the slot named inside.</li>
+</ul>
+<p>Expected output (the exact values, printed on separate lines):</p>
+<pre><code>React for Designers
+4
+true
+</code></pre>
+<p>Now change one value and observe. This is the design-token move: change once, see it everywhere.</p>
+<pre><code class="language-js">completedUnits = 5;
+console.log(completedUnits);
+</code></pre>
+<p>Output:</p>
+<pre><code>5
+</code></pre>
+<p>Now a function. Type:</p>
+<pre><code class="language-js">function progressLabel(done, total) {
+  return done + &quot; of &quot; + total + &quot; units done&quot;;
+}
+
+console.log(progressLabel(completedUnits, 12));
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>function progressLabel(done, total)</code> defines a function with two input slots.</li>
+<li><code>return done + " of " + total + " units done";</code> joins the numbers with text using <code>+</code> and hands the result back. Notice the spaces inside the strings, so the output reads naturally.</li>
+<li>The call passes <code>completedUnits</code> (currently <code>5</code>) as <code>done</code> and <code>12</code> as <code>total</code>.</li>
+</ul>
+<p>Expected output:</p>
+<pre><code>5 of 12 units done
+</code></pre>
+<h3>Part B — save it in a file</h3>
+<p>The console forgets everything when you close the tab. To keep work, you save it in a file. Because plain <code>.js</code> files cannot run in a browser on their own, we wrap the code in a tiny HTML file, which you already understand from U03.</p>
+<p>Create a folder for this unit. Inside it, create a file named <code>progress.html</code> and put this content in it:</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;title&gt;U05 progress&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Open the console to see the output&lt;/h1&gt;
+    &lt;script&gt;
+      const courseName = &quot;React for Designers&quot;;
+      let completedUnits = 4;
+      const isEnrolled = true;
+
+      function progressLabel(done, total) {
+        return done + &quot; of &quot; + total + &quot; units done&quot;;
+      }
+
+      console.log(courseName);
+      console.log(isEnrolled);
+      console.log(progressLabel(completedUnits, 12));
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>How to run it: save the file, then double-click it. On Windows and Linux it opens in your default browser; on macOS, Control-click the file and choose "Open With" → your browser. Then open the console (see the table in section 2) and look for the three lines.</p>
+<p>Expected output:</p>
+<pre><code>React for Designers
+true
+4 of 12 units done
+</code></pre>
+<p>Why the <code>&lt;script&gt;</code> tag: in HTML, <code>&lt;script&gt;</code> marks where browser-run JavaScript begins and <code>&lt;/script&gt;</code> marks where it ends. Everything between them is code the browser runs when the page loads.</p>
+<h2>Common errors</h2>
+<h3>Error 1: <code>Uncaught ReferenceError: courseNmae is not defined</code></h3>
+<p><strong>What happened.</strong> You typed a variable name that does not exist — usually a typo or a name you never created. Here <code>courseNmae</code> is <code>courseName</code> misspelled.</p>
+<p><strong>Fix.</strong> Compare the name in the log with the name you declared, character by character. The error is telling you the truth: there is no slot with that name. (In the console, you may need to retype the declaration if you cleared it or opened a new tab.)</p>
+<h3>Error 2: <code>Uncaught TypeError: Assignment to constant variable.</code></h3>
+<p><strong>What happened.</strong> You tried to reassign something declared with <code>const</code>.</p>
+<pre><code class="language-js">const total = 12;
+total = 13; // Assignment to constant variable.
+</code></pre>
+<p><strong>Fix.</strong> If the value genuinely needs to change, declare it with <code>let</code>. If it should not change, then the error protected you from overwriting a fixed value. Ask which is true before switching the keyword.</p>
+<h3>Error 3: Forgetting <code>return</code></h3>
+<pre><code class="language-js">function double(n) {
+  n * 2;
+}
+
+console.log(double(4));
+</code></pre>
+<p>Expected output was <code>8</code>. You see <code>undefined</code> instead.</p>
+<p><strong>What happened.</strong> The function calculated <code>n * 2</code> but never handed it back. The calculation happened and was thrown away. Without <code>return</code>, a function gives back <code>undefined</code>.</p>
+<p><strong>Fix.</strong> Write <code>return n * 2;</code>.</p>
+<h3>Error 4: <code>Uncaught SyntaxError: Invalid or unexpected token</code></h3>
+<p><strong>What happened.</strong> Almost always a missing or mismatched quote. <code>console.log("hello)</code> is missing the closing <code>"</code>; the browser cannot tell where the text ends.</p>
+<p><strong>Fix.</strong> Count your quotes. Every opening quote needs a closing quote of the same kind.</p>
+<h3>Reading an error — practice</h3>
+<p>Look at this line and the message it produces:</p>
+<pre><code class="language-js">const likeCount = 12;
+console.log(likeCount);
+console.log(likecount);
+</code></pre>
+<pre><code>12
+Uncaught ReferenceError: likecount is not defined
+</code></pre>
+<p>Decode it before reading on: the first log worked, so <code>likeCount</code> exists. The second failed, so <code>likecount</code> does not. The only difference is the capital <code>C</code>. <strong>Decoded:</strong> JavaScript names are case-sensitive. <strong>Fix:</strong> match the spelling exactly. This pattern — one small difference between a working line and a broken one — is how you will solve most errors from now on.</p>
+<h2>Checkpoints</h2>
+<p>Answer these before you start the assignment. If you can answer them, you are ready.</p>
+<ol>
+<li>In your own words, what is the difference between HTML, CSS, and JavaScript on a page?</li>
+<li>When would you choose <code>const</code> and when <code>let</code>?</li>
+<li>What is the difference between a parameter and an argument?</li>
+<li>A function that calculates something but never uses <code>return</code> gives back what, and why?</li>
+<li>Why do <code>"2" + "2"</code> and <code>2 + 2</code> give different results?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Increasing difficulty. These are not graded, but do them — they are how the ideas stick.</p>
+<h3>P1 — Read and predict</h3>
+<p>Without running them, write down what each line prints. Then run them in the console and compare.</p>
+<pre><code class="language-js">const label = &quot;Draft&quot;;
+console.log(label);
+
+const count = 3;
+console.log(count + 1);
+
+console.log(&quot;count is &quot; + count);
+console.log(true);
+</code></pre>
+<h3>P2 — Change one value</h3>
+<p>In <code>progress.html</code>, change <code>completedUnits</code> from <code>4</code> to <code>7</code> and reload the page. Observe only the last line changing. Now also change the total from <code>12</code> to <code>20</code>. Which output lines changed?</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete the function so <code>console.log(tagLabel("New"))</code> prints <code>[New]</code>.</p>
+<pre><code class="language-js">function tagLabel(text) {
+  return ____;
+}
+</code></pre>
+<h3>P4 — Write from a spec</h3>
+<p>Write a function <code>square(number)</code> that returns the number multiplied by itself. Then log <code>square(5)</code> and confirm you see <code>25</code>.</p>
+<h3>P5 — Fix the broken snippet</h3>
+<p>This should print <code>Hello, Ana!</code> but does not. Find and fix every problem.</p>
+<pre><code class="language-js">function greet(name) {
+  &quot;Hello, &quot; + name + &quot;!&quot;
+}
+console.log(greet(&quot;Ana&quot;)
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. The rubric is visible on purpose; read it before you write anything.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No arrays, objects, or lists — those come in U06.</li>
+<li>No arrow functions, destructuring, or imports — those come in U07.</li>
+<li>No installing anything. Node.js arrives in U08.</li>
+<li>No HTML layout or CSS beyond the tiny wrapper file.</li>
+<li>No string template syntax with backticks; we build strings with <code>+</code> for now. You will meet backticks in a later unit.</li>
+<li>No loops (<code>for</code>, <code>while</code>) or conditions (<code>if</code>); these are useful but would crowd this unit.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U06 — JavaScript: arrays, objects, and <code>map</code>.</strong> You will store many values together and transform every item in a list, which is the skill behind every generated list of cards in React.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U05 Assignment — Values, variables, and functions</h1>
+<p>Submit everything to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U05-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>progress.html</code></h3>
+<p>Create this file from scratch (do not copy the worked example word for word; change the values and content so it is yours). It must run in a browser and print to the console.</p>
+<p>Requirements:</p>
+<ul>
+<li>A <code>&lt;script&gt;</code> block inside an HTML page.</li>
+<li>At least one string, one number, and one boolean stored in variables.</li>
+<li>At least one <code>const</code> and at least one <code>let</code>.</li>
+<li>At least one function that takes input and uses <code>return</code>.</li>
+<li>At least three <code>console.log(...)</code> lines that together show all of the above.</li>
+</ul>
+<p>Suggested theme (you may choose your own): a design-sprint tracker that stores a sprint name, a number of finished tasks, and whether the sprint is active, then prints a label like <code>Sprint 1: 3 of 8 tasks done</code>, plus <code>true</code>/<code>false</code> for active.</p>
+<h3>2. <code>console-output.txt</code></h3>
+<p>Open <code>progress.html</code> in your browser, open the console, and copy the exact output into a plain text file named <code>console-output.txt</code>. Do not retype it from memory; copy what the console actually shows.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs or bullet lists are both fine. Do not paste the lesson back unchanged.</p>
+<ol>
+<li><strong>Explain it back.</strong> In 4–6 lines, explain the different jobs of HTML, CSS, and JavaScript on a page, as if to a designer who has never coded.</li>
+<li><strong><code>const</code> vs <code>let</code>.</strong> Explain when you used each in your file, and why. What would go wrong if you made everything <code>let</code>?</li>
+<li><strong>Parameter vs argument.</strong> Use your own function from <code>progress.html</code> to point out which part is the parameter and which is the argument.</li>
+<li><strong>Predict then run.</strong> Before running anything, write down what this snippet prints, line by line. Then run it in the console and write what it actually printed. If they differ, say why.<br />
+<code>js
+   const title = "Poster";
+   let copies = 2;
+   function multiply(a, b) {
+     return a * b;
+   }
+   console.log(title);
+   console.log(multiply(copies, 3));
+   console.log(title + " x" + copies);</code></li>
+<li><strong>Debug this broken snippet.</strong> This should print <code>Hello, Ravi!</code> but it does not. Write the corrected snippet, and name each mistake you fixed.<br />
+<code>js
+   function greeting(Name) {
+     "Hello, " + Name + "!"
+   }
+   console.log(Greeting("Ravi")</code></li>
+<li><strong>Read an error.</strong> You run a line and the console shows:<br />
+<code>Uncaught ReferenceError: likeCount is not defined</code><br />
+   In two or three sentences, explain what the message means and list two likely causes.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy this and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My `progress.html` opens in a browser without a blank or broken page.
+- [ ] The console shows three or more lines of output when I reload.
+- [ ] I have at least one string, one number, and one boolean.
+- [ ] I used both `const` and `let` on purpose, and can explain each choice.
+- [ ] My function uses `return`.
+- [ ] `console-output.txt` contains the real copied output, not a retype.
+- [ ] I read the U05 rubric before writing answers.md.
+- [ ] My answers are in my own words.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All four files present with the exact names above.</li>
+<li><code>progress.html</code> runs in the browser and prints to the console.</li>
+<li><code>console-output.txt</code> matches what the console really shows.</li>
+<li><code>answers.md</code> is in your own words and covers all six prompts.</li>
+<li>Checklist completed honestly.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U05 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>progress.html</code> runs and prints to the console</td>
+<td>4</td>
+<td>Yes</td>
+<td>Open the file; console shows output</td>
+</tr>
+<tr>
+<td>Uses a string, a number, and a boolean correctly (types match how they are written)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>progress.html</code> script</td>
+</tr>
+<tr>
+<td>Uses <code>const</code> and <code>let</code> deliberately, with at least one of each</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>progress.html</code> script</td>
+</tr>
+<tr>
+<td>Writes a function that takes input and returns output with <code>return</code></td>
+<td>4</td>
+<td>Yes</td>
+<td><code>progress.html</code> script</td>
+</tr>
+<tr>
+<td><code>console-output.txt</code> is real copied output that matches the file</td>
+<td>3</td>
+<td>Yes</td>
+<td>Compare against a fresh run</td>
+</tr>
+<tr>
+<td>Explain-it-back (Q1) is accurate and in plain language</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td><code>const</code>/<code>let</code> reasoning (Q2) is concrete, not "just because"</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Parameter vs argument (Q3) is identified correctly in their own function</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Predict-then-run (Q4): prediction is written before the real output; mismatch explained if present</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Debug snippet (Q5): all three faults fixed (missing <code>return</code>, wrong call name, missing close paren)</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Error decode (Q6): explains "name does not exist" and gives plausible causes</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present and honest</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+</tbody>
+</table>
+<h2>What counts as "correct" for the tricky bits</h2>
+<ul>
+<li><strong>Types:</strong> <code>"12"</code> is a string, <code>12</code> is a number, <code>true</code>/<code>false</code> are booleans. Quotes determine the type.</li>
+<li><strong><code>return</code>:</strong> a function that logs instead of returning, or that omits <code>return</code>, does not satisfy "returns output."</li>
+<li><strong>Q4 prediction:</strong> it is fine to predict wrongly. What matters is that a prediction is recorded and any mismatch is explained. A perfect prediction with no reasoning shown still earns the marks; a missing prediction does not.</li>
+<li><strong>Q5 faults:</strong> (1) missing <code>return</code>; (2) call says <code>Greeting</code> but the function is <code>greeting</code> (case mismatch); (3) <code>console.log(greet("Ana")</code> style missing <code>)</code>. In this snippet the closing of <code>console.log</code> is missing.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>File runs but prints nothing visible: award 2/4 for the run, and guide them to <code>console.log</code>. A blank page plus an empty console is usually a name or syntax error, not a missing script.</li>
+<li>Uses only <code>let</code> everywhere: award 1/3 on the <code>const</code>/<code>let</code> criterion; that is a genuine misunderstanding worth correcting, not a strong penalty.</li>
+<li>Function logs the correct text but never returns: award 2/4 on the function criterion. The effort is real; the concept is half-there.</li>
+<li><code>console-output.txt</code> clearly retyped with names the file never prints: award 0/3 and ask them to copy the real output.</li>
+<li>Do not penalise imperfect English. Do penalise copy-pasted lesson prose with no personalisation on Q1–Q3.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>A page with <code>&lt;h1&gt;</code> text but no <code>&lt;script&gt;</code>, so nothing reaches the console.</li>
+<li><code>const</code> reassigned, producing <code>Assignment to constant variable.</code> and left unfixed.</li>
+<li>A function that uses <code>console.log</code> internally instead of <code>return</code>, so the outer <code>console.log</code> prints <code>undefined</code>.</li>
+<li>Q6 answers that say "the code is broken" without naming the missing name.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U04-css-as-presentation/index.html">U04 CSS as presentation</a>
+    <a class="next" href="../U06-arrays-objects-and-map/index.html">U06 JavaScript: arrays, objects, and `map`</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U01 — What React is, and why a designer should care | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U01</div>
+    <h1>What React is, and why a designer should care</h1>
+    <span class="phase-badge ph0">Phase 0 — Orientation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U01 — What React is, and why a designer should care</h1>
+<p><strong>Phase 0 — Orientation</strong></p>
+<h2>Where you are</h2>
+<p>This is the second unit in the course. U00 gave you the map, the rules, and the stuck protocol. U01 explains <strong>where we are going</strong>: what React actually is, what problem it solves for a human, and why your design instincts already prepare you for it.</p>
+<p>There is no installation in this unit and no code to type. This is the "look at the mountain before we climb it" unit. That is deliberate — you should know what a word means before anyone asks you to use it.</p>
+<h2>What you will be able to do</h2>
+<p>By the end of this unit you can:</p>
+<ul>
+<li>Explain, in your own words, what React is and what problem it solves.</li>
+<li>Explain what a <strong>component</strong> is using an analogy to a symbol or component in your design tool.</li>
+<li>Say honestly what React is <strong>not</strong>, so you stop expecting it to be something it isn't.</li>
+<li>Describe the road from a design file to a working web page, and where React sits on that road.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong> That is the only prerequisite.</li>
+</ul>
+<p>If terms below feel new, that is expected. They are defined in this unit before you are asked to do anything with them.</p>
+<h2>Time and energy</h2>
+<p>About <strong>45–75 minutes</strong>. This unit is reading and reflecting, not installing. Take breaks. It is completely fine to read it twice; the second pass is usually where it clicks.</p>
+<h2>Why this exists</h2>
+<p>Most people who bounce off React did not bounce because React is impossible. They bounced because the first explanation was "a JavaScript library for building user interfaces" — a sentence made entirely of words they had not been given. That sentence assumes you already know JavaScript, already know what a library is in code, and already know what "user interface" means to a programmer.</p>
+<p>You are a designer. You think in composition, spacing, states, and reuse. This unit translates the programmer's sentence into yours. If you leave knowing <em>why</em> React exists, every later command will feel like it has a purpose instead of being a ritual.</p>
+<h2>Plain-language teaching</h2>
+<h3>The problem React solves (in human terms)</h3>
+<p>Imagine a web page with a button that appears in five places: a sign-up card, a settings panel, a dialog box, a toolbar, and a footer. You design it once — good. But the page has to be <em>built</em>, and every one of those five buttons is its own piece of markup with its own copy of the styling and behavior.</p>
+<p>Now imagine the client says: "Make the button rounded." In a design tool, you change the master component and every instance updates. On a hand-built web page, someone has to find all five buttons and change all five — and if they miss one, the page is subtly inconsistent. This is the everyday pain that React was created to remove.</p>
+<p><strong>Plain definition.</strong> React is a <strong>JavaScript library for building interfaces out of reusable parts.</strong> We will unpack every word of that sentence below, because that is the whole job of this unit.</p>
+<h3>Unpacking the sentence, one word at a time</h3>
+<p><strong>Interface.</strong> The part of the software a person actually sees and touches: the screen, the buttons, the text, the images, the forms. You already design interfaces.</p>
+<p><strong>JavaScript.</strong> A programming language that web browsers understand. It is the language that lets a page <em>change</em> — respond to a click, show a menu, update a number. JavaScript is not HTML and not CSS; we will meet all three properly in phase 1.</p>
+<p><strong>Library.</strong> A collection of pre-written, reusable code that does common jobs so you do not start from zero. A library is not a full app; it is a toolbox you call on when you need it. (You do not have to install anything to understand that description — installation comes much later, in U08.)</p>
+<p><strong>Building.</strong> Writing the instructions that produce the interface.</p>
+<p><strong>Interfaces out of reusable parts.</strong> Instead of writing each button five separate times, you describe the button <strong>once</strong> and place it wherever you need it. Change it in one place; it changes everywhere. If that sounds exactly like what a component or symbol does in your design tool, good — that is the same idea, and it is the heart of React.</p>
+<h3>Components, in design language</h3>
+<p>A <strong>component</strong> in React is a named, reusable piece of interface. It bundles three things that belong together:</p>
+<ol>
+<li><strong>Structure</strong> — what is in it (text, an image, an input).</li>
+<li><strong>Look</strong> — how it is styled.</li>
+<li><strong>Behavior</strong> — what happens when someone interacts with it.</li>
+</ol>
+<p>Here is the bridge to your world:</p>
+<table>
+<thead>
+<tr>
+<th>In your design tool</th>
+<th>In React</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A master component / symbol</td>
+<td>A component</td>
+</tr>
+<tr>
+<td>An instance placed on a screen</td>
+<td>Using the component in the interface</td>
+</tr>
+<tr>
+<td>Overriding text or color on one instance</td>
+<td>Configuring the component (later we call this <strong>props</strong>)</td>
+</tr>
+<tr>
+<td>Changing the master updates all instances</td>
+<td>Editing the component updates every place it appears</td>
+</tr>
+<tr>
+<td>Variants of a component (default, hover, disabled)</td>
+<td>The component handling different <strong>states</strong></td>
+</tr>
+<tr>
+<td>A page composed of frames and components</td>
+<td>An app composed of components inside components</td>
+</tr>
+</tbody>
+</table>
+<p>You are not learning a foreign religion. You are learning the same craft, with different nouns and a keyboard.</p>
+<h3>What React is <em>not</em></h3>
+<p>Naming the wrong expectations is as useful as naming the right one.</p>
+<ul>
+<li><strong>Not a design tool.</strong> React does not replace Figma, and it will not draw for you. You still decide layout, hierarchy, and color; React is how those decisions become a real page.</li>
+<li><strong>Not a website builder.</strong> It does not give you a drag-and-drop canvas. It is a toolbox you write with.</li>
+<li><strong>Not a programming language.</strong> It is written <em>in</em> JavaScript, using JavaScript's rules.</li>
+<li><strong>Not a replacement for HTML and CSS.</strong> React sits on top of them. Every React interface still becomes HTML and CSS in the browser. This is why we learn HTML and CSS first.</li>
+<li><strong>Not magic, and not instant.</strong> There is a real learning curve. The course paces it on purpose.</li>
+</ul>
+<h3>Where React sits on the road</h3>
+<p>Think of building a page as a chain. Each link depends on the one before it:</p>
+<pre><code class="language-text">interfaces are built from parts
+  → HTML gives those parts structure
+    → CSS gives them their look
+      → the browser turns them into a page (the DOM)
+        → JavaScript can change that page
+          → components name reusable parts
+            → (and further along, JSX, props, and state)
+</code></pre>
+<p>React enters near the <strong>bottom</strong> of that chain, not the top. It is excellent at naming reusable parts and letting JavaScript change the page — but it still speaks in HTML and CSS underneath. That is precisely why this course teaches HTML and CSS first, in U02–U04, and only starts React in U11. The order is not bureaucratic; it is how the ideas actually stack.</p>
+<h3>Honest scope</h3>
+<p>Here is what you will honestly be able to do by the end of this course, with no exaggeration:</p>
+<ul>
+<li>Build a small, real, static front-end page in React — a handful of components and one interactive detail.</li>
+<li>Read and adjust an existing React project enough to be useful in a team.</li>
+<li>Speak the same vocabulary as the developers you hand off to, so reviews and handoffs go better.</li>
+</ul>
+<p>Here is what this course does <strong>not</strong> promise: that you become a full software engineer, that you learn databases and servers, or that you will be building large production apps alone. When a course over-promises, learners blame themselves for not reaching an impossible bar. This course will not do that to you.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React</td>
+<td>A JavaScript library for building interfaces from reusable parts</td>
+<td>Not a design tool; not a language</td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td>The programming language browsers understand that lets a page change</td>
+<td>Not Java; not HTML; not CSS</td>
+</tr>
+<tr>
+<td>Library</td>
+<td>A toolbox of pre-written, reusable code</td>
+<td>Not an app by itself; not a framework you must obey</td>
+</tr>
+<tr>
+<td>Interface</td>
+<td>The part of software a person sees and touches</td>
+<td>Sometimes called "UI" (user interface)</td>
+</tr>
+<tr>
+<td>Component</td>
+<td>A named, reusable piece of interface (structure + look + behavior)</td>
+<td>Not a part of a car; not just a visual symbol</td>
+</tr>
+<tr>
+<td>Reusable</td>
+<td>Written once, used in many places</td>
+<td>Not "copy-pasted many times"</td>
+</tr>
+<tr>
+<td>Render</td>
+<td>To turn described parts into what is actually shown on screen</td>
+<td>Not "download"</td>
+</tr>
+<tr>
+<td>Props</td>
+<td>The settings you pass into a component to configure an instance</td>
+<td>Not taught in this unit; coming in U13 — here it is only named</td>
+</tr>
+<tr>
+<td>State</td>
+<td>The part of a component that can change (a menu open, a count)</td>
+<td>Not taught in this unit; coming in U17 — here it is only named</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>The browser's live, structured model of the page</td>
+<td>Explained properly in U02; here it is only named</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>This is a <strong>thinking example</strong>, not code to type. It shows the difference React exists to make. Read it slowly.</p>
+<p><strong>Scenario:</strong> A team designs a "notification card." One card appears in three places: a top banner, a sidebar, and a settings screen.</p>
+<p><strong>The hand-built way (before React-style thinking):</strong></p>
+<pre><code class="language-text">Card 1 (banner):    its own copy of the padding, border, text, and icon
+Card 2 (sidebar):   its own copy of the padding, border, text, and icon
+Card 3 (settings):  its own copy of the padding, border, text, and icon
+</code></pre>
+<p>Three copies. Tomorrow the border color changes. Whoever builds this must find and edit all three.</p>
+<p><strong>The component way (React-style thinking):</strong></p>
+<pre><code class="language-text">One definition:  NotificationCard  =  padding + border + text + icon
+Place it:        use NotificationCard in the banner
+                 use NotificationCard in the sidebar
+                 use NotificationCard in the settings screen
+</code></pre>
+<p>One definition, three uses. Change the border once; all three update. This is the exact same promise as a master component in your design tool.</p>
+<p><strong>Why this matters:</strong> React is not primarily about <em>looking</em> different. It is about changing the <em>cost</em> of maintenance. Designers feel that pain constantly — the "did we update every instance?" panic. React is one serious answer to it.</p>
+<p><strong>Predict before you read on:</strong> if one of the three cards needs different text, does that mean you must make a whole new component? (Answer: no. You keep one component and hand it different text — that handing-in is what "props" will mean in U13. Just recognize the shape for now.)</p>
+<h2>Common errors</h2>
+<h3>Error: "React is a design tool, so I can skip learning HTML and CSS."</h3>
+<p><strong>What happens:</strong> Later units feel impossible, because React produces HTML and CSS in the browser. Skipping the foundation is the single most common reason people stall.</p>
+<p><strong>Fix:</strong> Trust the order. U02–U04 exist so that React has something solid to stand on.</p>
+<h3>Error: "I must master all of JavaScript before I touch React."</h3>
+<p><strong>What happens:</strong> You study JavaScript for months, never reach React, and lose momentum.</p>
+<p><strong>Fix:</strong> This course teaches only the JavaScript you need, right before you need it (U05–U07). Enough to be useful, not a computer-science degree.</p>
+<h3>Error: "Let me install everything now so I'm ready."</h3>
+<p><strong>What happens:</strong> You install tools you cannot yet explain, hit an error, and conclude you are "bad at this." The tooling is not earned yet.</p>
+<p><strong>Fix:</strong> Installation is taught — and only taught — in U08, after you know what Node and npm are for. For now, keep your hands off the terminal.</p>
+<h3>Error: Reading "library" as "framework" and worrying about rules.</h3>
+<p><strong>What happens:</strong> You expect React to dictate your whole app's shape and feel overwhelmed.</p>
+<p><strong>Fix:</strong> A library is a toolbox you reach into. It is called on when needed, not a lifestyle. Precision comes later; for now, "toolbox" is enough.</p>
+<h2>Checkpoints</h2>
+<p>Answer these in your own words. If you can, you are ready for the assignment:</p>
+<ol>
+<li>In one sentence, what problem does React solve better than building a page by hand?</li>
+<li>What are the three things a component bundles together?</li>
+<li>Name one thing in your design tool that a React component is <em>like</em>, and say why.</li>
+<li>Name two things React is <em>not</em>.</li>
+<li>Where does React sit in the chain: before or after HTML and CSS? Why does the order matter?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>These are ungraded. Struggle is allowed and useful here.</p>
+<h3>P1 — Retell the sentence</h3>
+<p>Cover the lesson. Write the sentence "React is a JavaScript library for building interfaces out of reusable parts" and then, underneath, translate each of those six words into your own plain language. Peek when stuck.</p>
+<h3>P2 — Design bridge</h3>
+<p>Pick one component you actually reuse in a design file (a card, a button, an avatar, a tag). Write 2–4 sentences describing what it bundles: its structure, its look, and its behavior. This is the exact way you will later describe a React component.</p>
+<h3>P3 — Predict then check</h3>
+<p>Look at the "hand-built way" example. Predict what happens to the three cards when the border color changes in the hand-built version <strong>and</strong> in the component version. Write both predictions, then re-read the worked example to check.</p>
+<h3>P4 — Scope honestly</h3>
+<p>Write two lines: one thing you hope to build by the end of this course, and one thing that is outside this course's scope (see "Honest scope"). Being honest about the second protects you from disappointment.</p>
+<h3>P5 — Spot the wrong mental model</h3>
+<p>Here is a sentence a learner wrote: <em>"React draws my screens for me, so I can stop using Figma and just type colors."</em> Name the two things wrong with it.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it <strong>before</strong> you write the assignment; there are no secret criteria.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No installing anything (Node arrives in U08).</li>
+<li>No code, HTML, CSS, or JavaScript to write.</li>
+<li>No components, JSX, props, or state yet — those are named here only so they are not strangers later.</li>
+<li>No second design tool required; your existing tool is enough.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U02 — What a web page is made of.</strong> We look under the hood of any page: HTML, CSS, and the tree the browser builds (the DOM), using inspection tools — no writing code yet.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U01 Assignment — React in your own words</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U01-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Short paragraphs or bullets are fine. Do <strong>not</strong> paste the lesson text back unchanged — your trainer is looking for your understanding, not the lesson's wording.</p>
+<ol>
+<li><strong>Translate the sentence.</strong> Write your own one-sentence definition of React. It must contain the words <em>reusable</em> and <em>parts</em> (or a synonym you define).</li>
+<li><strong>The human problem.</strong> In 3–5 lines, describe the everyday problem React solves for a person building a page. Use your own scenario (a button, a card, a list — anything real to you).</li>
+<li><strong>Component anatomy.</strong> Name the three things a component bundles together, and give a one-line example of each for a component you know from a design file.</li>
+<li><strong>Design bridge.</strong> Complete this sentence and explain it: <em>"A React component is like a <strong><em>_</em>_ in my design tool because </strong>____."</em></li>
+<li><strong>What React is not.</strong> List <strong>two</strong> things React is <strong>not</strong>, and for each, one sentence on why that could confuse a beginner.</li>
+<li><strong>The chain.</strong> Put these in the correct order and explain in one line why the order matters: <em>JavaScript changes the page · CSS gives it look · HTML gives it structure · components name reusable parts.</em></li>
+<li><strong>Honest scope.</strong> Write one thing this course <strong>does</strong> aim to make you able to do, and one thing it deliberately does <strong>not</strong> promise.</li>
+<li><strong>Predict then run (on paper).</strong> In the worked example, one of the three notification cards needs different text. Predict whether that requires a whole new component. State your prediction, then state what the lesson says happens and why.</li>
+</ol>
+<h3>2. <code>mental-model.md</code></h3>
+<p>Two learners wrote broken mental models below. For <strong>each</strong>, quote the wrong part, explain the mistake in one or two sentences, and give the corrected idea.</p>
+<pre><code class="language-text">Learner A: &quot;React is a design tool like Figma, so once I learn it I won't
+            need to make design files anymore.&quot;
+
+Learner B: &quot;React replaces HTML and CSS, so I can skip the foundation units
+            and go straight to components.&quot;
+</code></pre>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U01 README fully (not only the assignment).
+- [ ] I can explain &quot;library,&quot; &quot;component,&quot; and &quot;reusable&quot; without looking.
+- [ ] I did the design-bridge exercise, not just the assignment.
+- [ ] I can name two things React is not.
+- [ ] I read the U01 rubric before writing my answers.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the exact names above.</li>
+<li>Answers 1–8 are written in your own words.</li>
+<li><code>mental-model.md</code> corrects <strong>both</strong> learners, not just one.</li>
+<li>The checklist is completed honestly (a false <code>[x]</code> is worse than an honest blank).</li>
+</ul>
+<p>If you get stuck, use the U00 stuck protocol and write your assumption down rather than leaving a blank.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U01 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Own-sentence definition of React includes "reusable" + "parts" (or a defined synonym)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Describes a concrete human maintenance/reuse problem</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Names all three component aspects (structure, look, behavior) with examples</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Design bridge is accurate and specific (a genuinely reusable element)</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Names two correct "not React" items with a plausible confusion each</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Chain is ordered correctly and the "why" is sound</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Honest scope: one real aim + one real non-promise</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Predict-then-run answer is correct (one component, configured not recreated)</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+<tr>
+<td><code>mental-model.md</code> corrects <strong>both</strong> learners with a reason</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>mental-model.md</code></td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder/zip structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit guidance</h3>
+<ul>
+<li><strong>Q1:</strong> 1/3 if "library" is described correctly but "reusable parts" is missing or unexplained.</li>
+<li><strong>Q3:</strong> 1/3 per named aspect; 0 if the learner lists only visual aspects ("look") and misses structure/behavior.</li>
+<li><strong>Q5:</strong> 2/3 for one solid item; 0 if the "not" items are actually true of React.</li>
+<li><strong>Q6:</strong> full only if the order AND the reason are correct; 1/2 if order is right but the reason is vague.</li>
+<li><strong>mental-model.md:</strong> 1.5/3 per learner corrected. A correct fix with no reason earns half of that learner's share.</li>
+<li><strong>Q8:</strong> award the point if the learner says "no new component" <em>and</em> ties it to passing different content in (props is not required vocabulary here).</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li><strong>Must-have (fails the unit if absent):</strong> Q1, Q2, Q3, Q5, Q6, and <code>mental-model.md</code>. These cover the unit's core outcomes.</li>
+<li><strong>Nice-to-have (points, but not a gate):</strong> Q4, Q7, Q8.</li>
+</ul>
+<p>Do not penalize imperfect English or design-tool choices. Penalize copy-pasted lesson text with no personalization on Q2, Q4, and Q7.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U00-how-this-course-works/index.html">U00 How this course works</a>
+    <a class="next" href="../U02-what-a-web-page-is-made-of/index.html">U02 What a web page is made of</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

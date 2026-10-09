@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U10 — Container lifecycle | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U10</div>
+    <h1>Container lifecycle</h1>
+    <span class="phase-badge ph2">Phase 2 — Docker basics</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U10 — Container lifecycle</h1>
+<p><strong>Phase 2 — Docker basics</strong></p>
+<h2>Where you are</h2>
+<p>You can run containers (U07), see them (U08), and pull real images (U09). Now you learn states and common actions: start, stop, logs, exec, rm, and cleanup.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Name container states (created, running, exited) in plain words.</li>
+<li>Use <code>docker stop</code> and <code>docker start</code>.</li>
+<li>Use <code>docker logs</code> to see output from a container.</li>
+<li>Use <code>docker exec</code> to run a command inside a running container.</li>
+<li>Use <code>docker rm</code> to remove stopped containers; explain when removal is safe.</li>
+<li>Explain detached mode (<code>-d</code>) and when to use it.</li>
+<li>Clean up safely (no image deletion required).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>U00–U09</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>30–50 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Leaving containers around causes name conflicts and clutter. You need calm, safe ways to control lifecycle.</p>
+<h2>Plain-language teaching</h2>
+<h3>States</h3>
+<ul>
+<li><strong>created:</strong> container object exists but not started.</li>
+<li><strong>running:</strong> actively executing main process.</li>
+<li><strong>exited:</strong> finished or stopped; filesystem state remains in writable layer until removed.</li>
+</ul>
+<p>You see states in <code>docker ps -a</code> under STATUS.</p>
+<h3>Start/stop</h3>
+<ul>
+<li><code>docker stop &lt;name-or-id&gt;</code> sends stop signal, gives graceful time, then exits.</li>
+<li><code>docker start &lt;name-or-id&gt;</code> restarts a stopped container (uses same writable layer).</li>
+</ul>
+<h3>Logs</h3>
+<p><code>docker logs &lt;name-or-id&gt;</code> shows stdout/stderr from container. Useful when detached or when something seems quiet.</p>
+<h3>Exec (run command inside running container)</h3>
+<p><code>docker exec -it &lt;name-or-id&gt; &lt;command&gt;</code> runs another process inside an already running container. Common: <code>docker exec -it web-test bash</code> to get shell (if bash exists).</p>
+<h3>Detached mode (-d)</h3>
+<p><code>-d</code> (detached) runs container in background; your terminal returns. Use for long-running services (like nginx). Without -d, container attaches to terminal.</p>
+<h3>Remove</h3>
+<p><code>docker rm &lt;name-or-id&gt;</code> removes a <strong>stopped</strong> container. You cannot remove a running container unless you stop it first (or use force, but not taught). Names free up after removal.</p>
+<h3>Cleanup mindset</h3>
+<p>Remove stopped containers you no longer need. This prevents "name is already in use" errors.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lifecycle</td>
+<td>Sequence of states/actions over time</td>
+<td>Vague term</td>
+</tr>
+<tr>
+<td>stop/start</td>
+<td>Pause/resume container</td>
+<td>Stop != delete</td>
+</tr>
+<tr>
+<td>logs</td>
+<td>Output history of container</td>
+<td>Not "files on host" unless logged there</td>
+</tr>
+<tr>
+<td>exec</td>
+<td>Run extra command inside running container</td>
+<td>Different from <code>docker run</code> (creates new container)</td>
+</tr>
+<tr>
+<td>detached (-d)</td>
+<td>Runs in background</td>
+<td>Foreground attached by default</td>
+</tr>
+<tr>
+<td>rm</td>
+<td>Remove container object</td>
+<td>rm does not remove image</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<h3>Start from U09: create a detached nginx</h3>
+<p>If you have <code>web-test</code> stopped: remove or reuse? Better create fresh named clearly.<br />
+- All shells: <code>docker run -d --name web-live nginx:latest</code></p>
+<p><strong>Expected:</strong> prints container ID; terminal returns.</p>
+<p>Check: <code>docker ps</code> shows <code>web-live</code> running.</p>
+<h3>Logs</h3>
+<ul>
+<li>All shells: <code>docker logs web-live</code> (shows startup logs)</li>
+</ul>
+<h3>Exec</h3>
+<ul>
+<li>All shells: <code>docker exec -it web-live sh</code> (nginx image has <code>sh</code>). Try <code>echo hello</code> inside, <code>exit</code>.</li>
+</ul>
+<h3>Stop and start</h3>
+<ul>
+<li><code>docker stop web-live</code> → exits. <code>docker ps</code> empty now; <code>docker ps -a</code> shows exited.</li>
+<li><code>docker start web-live</code> → running again. <code>docker ps</code> shows it.</li>
+</ul>
+<h3>Remove</h3>
+<p>Stop if running: <code>docker stop web-live</code> (if needed). Then <code>docker rm web-live</code>. <code>docker ps -a</code> no longer shows it.</p>
+<p><strong>Typical failure decoded:</strong> try to <code>docker rm</code> running container → "You cannot remove a running container... Stop the container before attempting removal or use force."</p>
+<h2>Common errors</h2>
+<h3>CE1 — rm running container</h3>
+<p><strong>Fix:</strong> <code>docker stop &lt;name&gt;</code> then <code>docker rm &lt;name&gt;</code>.</p>
+<h3>CE2 — exec on exited container</h3>
+<p><strong>Symptom:</strong> cannot exec in stopped container.<br />
+<strong>Fix:</strong> start it first.</p>
+<h3>CE3 — Name conflict from old container</h3>
+<p><strong>Symptom:</strong> "name already in use".<br />
+<strong>Fix:</strong> <code>docker rm &lt;old-name&gt;</code> (if stopped) or use new name.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>States: created/running/exited — difference?</li>
+<li><code>docker stop</code> vs <code>docker rm</code>?</li>
+<li><code>docker exec</code> vs <code>docker run</code>?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Lifecycle round trip</h3>
+<p>Create detached container → logs → exec command → stop → start → stop → rm. Observe states each time.</p>
+<h3>P2 — Name reuse</h3>
+<p>Create <code>temp-box</code>, stop, rm, create again with same name. Works now?</p>
+<h3>P3 — Logs on exited</h3>
+<p>Run a short container that exits quickly (hello-world) — <code>docker logs &lt;name&gt;</code> shows nothing useful, which is normal.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Force remove (<code>-f</code>) deep explanation.</li>
+<li>Removing images.</li>
+<li>Volumes/networks beyond lifecycle.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>Phase 3 starts: U11 — What a Dockerfile is and is not</strong> (build your own image).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U10 Assignment — Container lifecycle</h1>
+<p>Submit: <code>U10-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>lifecycle.md</code></h3>
+<ol>
+<li><strong>States.</strong> Define created/running/exited with examples from your runs.</li>
+<li><strong>Actions.</strong> Explain <code>docker stop</code>, <code>docker start</code>, <code>docker logs</code>, <code>docker exec</code>, <code>docker rm</code> and when to use each.</li>
+<li><strong>Detached vs foreground.</strong> What does <code>-d</code> do? When prefer detached?</li>
+<li><strong>Proof.</strong> Show lifecycle: run detached nginx with name → logs → exec (e.g. <code>echo hi</code>) → stop → start → stop → rm. Include key outputs/state observations.</li>
+<li><strong>Name conflict fix.</strong> If you get "name already in use", explain exact steps to fix safely.</li>
+<li><strong>Explain in your own words.</strong> Difference between <code>docker exec</code> and <code>docker run</code>.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I did full lifecycle round trip.
+- [ ] I can explain states and actions.
+- [ ] I know stop != rm.
+- [ ] I read rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files present.</li>
+<li>Answers in own words.</li>
+<li>Proof from runs or clearly labeled.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><p><em>No rubric file found.</em></p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U09-pulling-running-images/index.html">U09 Pulling and running existing images</a>
+    <a class="next" href="../U11-what-a-dockerfile-is/index.html">U11 What a Dockerfile is</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U24 — Environment variables and .env files | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U24</div>
+    <h1>Environment variables and .env files</h1>
+    <span class="phase-badge ph5">Phase 5 — Docker Compose</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U24 — Environment variables and .env files</h1>
+<p><strong>Phase 5 — Docker Compose</strong></p>
+<h2>Where you are</h2>
+<p>Your two-service app from U23 works, but its database password is written directly in <code>compose.yaml</code>. If you commit that file, the password goes into your project's history. This unit separates <strong>configuration</strong> from <strong>secrets</strong>, moves values into a <code>.env</code> file, and shows how Compose fills them in. This is a gentle introduction; deeper secret management comes in U33.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Tell the difference between configuration and secrets.</li>
+<li>Use <code>${VAR}</code> interpolation in <code>compose.yaml</code>.</li>
+<li>Create a <code>.env</code> file that Compose reads automatically.</li>
+<li>Explain why secrets must not be baked into images or committed to Git.</li>
+<li>Add <code>.env</code> to <code>.gitignore</code> and keep a safe <code>.env.example</code>.</li>
+<li>Run <code>docker compose config</code> to see resolved values, and understand its risk.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U15</strong> — image layers and why things baked in stay baked in.</li>
+<li><strong>U22–U23</strong> — services, <code>environment:</code>, a two-service app.</li>
+<li>Basic Git awareness (ignoring files). No Git expertise required.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. This unit is more careful reading than typing. The ideas are small but consequential; read slowly.</p>
+<h2>Why this exists</h2>
+<p>Hard-coded secrets are one of the most common and most damaging beginner mistakes. A password pasted into a tracked file leaks to everyone who ever clones the repository — including, sometimes, the public internet. This unit teaches the habit of keeping values <em>outside</em> the Compose file before that mistake becomes muscle memory.</p>
+<h2>Plain-language teaching</h2>
+<h3>Configuration vs secrets</h3>
+<ul>
+<li><strong>Configuration</strong> is a setting that is not dangerous if seen: a port number, a hostname, a log level, a feature flag, the database name.</li>
+<li>A <strong>secret</strong> is a value that must stay private: a password, an API token, a private key.</li>
+</ul>
+<p>Both are "environment variables" to a container. The difference is what happens if someone reads them. Treating them the same is how leaks happen.</p>
+<h3>Why not put secrets in the image</h3>
+<p>Recall from U15 that an image is built in layers, and each layer is kept. If a Dockerfile contains a secret — even in a layer that is later deleted — the secret remains inside the image and can be read by anyone who has it. Putting a secret in a <code>RUN</code> or <code>ENV</code> line of a Dockerfile is a permanent, public record.</p>
+<p>Even passing a secret as an environment variable has limits: anyone who can inspect the container can read it:</p>
+<pre><code class="language-text">docker inspect &lt;container&gt;
+</code></pre>
+<p>So environment variables are better than baking secrets into images, but they are not a vault. For local learning, a <code>.env</code> file that is <strong>not committed</strong> is a reasonable first step. Production needs a real secret store; we point at that in U33.</p>
+<h3>Interpolation: <code>${...}</code> in the Compose file</h3>
+<p><strong>Interpolation</strong> means Compose replaces a placeholder with a value when it reads the file. The syntax is <code>${NAME}</code>.</p>
+<pre><code class="language-yaml">    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+</code></pre>
+<p>Compose sees <code>${POSTGRES_PASSWORD}</code> and substitutes the value of that name. You can also provide a fallback:</p>
+<pre><code class="language-yaml">      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localdev}
+</code></pre>
+<p>The <code>:-</code> means "use <code>localdev</code> if the variable is not set." A fallback is convenient for local work but can hide a missing secret, so use it thoughtfully.</p>
+<h3>Where does the value come from? Precedence</h3>
+<p>Compose looks for each variable in this order (first match wins):</p>
+<ol>
+<li>Your <strong>shell environment</strong> (a variable you exported, or set in PowerShell).</li>
+<li>A file named <strong><code>.env</code></strong> in the folder next to <code>compose.yaml</code>.</li>
+</ol>
+<p>So <code>.env</code> is a convenient default that you can override from your shell when needed.</p>
+<h3>The <code>.env</code> file and <code>env_file:</code> are different</h3>
+<p>This is a classic confusion, so name it now:</p>
+<table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>What it does</th>
+<th>Who reads it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.env</code> (project root)</td>
+<td>Supplies values for <code>${VAR}</code> interpolation in <code>compose.yaml</code>.</td>
+<td>Compose itself, when parsing the file.</td>
+</tr>
+<tr>
+<td><code>env_file:</code> (under a service)</td>
+<td>Loads a file and sets those variables <strong>inside the container</strong>.</td>
+<td>The container runtime, at start.</td>
+</tr>
+</tbody>
+</table>
+<p><code>.env</code> configures the <em>file</em>; <code>env_file:</code> configures the <em>container</em>. They can hold the same kind of text but do different jobs.</p>
+<h3>Keep the secret out of Git</h3>
+<ul>
+<li>Add <code>.env</code> to <code>.gitignore</code> so it is never committed.</li>
+<li>Commit a <strong><code>.env.example</code></strong> — the same keys, with placeholder values. Teammates copy it to <code>.env</code> and fill in real values. This documents what is needed without leaking anything.</li>
+</ul>
+<h3>A gentle note on Docker secrets</h3>
+<p>Docker has a feature called <strong>Docker secrets</strong>, but in its full form it is tied to Docker Swarm (a multi-machine mode we do not use here). For local Compose work, the practical pattern is: keep secrets in an untracked <code>.env</code>, and never bake them into images. Later units (U33) cover stronger habits.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration</td>
+<td>Non-sensitive setting</td>
+<td>Not a secret; safe to see</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>A value that must stay private</td>
+<td>Not just "any variable"</td>
+</tr>
+<tr>
+<td>Interpolation</td>
+<td>Replacing <code>${NAME}</code> with a value</td>
+<td>Not the same as passing a file to a container</td>
+</tr>
+<tr>
+<td><code>.env</code></td>
+<td>File Compose reads for interpolation</td>
+<td>Not automatically copied into the image</td>
+</tr>
+<tr>
+<td><code>env_file:</code></td>
+<td>File loaded into a service's container environment</td>
+<td>Not the same file as <code>.env</code></td>
+</tr>
+<tr>
+<td>Fallback <code>${VAR:-x}</code></td>
+<td>Value used if <code>VAR</code> is unset</td>
+<td>Can hide a missing secret</td>
+</tr>
+<tr>
+<td><code>.env.example</code></td>
+<td>Committed template of required keys</td>
+<td>Not secret; contains placeholders</td>
+</tr>
+<tr>
+<td><code>.gitignore</code></td>
+<td>Tells Git which files to ignore</td>
+<td>Does not delete a file already committed</td>
+</tr>
+<tr>
+<td><code>docker compose config</code></td>
+<td>Prints the resolved Compose file</td>
+<td>Prints secrets in plaintext — handle with care</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will take the U23 project and move its values into a <code>.env</code> file. Put these files in one folder, for example <code>u24</code>.</p>
+<h3>File 1: <code>.env</code> (never committed)</h3>
+<pre><code class="language-text">POSTGRES_USER=appuser
+POSTGRES_PASSWORD=localdev-secret
+POSTGRES_DB=appdb
+WEB_HOST_PORT=8080
+</code></pre>
+<p>Plain rules for <code>.env</code>: one <code>KEY=value</code> per line, no spaces around <code>=</code>, and no surrounding quotes unless the value genuinely contains spaces. Blank lines and lines starting with <code>#</code> are ignored.</p>
+<h3>File 2: <code>.env.example</code> (committed)</h3>
+<pre><code class="language-text">POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+WEB_HOST_PORT=8080
+</code></pre>
+<p>Same keys, empty or safe placeholders. This is the file a teammate reads to learn what to set.</p>
+<h3>File 3: <code>.gitignore</code></h3>
+<pre><code class="language-text">.env
+</code></pre>
+<p>If you already commit a file that contains a secret, adding it to <code>.gitignore</code> afterwards is <strong>not</strong> enough — the secret stays in history. Rotating (changing) the password is the real fix. This is a good reason to get the habit right now.</p>
+<h3>File 4: <code>compose.yaml</code></h3>
+<pre><code class="language-yaml">services:
+  web:
+    build: .
+    ports:
+      - &quot;${WEB_HOST_PORT}:8000&quot;
+    environment:
+      DB_HOST: db
+      DB_PORT: &quot;5432&quot;
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+</code></pre>
+<p>Compare to U23: the literal values are gone; placeholders remain. The file is now safe to commit. <code>app.py</code> and <code>Dockerfile</code> are unchanged from U23.</p>
+<h3>Seeing the resolved values</h3>
+<p><strong>Command:</strong></p>
+<pre><code class="language-text">docker compose config
+</code></pre>
+<p><strong>What it does:</strong> reads <code>compose.yaml</code>, applies interpolation from your shell and <code>.env</code>, and prints the fully resolved configuration to your screen. It is a syntax check and a way to confirm which values will be used. It starts nothing.</p>
+<p><strong>Success looks like this</strong> (abbreviated and reformatted):</p>
+<pre><code class="language-text">name: u24
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - published: &quot;8080&quot;
+        target: 8000
+    environment:
+      DB_HOST: db
+      DB_PORT: &quot;5432&quot;
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: localdev-secret
+      POSTGRES_DB: appdb
+volumes:
+  db-data:
+    name: u24_db-data
+</code></pre>
+<p>Notice how <code>${...}</code> became real values. If a value shows up empty, the variable was not found.</p>
+<p><strong>A typical failure, decoded:</strong></p>
+<pre><code class="language-text">invalid interpolation format for &quot;environment&quot; option in service &quot;db&quot;:
+required variable POSTGRES_PASSWORD is missing a value
+</code></pre>
+<p><strong>What it means:</strong> Compose found <code>${POSTGRES_PASSWORD}</code> but neither your shell nor <code>.env</code> provided <code>POSTGRES_PASSWORD</code>. <strong>Fix:</strong> add the key to <code>.env</code> (or set it in your shell). If you intended a default, use <code>${POSTGRES_PASSWORD:-somedefault}</code>.</p>
+<p><strong>Important caution:</strong> the <code>config</code> output prints secrets in plaintext. Do not paste it into a chat, an issue, or a screenshot. When you need only validation, you can quiet the output:</p>
+<pre><code class="language-text">docker compose config --quiet
+</code></pre>
+<p><code>--quiet</code> prints nothing if the file is valid, and prints the error if it is not. Use it freely; use full <code>config</code> carefully.</p>
+<h3>Starting it</h3>
+<pre><code class="language-text">docker compose up
+</code></pre>
+<p>Compose reads <code>.env</code>, resolves the placeholders, and starts the services exactly as before. The difference is that the password now lives in an untracked file. To verify the app still reaches the database, open <code>http://localhost:8080</code> and look for <code>OK: reached database at db:5432</code>. Stop with <code>Ctrl+C</code>, then <code>docker compose down</code>.</p>
+<h3>A note on operating systems</h3>
+<ul>
+<li><code>.env</code> files are read the same way on Windows, macOS, and Linux. Use a plain text editor and save without a byte-order mark if your editor offers the option.</li>
+<li>To set a variable in the shell instead: PowerShell uses <code>$env:POSTGRES_PASSWORD = "value"</code>; bash uses <code>export POSTGRES_PASSWORD="value"</code>. Shell values win over <code>.env</code>.</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: A required variable is missing</h3>
+<p><strong>What you see</strong> (often when starting or running <code>config</code>):</p>
+<pre><code class="language-text">required variable POSTGRES_PASSWORD is missing a value
+</code></pre>
+<p><strong>What it means:</strong> the placeholder has no source. Either <code>.env</code> lacks the key, the key is misspelled (<code>PASSWORD</code> vs <code>POSTGRES_PASSWORD</code>), or you added a trailing space in <code>.env</code> and the parser read it as part of the value.</p>
+<p><strong>Fix:</strong> compare keys in <code>.env</code> and <code>compose.yaml</code> character by character. <code>KEY=value</code> with no spaces around <code>=</code>.</p>
+<h3>Error: It works for you but not after a fresh clone</h3>
+<p><strong>What it means:</strong> <code>.env</code> was never committed — correctly! — but the teammate did not create their own. They have no values.</p>
+<p><strong>Fix:</strong> commit <code>.env.example</code> and tell teammates to copy it: <code>cp .env.example .env</code> (macOS/Linux) or <code>Copy-Item .env.example .env</code> (PowerShell), then fill in real values.</p>
+<h3>Error: A secret was committed before <code>.gitignore</code> was added</h3>
+<p><strong>What it means:</strong> <code>.gitignore</code> prevents <em>future</em> tracking. It cannot erase a file from past commits.</p>
+<p><strong>Fix:</strong> rotate the secret (change the password/key), then remove the file from tracking properly. Never assume the old value is still private.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is the difference between configuration and a secret?</li>
+<li>Where does Compose look for <code>${VAR}</code> values, and in what order?</li>
+<li>Why is <code>.env</code> not the same as <code>env_file:</code>?</li>
+</ol>
+<p>If those are clear, you are ready.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Change one value</h3>
+<p>Set <code>WEB_HOST_PORT</code> to <code>8090</code> in <code>.env</code>, predict the new URL, then run <code>docker compose config --quiet</code> and <code>docker compose up</code>. Confirm the URL.</p>
+<h3>P2 — Fallback behavior</h3>
+<p>Change the password line in <code>compose.yaml</code> to <code>${POSTGRES_PASSWORD:-fallback-pass}</code>, then rename the key in <code>.env</code> to <code>PASSWORD_OLD</code> so it is no longer found. Run <code>docker compose config --quiet</code>; then run <code>docker compose config</code> and look at what value is used. What did the fallback do?</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Write the two lines you would add to a <code>.gitignore</code> to ignore <code>.env</code> and any <code>.env.local</code>, while keeping <code>.env.example</code>.</p>
+<h3>P4 — Write from a specification</h3>
+<p>Given a service that needs <code>API_TOKEN</code> and <code>LOG_LEVEL</code>, write the <code>environment:</code> block using interpolation, where <code>LOG_LEVEL</code> defaults to <code>info</code> if unset. Then write the <code>.env.example</code> for both keys.</p>
+<h3>P5 — Debug this broken snippet</h3>
+<p>A teammate commits this and wonders why their password leaks. Explain the problem in one or two sentences and describe the fix.</p>
+<pre><code class="language-dockerfile">FROM python:3.12-slim
+ENV DB_PASSWORD=SuperSecret123
+WORKDIR /app
+COPY . .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No full secrets-management tooling (Docker secrets/Swarm, vaults). That is a pointer for U33.</li>
+<li>No <code>up -d</code>, <code>logs</code>, <code>ps</code>, or <code>exec</code> (U25).</li>
+<li>No CI or registry concerns (Phase 6).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U25 — Compose lifecycle</strong> (<code>up -d</code>, <code>down</code>, <code>down -v</code>, <code>logs</code>, <code>build</code>, <code>ps</code>, <code>exec</code>, and the failures that follow).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U24 Assignment — Environment variables and .env files</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U24-YourName</code></p>
+<h2>What to build</h2>
+<p>Take your two-service project from U23 and move all configurable values into a <code>.env</code> file, with a committed <code>.env.example</code> and a <code>.gitignore</code> that ignores <code>.env</code>. Put your project in a subfolder named <code>project/</code>.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>project/.env</code></h3>
+<p>Must define at least: <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code>, and <code>WEB_HOST_PORT</code>. Use your own values. This file is <strong>not</strong> secret from your trainer (they need to grade it), but imagine it is.</p>
+<h3>2. <code>project/.env.example</code></h3>
+<p>The same keys with empty or placeholder values — the file a teammate would commit and copy.</p>
+<h3>3. <code>project/.gitignore</code></h3>
+<p>Must ignore <code>.env</code> while allowing <code>.env.example</code>.</p>
+<h3>4. <code>project/compose.yaml</code></h3>
+<p>A two-service Compose file where:</p>
+<ul>
+<li>every configurable value uses <code>${...}</code> interpolation,</li>
+<li>the database service reads <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, and <code>POSTGRES_DB</code>,</li>
+<li>the web service's published host port comes from <code>${WEB_HOST_PORT}</code>,</li>
+<li>the database data is still stored in a named volume at <code>/var/lib/postgresql/data</code>.</li>
+</ul>
+<h3>5. <code>project/app.py</code> and <code>project/Dockerfile</code></h3>
+<p>Carried over from U23, unchanged is fine.</p>
+<h3>6. <code>evidence.txt</code></h3>
+<p>Paste exactly what you did and saw, in this order:</p>
+<ul>
+<li>The command that validated the file without printing secrets.</li>
+<li>The command that started the project and the lines showing it started.</li>
+<li>The web response proving the app reached the database.</li>
+<li>The command and output for <code>docker compose down</code>.</li>
+</ul>
+<p>Do <strong>not</strong> paste the full output of <code>docker compose config</code> here, because it would print your password. Note in one line why you avoided it.</p>
+<h3>7. <code>answers.md</code></h3>
+<ol>
+<li><strong>Configuration vs secret.</strong> Define each in your own words and give two examples of each from your own project.</li>
+<li><strong>Interpolation.</strong> Explain what <code>${WEB_HOST_PORT}</code> means and where its value comes from when Compose runs.</li>
+<li><strong><code>.env</code> vs <code>env_file:</code>.</strong> Explain the difference between the project <code>.env</code> file and the <code>env_file:</code> service key. Who reads each one?</li>
+<li><strong>Precedence.</strong> If you set <code>POSTGRES_PASSWORD</code> in your shell <em>and</em> in <code>.env</code>, which one does Compose use? How could you test this?</li>
+<li><strong>Not baking secrets.</strong> Why is putting a secret in a Dockerfile <code>ENV</code> line dangerous even if you delete it in a later line? Reference image layers.</li>
+<li><strong>Debug this.</strong> A teammate commits this Dockerfile. Explain the leak and describe the correct approach for a local project.</li>
+</ol>
+<p><code>dockerfile
+   FROM python:3.12-slim
+   ENV DB_PASSWORD=SuperSecret123
+   WORKDIR /app
+   COPY . .
+   CMD ["python", "app.py"]</code></p>
+<ol start="7">
+<li><strong>Gitignore honesty.</strong> Explain why adding <code>.env</code> to <code>.gitignore</code> does <strong>not</strong> protect a secret in a file that was already committed.</li>
+</ol>
+<h3>8. <code>checklist.md</code></h3>
+<p>Copy and complete:</p>
+<pre><code class="language-markdown">- [ ] I read the U24 README fully (not only the assignment).
+- [ ] `compose.yaml` contains no hard-coded secrets.
+- [ ] `.env` exists locally and is listed in `.gitignore`.
+- [ ] `.env.example` contains the same keys as `.env`, with placeholders.
+- [ ] I validated the file with `docker compose config --quiet`.
+- [ ] I did not paste full `docker compose config` output anywhere.
+- [ ] I read the U24 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>project/</code> contains the files listed, named exactly as above.</li>
+<li><code>compose.yaml</code> has no literal secret values; all configurable values use <code>${...}</code>.</li>
+<li><code>.env.example</code> and <code>.gitignore</code> are correct.</li>
+<li>The project was started and the app reported a successful database connection.</li>
+<li><code>answers.md</code> is in your own words, with Q6 and Q7 answered concretely.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+</ul>
+<h2>Submission format</h2>
+<p>One folder or zip named <code>U24-YourName</code> containing <code>project/</code>, <code>evidence.txt</code>, <code>answers.md</code>, and <code>checklist.md</code>, with names exactly as written.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U24 Rubric</h1>
+<p>Visible to learners. Total <strong>25 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compose.yaml</code> uses <code>${...}</code> for all configurable values, no hard-coded secrets</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>project/compose.yaml</code></td>
+</tr>
+<tr>
+<td><code>.env</code> defines the required keys with sensible values</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/.env</code></td>
+</tr>
+<tr>
+<td><code>.env.example</code> has the same keys with placeholders</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>project/.env.example</code></td>
+</tr>
+<tr>
+<td><code>.gitignore</code> ignores <code>.env</code> and allows <code>.env.example</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>project/.gitignore</code></td>
+</tr>
+<tr>
+<td>Project starts and the app reports a successful DB connection</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>evidence.txt</code></td>
+</tr>
+<tr>
+<td>Evidence uses <code>config --quiet</code> and avoids printing secrets</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>evidence.txt</code></td>
+</tr>
+<tr>
+<td>Configuration vs secret clearly distinguished with examples</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Interpolation and precedence explained correctly</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2, Q4</td>
+</tr>
+<tr>
+<td><code>.env</code> vs <code>env_file:</code> difference explained correctly</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Explains why baked-in secrets persist in image layers</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5, Q6</td>
+</tr>
+<tr>
+<td>Explains why <code>.gitignore</code> cannot retroactively protect a commit</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Files named correctly; checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Secrets in Compose (5 pts): award 3 if most values are interpolated but one secret remains literal; award 0 if all values are still hard-coded.</li>
+<li>Evidence (2 pts): award 0 if the learner pasted full <code>config</code> output containing a real password, even if everything else is correct — this is the exact habit the unit teaches against. Award 1 if they used <code>config --quiet</code> but did not say why.</li>
+<li>Q3: award 1/2 if they know both involve variables but cannot say who reads each file.</li>
+<li>Q5/Q6: award full credit for identifying that image layers are permanent and readable; award 1/3 if they only say "it's unsafe" with no layer reasoning.</li>
+<li>Q4: the correct answer is that the shell environment wins over <code>.env</code>; award 1/2 for "shell wins" with no test idea.</li>
+<li>Note: a mild, honest password in the submitted <code>.env</code> is fine and expected for grading.</li>
+</ul>
+<h2>Evidence the assessor should look for</h2>
+<ul>
+<li><code>compose.yaml</code> contains <code>${POSTGRES_USER}</code>, <code>${POSTGRES_PASSWORD}</code>, <code>${POSTGRES_DB}</code>, and <code>${WEB_HOST_PORT}</code>.</li>
+<li><code>.gitignore</code> includes <code>.env</code> but not <code>.env.example</code> (or explicitly negates it).</li>
+<li><code>evidence.txt</code> shows a <code>config --quiet</code> run and a successful app response, and explicitly avoids exposing the password.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U23-two-service-app/index.html">U23 A two-service app</a>
+    <a class="next" href="../U25-compose-lifecycle/index.html">U25 Compose lifecycle</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U34 — Debugging containers calmly | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U34</div>
+    <h1>Debugging containers calmly</h1>
+    <span class="phase-badge ph7">Phase 7 — Craft and capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U34 — Debugging containers calmly</h1>
+<p><strong>Phase 7 — Craft and capstone</strong></p>
+<h2>Where you are</h2>
+<p>You have built and run a lot of containers by now. Some of them have failed. Red text is normal in this work; what is not acceptable is freezing in front of it. This unit gives you a <strong>repeatable method</strong> for diagnosing a misbehaving container, so that "it is broken" becomes "here is what I know, here is what I will check next." The goal is calm, ordered steps — not genius.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Run a fixed diagnostic sequence instead of random clicking.</li>
+<li>Read a container's state, exit code, and logs.</li>
+<li>Use <code>docker inspect</code> to answer specific questions with <code>-f</code>.</li>
+<li>Enter a running container with <code>docker exec</code> (when a shell exists).</li>
+<li>Recognise and decode four common failures: exits immediately, port busy, cannot connect, out of memory.</li>
+<li>Read exit codes and connect them to likely causes.</li>
+<li>Use <code>docker events</code> briefly to watch container lifecycle changes live.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00</strong> — the stuck protocol (you will reuse it here).</li>
+<li><strong>U07–U10</strong> — running containers, logs, exec, lifecycle.</li>
+<li><strong>U17–U20</strong> — volumes, ports, networking (two of the four failures involve ports).</li>
+<li><strong>U21–U25</strong> — Compose, for <code>docker compose logs</code>.</li>
+<li><strong>U31</strong> — restart policies and restart loops.</li>
+<li><strong>U33</strong> — why some minimal images have no shell.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. You will break things on purpose; that is the point. Keep one terminal open just for <code>docker logs</code> or <code>docker events</code> if you can.</p>
+<h2>Why this exists</h2>
+<p>When a container does not work, beginners do two harmful things: they run the same command again and again, or they start changing things at random. Both feel like action and produce nothing.</p>
+<p>Experienced people are not smarter in these moments. They follow a sequence: <strong>What state is it in? What did it say? What did it exit with? Can I get inside?</strong> That sequence narrows the problem fast, and it works whether the problem is a typo, a port clash, or a memory limit.</p>
+<p>This unit also reinforces the stuck protocol from U00. Debugging a container <em>is</em> the stuck protocol applied to Docker.</p>
+<h2>Plain-language teaching</h2>
+<h3>The container lifecycle, as states</h3>
+<p>A container is always in one of a few <strong>states</strong>. Naming the state is the first move.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>created</code></td>
+<td>It exists but has never started.</td>
+</tr>
+<tr>
+<td><code>running</code></td>
+<td>Its main process is alive.</td>
+</tr>
+<tr>
+<td><code>paused</code></td>
+<td>Frozen on purpose.</td>
+</tr>
+<tr>
+<td><code>restarting</code></td>
+<td>It exited and the restart policy is bringing it back (U31).</td>
+</tr>
+<tr>
+<td><code>exited</code></td>
+<td>The main process finished. It is not coming back unless you start it.</td>
+</tr>
+<tr>
+<td><code>dead</code></td>
+<td>Something is wrong and Docker could not remove it cleanly.</td>
+</tr>
+</tbody>
+</table>
+<p><code>docker ps</code> shows only <code>running</code> containers. <code>docker ps -a</code> shows <strong>all</strong> states — including the failures. The <code>-a</code> means "all," and it is the single most useful debugging habit in this unit.</p>
+<h3>Exit codes, in plain words</h3>
+<p>When a process ends, it returns a number called an <strong>exit code</strong>. Zero means "finished normally." Anything else means "something was not right." The number is a clue, not a verdict.</p>
+<table>
+<thead>
+<tr>
+<th>Exit code</th>
+<th>Common cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Success. The process finished its work.</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>A general application error.</td>
+</tr>
+<tr>
+<td><code>125</code></td>
+<td>Docker itself failed to run the container (bad flag, bad command line).</td>
+</tr>
+<tr>
+<td><code>126</code></td>
+<td>The command was found but could not be executed (permissions).</td>
+</tr>
+<tr>
+<td><code>127</code></td>
+<td>The command was not found inside the image.</td>
+</tr>
+<tr>
+<td><code>137</code></td>
+<td>Killed with SIGKILL — often out-of-memory or <code>docker kill</code>.</td>
+</tr>
+<tr>
+<td><code>143</code></td>
+<td>Terminated with SIGTERM — the usual result of <code>docker stop</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>You do not memorise these by force. You look them up <em>and</em> you look at the logs. The code tells you which family of problem you are in.</p>
+<h3>Logs are just the process's output</h3>
+<p>Containers do not have a special logging system by default. Whatever the main process prints to its output streams is captured by Docker and shown by <code>docker logs</code>. If the process prints nothing, the logs are empty — that itself is information. Programs that buffer their output (some Python and Node setups) may hide logs until they flush; that is a common source of "there are no logs!"</p>
+<h3>Reading <code>inspect</code>: ask a precise question</h3>
+<p><code>docker inspect</code> dumps a large JSON description of a container. Reading all of it is a mistake. Use <code>-f</code> to pull <strong>one field</strong>:</p>
+<ul>
+<li><code>.State.Status</code> — the state word.</li>
+<li><code>.State.ExitCode</code> — the number the process returned.</li>
+<li><code>.State.OOMKilled</code> — <code>true</code> if it was killed for using too much memory.</li>
+<li><code>.Config.Image</code> — which image it is running.</li>
+<li><code>.HostConfig.RestartPolicy.Name</code> — the restart policy (U31).</li>
+<li><code>.NetworkSettings.Ports</code> — how ports are mapped.</li>
+</ul>
+<h3>A method you can always run</h3>
+<p>When a container misbehaves, do these in order and <strong>stop at the first answer</strong>:</p>
+<ol>
+<li><strong>State:</strong> <code>docker ps -a</code> — is it running, exited, or restarting?</li>
+<li><strong>Logs:</strong> <code>docker logs --tail 50 &lt;name&gt;</code> — what did it last say?</li>
+<li><strong>Exit code:</strong> <code>docker inspect -f "{{.State.ExitCode}}" &lt;name&gt;</code> — how did it end?</li>
+<li><strong>Details:</strong> <code>docker inspect &lt;name&gt;</code> fields for image, ports, and memory.</li>
+<li><strong>Get inside (if running):</strong> <code>docker exec -it &lt;name&gt; sh</code> — look around.</li>
+<li><strong>Fix one thing</strong>, recreate, and observe. If it fails the same way, you have learned something.</li>
+</ol>
+<p>This is the U00 stuck protocol, dressed for Docker.</p>
+<h3>Windows / macOS / Linux note</h3>
+<p>Docker Desktop on Windows and macOS runs a Linux engine behind the scenes. Commands are identical, but shell access differs: minimal images often have <code>sh</code> but not <code>bash</code>; Windows-only images may offer <code>cmd</code> instead. Compose commands are the same on all three platforms.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>State</td>
+<td>Whether a container is created, running, paused, restarting, or exited</td>
+<td>Not the same as "healthy"</td>
+</tr>
+<tr>
+<td>Exit code</td>
+<td>Number a process returns when it ends</td>
+<td>Not always an error</td>
+</tr>
+<tr>
+<td>Logs</td>
+<td>Captured output of the main process</td>
+<td>Not a separate logging service</td>
+</tr>
+<tr>
+<td><code>inspect</code></td>
+<td>Full JSON description of a container</td>
+<td>Not a summary; use <code>-f</code> to focus</td>
+</tr>
+<tr>
+<td><code>exec</code></td>
+<td>Run a command inside an already-running container</td>
+<td>Not for exited containers</td>
+</tr>
+<tr>
+<td>SIGTERM</td>
+<td>Polite "please stop" signal</td>
+<td>Default from <code>docker stop</code></td>
+</tr>
+<tr>
+<td>SIGKILL</td>
+<td>Immediate "stop now" signal</td>
+<td>Not catchable by the process</td>
+</tr>
+<tr>
+<td>OOM</td>
+<td>Out of memory</td>
+<td>Not the same as a crash from a bug</td>
+</tr>
+<tr>
+<td><code>docker events</code></td>
+<td>Live feed of Docker activity</td>
+<td>Not your app's logs</td>
+</tr>
+<tr>
+<td>Health check</td>
+<td>A command Docker runs to test if the app is responsive</td>
+<td>Not the same as "process is alive"</td>
+</tr>
+<tr>
+<td>Restart loop</td>
+<td>A container restarting endlessly</td>
+<td>A symptom, not a root cause</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> a container exits almost immediately, and you do not know why. We will diagnose one deliberate example from start to fix.</p>
+<h3>Step 1 — run something that fails on purpose</h3>
+<pre><code class="language-bash">docker run --name boom alpine sh -c &quot;echo starting up; sleep 1; exit 3&quot;
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> create a container whose main process prints a line and then exits with a non-zero code.</li>
+<li><strong>Success looks like:</strong> the line <code>starting up</code> printed, then your prompt returns. This is <em>expected</em> failure.</li>
+<li><strong>One decoded failure:</strong> <code>docker: Error response from daemon: Conflict. The container name "/boom" is already in use</code> means you ran this before and the old container still exists. Remove it with <code>docker rm boom</code> and rerun.</li>
+</ul>
+<h3>Step 2 — what state is it in?</h3>
+<pre><code class="language-bash">docker ps -a
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> list all containers, including stopped ones.</li>
+<li><strong>Success looks like:</strong> a row for <code>boom</code> with <code>Exited (3)</code> and a few seconds ago. That <code>(3)</code> is the exit code.</li>
+<li><strong>One decoded failure:</strong> if <code>boom</code> does not appear at all, the container was created and auto-removed (for example via <code>--rm</code>) or you are looking at the wrong Docker context. Confirm you are on the expected context.</li>
+</ul>
+<h3>Step 3 — what did it say?</h3>
+<pre><code class="language-bash">docker logs boom
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> read the captured output of the main process.</li>
+<li><strong>Success looks like:</strong> a single line: <code>starting up</code>. Nothing more, because the program printed nothing more.</li>
+<li><strong>One decoded failure:</strong> empty output usually means the program died before printing, or it buffers output. Try a longer sleep, or check the exit code next.</li>
+</ul>
+<h3>Step 4 — how did it end?</h3>
+<pre><code class="language-bash">docker inspect -f &quot;{{.State.ExitCode}}&quot; boom
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> print just the exit code.</li>
+<li><strong>Success looks like:</strong> <code>3</code>, matching the <code>exit 3</code> in the command.</li>
+<li><strong>One decoded failure:</strong> <code>template parsing error</code> means the shell mangled the braces. In PowerShell use double quotes as shown; in bash single quotes are safer.</li>
+</ul>
+<h3>Step 5 — form a hypothesis, fix one thing, observe</h3>
+<p>Here the picture is complete: the command deliberately exits with <code>3</code>. In real life, you would now change the command or configuration and rerun. To demonstrate, run a corrected version:</p>
+<pre><code class="language-bash">docker rm boom
+docker run --name boom alpine sh -c &quot;echo starting up; sleep 3600&quot;
+</code></pre>
+<p>Now <code>docker ps</code> shows <code>boom</code> as <code>Up</code> and <code>docker logs boom</code> shows <code>starting up</code>. One change, then observe.</p>
+<h3>A quick look with <code>docker events</code></h3>
+<p>In a second terminal, start this live feed:</p>
+<pre><code class="language-bash">docker events --filter container=boom
+</code></pre>
+<ul>
+<li><strong>Purpose:</strong> watch lifecycle events (start, die, stop) for one container in real time.</li>
+<li><strong>Success looks like:</strong> when you start and stop <code>boom</code> in the other terminal, lines appear such as <code>container start</code> and <code>container die</code>.</li>
+<li><strong>One decoded failure:</strong> if nothing appears, either no events happened yet (start/stop the container) or the filter name is misspelled. Stop the feed with <code>Ctrl+C</code>.</li>
+</ul>
+<p>Clean up:</p>
+<pre><code class="language-bash">docker rm -f boom
+</code></pre>
+<h2>Common errors</h2>
+<h3>Failure 1: The container exits immediately</h3>
+<p><strong>Symptom:</strong> <code>docker ps -a</code> shows <code>Exited (0)</code> or <code>Exited (something)</code> seconds after start.</p>
+<p><strong>Diagnose:</strong> read the exit code and the logs from the method above.</p>
+<p><strong>Common causes and fixes:</strong></p>
+<ul>
+<li>The main command does its job and finishes (for example a script with no long-running process). Fix: run a process that stays alive, or treat it as a one-shot job on purpose.</li>
+<li>Command not found → exit <code>127</code>. Fix: correct the command or use the right shell.</li>
+<li>The app crashes on startup → exit <code>1</code> with an error in the logs. Fix: read the error.</li>
+</ul>
+<h3>Failure 2: "port is already allocated"</h3>
+<p><strong>Symptom:</strong> <code>Bind for 0.0.0.0:8085 failed: port is already allocated</code>.</p>
+<p><strong>Diagnose:</strong> something else already uses host port <code>8085</code>.</p>
+<p><strong>Fix:</strong> find the other process (<code>docker ps</code> shows other containers; on Windows <code>netstat -ano | findstr :8085</code>; on macOS/Linux <code>lsof -i :8085</code>), or choose a different host port: <code>-p 8090:8085</code>. Remember only the left number is the host side (U18).</p>
+<h3>Failure 3: "The container is running but I cannot connect"</h3>
+<p><strong>Symptom:</strong> <code>docker ps</code> shows <code>Up</code>, but <code>curl http://localhost:PORT</code> fails or hangs.</p>
+<p><strong>Diagnose:</strong> work checks in order:</p>
+<ol>
+<li>Is the port <strong>published</strong>? <code>docker inspect -f "{{.NetworkSettings.Ports}}" &lt;name&gt;</code>. Missing mapping means the app is unreachable from outside.</li>
+<li>Is the app listening on <strong>all interfaces</strong>, not just <code>127.0.0.1</code>, inside the container? An app bound to <code>127.0.0.1</code> inside the container is unreachable through a mapping. The app must bind <code>0.0.0.0</code>.</li>
+<li>Is the app actually listening on the port you published? A mismatch between the internal port and <code>containerPort</code> is common.</li>
+<li>Are you connecting from the right place? From another container, <code>localhost</code> means <em>that</em> container (U19), not the app.</li>
+</ol>
+<p><strong>Fix:</strong> publish the correct port, bind the app to <code>0.0.0.0</code>, and match internal/external ports.</p>
+<h3>Failure 4: Out of memory (OOM)</h3>
+<p><strong>Symptom:</strong> the process dies with exit code <code>137</code>, or the container restarts under load.</p>
+<p><strong>Diagnose:</strong> <code>docker inspect -f "{{.State.OOMKilled}}" &lt;name&gt;</code> returns <code>true</code>. <code>docker stats --no-stream</code> shows current memory use. <code>docker events</code> may show a <code>die</code> event with an <code>oom</code> cause.</p>
+<p><strong>Fix:</strong> raise or remove the memory limit (if it was set), reduce the app's memory use, or give the task less work. A frequent cause is a runaway loop or a huge file loaded into memory.</p>
+<h3>Error: "I cannot <code>exec</code> into it"</h3>
+<p><strong>What happens:</strong> <code>docker exec -it &lt;name&gt; sh</code> says the container is not running, or <code>sh: not found</code>.</p>
+<p><strong>Why:</strong> <code>exec</code> needs a running container, and some images (distroless, U33) have no shell at all.</p>
+<p><strong>Fix:</strong> if it exited, start it or use <code>docker logs</code>/<code>inspect</code>. If there is no shell, debug from outside using logs, inspect, and a temporary debug image, or rebuild with a shell for investigation only.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>Write the five steps of the diagnostic method from memory.</li>
+<li>What does <code>docker ps -a</code> show that <code>docker ps</code> does not, and why is that the first command?</li>
+<li>What does exit code <code>127</code> usually mean? What about <code>137</code>?</li>
+<li>Name the two most common reasons a running container is unreachable from outside.</li>
+<li>Why can a container be "running" yet still be useless to users?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Deliberate failures</h3>
+<p>Create three containers that fail in three different ways: exit code <code>1</code>, exit code <code>127</code>, and a bad host port mapping. For each, write the state, exit code, and one sentence of cause.</p>
+<h3>P2 — Read one field only</h3>
+<p>Using <code>docker inspect -f</code>, print each of these for a running container you already have: <code>.State.Status</code>, <code>.Config.Image</code>, <code>.NetworkSettings.Ports</code>. Write what each value tells you.</p>
+<h3>P3 — Events in the background</h3>
+<p>Run <code>docker events</code> in one terminal and start/stop a container in another. Copy two event lines and explain what each means.</p>
+<h3>P4 — Connect failure hunt</h3>
+<p>Run a small web server that binds to <code>127.0.0.1</code> inside the container, publish its port, and try to reach it. Explain why it fails. Then make it bind <code>0.0.0.0</code> and reach it successfully.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No advanced tracing, profilers, or debuggers.</li>
+<li>No log-aggregation products.</li>
+<li>No monitoring dashboards or alerting.</li>
+<li>No Kubernetes debugging (U32 was a survey only).</li>
+<li>No deep Linux performance tuning.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U35 — Capstone: containerize a real app</strong> (put everything together in one deliverable).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U34 Assignment — Diagnosis notes</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U34-YourName</code></p>
+<h2>The scenarios</h2>
+<p>Each block below shows a command and its real output. Diagnose each one using the method from the lesson. You are not required to reproduce these containers, though you may if you wish.</p>
+<h3>Scenario A</h3>
+<pre><code class="language-text">$ docker run --name web myapp:1.0
+$ docker ps -a
+CONTAINER ID   IMAGE       COMMAND           CREATED          STATUS                       PORTS   NAMES
+a1b2c3d4e5f6   myapp:1.0   &quot;python server&quot;   5 seconds ago    Exited (127) 4 seconds ago           web
+$ docker logs web
+sh: 1: python: not found
+</code></pre>
+<h3>Scenario B</h3>
+<pre><code class="language-text">$ docker run -d --name api -p 8080:80 nginx
+docker: Error response from daemon: driver failed programming external connectivity on endpoint api: Bind for 0.0.0.0:8080 failed: port is already allocated.
+</code></pre>
+<h3>Scenario C</h3>
+<pre><code class="language-text">$ docker run -d --name worker --memory 20m myworker:1.0
+$ docker ps -a
+CONTAINER ID   IMAGE          COMMAND        CREATED          STATUS                       PORTS   NAMES
+9f8e7d6c5b4a   myworker:1.0   &quot;worker.py&quot;    8 seconds ago    Exited (137) 3 seconds ago           worker
+$ docker inspect -f &quot;{{.State.OOMKilled}}&quot; worker
+true
+$ docker logs worker
+processing batch 1
+processing batch 2
+</code></pre>
+<h3>Scenario D</h3>
+<pre><code class="language-text">$ docker run -d --name web2 -p 8000:8000 boundapp:1.0
+$ docker ps
+CONTAINER ID   IMAGE           COMMAND        CREATED          STATUS         PORTS                    NAMES
+c3d4e5f6a7b8   boundapp:1.0    &quot;python app&quot;   10 seconds ago   Up 9 seconds   0.0.0.0:8000-&gt;8000/tcp   web2
+$ curl http://localhost:8000
+curl: (52) Empty reply from server
+$ docker logs web2
+ * Running on http://127.0.0.1:8000
+</code></pre>
+<h2>Files to submit</h2>
+<h3>1. <code>diagnosis.md</code></h3>
+<p>For <strong>each</strong> scenario (A–D), write a short structured note:</p>
+<ul>
+<li><strong>State:</strong> what <code>docker ps -a</code> tells you.</li>
+<li><strong>Evidence:</strong> the exact line(s) from the outputs that matter.</li>
+<li><strong>Exit code (if any):</strong> the number and what it points to.</li>
+<li><strong>Likely cause:</strong> one or two sentences.</li>
+<li><strong>Fix:</strong> the specific change you would make.</li>
+<li><strong>Command used to confirm:</strong> the single command you would run next to be sure.</li>
+</ul>
+<h3>2. <code>method.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li>Write the five-step diagnostic method from memory as a numbered list.</li>
+<li>Explain why <code>docker ps -a</code> is the first command, and what it can show that <code>docker ps</code> cannot.</li>
+<li>For Scenario C, explain why the logs look "normal" even though the container was killed.</li>
+<li>For Scenario D, explain why the container is <code>Up</code> yet unreachable, and name the one word in the logs that gives it away.</li>
+<li>Describe one time in this course you used (or wish you had used) the stuck protocol from U00 while debugging.</li>
+</ol>
+<h3>3. <code>practice-log.txt</code></h3>
+<p>Paste a real terminal transcript where you create <strong>one</strong> failing container of your own, then diagnose it with at least three of the method's commands. Label each command with a short comment.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>Three files present with the names above.</li>
+<li>Every scenario has a stated cause and a concrete fix.</li>
+<li>Scenario D's answer identifies the <code>127.0.0.1</code> binding problem.</li>
+<li>The practice log shows a real container and real command output.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U34 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scenario A diagnosed (exit 127, command not found) with fix</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>diagnosis.md</code></td>
+</tr>
+<tr>
+<td>Scenario B diagnosed (host port busy) with fix</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>diagnosis.md</code></td>
+</tr>
+<tr>
+<td>Scenario C diagnosed (OOM, exit 137) with fix</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>diagnosis.md</code></td>
+</tr>
+<tr>
+<td>Scenario D diagnosed (bound to 127.0.0.1 inside container) with fix</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>diagnosis.md</code></td>
+</tr>
+<tr>
+<td>Five-step method reproduced in sensible order</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>method.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correct explanation of <code>ps -a</code> vs <code>ps</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>method.md</code> Q2</td>
+</tr>
+<tr>
+<td>Scenario D explanation names the <code>127.0.0.1</code> line</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>method.md</code> Q4</td>
+</tr>
+<tr>
+<td>Practice log shows a real container and real output</td>
+<td>1</td>
+<td>No</td>
+<td><code>practice-log.txt</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Each scenario: award cause 2 points and fix 1 point. A correct exit-code reading with a vague cause earns 1.5.</li>
+<li>Scenario A: full credit requires recognising <code>python</code> is missing from the image, not merely "it exited."</li>
+<li>Scenario C: full credit requires connecting exit <code>137</code>/<code>OOMKilled=true</code> to the <code>--memory 20m</code> limit.</li>
+<li>Scenario D: the decisive evidence is <code>Running on http://127.0.0.1:8000</code>; the fix is binding to <code>0.0.0.0</code>. Award 0 for the scenario if the answer is only "restart it."</li>
+<li>Method Q1: five steps, order sensible. <code>ps -a</code> → logs → exit code/inspect → (exec if running) → fix and observe. Deduct 1 if only two or three steps are present.</li>
+<li>Practice log: award the point only if it contains at least three distinct diagnostic commands with output.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U33-security-habits/index.html">U33 Security habits</a>
+    <a class="next" href="../U35-capstone-containerize-an-app/index.html">U35 Capstone: containerize a real app</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

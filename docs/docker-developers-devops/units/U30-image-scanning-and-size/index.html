@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U30 — Image scanning and size hygiene | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U30</div>
+    <h1>Image scanning and size hygiene</h1>
+    <span class="phase-badge ph6">Phase 6 — Registries and automation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U30 — Image scanning and size hygiene</h1>
+<p><strong>Phase 6 — Registries and automation</strong></p>
+<h2>Where you are</h2>
+<p>You can now build, push, and automatically publish images. The last phase-6 habit is stewardship: keeping images <strong>small</strong> and understanding <strong>what is inside them</strong>. Small images pull faster, waste less disk, and expose less to attackers. In this unit you tidy the images on your machine, learn what makes an image big, and read a security scan without panicking.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why image size matters in concrete terms.</li>
+<li>Read the <code>SIZE</code> column of <code>docker image ls</code> and judge whether an image is unusually large.</li>
+<li>Use <code>docker image prune</code> safely and explain what each variant deletes.</li>
+<li>Name three ways to slim an image, and which unit taught each.</li>
+<li>Read the output of <code>docker scout</code> (or <code>trivy</code>) calmly and decide what actually needs action.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U10</strong> — container lifecycle and <code>docker rmi</code>/<code>rm</code>.</li>
+<li><strong>U13</strong> — <code>.dockerignore</code>.</li>
+<li><strong>U15–U16</strong> — layers, cache, and multi-stage builds.</li>
+<li><strong>U26–U27</strong> — pulling and pushing images (size matters most when images travel).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–75 minutes</strong>. The scanning tool may download a database the first time it runs, which can take a few minutes; that is normal. Nothing here is dangerous to try — the cleanup commands only remove things you can rebuild or re-pull.</p>
+<h2>Why this exists</h2>
+<p>Two quiet costs hide in a big image.</p>
+<p>First, <strong>time</strong>. Every pull copies the image over the network. A 1 GB image pulled by ten machines is 10 GB of transfers; a 150 MB image is a tenth of that. In a pipeline (U29), that difference shows up on every single build.</p>
+<p>Second, <strong>risk</strong>. Every program inside an image is code that could have a known security flaw. An image that carries a full compiler toolchain, a system package manager, and years of accumulated libraries has far more of those flaws than a lean image that ships only what the app needs. A <strong>vulnerability scanner</strong> looks inside your image and lists the known flaws in its packages. It is not a verdict on your skill — it is a map of where to tidy next.</p>
+<h2>Plain-language teaching</h2>
+<h3>Why image size matters</h3>
+<p>Think of an image as a box you have to ship. Bigger box, slower shipping, more storage on every shelf, more surface for something to be wrong. Three concrete consequences:</p>
+<ol>
+<li><strong>Pull time.</strong> Slow pulls slow down teammates, CI runners, and deployments.</li>
+<li><strong>Disk and cost.</strong> Images accumulate locally and in registries; storage is finite and sometimes billed.</li>
+<li><strong>Attack surface.</strong> More packages mean more code that could contain a known vulnerability. Less is genuinely more.</li>
+</ol>
+<h3>Where the size comes from</h3>
+<p>An image is a stack of <strong>layers</strong> (U15). Size usually comes from the <strong>base image</strong> and from what your Dockerfile installs on top.</p>
+<p>A quick way to see the base image's weight: compare similar images in <code>docker image ls</code>. A full Python image is roughly 1 GB; <code>python:3.12-slim</code> is a fraction of that; <code>python:3.12-alpine</code> is smaller again. Node has <code>node:20</code> versus <code>node:20-slim</code> versus <code>node:20-alpine</code> in the same way.</p>
+<h3>Command: <code>docker image ls</code></h3>
+<p><strong>What it does:</strong> lists local images with their tag and size — your starting point and your measuring stick.</p>
+<pre><code class="language-bash">docker image ls
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong><br />
+<code>text
+  REPOSITORY                      TAG       IMAGE ID       CREATED       SIZE
+  python                          3.12      7ab1...        2 weeks ago   1.02GB
+  myapp                           1.0       9f2c...         1 hour ago   148MB
+  myapp                           &lt;none&gt;    1d0a...         3 days ago   997MB</code><br />
+  The <code>&lt;none&gt;</code> tag marks a <strong>dangling image</strong> — an untagged image, often an older build that a new tag replaced.</li>
+<li><strong>One decoded failure:</strong> <code>Cannot connect to the Docker daemon</code> → decoded: Docker is not running; start it (U06). This is the same fix as always.</li>
+</ul>
+<h3>Command: <code>docker image prune</code></h3>
+<p><strong>What it does:</strong> deletes images you are no longer using, freeing disk. Used carefully, it is routine housekeeping.</p>
+<p>Two forms, and the difference matters:</p>
+<pre><code class="language-bash">docker image prune
+</code></pre>
+<ul>
+<li><strong>Deletes:</strong> only <strong>dangling</strong> images — untagged ones with no container using them. This is the safe default.</li>
+<li><strong>Success looks like:</strong><br />
+<code>text
+  Deleted Images:
+  deleted: sha256:1d0a...
+  Total reclaimed space: 1.1GB</code></li>
+</ul>
+<pre><code class="language-bash">docker image prune -a
+</code></pre>
+<ul>
+<li><strong>Deletes:</strong> <em>all</em> images not used by a running or stopped container — including ones with tags you might still want.</li>
+<li>
+<p><strong>Success looks like:</strong> a longer <code>deleted:</code> list and a total reclaimed space line.</p>
+</li>
+<li>
+<p><strong>One decoded failure / surprise:</strong> <code>-a</code> deleted an image you wanted, because no container was using it. Decoded: <code>-a</code> means "all unused," not "all broken." The image can almost always be rebuilt from its Dockerfile or re-pulled (U27). The lesson: read the prompt before confirming. <code>docker image prune</code> asks <code>Are you sure? [y/N]</code>; answer honestly, or type <code>--force</code> only when you are certain.</p>
+</li>
+</ul>
+<p><strong>A safe habit:</strong> run plain <code>docker image prune</code> first and read the reclaimed-space number. Only reach for <code>-a</code> when you truly want a clean slate.</p>
+<h3>Slimming an image: three levers you already own</h3>
+<ol>
+<li><strong>A smaller base image.</strong> Swap <code>python:3.12</code> for <code>python:3.12-slim</code> (or alpine where your dependencies allow). This removes a large slice of unneeded OS and tooling. Taught in U16 and previewed in U27.</li>
+<li><strong>A multi-stage build.</strong> Build in a stage with all the compilers and headers, then copy only the finished files into a tiny final stage. The toolchain never ships. Taught in U16.</li>
+<li><strong>A good <code>.dockerignore</code>.</strong> Everything in the build context can end up in a layer. Ignore <code>.git</code>, <code>node_modules</code>, virtual environments, logs, and test data. Taught in U13.</li>
+</ol>
+<p>A fourth, smaller lever: combine related <code>RUN</code> steps and clean package caches in the same layer, so the cache is not stored permanently.</p>
+<h3>Scanning: what a vulnerability scanner does</h3>
+<p>A <strong>vulnerability scanner</strong> reads the package list inside your image and compares it to databases of known vulnerabilities (often called <strong>CVEs</strong> — Common Vulnerabilities and Exposures). It reports what it finds with severity labels like <code>CRITICAL</code>, <code>HIGH</code>, <code>MEDIUM</code>, <code>LOW</code>.</p>
+<p><strong>What it is not:</strong> it is not a test of your code, and it is not a score of you. Most findings come from the base image and from third-party packages, and many are not exploitable in your particular use. The scan is a map, not a verdict.</p>
+<h3>Tool: <code>docker scout</code></h3>
+<p><strong>Docker Scout</strong> ships with recent Docker Desktop versions and is the natural first scanner because you likely already have it.</p>
+<p><strong>What it does:</strong> inspects an image and summarizes its base image and known vulnerabilities.</p>
+<pre><code class="language-bash">docker scout quickview myapp:1.0
+docker scout cves myapp:1.0
+</code></pre>
+<ul>
+<li><code>quickview</code> gives a short summary (base image, counts by severity).</li>
+<li><code>cves</code> lists the individual findings.</li>
+<li><strong>Success looks like (quickview, trimmed):</strong><br />
+<code>text
+    Target   │  myapp:1.0
+      digest │  sha256:...
+    Base image │ python:3.12-slim
+    Vulnerabilities │ 0C 2H 7M 19L</code><br />
+  The letters mean Critical, High, Medium, Low counts.</li>
+<li><strong>One decoded failure:</strong> <code>docker: 'scout' is not a docker command</code> → decoded: your Docker version does not include Scout. Update Docker Desktop, or use the free alternative below. It is not a problem with your image.</li>
+</ul>
+<h3>Alternative tool: <code>trivy</code> (free, open source)</h3>
+<p>If Scout is unavailable, <strong>Trivy</strong> is a free, widely used scanner. It is a separate download, so treat this as optional; ask your trainer if installing it fits your setup.</p>
+<pre><code class="language-bash">trivy image myapp:1.0
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> scans the image and prints a table of vulnerabilities by severity.</li>
+<li><strong>Success looks like:</strong> a table ending with a summary line such as:<br />
+<code>text
+  python:3.12-slim (debian 12.5)
+  Total: 14 (UNKNOWN: 0, LOW: 10, MEDIUM: 3, HIGH: 1, CRITICAL: 0)</code></li>
+<li><strong>One decoded failure:</strong> <code>trivy: command not found</code> → decoded: Trivy is not installed or not on your <code>PATH</code>. Install it from the official project, or stay with <code>docker scout</code>.</li>
+</ul>
+<p><strong>Everything here is free.</strong> Scout is part of Docker Desktop; Trivy is open source.</p>
+<h3>Reading scan output calmly</h3>
+<p>When you first see a list of vulnerabilities, the urge is to panic or ignore it entirely. Do neither. Work the list:</p>
+<ol>
+<li><strong>Look at the base image first.</strong> If 90% of findings are in the base image, the highest-value fix is usually to update or shrink the base (<code>slim</code>/<code>alpine</code>, newer pinned version).</li>
+<li><strong>Start with <code>CRITICAL</code> and <code>HIGH</code>.</strong> Ignore <code>LOW</code> for now; it will drown you.</li>
+<li><strong>Check <code>Fixed Version</code>.</strong> If there is a fixed version available, updating the package (or the base) resolves it. If not, note it and move on.</li>
+<li><strong>Ask if it is exploitable here.</strong> A flaw in a compiler that never ships (because of a multi-stage build) or in a network service your app never runs is often not reachable. Reduce risk by removing the code entirely where you can.</li>
+<li><strong>Re-scan after a fix</strong> and compare counts. You are looking for fewer high-severity findings, not zero — zero is rare and not the bar.</li>
+</ol>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dangling image</td>
+<td>An untagged image (<code>&lt;none&gt;</code>)</td>
+<td>Not the same as an unused, tagged image</td>
+</tr>
+<tr>
+<td><code>docker image prune</code></td>
+<td>Removes dangling images</td>
+<td>The default is <em>not</em> "remove everything"</td>
+</tr>
+<tr>
+<td><code>docker image prune -a</code></td>
+<td>Removes all images not used by a container</td>
+<td>More aggressive than the default</td>
+</tr>
+<tr>
+<td>Base image</td>
+<td>The image your <code>FROM</code> starts from</td>
+<td>Usually the biggest single size contributor</td>
+</tr>
+<tr>
+<td><code>slim</code> / <code>alpine</code></td>
+<td>Smaller variants of common base images</td>
+<td>Alpine can break Python packages that need native builds</td>
+</tr>
+<tr>
+<td>Multi-stage build</td>
+<td>Build big, ship small (U16)</td>
+<td>Not a special flag; a Dockerfile pattern</td>
+</tr>
+<tr>
+<td>CVE</td>
+<td>A catalogued, known vulnerability</td>
+<td>Not a bug in your code specifically</td>
+</tr>
+<tr>
+<td>Scanner (Scout/Trivy)</td>
+<td>Reads packages, compares to vulnerability databases</td>
+<td>Not a test of correctness</td>
+</tr>
+<tr>
+<td>Severity</td>
+<td>CRITICAL/HIGH/MEDIUM/LOW ranking</td>
+<td>Low is not "safe," just lower priority</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> Sam's <code>myapp:1.0</code> image is 997 MB, which feels too big for a one-line script. Sam measures, slims, cleans up, and scans.</p>
+<p><strong>Step 1 — measure.</strong></p>
+<pre><code class="language-bash">docker image ls
+</code></pre>
+<p>Sam sees <code>myapp</code> at <strong>997MB</strong> and a <code>python</code> base at <strong>1.02GB</strong>. The base is the obvious culprit.</p>
+<p><strong>Step 2 — slim the Dockerfile.</strong> Before:</p>
+<pre><code class="language-dockerfile">FROM python:3.12
+WORKDIR /app
+COPY app.py .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>After:</p>
+<pre><code class="language-dockerfile">FROM python:3.12-slim
+WORKDIR /app
+COPY app.py .
+CMD [&quot;python&quot;, &quot;app.py&quot;]
+</code></pre>
+<p>Only <code>FROM</code> changed. Rebuild:</p>
+<pre><code class="language-bash">docker build -t myapp:1.1 .
+docker image ls myapp
+</code></pre>
+<ul>
+<li><strong>What <code>docker build</code> does:</strong> produces the new, smaller <code>myapp:1.1</code> (U11–U14).</li>
+<li><strong>Success looks like:</strong> a <code>myapp</code> line whose <code>SIZE</code> is dramatically smaller (often around 150–200 MB for slim Python).</li>
+<li><strong>One decoded failure:</strong> <code>python:3.12-slim not found</code> → decoded: the tag was mistyped or you are offline and do not have it cached. Check the spelling, or pull it once with a network connection.</li>
+</ul>
+<p><strong>Step 3 — clean the leftovers.</strong> The old 997 MB image is now dangling:</p>
+<pre><code class="language-bash">docker image prune
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> removes dangling images only.</li>
+<li><strong>Success looks like:</strong> <code>Total reclaimed space:</code> followed by a large number.</li>
+<li><strong>One decoded failure / surprise:</strong> running <code>docker image prune -a</code> and losing a tagged image you wanted. Decoded: <code>-a</code> removes all unused images, tagged included. Rebuild or re-pull to get it back.</li>
+</ul>
+<p><strong>Step 4 — scan.</strong></p>
+<pre><code class="language-bash">docker scout quickview myapp:1.1
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> summarizes the base image and vulnerability counts.</li>
+<li><strong>Success looks like:</strong> a short block headed <code>Target</code> and <code>Base image</code> with counts like <code>0C 2H 7M 19L</code>.</li>
+<li><strong>One decoded failure:</strong> <code>'scout' is not a docker command</code> → decoded: update Docker Desktop, or use <code>trivy image myapp:1.1</code> instead.</li>
+</ul>
+<p><strong>Step 5 — read it calmly.</strong> The findings cluster in the base image. The response is not to panic; it is to (a) keep the slim base up to date, and (b) re-scan after updating. Sam's count drops. Sam does not chase it to zero.</p>
+<p><strong>OS note:</strong> <code>docker image ls</code>, <code>docker image prune</code>, and <code>docker scout</code> are identical across Windows, macOS, and Linux. Trivy installation differs by OS — prefer your OS's official instructions if you choose it.</p>
+<h2>Common errors</h2>
+<h3>Error: "prune deleted something I needed"</h3>
+<p><strong>What happens:</strong> <code>docker image prune -a</code> removed tagged images that no container was using.</p>
+<p><strong>Fix:</strong> rebuild from the Dockerfile or re-pull from the registry (U27). Next time, use plain <code>docker image prune</code> unless you want a clean slate. Nothing is unrecoverable as long as the source or the registry still has it.</p>
+<h3>Error: <code>permission denied</code> while pruning on Linux</h3>
+<p><strong>What happens:</strong> your user is not allowed to talk to the Docker daemon.</p>
+<p><strong>Fix:</strong> add your user to the <code>docker</code> group or run the command with appropriate privileges. On Docker Desktop (Windows/macOS) this does not occur. Treat "add myself to the docker group" as a security decision, not a magic fix — it grants broad power.</p>
+<h3>Error: <code>'scout' is not a docker command</code></h3>
+<p><strong>What happens:</strong> your Docker is older than the version that bundles Scout.</p>
+<p><strong>Fix:</strong> update Docker Desktop, or use the free <code>trivy</code> alternative.</p>
+<h3>Error: a scan reports a <code>CRITICAL</code> finding</h3>
+<p><strong>What happens:</strong> a package in your image has a serious known vulnerability.</p>
+<p><strong>Fix:</strong> check whether a fixed version exists — often updating the base image or that package resolves it. If no fix exists yet, assess whether the affected code is actually reachable in your app, and reduce it (smaller base, multi-stage) where possible. One critical finding is a to-do item, not a failure of your character.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Give two concrete costs of a large image.</li>
+<li>What exactly does plain <code>docker image prune</code> delete, and how is that different from <code>-a</code>?</li>
+<li>Name the three slimming levers from earlier units, and which unit taught each.</li>
+<li>Why is a scan with 40 findings not necessarily 40 things you must personally fix?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Measure and predict</h3>
+<p>Run <code>docker image ls</code>. Pick your largest image. Predict its size as a percentage of the smallest. Then write one sentence naming the likely cause of the difference.</p>
+<h3>P2 — Change one thing</h3>
+<p>Take any Dockerfile you built in earlier units and change only its <code>FROM</code> line to a <code>slim</code> or <code>alpine</code> variant. Rebuild. Record the before/after size. If the build breaks, note the error — that is useful information, not a failure.</p>
+<h3>P3 — Safe cleanup</h3>
+<p>Run <code>docker image prune</code> (no <code>-a</code>). Record the reclaimed space. Then run <code>docker image ls</code> again and confirm your tagged images are still present.</p>
+<h3>P4 — Read a scan</h3>
+<p>If you have <code>docker scout</code> or <code>trivy</code>, scan one of your images. Sort the findings: how many are in the base image versus added packages? Which single action would remove the most high-severity findings?</p>
+<h3>P5 — Debug this</h3>
+<p>A teammate runs <code>docker image prune -a</code> on a shared build machine and later cannot run a test because the image is gone. Write two sentences on what happened and how they would recover it.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No deep vulnerability remediation, patching, or CVE triage policy.</li>
+<li>No registry-side scanning (that belongs to a later, deployment-focused unit).</li>
+<li>No hardening beyond size and base-image hygiene — non-root users and secrets-in-layers come in U33.</li>
+<li>No recommendation to install paid scanner plans; Scout and Trivy are enough here.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U31 — From image to service</strong> (where a pushed image actually gets run, and what "deploy" means in this course).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U30 Assignment — Image scanning and size hygiene</h1>
+<p>Submit everything in <strong>one folder or zip</strong> named:</p>
+<p><code>U30-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>evidence.md</code></h3>
+<ol>
+<li><strong>Before and after sizes.</strong> Paste the <code>docker image ls</code> line (repository, tag, size) for one image <em>before</em> you slim it, and <em>after</em>. If you cannot change the base image, slim a different way (for example <code>.dockerignore</code>) and say which lever you used.</li>
+<li><strong>Cleanup.</strong> Paste the <code>Total reclaimed space:</code> line from a <code>docker image prune</code> run, plus the <code>docker image ls</code> output showing your tagged images are still present.</li>
+<li><strong>Scan summary.</strong> If <code>docker scout</code> or <code>trivy</code> is available, paste the summary line (for example <code>0C 2H 7M 19L</code> or <code>Total: 14 (...)</code>). If neither tool is available, write <code>Scanner unavailable</code> and explain in <code>answers.md</code> what you would have run.</li>
+</ol>
+<p><strong>Important:</strong> no secrets or tokens in your submission.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Why size matters.</strong> Give two concrete costs of a large image and tie each to a situation a team actually hits (pulls, CI, storage, attack surface).</li>
+<li><strong>Dangling vs unused.</strong> Explain the difference between a dangling image and a tagged-but-unused image. Which one does plain <code>docker image prune</code> remove?</li>
+<li><strong>Prune safety.</strong> Explain the difference between <code>docker image prune</code> and <code>docker image prune -a</code>. Give one situation where each is the right choice.</li>
+<li><strong>Three levers.</strong> Name the three slimming levers, and for each say which earlier unit taught it and what it removes.</li>
+<li><strong>Reading a scan.</strong> A scan reports <code>0C, 6H, 40M, 120L</code>. Describe, step by step, how you would decide what to do first. Why is "120L" not your immediate priority?</li>
+<li><strong>Predict then explain.</strong> Predict what happens to your image's size if you switch <code>FROM node:20</code> to <code>FROM node:20-alpine</code>, and name one risk of that change. (Hint: not every native package builds cleanly on Alpine.)</li>
+<li><strong>Debug this.</strong> A teammate says: "<code>docker image prune -a</code> deleted our tagged test image and now CI cannot run." Explain what happened and the two ways to recover.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U30 README fully.
+- [ ] I measured at least one image's size before and after a change.
+- [ ] I understand plain `prune` vs `prune -a`.
+- [ ] I know a scan is a to-do list, not a verdict.
+- [ ] I read the U30 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li><code>evidence.md</code>, <code>answers.md</code>, and <code>checklist.md</code> present with the names above.</li>
+<li>Real before/after size numbers reported.</li>
+<li>Answers are in your own words.</li>
+</ul>
+<h2>If scanning tools are unavailable</h2>
+<p>That is allowed. Complete <code>evidence.md</code> with <code>Scanner unavailable</code> and answer Q5 in full. Your trainer cares that you can <em>read</em> a scan and reason about it, not that you installed a specific tool.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U30 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>. Must-have criteria decide pass/fail.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reports real before/after image sizes</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>evidence.md</code></td>
+</tr>
+<tr>
+<td>Documents a cleanup with reclaimed space and surviving tagged images</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>evidence.md</code></td>
+</tr>
+<tr>
+<td>Explains two concrete costs of large images</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Distinguishes dangling vs tagged-unused images</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Correctly separates <code>prune</code> from <code>prune -a</code> with a use case each</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Names three slimming levers from correct earlier units</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Reads a scan by severity and base image, not by panic</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Predicts size drop and names a real Alpine risk</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Diagnoses the over-aggressive prune and recovery</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+</tbody>
+</table>
+<h3>Bonus (nice-to-have, up to +2, not required to pass)</h3>
+<ul>
+<li>Includes a real scan summary (Scout or Trivy): +2.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>Evidence: award 2/4 if only one size is reported; 0 if numbers are clearly fabricated (identical "before/after" with a claimed change).</li>
+<li>Q2: require that dangling = untagged, and that plain prune does not touch tagged images.</li>
+<li>Q3: <code>prune</code> = routine, <code>-a</code> = clean slate / reclaim when nothing is running that you need.</li>
+<li>Q4: three of — smaller base (U16/U27), multi-stage (U16), <code>.dockerignore</code> (U13), combining RUN/cache cleanup.</li>
+<li>Q5: must mention prioritizing CRITICAL/HIGH and fixing the base image first. "120L" is low priority because of volume, not because low is meaningless.</li>
+<li>Q7: cause = <code>-a</code> removes all unused images including tagged ones; recovery = rebuild from Dockerfile or re-pull from registry.</li>
+</ul>
+<h2>Integrity flags</h2>
+<ul>
+<li>Claimed scan output with a malformed <code>Total:</code> line.</li>
+<li>Secret or token in the submission.</li>
+</ul>
+<h2>Common wrong-but-thoughtful answers</h2>
+<ul>
+<li>Believing <code>prune -a</code> only removes dangling images — very common; correct it clearly.</li>
+<li>Thinking "all CVEs must be fixed before pushing" — reassure: prioritize by severity and reachability.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U29-github-actions-build/index.html">U29 A minimal GitHub Actions build</a>
+    <a class="next" href="../U31-from-image-to-service/index.html">U31 From image to service</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

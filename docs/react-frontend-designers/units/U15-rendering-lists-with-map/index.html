@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U15 — Rendering lists with map | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U15</div>
+    <h1>Rendering lists with map</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U15 — Rendering lists with map</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>You can compose a page from components (U14). But you hand-wrote each <code>Card</code>. If a shop has forty products, hand-writing forty cards is absurd — and if the list comes from data that changes, you cannot know how many there are in advance. In this unit you learn to take an <strong>array</strong> of data and render one component per item automatically, using JavaScript's <code>.map</code>.</p>
+<p>This is the unit where your page stops being fixed and starts responding to data.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why hand-writing repeated components does not scale.</li>
+<li>Use <code>.map</code> to turn an array of data into an array of components.</li>
+<li>Give each rendered item a <code>key</code> and explain why React needs it.</li>
+<li>Read and decode React's "missing key" / "unique key" warnings.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U06</strong> — Arrays, objects, and <code>map</code> (this unit is <code>.map</code> applied inside JSX; re-read U06 if the word "array" feels shaky).</li>
+<li><strong>U07</strong> — Arrow functions and destructuring (we use both).</li>
+<li><strong>U12</strong> — JSX and curly braces (<code>{ }</code> means "put a value here").</li>
+<li><strong>U13</strong> — Props.</li>
+<li><strong>U14</strong> — Composition (you will render a <code>Card</code> component in a loop).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>75–100 minutes</strong>. <code>.map</code> itself is from U06, so the new ideas are narrow: putting <code>.map</code> inside JSX, and the <code>key</code> rule. Take the <code>key</code> part slowly — it is the part people skip and then meet again as a confusing bug.</p>
+<h2>Why this exists</h2>
+<p>Imagine you are designing a contacts screen. You lay out one contact card, and then duplicate it fifteen times. Now the client says, "By the way, the number of contacts changes and new ones appear at the top." Your duplicated frame cannot do that. A screen built from <em>data</em> can.</p>
+<p>The human problem: <strong>the amount of content is not known while you design, and it changes later.</strong> A real interface must be built from the data, so that three items and three thousand items are the same code.</p>
+<p>In a design tool, you handle this with <strong>lists / repeat</strong> features or by connecting a component to real data (CMS, variables). In React, the tool for this is <code>.map</code>. It means: "take this array, do something to each item, and give me back a new array of the results."</p>
+<h2>Plain-language teaching</h2>
+<h3>What <code>.map</code> does (the reminder from U06)</h3>
+<p>An <strong>array</strong> is an ordered list of values, written with square brackets:</p>
+<pre><code class="language-jsx">[&quot;Mug&quot;, &quot;Notebook&quot;, &quot;Pen&quot;]
+</code></pre>
+<p><code>.map</code> runs a function on each item and returns a <strong>new array</strong> of whatever the function returns. It does not change the original.</p>
+<pre><code class="language-jsx">const words = [&quot;Mug&quot;, &quot;Notebook&quot;, &quot;Pen&quot;];
+const loud = words.map((word) =&gt; word.toUpperCase());
+// loud is now [&quot;MUG&quot;, &quot;NOTEBOOK&quot;, &quot;PEN&quot;]
+</code></pre>
+<ul>
+<li><code>(word) =&gt; ...</code> is an arrow function (U07).</li>
+<li><code>.map</code> visits <code>"Mug"</code>, then <code>"Notebook"</code>, then <code>"Pen"</code>.</li>
+<li>For each, it returns the item in uppercase.</li>
+<li><code>loud</code> is a new array of the three results.</li>
+</ul>
+<p>The original <code>words</code> is untouched.</p>
+<h3>From a map of strings to a map of components</h3>
+<p>Here is the leap for this unit. If the function returns JSX instead of a string, <code>.map</code> produces an array of JSX elements — and JSX is happy to render an array:</p>
+<pre><code class="language-jsx">const names = [&quot;Ada&quot;, &quot;Ravi&quot;, &quot;Leila&quot;];
+
+function App() {
+  return (
+    &lt;ul&gt;
+      {names.map((name) =&gt; (
+        &lt;li&gt;{name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>names.map((name) =&gt; (...))</code> — for each name, produce something.</li>
+<li><code>( &lt;li&gt;{name}&lt;/li&gt; )</code> — the something is a list item. The parentheses just group the JSX so it is easy to read; you will see this style everywhere.</li>
+<li><code>{ ... }</code> around the whole <code>.map</code> — this is the U12 rule: curly braces mean "put a JavaScript value here." The <code>.map</code> produces an array of elements, and the braces drop that array into the markup.</li>
+<li>The result: one <code>&lt;li&gt;</code> per name.</li>
+</ul>
+<p><strong>Note the reuse:</strong> we did not write three <code>&lt;li&gt;</code> tags. We wrote one rule that works for three names <em>or</em> three hundred.</p>
+<h3>Objects in the array (the common real case)</h3>
+<p>Real data is usually an array of objects (U06):</p>
+<pre><code class="language-jsx">const products = [
+  { id: 1, name: &quot;Mug&quot;, price: 12 },
+  { id: 2, name: &quot;Notebook&quot;, price: 8 },
+  { id: 3, name: &quot;Pen&quot;, price: 3 },
+];
+</code></pre>
+<p>Each object has an <code>id</code>, a <code>name</code>, and a <code>price</code>. We can map these into <code>Card</code> components (U14), passing props (U13):</p>
+<pre><code class="language-jsx">{products.map((product) =&gt; (
+  &lt;Card key={product.id} title={product.name} body={&quot;$&quot; + product.price} /&gt;
+))}
+</code></pre>
+<p>This is the pattern you will use most often from now on.</p>
+<h3>The <code>key</code> prop — and why React needs it</h3>
+<p>You may have noticed <code>key={product.id}</code> in that snippet. <strong><code>key</code> is a special prop React requires when you render a list.</strong></p>
+<p>Here is the plain problem it solves. React is constantly comparing the previous list of elements with the new list to decide what changed, so it only updates what needs updating (that is how it stays fast). To compare individual items reliably, React needs each item to have a <strong>stable identity</strong> — a value that stays with that item as the list grows, shrinks, or reorders.</p>
+<p><code>key</code> is that identity. It must be:</p>
+<ul>
+<li><strong>unique</strong> among the siblings in that list (no two items share a key), and</li>
+<li><strong>stable</strong> — the same item keeps the same key across renders.</li>
+</ul>
+<p>A database <code>id</code> is ideal. The design-tool parallel: think of the <code>key</code> as the item's <strong>unique layer name or ID</strong>. If two layers had the exact same name and React-like diffing relied on names, it could not tell which layer moved where. <code>key</code> gives React a reliable handle to track each item as it is added, removed, or reordered.</p>
+<p><code>key</code> is not something you read inside the component; it is guidance for React itself. That is why you do not see it used in <code>Card</code>.</p>
+<h3>What <code>key</code> is <em>not</em></h3>
+<ul>
+<li>It is <strong>not</strong> a copy of the content. Using the visible text as a key works only if the text is truly unique and never repeats.</li>
+<li>It is <strong>not</strong> the array index in most cases. Using the index (<code>key={index}</code>) looks tempting but breaks when items are reordered or removed, because the index of an item changes. Use a stable <code>id</code> when you have one.</li>
+<li>It is <strong>not</strong> read as a prop by your component. It is reserved by React.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Array</td>
+<td>An ordered list of values in <code>[ ]</code></td>
+<td>Not an object; no named fields</td>
+</tr>
+<tr>
+<td><code>.map</code></td>
+<td>Turns an array into a new array by transforming each item</td>
+<td>Does not change the original; not a loop that mutates</td>
+</tr>
+<tr>
+<td>Arrow function</td>
+<td>Compact function <code>(x) =&gt; ...</code> from U07</td>
+<td>The <code>=&gt;</code> is just "goes to"; the left is input, right is output</td>
+</tr>
+<tr>
+<td>JSX element</td>
+<td>A piece of markup produced by a component</td>
+<td><code>.map</code> can return a whole array of these</td>
+</tr>
+<tr>
+<td><code>key</code> prop</td>
+<td>Special, unique, stable identity for each item in a list</td>
+<td>Not read by your component; not the visible text</td>
+</tr>
+<tr>
+<td>Index</td>
+<td>The position number of an item (0, 1, 2…)</td>
+<td>A weak key because it changes on reorder/remove</td>
+</tr>
+<tr>
+<td>Stable</td>
+<td>Does not change for the same item across renders</td>
+<td><code>id</code> from data is stable; <code>Math.random()</code> is not</td>
+</tr>
+<tr>
+<td>Missing key warning</td>
+<td>React's console message when a list item has no <code>key</code></td>
+<td>A warning, not always a crash — but fix it anyway</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will render a list of three products as <code>Card</code> components. Assume <code>Card.jsx</code> from U14.</p>
+<p><strong><code>src/App.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import Card from &quot;./Card.jsx&quot;;
+
+const products = [
+  { id: &quot;p1&quot;, name: &quot;Mug&quot;, price: 12 },
+  { id: &quot;p2&quot;, name: &quot;Notebook&quot;, price: 8 },
+  { id: &quot;p3&quot;, name: &quot;Pen&quot;, price: 3 },
+];
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Products&lt;/h1&gt;
+      {products.map((product) =&gt; (
+        &lt;Card
+          key={product.id}
+          title={product.name}
+          body={&quot;$&quot; + product.price}
+        /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<p>Every line, justified:</p>
+<ul>
+<li><code>import Card from "./Card.jsx";</code> — brings in the component from U14.</li>
+<li><code>const products = [...]</code> — an array of objects (U06). <code>id</code> is the stable identity we will use as the key. Note <code>id</code> values are unique strings.</li>
+<li><code>function App()</code> — the page component.</li>
+<li><code>{products.map((product) =&gt; ( ... ))}</code> — for each product object, produce a <code>Card</code>. The braces place the resulting array into the markup.</li>
+<li><code>key={product.id}</code> — the required stable identity for this list item.</li>
+<li><code>title={product.name}</code> — passes the product's name as a prop (U13).</li>
+<li><code>body={"$" + product.price}</code> — builds a price string with <code>+</code> (U05) and passes it as a prop. The braces are needed because it is an expression, not literal text.</li>
+</ul>
+<p><strong>Run it</strong> (U09):</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>Same command on every OS; only the terminal app differs.</p>
+<p><strong>What success looks like:</strong> The page shows the heading "Products" and three cards: "Mug / $12," "Notebook / $8," "Pen / $3." Now add a fourth object to the array, save, and watch a fourth card appear — without touching any JSX.</p>
+<p><strong>A design-tool parallel:</strong> you connected one card component to a data list. Add a row of data; get another card.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Missing key (the decoded warning)</h3>
+<p>If you write the map without <code>key</code>:</p>
+<pre><code class="language-jsx">{products.map((product) =&gt; (
+  &lt;Card title={product.name} body={&quot;$&quot; + product.price} /&gt;
+))}
+</code></pre>
+<p>React's console prints something like:</p>
+<pre><code class="language-text">Warning: Each child in a list should have a unique &quot;key&quot; prop.
+Check the render method of `App`. See https://react.dev/link/warning-keys for more information.
+</code></pre>
+<p><strong>Decode it, piece by piece:</strong></p>
+<ul>
+<li><strong>"Each child in a list should have a unique 'key' prop"</strong> — you rendered a list (a <code>.map</code>), and at least one item is missing its <code>key</code>.</li>
+<li><strong>"Check the render method of <code>App</code>"</strong> — React names the component where the problem is.</li>
+<li>The link is React's longer explanation; you do not need it to fix this.</li>
+</ul>
+<p><strong>What it means in practice:</strong> The page may still <em>look</em> fine, which is why people ignore it. But React cannot reliably track the items, so reordering, adding, or removing can update the wrong rows. Fix it now, while it is harmless.</p>
+<p><strong>Fix:</strong> Add <code>key={product.id}</code> to the outermost element returned by the map. The key goes on the item itself — the <code>Card</code> — not on something inside <code>Card</code>.</p>
+<h3>Error 2 — Duplicate keys</h3>
+<pre><code class="language-jsx">{products.map((product) =&gt; (
+  &lt;Card key=&quot;item&quot; ... /&gt;
+))}
+</code></pre>
+<p>Every item gets the key <code>"item"</code>. React warns:</p>
+<pre><code class="language-text">Warning: Encountered two children with the same key, `item`.
+</code></pre>
+<p><strong>Decode it:</strong> "two children with the same key" means two list items claimed the same identity, so React cannot tell them apart.</p>
+<p><strong>Fix:</strong> Use a value that is different for each item. Real data usually has an <code>id</code>; use that.</p>
+<h3>Error 3 — Using the array index as the key</h3>
+<pre><code class="language-jsx">{products.map((product, index) =&gt; (
+  &lt;Card key={index} ... /&gt;
+))}
+</code></pre>
+<p>This often <em>looks</em> fine and produces no warning, which makes it a trap. The index is the position, and positions shift when the list changes. If a user deletes the first item, every remaining item's index changes, and React can misattribute state (arriving in U17) to the wrong row.</p>
+<p><strong>Fix:</strong> Prefer a stable <code>id</code> from the data. Reach for the index only when the list is static and never reordered — and say so in a comment.</p>
+<h3>Error 4 — Trying to render an object directly</h3>
+<pre><code class="language-jsx">{products.map((product) =&gt; &lt;li&gt;{product}&lt;/li&gt;)}
+</code></pre>
+<p><strong>What happens:</strong> An error like:</p>
+<pre><code class="language-text">Objects are not valid as a React child
+</code></pre>
+<p><strong>Decode it:</strong> React can render text, numbers, and elements, but not a whole object. You must pick fields: <code>{product.name}</code>.</p>
+<p><strong>Fix:</strong> Render specific fields of the object, as in the worked example.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does <code>.map</code> return?</li>
+<li>Why can JSX render the result of <code>.map</code>?</li>
+<li>Why does each list item need a <code>key</code>, and what makes a good key?</li>
+<li>Why is the array index usually a weak choice for a key?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Predict the output of each before running:</p>
+<pre><code class="language-jsx">{[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;].map((letter) =&gt; &lt;li&gt;{letter.toUpperCase()}&lt;/li&gt;)}
+</code></pre>
+<pre><code class="language-jsx">{[] .map((x) =&gt; &lt;li&gt;{x}&lt;/li&gt;)}
+</code></pre>
+<h3>P2 — Change one value, observe</h3>
+<p>In the worked example, change <code>body={"$" + product.price}</code> to <code>body={"Price: " + product.price}</code>. Save and observe. Then add a fourth product object and watch a fourth card appear.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Fill the blanks so this renders one <code>&lt;li&gt;</code> per name with a good key:</p>
+<pre><code class="language-jsx">const names = [&quot;Ada&quot;, &quot;Ravi&quot;, &quot;Leila&quot;];
+
+&lt;ul&gt;
+  {names.____((name, index) =&gt; (
+    &lt;li ____={____}&gt;{name}&lt;/li&gt;
+  ))}
+&lt;/ul&gt;
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Given this data, render it as an unordered list of <code>&lt;li&gt;</code> elements showing <code>name</code> and <code>score</code>, each with a proper key:</p>
+<pre><code class="language-jsx">const players = [
+  { id: 101, name: &quot;Ada&quot;, score: 90 },
+  { id: 102, name: &quot;Ravi&quot;, score: 75 },
+  { id: 103, name: &quot;Leila&quot;, score: 88 },
+];
+</code></pre>
+<h3>P5 — Fix the broken example</h3>
+<p>This list renders but React warns about keys, and one key is duplicated. Fix both problems and explain each in one sentence.</p>
+<pre><code class="language-jsx">{players.map((player) =&gt; (
+  &lt;li key=&quot;player&quot;&gt;{player.name}&lt;/li&gt;
+))}
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No sorting, filtering, or searching the list — later phases.</li>
+<li>No events or clicks on list items — U17.</li>
+<li>No state; the data here is a constant. Making a list change at runtime comes with state in U17.</li>
+<li>No fetching data from the internet — that is deferred to U19 and beyond.</li>
+<li>No conditional rendering of the list (empty state, etc.) — that is U16.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U16 — Conditional rendering</strong> (showing and hiding pieces of the page by rule, including the empty-list case).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U15 Assignment — Render a list from data</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U15-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>App.jsx</code></h3>
+<p>A file that renders a list from an array of data using <code>.map</code>.</p>
+<ul>
+<li>Define an array of <strong>at least four objects</strong>. Each object must have an <code>id</code> and at least two other fields (for example <code>name</code> and <code>score</code>, or <code>title</code> and <code>price</code>).</li>
+<li>Render one component (reuse <code>Card</code> from U14, or define a small <code>Row</code> component) per object using <code>.map</code>.</li>
+<li>Each rendered item must have a <code>key</code> based on the object's stable <code>id</code>.</li>
+<li>Pass at least two fields through as props.</li>
+</ul>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Explain <code>.map</code>.</strong> In 3–5 sentences, explain what <code>.map</code> does to a designer who has not coded. Use a "repeat" or "duplicate" metaphor from a design tool if it helps.</li>
+<li><strong>Why not hand-write?</strong> Give one concrete reason hand-writing repeated components fails when the data changes.</li>
+<li><strong>The key.</strong> Explain what a <code>key</code> is and what makes a good one. Say why the object's <code>id</code> is better than the array index.</li>
+<li><strong>Predict then run.</strong> Before running, write what this renders. Then run and report.</li>
+</ol>
+<p><code>jsx
+   const tags = ["design", "code", "craft"];
+   {tags.map((tag) =&gt; &lt;span key={tag}&gt;{tag}&lt;/span&gt;)}</code></p>
+<ol start="5">
+<li><strong>Add a row.</strong> Describe (in prose) exactly where in your file you would add a fifth object and what would appear in the browser. Then actually do it and confirm.</li>
+</ol>
+<h3>3. <code>error-reading.md</code></h3>
+<p>Paste, run, and answer:</p>
+<pre><code class="language-jsx">const items = [
+  { id: 1, label: &quot;First&quot; },
+  { id: 2, label: &quot;Second&quot; },
+];
+
+function App() {
+  return (
+    &lt;ul&gt;
+      {items.map((item) =&gt; (
+        &lt;li key={item.id}&gt;{label}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default App;
+</code></pre>
+<p>a. Describe what the browser shows (the list may be empty or the build may fail — describe whichever happens).<br />
+b. Read the console or terminal message and quote the part that names the problem.<br />
+c. Fix the code so the list shows "First" and "Second."<br />
+d. Write the general rule this bug teaches in one sentence.</p>
+<h2>Definition of done</h2>
+<ul>
+<li><code>App.jsx</code> renders 4+ items via <code>.map</code>, each with a stable <code>key</code>.</li>
+<li><code>answers.md</code> answers all five prompts in your own words.</li>
+<li><code>error-reading.md</code> quotes the real error and includes the fix and the rule.</li>
+<li>Files are named exactly as above.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>The list is genuinely data-driven: editing the array alone changes the page.</li>
+<li>Keys come from stable <code>id</code>s, and the answer explains <em>why</em> an id beats an index.</li>
+<li>The predict-then-run section is honest about any wrong prediction.</li>
+<li>The error-reading answer distinguishes the <em>error text</em> from the <em>rule</em> it teaches.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U15 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Array of 4+ objects with <code>id</code> and 2+ fields</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>App.jsx</code></td>
+</tr>
+<tr>
+<td>Uses <code>.map</code> to render one component per object</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>App.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>Every item has a unique, stable <code>key</code> (not the index)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>App.jsx</code></td>
+</tr>
+<tr>
+<td>Two or more fields passed as props and displayed</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>App.jsx</code></td>
+</tr>
+<tr>
+<td>Explains <code>.map</code> in own words / with a design metaphor</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains why stable keys beat indices</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Predict-then-run completed with honest reporting</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Add-a-row description matches actual behavior</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Error-reading: quotes real message, fixes bug, states rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong><code>.map</code> used but no <code>key</code>:</strong> award 2/4 for the map and 0/4 for keys. This is the exact lesson; do not let it pass on "it still rendered."</li>
+<li><strong><code>key={index}</code> only:</strong> award 1/4 for keys, and check Q3 — if they explain <em>why</em> index is weak and still used it in a static list with a comment, award 2/4. The reasoning matters more than dogma.</li>
+<li><strong>Duplicate keys (<code>key="item"</code>):</strong> 0/4 for keys; this is a distinct bug from missing keys.</li>
+<li><strong>List hardcoded instead of mapped:</strong> 0/4 for <code>.map</code>; the unit's core skill is absent.</li>
+<li><strong>Q1:</strong> Full marks for a concrete design comparison (repeat grid, data-connected component). Pure code restatement caps at 2/3.</li>
+<li><strong>Q3:</strong> Must mention that indices change on reorder/remove. Just "ids are unique" caps at 2/3.</li>
+<li><strong>Error-reading:</strong> The bug is <code>{label}</code> (undefined variable) — it should be <code>{item.label}</code>. In Vite this likely fails to build with <code>'label' is not defined</code>. Award full only if they quote the real message and fix to <code>{item.label}</code>. If they mistakenly blame the key, award 1/3 and note the actual cause.</li>
+<li>Do not penalize imperfect English. Penalize copied lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U14-composing-components/index.html">U14 Composing components</a>
+    <a class="next" href="../U16-conditional-rendering/index.html">U16 Conditional rendering</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

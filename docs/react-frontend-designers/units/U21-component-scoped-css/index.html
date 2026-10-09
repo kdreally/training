@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U21 — Component-scoped CSS | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U21</div>
+    <h1>Component-scoped CSS</h1>
+    <span class="phase-badge ph4">Phase 4 — Styling and design</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U21 — Component-scoped CSS</h1>
+<p><strong>Phase 4 — Styling and design</strong></p>
+<h2>Where you are</h2>
+<p>In U20 you saw the four ways a React app can deliver styles, and we chose one: <strong>plain CSS files, one per component, plus a shared token file</strong>. This unit does the first half of that promise — attaching a real stylesheet to a real component and keeping its styles from leaking into the rest of the app.</p>
+<p>"Component-scoped" is the goal. By the end you will understand exactly how much of it plain CSS gives you for free (less than the name suggests) and how much comes from a naming habit you control.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Import a <code>.css</code> file into a component so React loads it.</li>
+<li>Explain what "global namespace" means for plain CSS and why a naming convention prevents collisions.</li>
+<li>Apply a simple, designer-friendly class naming pattern (<code>card</code>, <code>card__title</code>, <code>card--highlighted</code>).</li>
+<li>Keep a component's stylesheet next to its component file.</li>
+<li>Build a small, styled <code>Card</code> component and use it from <code>App.jsx</code>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U04 — CSS as presentation</strong>: selectors, the box model, and flexbox.</li>
+<li><strong>U10 — The project folder tour</strong>: you know <code>src/</code> holds your components and <code>App.jsx</code> is what renders on screen.</li>
+<li><strong>U11 — Your first component</strong> and <strong>U12 — JSX explained</strong>: a component is a function returning JSX; JSX uses <code>className</code>, not <code>class</code> (restated in U20).</li>
+<li><strong>U13 — Props as design properties</strong>: a component can receive values from outside.</li>
+<li><strong>U20 — Styling options</strong>: <code>className</code>, the inline <code>style</code> prop, and why plain CSS is our choice.</li>
+</ul>
+<p>If you have not read U20, read it first. This unit assumes its vocabulary.</p>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>. You will write two or three small files and look at them in the browser. This is the first styling unit with real code, so give yourself permission to go slowly and to break things on purpose.</p>
+<h2>Why this exists</h2>
+<p>In a design tool, a card's styles belong to the card. Nothing else on the canvas can accidentally inherit them. In plain CSS, that safety is not automatic — CSS has one <strong>global namespace</strong>, which is a fancy way of saying every class name lives in the same shared pool. If <code>Card.css</code> defines <code>.title</code> and your header also defines <code>.title</code>, both elements get whichever <code>.title</code> rule the browser applied last, and one of them silently looks wrong.</p>
+<p>This is the classic "why did my styles change?" moment that makes beginners think CSS is haunted. It is not haunted; it is global. This unit teaches a naming habit that makes collisions nearly impossible, so you get the designer's "styles belong to the component" feeling without giving up readable CSS.</p>
+<h2>Plain-language teaching</h2>
+<h3>What "importing a CSS file" actually does</h3>
+<p>When you write this at the top of <code>Card.jsx</code>:</p>
+<pre><code class="language-jsx">import &quot;./Card.css&quot;;
+</code></pre>
+<p>you are telling the Vite toolchain (from U09): "when this component is part of the app, also load this stylesheet." The toolchain bundles <code>Card.css</code> into the app's CSS.</p>
+<ul>
+<li><strong>What it does:</strong> makes every class defined in <code>Card.css</code> available to the whole running page.</li>
+<li><strong>Success looks like:</strong> the styles apply, and the browser's Developer Tools show <code>Card.css</code> as a source file.</li>
+<li><strong>One decoded failure:</strong> if the path is wrong, the dev server prints something like <em>"Failed to resolve import <code>./Card.css</code> from <code>src/Card.jsx</code>. Does the file exist?"</em> The page may still render but unstyled. The message tells you the exact import and file it could not find — check the file's name and location.</li>
+</ul>
+<p>An important honesty point: <code>import "./Card.css"</code> is <strong>not</strong> what scopes the styles. The import only <em>loads</em> them. Scoping comes from the names you choose. Even if <code>Card.css</code> sits next to <code>Card.jsx</code>, a rule named <code>.title</code> inside it is global. We fix that with naming.</p>
+<h3>The naming convention we will use</h3>
+<p>We use a small, three-part pattern. It is a simplified cousin of a widely used convention called <strong>BEM</strong> (Block, Element, Modifier). You do not need the acronym; you need the habit.</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Pattern</th>
+<th>Example</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Block</td>
+<td><code>.name</code></td>
+<td><code>.card</code></td>
+<td>The component itself</td>
+</tr>
+<tr>
+<td>Element</td>
+<td><code>.block__thing</code></td>
+<td><code>.card__title</code></td>
+<td>A part inside the block</td>
+</tr>
+<tr>
+<td>Modifier</td>
+<td><code>.block--variant</code></td>
+<td><code>.card--highlighted</code></td>
+<td>A variation of the block</td>
+</tr>
+</tbody>
+</table>
+<p>Rules that make the habit work:</p>
+<ol>
+<li>Every class starts with the component's name (<code>card</code>), so no two components ever share a bare name.</li>
+<li>Elements use a double underscore (<code>card__title</code>) and modifiers a double dash (<code>card--highlighted</code>).</li>
+<li>You never style a bare, generic name like <code>.title</code>, <code>.container</code>, or <code>.button</code> in a component file.</li>
+</ol>
+<p>Do the element and modifier separators look odd at first? A little. The doubled characters exist precisely because they are rare in normal words, so <code>card__title</code> can never be confused with a single-word class called <code>card__title</code>. That is the whole trick.</p>
+<h3>Why keep the stylesheet next to the component</h3>
+<pre><code class="language-text">src/
+  components/
+    Card/
+      Card.jsx
+      Card.css
+    Header/
+      Header.jsx
+      Header.css
+</code></pre>
+<p>When a designer asks "what does this card look like underneath?", the answer is one file away. This mirrors how you keep a component and its variants together in a design system page. It also makes the class prefix obvious: the file named <code>Card.css</code> using the prefix <code>card</code> is self-enforcing.</p>
+<h3>A note on sharing styles across components</h3>
+<p>If a style is truly shared (a brand color, a page background, a spacing scale), it does not belong to any one component. It belongs in the shared token file we build in <strong>U22</strong>. For now, keep each component's styles local, and resist the urge to copy the same rule into many files. Copying is how drift starts.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Global namespace</td>
+<td>One shared pool where all CSS class names live</td>
+<td>"Scoped" in plain CSS is a naming habit, not enforced by the tool</td>
+</tr>
+<tr>
+<td>Import (CSS)</td>
+<td>A line that tells the build to include a stylesheet</td>
+<td>Importing does not scope the CSS; it only loads it</td>
+</tr>
+<tr>
+<td>Class collision</td>
+<td>Two components define the same class name differently, so one wins</td>
+<td>The page still renders — the bug is silent and visual</td>
+</tr>
+<tr>
+<td>BEM (simplified)</td>
+<td>A naming pattern: block, block__element, block--modifier</td>
+<td>The doubled characters are intentional separators, not typos</td>
+</tr>
+<tr>
+<td>Block</td>
+<td>The component's root class (for example, <code>.card</code>)</td>
+<td>Not the HTML <code>&lt;div&gt;</code> you happen to use</td>
+</tr>
+<tr>
+<td>Element</td>
+<td>A part inside the block (for example, <code>.card__title</code>)</td>
+<td>Not an HTML element; it is a class name</td>
+</tr>
+<tr>
+<td>Modifier</td>
+<td>A variation of the block or element (<code>.card--highlighted</code>)</td>
+<td>Not dynamic state; it is a fixed named variant</td>
+</tr>
+<tr>
+<td>Component folder</td>
+<td>A folder holding a component and its stylesheet</td>
+<td>Optional but strongly recommended</td>
+</tr>
+<tr>
+<td>Specificity</td>
+<td>How CSS decides which rule wins when two target one element</td>
+<td>A source of "why is my style ignored?" — see below</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build one small <code>Card</code> component and use it in <code>App.jsx</code>. The card has a title, some body text, and an optional highlighted variant.</p>
+<h3>File 1 — <code>src/components/Card/Card.jsx</code></h3>
+<pre><code class="language-jsx">import &quot;./Card.css&quot;;
+
+export default function Card({ title, children, highlighted = false }) {
+  const className = highlighted ? &quot;card card--highlighted&quot; : &quot;card&quot;;
+
+  return (
+    &lt;article className={className}&gt;
+      &lt;h2 className=&quot;card__title&quot;&gt;{title}&lt;/h2&gt;
+      &lt;p className=&quot;card__body&quot;&gt;{children}&lt;/p&gt;
+    &lt;/article&gt;
+  );
+}
+</code></pre>
+<p>Line-by-line justification:</p>
+<ul>
+<li><code>import "./Card.css";</code> — loads the stylesheet for this app. Required before any of its classes will work.</li>
+<li><code>export default function Card(...)</code> — the component from U11. <code>Card</code> is the name other files import.</li>
+<li><code>({ title, children, highlighted = false })</code> — props from U13. <code>title</code> is text; <code>children</code> is whatever you nest inside <code>&lt;Card&gt;</code>; <code>highlighted</code> defaults to <code>false</code>.</li>
+<li><code>const className = ...</code> — builds the class string. If highlighted, it is <code>"card card--highlighted"</code> (two classes separated by a space); otherwise just <code>"card"</code>.</li>
+<li><code>&lt;article className={className}&gt;</code> — <code>article</code> is sensible HTML for a self-contained card (U03). Note the braces: <code>className</code> is a JavaScript value, not a quoted literal.</li>
+<li><code>&lt;h2 className="card__title"&gt;</code> — a heading, styled by the element class.</li>
+<li><code>&lt;p className="card__body"&gt;{children}&lt;/p&gt;</code> — renders whatever was nested inside.</li>
+</ul>
+<h3>File 2 — <code>src/components/Card/Card.css</code></h3>
+<pre><code class="language-css">.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 320px;
+  font-family: system-ui, sans-serif;
+  color: #1e293b;
+}
+
+.card__title {
+  margin: 0 0 8px 0;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.card__body {
+  margin: 0;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.card--highlighted {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Every class starts with <code>card</code>, so nothing here can collide with another component.</li>
+<li><code>.card--highlighted</code> only changes a couple of properties; it <em>adds to</em> <code>.card</code> rather than replacing it. That is why the JSX applies both classes together.</li>
+<li>Colors here are literal hex values for now. In U22 we move them into shared tokens.</li>
+</ul>
+<h3>File 3 — <code>src/App.jsx</code> (using the card)</h3>
+<pre><code class="language-jsx">import Card from &quot;./components/Card/Card&quot;;
+
+export default function App() {
+  return (
+    &lt;main style={{ padding: 24, display: &quot;flex&quot;, gap: 16 }}&gt;
+      &lt;Card title=&quot;Draft&quot;&gt;Still deciding on the layout.&lt;/Card&gt;
+      &lt;Card title=&quot;Approved&quot; highlighted&gt;
+        Ready to hand off.
+      &lt;/Card&gt;
+    &lt;/main&gt;
+  );
+}
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li><code>import Card from "./components/Card/Card";</code> — the default export's path. If you rename or move the file, you must update this path. A wrong path is the single most common beginner error (see below).</li>
+<li><code>title="Draft"</code> and text between the tags become props. The text between <code>&lt;Card&gt;</code> and <code>&lt;/Card&gt;</code> arrives as <code>children</code>.</li>
+<li><code>&lt;Card title="Approved" highlighted&gt;</code> — writing the prop with no value means <code>highlighted={true}</code>. That is why the second card gets the modifier class.</li>
+<li>The inline <code>style</code> on <code>&lt;main&gt;</code> is the layout of the <em>page</em>, a one-off. It is acceptable here; the card's reusable styles live in <code>Card.css</code>.</li>
+</ul>
+<h3>How to run it and what success looks like</h3>
+<ol>
+<li>Save all three files.</li>
+<li>Your dev server from U09 is running (<code>npm run dev</code>). If it is not, start it in the project folder. The terminal prints a local URL such as <code>http://localhost:5173/</code>.</li>
+<li>Open that URL. You should see two cards side by side: a plain one and a highlighted one with a blue border and soft blue shadow.</li>
+</ol>
+<p>If you see raw, unstyled HTML with no borders or padding, the stylesheet did not load — jump to Error 1.</p>
+<h2>Common errors</h2>
+<h3>Error 1: The import path is wrong</h3>
+<p><strong>What you see:</strong> the terminal shows <em>"Failed to resolve import './Card.css' from 'src/components/Card/Card.jsx'"</em>, or the page renders with no styles.</p>
+<p><strong>What it means:</strong> the exact file the import names does not exist where the import says. Case matters: <code>Card.css</code> and <code>card.css</code> are different names on Linux and in many deployment systems, even if your Windows or macOS file system does not complain.</p>
+<p><strong>Fix:</strong> open the component folder, confirm the filename character-for-character, and correct the import. If the CSS file is one folder up, the path is <code>"../Card.css"</code>.</p>
+<h3>Error 2: A class collision that makes no sense</h3>
+<p><strong>What you see:</strong> after adding a new component, an <em>old</em> component's text suddenly changes size or color. You never touched the old file.</p>
+<p><strong>What it means:</strong> both components define the same class name. For example, <code>Card.css</code> and <code>Badge.css</code> both define <code>.title</code>, but differently. Because CSS is global, the second one to load wins for both elements.</p>
+<p><strong>Fix:</strong> rename with the component prefix (<code>card__title</code>, <code>badge__title</code>). This is exactly why our convention prefixes every class.</p>
+<h3>Error 3: Writing <code>class</code> instead of <code>className</code></h3>
+<p><strong>What you see:</strong> the console warning <em>"Invalid DOM property <code>class</code>. Did you mean <code>className</code>?"</em> and no styles.</p>
+<p><strong>What it means:</strong> this is the JSX rule from U20; it reappears the moment you copy CSS examples from the web (which are written in plain HTML).</p>
+<p><strong>Fix:</strong> use <code>className</code>. Read the browser console (F12) when styles do not appear — the warning is usually waiting there.</p>
+<h3>Error 4: Two rules fight, and the "wrong" one wins</h3>
+<p><strong>What you see:</strong> <code>.card--highlighted { border-color: blue; }</code> seems ignored; the border stays gray.</p>
+<p><strong>What it means:</strong> <strong>specificity</strong> (from U04): when two rules set the same property, CSS picks based on selector specificity and order, not on which class you <em>meant</em>. If <code>.card</code> appears later or is more specific, it can win.</p>
+<p><strong>Fix:</strong> open Developer Tools (F12), select the element, and read the Styles panel. Struck-through declarations are the ones being overridden, and the panel names the winning rule. In our pattern, <code>.card--highlighted</code> comes <em>after</em> <code>.card</code> in the file, which is usually enough because they have equal specificity and later wins. When in doubt, inspect rather than guess.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words:</p>
+<ol>
+<li>What does <code>import "./Card.css";</code> actually do — and what does it <em>not</em> do?</li>
+<li>Why does our convention prefix every class with the component name?</li>
+<li>Given the classes <code>card</code>, <code>card__title</code>, and <code>card--highlighted</code>, which is the block, which is an element, and which is a modifier?</li>
+<li>Your card renders unstyled. Name the first thing you check and where you look.</li>
+</ol>
+<p>If you can answer all four, you are ready for the assignment.</p>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Look at <code>&lt;Card title="Approved" highlighted&gt;</code>. Before running anything, write down the exact <code>className</code> string that reaches the <code>&lt;article&gt;</code>. Then check against the worked example.</p>
+<h3>P2 — Change one value</h3>
+<p>In <code>Card.css</code>, change <code>.card</code>'s <code>border-radius</code> from <code>12px</code> to <code>999px</code>. Predict the shape first, then apply it. Notice that one line changed every card, which is the point of sharing a class.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>You add a "footer" area to the card. Following the convention, the class for it should be <code>card____</code>. Fill in the missing piece. Then style it with a smaller, muted font.</p>
+<h3>P4 — Debug this broken snippet</h3>
+<pre><code class="language-jsx">// Badge.jsx
+export default function Badge({ label }) {
+  return &lt;span class=&quot;badge&quot;&gt;{label}&lt;/span&gt;;
+}
+</code></pre>
+<p>Name the problem and write the corrected line.</p>
+<h3>P5 — Inspection practice</h3>
+<p>Run the app, press <strong>F12</strong>, and use the element picker to select the highlighted card. In the Styles panel, confirm you can see <code>.card--highlighted</code> and <code>.card</code> both applied. Write one sentence about how the panel shows which properties came from which class.</p>
+<h3>P6 — Design bridge</h3>
+<p>Open a Figma component you have made (or imagine one). Write its "parts" as if naming classes: the component, its inner pieces, and its variants. For example: <code>button</code>, <code>button__label</code>, <code>button--ghost</code>. You will reuse this mapping in U22.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No design tokens or CSS variables yet (U22).</li>
+<li>No responsive breakpoints or media queries (U23).</li>
+<li>No accessibility review (U24).</li>
+<li>No CSS Modules, Tailwind, or CSS-in-JS — we chose plain CSS in U20.</li>
+<li>No animations or transitions (U29).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U22 — Design tokens as props</strong>: we pull repeated values out of component CSS and into a shared, named token file, then let props select among them.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U21 Assignment — A component with its own stylesheet</h1>
+<p>Submit to your trainer in <strong>one folder or zip</strong> named <code>U21-YourName</code>.</p>
+<p>You will build a small styled component and explain your choices. Keep it small: one component, one stylesheet, one using file.</p>
+<h2>Files to submit</h2>
+<h3>1. Your component (folder <code>component/</code>)</h3>
+<p>Create a component folder using the course layout. Use <strong>your own component idea</strong> — it must not be the Card from the lesson. Good options: a <code>ProfileChip</code>, a <code>PriceTag</code>, an <code>EventBadge</code>, a <code>StatTile</code>. Pick one with at least a title and one other part.</p>
+<p>Required contents:</p>
+<pre><code class="language-text">component/
+  YourComponent/
+    YourComponent.jsx
+    YourComponent.css
+  App.jsx
+</code></pre>
+<ul>
+<li><code>YourComponent.jsx</code> must <code>import "./YourComponent.css";</code>.</li>
+<li>It must accept <strong>at least two props</strong> (one text prop and one optional variant prop that toggles a modifier class).</li>
+<li><code>YourComponent.css</code> must follow the naming convention: every class starts with the component's prefix, using <code>__</code> for elements and <code>--</code> for the modifier.</li>
+<li><code>App.jsx</code> renders the component <strong>twice</strong>: once default, once with the variant prop set.</li>
+</ul>
+<p>If you have a Vite project from U09, drop these files into it and confirm it runs. If you do not, submitting the three files is enough; note that in <code>answers.md</code>.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Import.</strong> In one or two sentences, explain what <code>import "./YourComponent.css";</code> does and what it does <strong>not</strong> do.</li>
+<li><strong>Naming.</strong> List every class you created. For each, label it block, element, or modifier, and explain why the prefix prevents collisions.</li>
+<li><strong>Collision scenario.</strong> Describe a realistic way your class names could have collided with another component if you had used bare names like <code>.title</code>.</li>
+<li><strong>Inspection.</strong> Open Developer Tools (F12), select your variant instance, and describe which two classes you see applied and one property that came from the modifier.</li>
+<li><strong>Design bridge.</strong> Map one of your design-tool components to your class names (block = component, elements = inner parts, modifiers = variants). Use your own design vocabulary.</li>
+<li><strong>Reflection.</strong> Name one thing that was harder than expected and how you resolved it (or what you are still unsure about).</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My component and stylesheet live in the same folder.
+- [ ] I imported the stylesheet in the component file.
+- [ ] Every class starts with my component's prefix.
+- [ ] I used `__` for elements and `--` for the modifier.
+- [ ] The variant prop changes the class string, verified in the browser.
+- [ ] I checked the browser for console warnings.
+- [ ] I read the U21 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>The component renders twice in <code>App.jsx</code>; the variant instance visibly differs.</li>
+<li>The stylesheet imports correctly and there are no console errors.</li>
+<li>Class names follow the convention consistently.</li>
+<li>All written answers are in your own words.</li>
+</ul>
+<h2>Predict-then-run requirement</h2>
+<p>Before you run your component, write in <code>answers.md</code> the exact <code>className</code> string you expect on the rendered root element for both instances. Then run and confirm. If your prediction was wrong, say what you had wrong.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U21 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component imports its stylesheet with a correct path</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>YourComponent.jsx</code></td>
+</tr>
+<tr>
+<td>Component accepts a text prop and an optional variant prop</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>YourComponent.jsx</code></td>
+</tr>
+<tr>
+<td><code>App.jsx</code> renders default and variant instances</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>App.jsx</code></td>
+</tr>
+<tr>
+<td>Class names follow block / <code>__</code> element / <code>--</code> modifier convention</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>YourComponent.css</code></td>
+</tr>
+<tr>
+<td>Component and stylesheet are in the same folder</td>
+<td>2</td>
+<td>Yes</td>
+<td>folder structure</td>
+</tr>
+<tr>
+<td>Explains import vs scoping correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correctly labels each class and explains collision prevention</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2–Q3</td>
+</tr>
+<tr>
+<td>Inspection answer names two applied classes and a modifier property</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Design bridge maps a design component to class names</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Prediction recorded then verified</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> predict section</td>
+</tr>
+<tr>
+<td>Checklist present and honest</td>
+<td>1</td>
+<td>Yes</td>
+<td><code>checklist.md</code></td>
+</tr>
+</tbody>
+</table>
+<h2>What the assessor should look for</h2>
+<ul>
+<li><strong>Import (4):</strong> the import line exists and the path resolves. A missing import means the styles cannot apply regardless of how correct the CSS is — treat as must-have failure and note it clearly.</li>
+<li><strong>Props (4):</strong> at least one text prop and one optional prop that changes the class string. The variant must actually be used in the <code>className</code> logic, not merely accepted and ignored.</li>
+<li><strong>Convention (5):</strong> every class begins with the component prefix. Elements use <code>__</code>, modifiers use <code>--</code>. Deduct proportional points for a few bare/generic names. A file full of bare <code>.title</code>, <code>.body</code>, <code>.box</code> names demonstrates the exact failure the unit warns about and should score low here even if it looks fine.</li>
+<li><strong>Q1 (3):</strong> full credit requires both halves — "loads the stylesheet" <strong>and</strong> "does not scope by itself; naming does."</li>
+<li><strong>Q2–Q3 (3):</strong> they must correctly identify block/element/modifier and give a plausible collision story. Accept any concrete collision.</li>
+<li><strong>Q4 (2):</strong> accept any two classes that are genuinely applied, with a property that clearly comes from the modifier.</li>
+<li><strong>Prediction (1):</strong> the exact strings <code>"prefix"</code> and <code>"prefix prefix--variant"</code> (names vary) written before running.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>If the component works visually but uses bare class names, award visual/functional rows fully and the convention row at 0–2. Do not let a pretty result hide the unit's actual learning objective.</li>
+<li>If the variant prop is accepted but unused, give 2/4 on the props row.</li>
+<li>If <code>App.jsx</code> renders only one instance, award 1/3 and note it.</li>
+<li>Do not penalize a component idea that differs from the lesson's Card — variety is encouraged.</li>
+<li>Cosmetic CSS quality is not graded here; naming, import, and prop wiring are. Judge craft in U23/U30.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Component in one folder, stylesheet in another or in <code>src/</code>.</li>
+<li>Bare generic class names with no prefix.</li>
+<li><code>class</code> used instead of <code>className</code>, with the console warning ignored.</li>
+<li>Variant prop received but never used in the className logic.</li>
+<li><code>answers.md</code> restates the lesson rather than reporting what they actually inspected.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U20-styling-options/index.html">U20 Styling options in a React app</a>
+    <a class="next" href="../U22-design-tokens-as-props/index.html">U22 Design tokens as props</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

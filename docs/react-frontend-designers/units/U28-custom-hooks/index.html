@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U28 — Custom hooks | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U28</div>
+    <h1>Custom hooks</h1>
+    <span class="phase-badge ph5">Phase 5 — Interaction and polish</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U28 — Custom hooks</h1>
+<p><strong>Phase 5 — Interaction and polish</strong></p>
+<h2>Where you are</h2>
+<p>You have used <code>useState</code>, and you met <code>useEffect</code> in U19. You have felt the small frustration of writing the same little block of state logic in two or three components. This unit gives that repeated logic a <strong>name</strong> by packaging it into a <strong>custom hook</strong>.</p>
+<p>The reassuring truth up front: a custom hook is not a new feature of React with new rules to memorize. It is a plain JavaScript function that follows one naming rule and one calling rule. This unit is mostly about recognizing a pattern you already write, then refactoring it.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a custom hook is in plain language.</li>
+<li>Recognize repeated state logic across components.</li>
+<li>Write a custom hook named <code>useSomething</code> that calls built-in hooks.</li>
+<li>Use a custom hook in one or more components.</li>
+<li>State the <strong>rules of hooks</strong> and recognize a violation from an error message.</li>
+<li>Build a <code>useToggle</code> and a <code>useLocalStorage</code> hook.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05</strong> — JavaScript functions.</li>
+<li><strong>U07</strong> — arrow functions, destructuring, imports.</li>
+<li><strong>U17</strong> — events and state with <code>useState</code>.</li>
+<li><strong>U19</strong> — side effects with <code>useEffect</code> (light scope).</li>
+<li><strong>U26</strong> — lifting state (custom hooks often return a value and a setter, the same pair lifting state uses).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>70–100 minutes</strong>. This unit feels clever, and it can pull you into over-abstracting. We keep the scope small: two useful hooks, both short. If you catch yourself inventing a hook framework, stop and take a walk.</p>
+<h2>Why this exists</h2>
+<p>A designer reuses a button with three variants instead of redrawing it six times. Reuse is how design systems stay consistent. Code has the same need.</p>
+<p>Suppose two different components each need a true/false flag that flips when a button is clicked. You write the same three lines twice:</p>
+<pre><code class="language-jsx">const [isOpen, setIsOpen] = useState(false);
+const open = () =&gt; setIsOpen(true);
+const close = () =&gt; setIsOpen(false);
+</code></pre>
+<p>That is fine for two. By the fifth time, you have five copies to keep in sync. A custom hook names this behavior once: <code>useToggle</code>. Five components call <code>useToggle()</code> and each still gets its <strong>own</strong> independent flag.</p>
+<p>The human problem: <strong>the same behavior, written repeatedly, drifts and multiplies bugs.</strong> Naming it once fixes it once.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a custom hook is</h3>
+<p>A <strong>custom hook</strong> is a JavaScript function whose name starts with <code>use</code> and which calls one or more React hooks inside it.</p>
+<p>That is the whole definition. It is not a component. It is not a class. It renders nothing. It is a function that packages <strong>stateful behavior</strong> so several components can reuse it.</p>
+<h3>Why the name must start with <code>use</code></h3>
+<p>React cannot see your code the way you can. It uses the <code>use</code> prefix as a signal: "this function may call hooks." That single convention lets React and its lint tools check your code for the rules below. If you name it <code>toggleState</code> instead of <code>useToggle</code>, React may still run it, but you lose the safety checks and break a strong community convention. Always start with <code>use</code>.</p>
+<h3>The rules of hooks</h3>
+<p>There are only two rules, and they apply to <em>all</em> hooks, built-in and custom:</p>
+<ol>
+<li><strong>Only call hooks at the top level</strong> of a component or another hook. Never inside a loop, an <code>if</code>, a nested function, or after an early <code>return</code>.</li>
+<li><strong>Only call hooks from React components or from other hooks.</strong> Never from a plain utility function that is not a component or a hook.</li>
+</ol>
+<p>Why rule 1 exists: React tracks your component's hooks <strong>by the order they run</strong>, not by their names. If a hook runs conditionally, the order changes between renders, and React reads the wrong value from the wrong hook. The rules keep the order stable. The order is the identity.</p>
+<p>Think of it like a numbered stack of layers. If you sometimes hide the third layer, then "third from the bottom" stops meaning the same thing. React counts positions, so the set of hooks must stay the same on every render.</p>
+<h3>What a custom hook is <em>not</em></h3>
+<ul>
+<li><strong>Not shared state.</strong> Calling <code>useToggle()</code> in two components gives each its own independent flag. To share one flag, you lift state (U26) or use context (U27). A hook shares <em>behavior</em>, not <em>data</em>.</li>
+<li><strong>Not magic.</strong> No new syntax, no compiler trick. Just a function that calls functions.</li>
+<li><strong>Not a component.</strong> Hooks return values; components return JSX.</li>
+</ul>
+<h3>A useful mental model: the returned pair</h3>
+<p>Most custom hooks return the same shape you already know from <code>useState</code>: a value and a way to change it. <code>useToggle</code> returns <code>[value, toggle]</code>; <code>useLocalStorage</code> returns <code>[storedValue, setStoredValue]</code>. If you understand <code>useState</code>, you already understand the interface.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom hook</td>
+<td>A function starting with <code>use</code> that calls other hooks</td>
+<td>Not a component; it renders nothing</td>
+</tr>
+<tr>
+<td>Rules of hooks</td>
+<td>Two rules about where hooks may be called</td>
+<td>Not optional style — React depends on them</td>
+</tr>
+<tr>
+<td>Top level</td>
+<td>Directly inside the component or hook body, not nested</td>
+<td>"Top" means depth, not vertical position on screen</td>
+</tr>
+<tr>
+<td>Order of hooks</td>
+<td>The sequence in which hooks run each render</td>
+<td>The order must be identical every render</td>
+</tr>
+<tr>
+<td><code>useToggle</code></td>
+<td>A hook returning <code>[value, toggle]</code> for a boolean</td>
+<td>Not shared between components; each call is separate</td>
+</tr>
+<tr>
+<td><code>useLocalStorage</code></td>
+<td>A hook that keeps a value in the browser's storage</td>
+<td>Not React state; the browser stores it; you sync it</td>
+</tr>
+<tr>
+<td><code>localStorage</code></td>
+<td>A browser storage area that survives refreshes</td>
+<td>Not a React feature; it belongs to the browser</td>
+</tr>
+<tr>
+<td>Refactor</td>
+<td>Rewriting code to keep behavior while improving its shape</td>
+<td>Not adding features; here, it removes repetition</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Two hooks, then a component that uses both. Every line is justified below.</p>
+<p><strong>File:</strong> <code>src/useToggle.js</code></p>
+<pre><code class="language-js">import { useState } from &quot;react&quot;;
+
+export function useToggle(initialValue = false) {
+  const [value, setValue] = useState(initialValue);
+
+  function toggle() {
+    setValue((current) =&gt; !current);
+  }
+
+  return [value, toggle];
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/useLocalStorage.js</code></p>
+<pre><code class="language-js">import { useState } from &quot;react&quot;;
+
+export function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() =&gt; {
+    const saved = window.localStorage.getItem(key);
+    return saved !== null ? JSON.parse(saved) : initialValue;
+  });
+
+  function setValue(newValue) {
+    const valueToStore =
+      typeof newValue === &quot;function&quot; ? newValue(storedValue) : newValue;
+    setStoredValue(valueToStore);
+    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+  }
+
+  return [storedValue, setValue];
+}
+</code></pre>
+<p><strong>File:</strong> <code>src/Counter.jsx</code></p>
+<pre><code class="language-jsx">import { useToggle } from &quot;./useToggle&quot;;
+import { useLocalStorage } from &quot;./useLocalStorage&quot;;
+
+export default function Counter() {
+  const [isVisible, toggleVisible] = useToggle(true);
+  const [count, setCount] = useLocalStorage(&quot;counter&quot;, 0);
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={toggleVisible}&gt;
+        {isVisible ? &quot;Hide&quot; : &quot;Show&quot;} counter
+      &lt;/button&gt;
+
+      {isVisible &amp;&amp; (
+        &lt;p&gt;
+          &lt;button onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;Add one&lt;/button&gt;
+          Count: {count}
+        &lt;/p&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<p><strong>How to run it:</strong> start the dev server with <code>npm run dev</code> in your project folder and open the printed address. Same command on Windows, macOS, and Linux.</p>
+<h3>Why every line is where it is</h3>
+<p><strong>In <code>useToggle</code>:</strong></p>
+<ul>
+<li><code>initialValue = false</code> is a <strong>default parameter</strong>. If you call <code>useToggle()</code> with no argument, the starting value is <code>false</code>. This is plain JavaScript, not React.</li>
+<li><code>useState(initialValue)</code> holds one boolean per component that calls this hook. The name <code>useToggle</code> begins with <code>use</code>, satisfying rule 2.</li>
+<li><code>toggle</code> uses the function-updater form <code>setValue((current) =&gt; !current)</code>. It reads the latest value safely.</li>
+<li><code>return [value, toggle]</code> returns an array of two items, exactly like <code>useState</code>. Callers destructure with names of their choosing.</li>
+</ul>
+<p><strong>In <code>useLocalStorage</code>:</strong></p>
+<ul>
+<li><code>window.localStorage</code> is the browser's small storage area. Values survive a page refresh. <code>window</code> is available in the browser; it is not part of React.</li>
+<li>The first <code>useState</code> argument is a function — a <strong>lazy initializer</strong>. React runs it only on the first render. This reads storage once instead of on every keystroke.</li>
+<li><code>getItem</code> returns <code>null</code> when the key is absent. We check <code>saved !== null</code> so that a stored <code>0</code> or <code>false</code> is not mistaken for "nothing there."</li>
+<li><code>JSON.parse</code> turns the stored text back into a real value. Storage can only hold text, so numbers and objects must be converted.</li>
+<li><code>setValue</code> mirrors a state setter: it accepts either a new value or a function of the previous value. The <code>typeof newValue === "function"</code> check supports both forms.</li>
+<li><code>JSON.stringify</code> converts the value to text before storing. Without it, an object would be saved as <code>"[object Object]"</code>.</li>
+<li><code>localStorage</code> can throw if storage is full or disabled. For this course's purposes we keep it simple; a production hook would wrap these calls in <code>try</code>/<code>catch</code>.</li>
+</ul>
+<p><strong>In <code>Counter</code>:</strong> both hooks are called at the top level, unconditionally, in a fixed order. Each component that calls them gets independent values. Notice <code>setCount((c) =&gt; c + 1)</code> — passing a function is supported by the hook because we handled it.</p>
+<p><strong>What success looks like:</strong> the page shows a "Hide counter" button and "Count: 0." Clicking "Add one" increments the count. Clicking "Hide counter" hides the block and the button label changes to "Show counter." Reloading the page keeps the count, because it is in browser storage.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>React Hook "useState" is called conditionally</code></h3>
+<p><strong>When it happens:</strong> you put a hook inside an <code>if</code>, a loop, or two hooks behind a condition.</p>
+<pre><code class="language-jsx">function Panel({ show }) {
+  if (show) {
+    const [open, setOpen] = useState(false); // violation
+  }
+  // ...
+}
+</code></pre>
+<p><strong>Decoded:</strong> rule 1 was broken. React cannot guarantee the same order of hooks on every render, so it refuses.</p>
+<p><strong>Fix:</strong> move every hook call to the top level of the component, before any <code>if</code> or <code>return</code>. If a hook should sometimes do nothing, let it run always and use its value conditionally instead.</p>
+<h3>Error: <code>Invalid hook call. Hooks can only be called inside of the body of a function component</code></h3>
+<p><strong>When it happens:</strong> you call a hook from a plain function that is not a component or a hook — for example, inside a helper named <code>formatTheme</code> or inside a class method.</p>
+<p><strong>Decoded:</strong> rule 2 was broken. Hooks do not know which component they belong to here.</p>
+<p><strong>Fix:</strong> either make the function a proper component (name it in <code>PascalCase</code> and have it return JSX) or, better, move the hook into a custom hook whose name starts with <code>use</code>.</p>
+<h3>Error: two components seem to share the same counter</h3>
+<p><strong>When it happens:</strong> you put the state <em>outside</em> the hook — at module level, in a plain variable shared by the file.</p>
+<pre><code class="language-js">let count = 0; // module-level: shared by everyone
+export function useBadCounter() {
+  const [value, setValue] = useState(count);
+  // ...
+}
+</code></pre>
+<p><strong>Decoded:</strong> this is not a hook bug. <code>useState</code> gives each component its own value, but a module-level variable is shared by the whole file. The two ideas were mixed.</p>
+<p><strong>Fix:</strong> keep the state inside the hook via <code>useState</code>. If you truly want one shared value, that is lifting state (U26) or context (U27), not a custom hook.</p>
+<h3>Error: <code>JSON.parse</code> throws <code>Unexpected token o in JSON at position 1</code></h3>
+<p><strong>When it happens:</strong> something other than valid JSON text is in storage under that key. <code>"[object Object]"</code> is the classic culprit — an object was stored without <code>JSON.stringify</code>.</p>
+<p><strong>Decoded:</strong> the text in storage cannot be parsed as JSON.</p>
+<p><strong>Fix:</strong> store with <code>JSON.stringify</code>, and read with <code>JSON.parse</code>. If old bad data is already there, clear it in the browser's developer tools (Application → Local Storage) and reload.</p>
+<h2>Checkpoints</h2>
+<p>Answer before the assignment. If all five are clear, you are ready.</p>
+<ol>
+<li>In one sentence, what is a custom hook?</li>
+<li>Why must its name start with <code>use</code>?</li>
+<li>State the two rules of hooks.</li>
+<li>If two components both call <code>useToggle()</code>, do they share one flag or have two? Why?</li>
+<li>What does <code>useLocalStorage</code> return, and what does the second item do?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Look at <code>Counter</code>. Predict what the count shows after: click "Add one" three times, then reload the page. Then run it and compare.</p>
+<h3>P2 — Change one value</h3>
+<p>Call <code>useToggle(false)</code> instead of <code>useToggle(true)</code> in <code>Counter</code>. Predict what is visible when the page first loads, then check.</p>
+<h3>P3 — Fill in the blank</h3>
+<pre><code class="language-js">import { useState } from &quot;react&quot;;
+
+export function useCounter(start = 0) {
+  const [count, setCount] = useState(start);
+  function increment() {
+    setCount((c) =&gt; ________);
+  }
+  return [count, increment];
+}
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Write a hook <code>useInput(initial)</code> that returns <code>[value, handleChange]</code>, where <code>handleChange</code> accepts a change event and updates the value to <code>event.target.value</code>. Use it in a small <code>NameField</code> component. This packages the controlled-input pattern from U18.</p>
+<h3>P5 — Fix a broken example</h3>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function useIsOnline() {
+  const [online, setOnline] = useState(true);
+  window.addEventListener(&quot;online&quot;, () =&gt; setOnline(true));
+  window.addEventListener(&quot;offline&quot;, () =&gt; setOnline(false));
+  return online;
+}
+
+function Status() {
+  if (navigator.onLine) {
+    const isOnline = useIsOnline();
+  }
+  return &lt;p&gt;Status ready&lt;/p&gt;;
+}
+</code></pre>
+<p>This code has at least two problems. One is a rules-of-hooks violation. The other is a real-world issue with adding event listeners. Find them, write them down, and describe (even if you do not fully fix) a better approach. Note: setting up listeners cleanly involves <code>useEffect</code> from U19; using it here is allowed.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No <code>useMemo</code>, <code>useCallback</code>, <code>useRef</code>, or <code>useReducer</code>. Those exist; they are out of scope here.</li>
+<li>No third-party hook libraries. We write our own small hooks.</li>
+<li>No data-fetching hooks (<code>useFetch</code>, React Query, and similar).</li>
+<li>No testing of hooks. That is beyond this course.</li>
+<li>No state-sharing through hooks. If you want shared data, that is U26/U27.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U29 — Simple transitions and animation</strong> — where motion belongs (mostly CSS), and how to respect people who prefer less of it.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U28 Assignment — Custom hooks</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U28-YourName</code> (use your real name or student id as they prefer)</p>
+<h2>What you are building</h2>
+<p>Two things:</p>
+<ol>
+<li><strong>At least two custom hooks</strong>, each starting with <code>use</code>, each calling at least one React hook. One of them should be <code>useToggle</code>. The other should be a hook you find genuinely useful (for example <code>useLocalStorage</code>, <code>useInput</code>, <code>useCounter</code>, or <code>useWindowWidth</code>).</li>
+<li><strong>At least two components</strong> that use your hooks, including one component that uses <strong>the same hook twice</strong> or two components that each use the same hook — to prove the values are independent.</li>
+</ol>
+<p>Keep each hook focused and short. If a hook needs more than about 15 lines, simplify it or split it.</p>
+<h2>Files to submit</h2>
+<h3>1. Your project files</h3>
+<p>Include:</p>
+<ul>
+<li>Each hook file.</li>
+<li>Each component file that uses a hook.</li>
+<li>Any CSS you added.</li>
+</ul>
+<p>If your project has many files, include only the ones you touched and say so in <code>answers.md</code>.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer these prompts in your own words. Do not paste lesson text back unchanged.</p>
+<ol>
+<li><strong>Define a custom hook.</strong> In 3–5 sentences, explain to another designer what a custom hook is. Use the phrase "shares behavior, not data" and explain what it means.</li>
+<li><strong>Before and after.</strong> Paste a short "before" (the repeated logic written inline in a component) and the "after" (the same component using your hook). One short example is enough.</li>
+<li><strong>Rules of hooks.</strong> State both rules in your own words. Then explain, in one or two sentences, <em>why</em> React cares about the order hooks run in.</li>
+<li><strong>Independence check.</strong> Show or describe a case where two components (or one component calling the hook twice) each get their own separate value. Explain why they do not share.</li>
+<li><strong>Predict then run.</strong> Before running, predict what your <code>useLocalStorage</code> (or equivalent) shows after a page reload. Run it, then write what actually happened and why.</li>
+<li><strong>Debug this snippet.</strong> The hook below has a rules-of-hooks problem. Explain what is wrong and give a corrected version.</li>
+</ol>
+<p>```jsx<br />
+   import { useState } from "react";</p>
+<p>export function useName(hasMiddleName) {<br />
+     const [first, setFirst] = useState("");<br />
+     if (hasMiddleName) {<br />
+       const [middle, setMiddle] = useState("");<br />
+     }<br />
+     return first;<br />
+   }<br />
+   ```</p>
+<ol start="7">
+<li><strong>Error reading.</strong> Copy one real error message you saw while building this assignment (or reproduce the <code>React Hook "useState" is called conditionally</code> message on purpose). Decode it: what does it mean, and what was the fix?</li>
+<li><strong>Design bridge.</strong> Name a repeated behavior you keep re-creating in your design work (for example, a card hover treatment, a modal pattern, or a form row). In two or three sentences, connect "naming the behavior once" in code to using one reusable component in a design system.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy this checklist and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] Every custom hook name starts with `use`.
+- [ ] Every hook calls its hooks at the top level (no hooks inside `if`, loops, or nested functions).
+- [ ] I have at least two components using my hooks.
+- [ ] I proved that two callers get independent values.
+- [ ] I can explain why a hook shares behavior but not data.
+- [ ] I read the U28 rubric before writing answers.md.
+- [ ] I ran the app and saw the behavior, not only read the code.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Two custom hooks, named correctly, each calling at least one React hook.</li>
+<li>Two or more components using them, with demonstrated independence.</li>
+<li>Both rules of hooks stated and respected in your code.</li>
+<li><code>answers.md</code> present and in your own words.</li>
+<li><code>checklist.md</code> completed honestly.</li>
+<li>No rules-of-hooks warnings or errors in the browser console.</li>
+</ul>
+<h2>Submission format</h2>
+<p>Put everything inside one folder named <code>U28-YourName</code>. Compress it only if your trainer asks. If your file names differ from the suggestions, list them at the top of <code>answers.md</code>.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U28 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Two custom hooks, each named <code>use…</code> and calling at least one React hook</td>
+<td>5</td>
+<td>Yes</td>
+<td>submitted hook files</td>
+</tr>
+<tr>
+<td>Two or more components use the hooks; values are independent per caller</td>
+<td>4</td>
+<td>Yes</td>
+<td>components + <code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Both rules of hooks stated correctly in own words</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Explains that a hook shares behavior, not data, and shows it</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1 + Q4</td>
+</tr>
+<tr>
+<td>Clear before/after refactor showing repetition removed</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Debug snippet correctly diagnosed (conditional hook) and fixed</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Error-reading: a real error quoted and decoded</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Predict-then-run is concrete and compares prediction to reality</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Design bridge connects a named reusable behavior across design and code</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>The central skill is <strong>independence</strong>: two callers must get their own value. If a learner shares one value through a module-level variable, award the hook points but 0–1 on independence, and note it clearly (this is also a U26/U27 confusion).</li>
+<li>Q1: full credit requires the "behavior, not data" idea plus a plain explanation. A definition that says "a function starting with use" alone gets partial.</li>
+<li>Q3: both rules needed at top-level-only and components/hooks-only. The "why" (hook order = identity) is the part many skip; partial if the rules are right but the reason is missing.</li>
+<li>Q6: the bug is <code>useState</code> inside an <code>if</code> (conditional hook). The corrected hook must call both <code>useState</code> calls unconditionally at the top and use the value conditionally. Accept returning both values or an object.</li>
+<li>Q7: any genuine error message, decoded. The classic is <code>React Hook "useState" is called conditionally</code>. Full credit if they connect the message to a rule.</li>
+<li>Do not penalize imperfect English. Do penalize copied lesson text with no personalization on Q1 and Q8.</li>
+</ul>
+<h3>What to look for (assessor pointer)</h3>
+<p>Strongest evidence: a learner who moved repeated logic into a hook <strong>and</strong> can explain why two components calling it do not share data. Watch for "hooks are global state" — that is the misconception this unit must correct.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U27-context/index.html">U27 Context (light)</a>
+    <a class="next" href="../U29-transitions-and-animation/index.html">U29 Simple transitions and animation</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

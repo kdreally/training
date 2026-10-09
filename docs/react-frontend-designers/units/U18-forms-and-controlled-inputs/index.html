@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U18 — Forms and controlled inputs | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U18</div>
+    <h1>Forms and controlled inputs</h1>
+    <span class="phase-badge ph3">Phase 3 — Components and data</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U18 — Forms and controlled inputs</h1>
+<p><strong>Phase 3 — Components and data</strong></p>
+<h2>Where you are</h2>
+<p>You can react to clicks and remember values with state (U17). Now we point that same machinery at the most common interaction of all: <strong>typing into a field</strong>. In React, the text you type lives in state, and the input displays that state. This two-way tie is called a <strong>controlled input</strong>, and it is the standard way to build forms.</p>
+<p>By the end of this unit you will have a form that reflects exactly what the user types, and that reacts when they submit it.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a controlled input is and why React recommends it.</li>
+<li>Bind an <code>&lt;input&gt;</code> to state with <code>value</code> and <code>onChange</code>.</li>
+<li>Build a form that echoes typed text live.</li>
+<li>Submit with <code>onSubmit</code> and stop the browser's default page reload using <code>preventDefault</code>.</li>
+<li>Decode the "read-only input" and "uncontrolled" warnings.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12</strong> — JSX and curly braces.</li>
+<li><strong>U13</strong> — Props.</li>
+<li><strong>U17</strong> — Events, handlers, <code>useState</code>, and the re-render idea (this unit is unusable without it).</li>
+<li><strong>U03</strong> — HTML forms and inputs (we recap the parts we need).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>75–100 minutes</strong>. If U17 felt wobbly, pause and re-read its "Why a plain variable fails" and "Enter useState" sections first. Controlled inputs are state plus one new idea: the input's value is <em>driven by</em> state.</p>
+<h2>Why this exists</h2>
+<p>A form is where a user gives the app information: a name, an email, a search term, a review. In a design tool you draw a text field with placeholder text and maybe a filled state. But a live field must actually <em>hold</em> the characters as they are typed, and let the rest of the page notice them.</p>
+<p>The human problem: <strong>the app needs to know what the user is typing, as they type it, so it can validate, preview, enable a button, or filter a list.</strong></p>
+<p>In React, the pattern is: the state is the single source of truth for the field's text. The field displays state; typing updates state; state updates redisplay the field. Because state and field are always in sync, you can never have the screen and the data disagree — which is what makes controlled inputs trustworthy.</p>
+<h2>Plain-language teaching</h2>
+<h3>The parts of an input</h3>
+<p>An <code>&lt;input&gt;</code> in HTML (U03) is a text box. Two attributes matter here:</p>
+<ul>
+<li><code>value</code> — the text currently in the box.</li>
+<li><code>onChange</code> — a handler that runs whenever the text changes (on each keystroke).</li>
+</ul>
+<p>With plain HTML, the browser manages the text and you read it later. With React, we take over: <strong>we</strong> store the text in state and feed it back through <code>value</code>. That is a <strong>controlled component</strong> — a form element whose value is controlled by React state.</p>
+<h3>The controlled input pattern</h3>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function NameField() {
+  const [name, setName] = useState(&quot;&quot;);
+
+  return (
+    &lt;input
+      value={name}
+      onChange={(event) =&gt; setName(event.target.value)}
+    /&gt;
+  );
+}
+</code></pre>
+<p>The loop, step by step:</p>
+<ol>
+<li>State <code>name</code> starts as <code>""</code> (empty text).</li>
+<li>The input's <code>value</code> is <code>name</code>, so it starts empty.</li>
+<li>The user types "A". The browser fires a <strong>change event</strong>.</li>
+<li><code>onChange</code> runs. The event object carries the new text at <code>event.target.value</code> ("A").</li>
+<li><code>setName("A")</code> updates state.</li>
+<li>State changed, so React <strong>re-renders</strong> (U17).</li>
+<li>The input's <code>value</code> is now <code>"A"</code>, which matches what the user typed.</li>
+</ol>
+<p>This looks like extra work to achieve the same result as plain HTML — and it is. The payoff is that at every moment, <code>name</code> in your code <em>is</em> the field's text. You can read it, validate it, or show it anywhere.</p>
+<h3>The event object</h3>
+<p>When an event fires, React passes a <strong>synthetic event object</strong> to your handler. It is a cross-browser wrapper with the details of what happened. For typing, the useful part is:</p>
+<ul>
+<li><code>event.target</code> — the DOM element that fired the event (your input).</li>
+<li><code>event.target.value</code> — the current text in that input.</li>
+</ul>
+<p><code>(event) =&gt; setName(event.target.value)</code> is the idiom you will write hundreds of times. You can name the parameter whatever you like (<code>e</code> is common), but <code>event</code> is clearer for beginners.</p>
+<h3>Why not let the field store its own text?</h3>
+<p>You <em>can</em> — that is an <strong>uncontrolled input</strong>, where <code>value</code> is not set and the browser remembers the text. React warns you if you mix the two: setting <code>value</code> without <code>onChange</code> makes a field you cannot type into (it always snaps back to the fixed value). More on that in Common Errors.</p>
+<p>For this course we build controlled inputs, because they keep the data and the display in one place and prepare you for validation and submission.</p>
+<h3>Submitting a form</h3>
+<p>HTML forms want to submit — usually by sending data to a server and <strong>reloading the page</strong>. In a React app, a page reload would wipe your state and is almost never what you want. So we intercept the submit.</p>
+<p>Wrap the fields in a <code>&lt;form&gt;</code> and handle <code>onSubmit</code>:</p>
+<pre><code class="language-jsx">function SearchForm() {
+  const [query, setQuery] = useState(&quot;&quot;);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    alert(&quot;Searching for: &quot; + query);
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input
+        value={query}
+        onChange={(event) =&gt; setQuery(event.target.value)}
+      /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+</code></pre>
+<p>Two new pieces:</p>
+<ul>
+<li><code>onSubmit={handleSubmit}</code> — attaches the handler to the form's submit event. Submitting happens when the user presses Enter in a field or clicks a button of <code>type="submit"</code>.</li>
+<li><code>event.preventDefault()</code> — stops the browser's default behavior (the page reload). <strong><code>preventDefault</code> is a method on the event object.</strong> Without it, the page reloads and you lose everything.</li>
+<li><code>"Searching for: " + query</code> — reading state directly, because after <code>preventDefault</code> the submit handler has access to <code>query</code> from the current render.</li>
+</ul>
+<h3>A field that reflects typed text</h3>
+<p>The simplest demonstration: type in a box, and watch the same text appear elsewhere on the page.</p>
+<pre><code class="language-jsx">&lt;p&gt;You typed: {query}&lt;/p&gt;
+</code></pre>
+<p>Because the field is controlled by <code>query</code>, this paragraph is always in sync, character for character.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Form</td>
+<td>A group of fields plus a submit action</td>
+<td>Submitting normally reloads the page unless prevented</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>A text field element</td>
+<td>In JSX, self-closing: <code>&lt;input /&gt;</code></td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>The text shown in a controlled input</td>
+<td>Setting it without <code>onChange</code> makes the field read-only</td>
+</tr>
+<tr>
+<td><code>onChange</code></td>
+<td>Handler that runs on each keystroke</td>
+<td>Not the same as HTML's <code>onchange</code> (which may fire on blur)</td>
+</tr>
+<tr>
+<td>Controlled component</td>
+<td>A field whose value comes from React state</td>
+<td>Not "any component with a form in it"</td>
+</tr>
+<tr>
+<td>Uncontrolled input</td>
+<td>A field that keeps its own text (no <code>value</code>)</td>
+<td>You read it via a ref; not used in this unit</td>
+</tr>
+<tr>
+<td>Event object</td>
+<td>The object passed to a handler with event details</td>
+<td><code>event.target.value</code> is the new text</td>
+</tr>
+<tr>
+<td><code>event.target</code></td>
+<td>The element that fired the event</td>
+<td>For typing, it is your input</td>
+</tr>
+<tr>
+<td><code>onSubmit</code></td>
+<td>Handler on the <code>&lt;form&gt;</code> for submit</td>
+<td>Attach to the form, not the button</td>
+</tr>
+<tr>
+<td><code>preventDefault</code></td>
+<td>Stops the browser's default action</td>
+<td>Must be called inside the handler; forgetting it reloads the page</td>
+</tr>
+<tr>
+<td>Source of truth</td>
+<td>The one place a value really lives (here, state)</td>
+<td>Avoids screen and data disagreeing</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will build a tiny sign-up form that echoes the typed values and shows a confirmation on submit.</p>
+<p><strong><code>src/SignupForm.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/SignupForm.jsx
+import { useState } from &quot;react&quot;;
+
+function SignupForm() {
+  const [name, setName] = useState(&quot;&quot;);
+  const [email, setEmail] = useState(&quot;&quot;);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    alert(&quot;Thanks, &quot; + name + &quot;! We will email &quot; + email + &quot;.&quot;);
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;h2&gt;Sign up&lt;/h2&gt;
+
+      &lt;label&gt;
+        Name
+        &lt;input
+          value={name}
+          onChange={(event) =&gt; setName(event.target.value)}
+        /&gt;
+      &lt;/label&gt;
+
+      &lt;label&gt;
+        Email
+        &lt;input
+          value={email}
+          onChange={(event) =&gt; setEmail(event.target.value)}
+        /&gt;
+      &lt;/label&gt;
+
+      &lt;button type=&quot;submit&quot;&gt;Sign up&lt;/button&gt;
+
+      &lt;p&gt;Preview: {name || &quot;(no name yet)&quot;} — {email || &quot;(no email yet)&quot;}&lt;/p&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default SignupForm;
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>import { useState } from "react";</code> — state is required for controlled inputs.</li>
+<li><code>const [name, setName] = useState("");</code> — the name's text, starting empty. String state starts as <code>""</code>.</li>
+<li><code>const [email, setEmail] = useState("");</code> — a second, independent piece of state.</li>
+<li><code>function handleSubmit(event) { event.preventDefault(); ... }</code> — stops the reload, then acts on the current state. <code>alert</code> is a simple way to show a result; a real app would show a message on the page.</li>
+<li><code>&lt;form onSubmit={handleSubmit}&gt;</code> — attach the handler to the form.</li>
+<li><code>&lt;label&gt; Name &lt;input ... /&gt; &lt;/label&gt;</code> — wrapping the input inside its label associates them, which is good for accessibility (a fuller treatment is U24). Clicking the label focuses the field.</li>
+<li><code>value={name} onChange={(event) =&gt; setName(event.target.value)}</code> — the controlled-input pattern, once per field.</li>
+<li><code>&lt;button type="submit"&gt;</code> — submits the form (triggering <code>onSubmit</code>).</li>
+<li><code>&lt;p&gt;Preview: {name || "(no name yet)"} ...&lt;/p&gt;</code> — the <code>||</code> (or) from U05: if <code>name</code> is empty (<code>""</code> is falsy), show the placeholder text in parentheses. This proves the field and state are the same.</li>
+</ul>
+<p><strong><code>src/App.jsx</code>:</strong></p>
+<pre><code class="language-jsx">// src/App.jsx
+import SignupForm from &quot;./SignupForm.jsx&quot;;
+
+function App() {
+  return &lt;SignupForm /&gt;;
+}
+
+export default App;
+</code></pre>
+<p><strong>Run it</strong> (U09):</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p>Same command on every OS; only the terminal app differs.</p>
+<p><strong>What success looks like:</strong> A "Sign up" form with Name and Email fields. As you type, the "Preview" line updates character by character. Clicking "Sign up" or pressing Enter shows a browser alert greeting you by name and email — and the page does <strong>not</strong> reload. Type nothing and the preview shows the "(no name yet)" placeholders.</p>
+<p><strong>A design-tool parallel:</strong> you made a prototype where typing into a text layer updates another text layer bound to the same variable. That is exactly what is happening.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Read-only field (value without onChange)</h3>
+<pre><code class="language-jsx">&lt;input value={name} /&gt;
+</code></pre>
+<p>(where <code>name</code> is state that never changes, or a fixed string).</p>
+<p><strong>What happens:</strong> You type and nothing appears. React keeps resetting the field to the fixed <code>value</code> on every keystroke. In the console React prints:</p>
+<pre><code class="language-text">Warning: You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`.
+</code></pre>
+<p><strong>Decode it, piece by piece:</strong></p>
+<ul>
+<li><strong>"provided a <code>value</code> prop ... without an <code>onChange</code> handler"</strong> — you set <code>value</code> but gave React no way to hear the typing.</li>
+<li><strong>"This will render a read-only field"</strong> — the visible consequence: you cannot type.</li>
+<li><strong>"use <code>defaultValue</code>"</strong> — the uncontrolled alternative (the field keeps its own text). We are building controlled forms, so instead...</li>
+<li><strong>"set either <code>onChange</code> or <code>readOnly</code>"</strong> — add <code>onChange</code> to make it controlled, or <code>readOnly</code> if you truly mean a fixed field.</li>
+</ul>
+<p><strong>Fix:</strong> Add the handler: <code>value={name} onChange={(event) =&gt; setName(event.target.value)}</code>.</p>
+<h3>Error 2 — Value is undefined (uncontrolled warning)</h3>
+<pre><code class="language-jsx">const [name, setName] = useState();
+// ...
+&lt;input value={name} onChange={(event) =&gt; setName(event.target.value)} /&gt;
+</code></pre>
+<p><strong>What happens:</strong> Starting <code>useState()</code> with no argument makes <code>name</code> <code>undefined</code>. React treats a <code>value</code> of <code>undefined</code> as "uncontrolled" and prints:</p>
+<pre><code class="language-text">Warning: A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen.
+</code></pre>
+<p><strong>Decode it:</strong> "uncontrolled ... to be controlled" means the field started with no <code>value</code> (undefined) and then got one — React warns because that switch can cause confusing behavior.</p>
+<p><strong>Fix:</strong> Always give string state a starting value: <code>useState("")</code>.</p>
+<h3>Error 3 — Forgetting <code>preventDefault</code></h3>
+<p><strong>What happens:</strong> You click "Sign up" and the whole page reloads. Your typed text vanishes, the console clears, and the form appears reset. Nothing seems to have submitted.</p>
+<p><strong>Decode it:</strong> There is no error message. The tell is the flash and the lost state. The browser did its default action: it submitted the form and navigated/reloaded.</p>
+<p><strong>Fix:</strong> Call <code>event.preventDefault()</code> as the first line of your submit handler.</p>
+<h3>Error 4 — Attaching <code>onSubmit</code> to the button</h3>
+<pre><code class="language-jsx">&lt;button type=&quot;submit&quot; onSubmit={handleSubmit}&gt;
+</code></pre>
+<p><strong>What happens:</strong> <code>onSubmit</code> is a form event, not a button event. Clicking the button submits the form, which reloads the page, and your handler may never run (or runs oddly).</p>
+<p><strong>Fix:</strong> Put <code>onSubmit</code> on the <code>&lt;form&gt;</code>, and let the <code>type="submit"</code> button trigger it.</p>
+<h3>Error 5 — Two fields sharing one state</h3>
+<pre><code class="language-jsx">&lt;input value={name} onChange={(e) =&gt; setName(e.target.value)} /&gt;
+&lt;input value={name} onChange={(e) =&gt; setName(e.target.value)} /&gt;
+</code></pre>
+<p><strong>What happens:</strong> Typing in either box changes the same value, so both update together. If you expected independent fields, this is a surprise.</p>
+<p><strong>Fix:</strong> Use a separate piece of state per field (<code>name</code> and <code>email</code>), or an object state updated by field name (an advanced pattern for later).</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In one sentence, what is a controlled input?</li>
+<li>What does <code>event.target.value</code> contain during typing?</li>
+<li>What are the two things you must do to handle a form submit without reloading the page?</li>
+<li>Why does <code>&lt;input value={name} /&gt;</code> with no <code>onChange</code> become read-only?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Predict what the Preview line shows at each step: page loads; type "Sam"; clear it completely; type a single space.</p>
+<h3>P2 — Change one value, observe</h3>
+<p>Change both <code>useState("")</code> calls to <code>useState("hello")</code>. Reload and observe the fields' starting text and the preview. Then change one field's <code>onChange</code> to remove the state update and observe the read-only warning.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete a controlled search field:</p>
+<pre><code class="language-jsx">const [q, ____] = useState(&quot;&quot;);
+
+&lt;input
+  value={____}
+  onChange={(event) =&gt; setQ(____.target.value)}
+/&gt;
+</code></pre>
+<h3>P4 — Write from a specification</h3>
+<p>Create <code>ColorForm.jsx</code>: one text field bound to state, and a <code>&lt;div&gt;</code> whose inline <code>style={{ backgroundColor: color }}</code> uses the typed text as a CSS color name. Type "tomato" and the swatch should turn that color. Submit does nothing but prevent the reload. (Inline styles are fine here; deeper styling is Phase 4.)</p>
+<h3>P5 — Fix the broken example</h3>
+<p>This form reloads the page every time you submit, and the field cannot be typed into. Fix both bugs and explain each in one sentence.</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function Broken() {
+  const [text, setText] = useState(&quot;hello&quot;);
+
+  return (
+    &lt;form&gt;
+      &lt;input value={text} /&gt;
+      &lt;button type=&quot;submit&quot; onSubmit={() =&gt; setText(&quot;sent&quot;)}&gt;
+        Send
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No form validation, error messages, or required-field logic — later phases.</li>
+<li>No checkboxes, radios, selects, or textareas in depth — the same <code>value</code>/<code>onChange</code> idea extends to them.</li>
+<li>No backend submission, <code>fetch</code>, or API calls — deferred beyond U19.</li>
+<li>No <code>useEffect</code> or <code>useRef</code> — U19 introduces effects; refs come later.</li>
+<li>No deep accessibility pass on forms — that is U24 (we only use <code>&lt;label&gt;</code> here).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U19 — Side effects with useEffect</strong> (running small pieces of code after rendering, like updating the page title — kept light and honest).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U18 Assignment — A controlled form</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U18-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>ProfileForm.jsx</code></h3>
+<p>A form component meeting this specification:</p>
+<ul>
+<li>At least <strong>two</strong> text fields (for example, a display name and a bio), each with its <strong>own</strong> state variable.</li>
+<li>Each field is a <strong>controlled input</strong> using <code>value</code> and <code>onChange</code>.</li>
+<li>A live preview area on the page that echoes what the user has typed (so the field and state are visibly in sync).</li>
+<li>A submit button inside the <code>&lt;form&gt;</code> with <code>type="submit"</code>.</li>
+<li>An <code>onSubmit</code> handler on the form that calls <code>event.preventDefault()</code> and then shows the submitted values (an on-page message is preferred; an <code>alert</code> is acceptable).</li>
+</ul>
+<h3>2. <code>App.jsx</code></h3>
+<p>Imports and renders <code>ProfileForm</code>.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Controlled input.</strong> In 4–6 sentences, explain to a designer what a controlled input is, using a design-tool variable or prototype comparison.</li>
+<li><strong>The loop.</strong> Describe, in order, what happens from the moment a user presses a key to the moment the character appears in the box.</li>
+<li><strong>The event object.</strong> What is <code>event.target.value</code>, and why do we read the text from there rather than from the input some other way?</li>
+<li><strong>preventDefault.</strong> What happens if you forget <code>event.preventDefault()</code>? Describe what you would see.</li>
+<li><strong>Predict then run.</strong> Before running, write what your preview shows when: (a) nothing is typed, (b) only the first field has text, (c) both have text. Then run and confirm.</li>
+</ol>
+<h3>4. <code>error-reading.md</code></h3>
+<p>Paste, run, and answer:</p>
+<pre><code class="language-jsx">import { useState } from &quot;react&quot;;
+
+function Search() {
+  const [text, setText] = useState();
+
+  return (
+    &lt;form&gt;
+      &lt;input
+        value={text}
+        onChange={(event) =&gt; setText(event.target.value)}
+      /&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default Search;
+</code></pre>
+<p>a. Describe what happens when you start typing.<br />
+b. Quote the exact warning from the browser console.<br />
+c. Explain why React gives this warning, using the words "controlled" and "uncontrolled."<br />
+d. Fix the code.<br />
+e. Write the general rule in one sentence.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>Two independent controlled text fields, each reflecting state.</li>
+<li>Live preview stays in sync with typing.</li>
+<li>Submit prevents the page reload and shows the values.</li>
+<li><code>answers.md</code> answers all five prompts in your own words.</li>
+<li><code>error-reading.md</code> quotes the real warning, explains it, fixes it, and states the rule.</li>
+<li>Files are named exactly as above.</li>
+</ul>
+<h2>What a strong submission looks like</h2>
+<ul>
+<li>Each field has its own state (two fields do not share one value).</li>
+<li>The typed characters appear in the preview immediately, proving the loop.</li>
+<li>The "loop" answer (Q2) correctly orders: keypress → change event → <code>onChange</code> handler → <code>setState</code> → re-render → <code>value</code> reflects state.</li>
+<li>The error-reading answer correctly identifies <code>useState()</code> (undefined start) as the cause of the controlled/uncontrolled warning.</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U18 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Two or more text fields, each a controlled input</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>ProfileForm.jsx</code> + running app</td>
+</tr>
+<tr>
+<td>Each field has its own independent state</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>ProfileForm.jsx</code></td>
+</tr>
+<tr>
+<td>Live preview stays in sync with typing</td>
+<td>3</td>
+<td>Yes</td>
+<td>running app</td>
+</tr>
+<tr>
+<td>Submit uses <code>onSubmit</code> + <code>preventDefault</code> and shows values</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>ProfileForm.jsx</code> + running app</td>
+</tr>
+<tr>
+<td><code>onSubmit</code> is on the form; button is <code>type="submit"</code></td>
+<td>1</td>
+<td>Yes</td>
+<td><code>ProfileForm.jsx</code></td>
+</tr>
+<tr>
+<td>Explains controlled inputs with a comparison</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Correctly describes the update loop in order</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Explains the consequences of missing <code>preventDefault</code></td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Error-reading: quotes warning, explains, fixes, states rule</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>error-reading.md</code></td>
+</tr>
+<tr>
+<td>Predict-then-run completed and honest</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Files named and present correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>submission structure</td>
+</tr>
+</tbody>
+</table>
+<p><em>(Total weights to 20 across content; drop the lowest non-must-have if a cohort over-scores.)</em></p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li><strong>Fields render and echo but share one state:</strong> award 2/3 for independent state; two fields visibly mirroring each other is a common mistake worth a clear note.</li>
+<li><strong>Field is read-only (no <code>onChange</code>):</strong> award 0/4 for controlled inputs; check whether they hit Error 1 and guide them to the exact warning text.</li>
+<li><strong>Sample Name in a page reload leaving state blank:</strong> award 0/3 for submit handling; this is the Error 3 experience.</li>
+<li><strong>Q1:</strong> Full marks for a genuine design comparison (bound text/variable). Pure definition caps at 1/2.</li>
+<li><strong>Q2:</strong> The order must be substantially correct. Confusing <code>onChange</code> with <code>onClick</code> caps at 1/3.</li>
+<li><strong>Error-reading:</strong> The cause is <code>useState()</code> with no initial value, producing <code>undefined</code> and the warning: <code>A component is changing an uncontrolled input to be controlled...</code>. Full marks require quoting it (or close), naming the undefined start, and fixing to <code>useState("")</code>. Blaming <code>preventDefault</code> is off-target (1/3).</li>
+<li>Do not penalize imperfect English. Penalize copied lesson text with no personalization.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U17-events-and-state-with-usestate/index.html">U17 Events and state with useState</a>
+    <a class="next" href="../U19-side-effects-with-useeffect/index.html">U19 Side effects with useEffect</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

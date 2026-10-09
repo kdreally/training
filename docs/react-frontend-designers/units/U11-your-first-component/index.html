@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U11 — Your first component | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U11</div>
+    <h1>Your first component</h1>
+    <span class="phase-badge ph2">Phase 2 — Running React</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U11 — Your first component</h1>
+<p><strong>Phase 2 — Running React</strong></p>
+<h2>Where you are</h2>
+<p>You have a running Vite + React project (U09) and you know what every file in it does (U10). You have not written any React yet.</p>
+<p>Now you write your first <strong>component</strong>. It will be small: a function that returns a heading. That is genuinely all a component is. But writing one yourself, seeing it appear in the browser, and then breaking and fixing the export is the doorway into the rest of the course.</p>
+<p>We will go slowly. You will replace the starter content in <code>App.jsx</code> with your own, encounter the single most common React beginner failure (a name mismatch between <code>import</code> and <code>export</code>), and learn to read it.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define what a React component is in one plain sentence.</li>
+<li>Explain why component names use <strong>PascalCase</strong> (capital first letter).</li>
+<li>Create a component function that returns markup.</li>
+<li>Export a component and import it in another file.</li>
+<li>Edit <code>App.jsx</code> and see your own text on the page.</li>
+<li>Diagnose and fix a blank page caused by an import/export mismatch.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U09</strong> — you can start the dev server (<code>npm run dev</code>) and open the <code>localhost</code> URL.</li>
+<li><strong>U10</strong> — you know <code>App.jsx</code> is your top-level component and <code>main.jsx</code> imports it.</li>
+<li><strong>U05</strong> — functions: a named block of code that can be called.</li>
+<li><strong>U07</strong> — <code>import</code> and <code>export</code> at a high level.</li>
+</ul>
+<p>You do <strong>not</strong> need to know JSX deeply. U12 explains the markup-looking part. Today you copy the shape and change the text.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. Expect to make the blank-page mistake on purpose. That is the lesson, not a detour.</p>
+<h2>Why this exists</h2>
+<p>React is built from <strong>components</strong>. Everything you will build later — a card, a navbar, a whole page — is a component. If "component" stays an abstract word, the rest of the course is fog. If you write one today, even a tiny one, the word becomes concrete.</p>
+<p><strong>Design bridge:</strong> you already work with components. A button symbol in your design tool is a named, reusable part. You define it once, place many instances, and change all of them by editing the one definition. A React component is that idea in code: <strong>a named, reusable piece of interface defined once and used wherever you name it.</strong></p>
+<h2>Plain-language teaching</h2>
+<h3>What a React component is</h3>
+<blockquote>
+<p>A React component is a <strong>function that returns a piece of interface</strong>.</p>
+</blockquote>
+<p>That is the shortest honest definition. In code it looks like this:</p>
+<pre><code class="language-jsx">function Greeting() {
+  return &lt;h1&gt;Hello&lt;/h1&gt;
+}
+</code></pre>
+<p>Read it in plain words:</p>
+<ul>
+<li><code>function Greeting()</code> — a function named <code>Greeting</code>. (From U05: a function is a reusable named block.)</li>
+<li><code>return &lt;h1&gt;Hello&lt;/h1&gt;</code> — it hands back some markup, a heading.</li>
+<li>The <code>&lt;h1&gt;Hello&lt;/h1&gt;</code> part is almost HTML; U12 explains why it lives inside JavaScript.</li>
+</ul>
+<p>A component may also <strong>be used</strong> like a tag. Once defined, you write <code>&lt;Greeting /&gt;</code> somewhere and React places its output there.</p>
+<p><strong>What a component is not:</strong></p>
+<ul>
+<li>It is not a whole app (it is one part).</li>
+<li>It is not a class you have to understand (modern React uses functions).</li>
+<li>It is not named after its file by requirement (though by convention it usually matches).</li>
+</ul>
+<h3>Why the name is capitalized (PascalCase)</h3>
+<p><strong>PascalCase</strong> means every word starts with a capital letter: <code>Greeting</code>, <code>UserCard</code>, <code>NavBar</code>. React relies on this rule:</p>
+<ul>
+<li>A name starting with a <strong>capital</strong> letter (<code>&lt;Greeting /&gt;</code>) is treated as <strong>your component</strong>.</li>
+<li>A name starting with a <strong>lowercase</strong> letter (<code>&lt;div&gt;</code>, <code>&lt;img&gt;</code>) is treated as a <strong>built-in HTML element</strong> (from U03).</li>
+</ul>
+<p>So <code>function greeting()</code> used as <code>&lt;greeting /&gt;</code> would fail — React would look for an HTML tag called <code>greeting</code>, which does not exist. <strong>The capital letter is not decoration; it is how React tells your parts apart from HTML's.</strong></p>
+<h3>Component name vs file name</h3>
+<p>By convention the file and the component share a name:</p>
+<ul>
+<li>File <code>App.jsx</code> defines <code>function App()</code>.</li>
+<li>File <code>Greeting.jsx</code> would define <code>function Greeting()</code>.</li>
+</ul>
+<p>This is a strong convention, not a hard rule, but following it prevents a whole class of confusion.</p>
+<h3><code>export</code> and <code>import</code>: how files share components</h3>
+<p>A component defined in one file is not automatically visible in another. It must be <strong>exported</strong> by its file and <strong>imported</strong> by the file that uses it.</p>
+<pre><code class="language-jsx">export default App
+</code></pre>
+<p>Means: "this file's main thing is <code>App</code>." The matching side is:</p>
+<pre><code class="language-jsx">import App from './App.jsx'
+</code></pre>
+<p>Means: "bring in the default thing from <code>App.jsx</code>, and call it <code>App</code> here."</p>
+<p>If the name on one side does not match what the other side provides, you get a blank page and a console error. That is the headline failure below.</p>
+<p><strong>Default vs named exports (preview).</strong> A file can have one <strong>default</strong> export (<code>export default App</code>) or several <strong>named</strong> exports (<code>export function Greeting() {}</code>). The import syntax differs: default imports have no braces (<code>import App from ...</code>), named imports use braces (<code>import { Greeting } from ...</code>). U13 introduces named exports properly; today you use the default pattern that the scaffold already uses.</p>
+<h3>Your top-level component: <code>App</code></h3>
+<p>In your project, <code>main.jsx</code> already imports and renders <code>App</code>. So the simplest thing you can do is <strong>change what <code>App</code> returns</strong>. When you edit <code>App.jsx</code> and save, <code>main.jsx</code> re-renders it, and the page updates. You do not need to touch <code>main.jsx</code> at all today.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component</td>
+<td>A function that returns a piece of interface</td>
+<td>Not a whole page; not a CSS class</td>
+</tr>
+<tr>
+<td>Function</td>
+<td>A named reusable block of code (from U05)</td>
+<td>Not the same as a component, though a component <em>is</em> a function</td>
+</tr>
+<tr>
+<td>Return</td>
+<td>The value a function hands back</td>
+<td>Not <code>console.log</code>, which only prints</td>
+</tr>
+<tr>
+<td>PascalCase</td>
+<td>Capital first letter of each word</td>
+<td>Required for components, not for HTML tags</td>
+</tr>
+<tr>
+<td>JSX</td>
+<td>HTML-looking markup inside JavaScript</td>
+<td>Explained fully in U12</td>
+</tr>
+<tr>
+<td><code>export default</code></td>
+<td>Marks a file's main value for others to use</td>
+<td>Not automatic; you must write it</td>
+</tr>
+<tr>
+<td><code>import</code></td>
+<td>Brings another file's export in</td>
+<td>Name must match</td>
+</tr>
+<tr>
+<td>Default export</td>
+<td>The single main export of a file</td>
+<td>Imported without braces</td>
+</tr>
+<tr>
+<td>Named export</td>
+<td>One of possibly many exports</td>
+<td>Imported with braces</td>
+</tr>
+<tr>
+<td>Render</td>
+<td>React placing a component's output on the page</td>
+<td>Not the same as "save"</td>
+</tr>
+<tr>
+<td>Blank page</td>
+<td>Page loads but shows nothing</td>
+<td>Usually import/export name mismatch</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will replace the starter <code>App.jsx</code> with your own tiny component and see it live.</p>
+<h3>Step 1 — Make sure the server is running</h3>
+<p>In the project folder, run:</p>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p><em>What it does:</em> starts the Vite dev server so the page updates when you save.</p>
+<p><em>What success looks like:</em> the Local URL is printed (for example <code>http://localhost:5173/</code>).</p>
+<p><em>One decoded failure:</em> <code>npm error Missing script: "dev"</code> — you are in the wrong folder. <code>cd</code> into <code>my-first-react-app</code> and run again.</p>
+<h3>Step 2 — Open <code>src/App.jsx</code> in your editor</h3>
+<p>You will see the starter component from U10 (logos, heading, a counter). You are going to replace its <strong>body</strong>, not delete the file.</p>
+<h3>Step 3 — Replace the file with this complete version</h3>
+<pre><code class="language-jsx">function App() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Hello, I am learning React&lt;/h1&gt;
+      &lt;p&gt;I am a designer, and this is my first component.&lt;/p&gt;
+    &lt;/div&gt;
+  )
+}
+
+export default App
+</code></pre>
+<p>Every line justified:</p>
+<ul>
+<li><code>function App() {</code> — defines the component named <code>App</code>, capital A. This must match what <code>main.jsx</code> imports.</li>
+<li><code>return (</code> — begins the value the component gives back.</li>
+<li><code>&lt;div&gt;</code> — one wrapping HTML element around everything (U12 explains why one root is needed).</li>
+<li><code>&lt;h1&gt;...&lt;/h1&gt;</code> — a heading with your words.</li>
+<li><code>&lt;p&gt;...&lt;/p&gt;</code> — a paragraph with your words.</li>
+<li><code>&lt;/div&gt;</code> — closes the wrapper.</li>
+<li><code>)</code> — closes the return.</li>
+<li><code>}</code> — closes the function.</li>
+<li><code>export default App</code> — makes <code>App</code> the default export so <code>main.jsx</code>'s <code>import App from './App.jsx'</code> can find it.</li>
+</ul>
+<h3>Step 4 — Save the file</h3>
+<p><strong>Ctrl + S</strong> (Windows/Linux) or <strong>Cmd + S</strong> (macOS).</p>
+<h3>Step 5 — Look at the browser</h3>
+<p><em>What success looks like:</em> the page now shows <strong>"Hello, I am learning React"</strong> as a large heading and your paragraph below it. The starter logos and counter are gone.</p>
+<p><strong>Why it updated by itself:</strong> Vite noticed the file changed (the hot reload from U09) and re-rendered the <code>App</code> component.</p>
+<h3>Step 6 — Now break it on purpose</h3>
+<p>Change the last line to:</p>
+<pre><code class="language-jsx">export default Appp
+</code></pre>
+<p>(Notice the extra <code>p</code>.) Save.</p>
+<p><em>What success looks like (for a lesson about failure):</em> the page may go <strong>blank</strong>, and the terminal or browser console shows a message about <code>App</code> or <code>Appp</code>. This is the exact mistake we want you to meet now, while it is safe.</p>
+<p><strong>The decoded error.</strong> The browser console (press F12, click <strong>Console</strong>) may show something like:</p>
+<pre><code class="language-text">Warning: React.jsx: type is invalid ... but got: undefined
+</code></pre>
+<p>or Vite may show:</p>
+<pre><code class="language-text">&quot;Appp&quot; is not defined
+</code></pre>
+<p>Read it slowly. <code>main.jsx</code> imports a default export and calls it <code>App</code>. Your file now exports a value called <code>Appp</code>, and <code>App</code> no longer exists. The names disagree. <strong>The fix:</strong> change the last line back to:</p>
+<pre><code class="language-jsx">export default App
+</code></pre>
+<p>Save, and your page returns.</p>
+<p><strong>This is the single most common React beginner bug.</strong> Whenever you see a blank page with a "not defined" or "type is invalid" message, suspect a name mismatch between <code>export</code> and <code>import</code> first.</p>
+<h2>Common errors</h2>
+<h3>Error: blank page, console says "type is invalid" or "X is not defined"</h3>
+<p><strong>What it means:</strong> the component used in <code>main.jsx</code> cannot be found — usually a typo in the <code>export</code> name, or the <code>import</code> in <code>main.jsx</code> was changed.</p>
+<p><strong>Fix:</strong> make <code>App.jsx</code> end with <code>export default App</code> and confirm <code>main.jsx</code> says <code>import App from './App.jsx'</code>. Names are case-sensitive.</p>
+<h3>Error: <code>Adjacent JSX elements must be wrapped in an enclosing tag</code></h3>
+<p><strong>What it means:</strong> your component returns two elements side by side with no single parent. U12 covers this in full.</p>
+<p><strong>Fix (preview):</strong> wrap everything in one <code>&lt;div&gt;...&lt;/div&gt;</code> (or a fragment, <code>&lt;&gt;...&lt;/&gt;</code>), so there is one root element.</p>
+<h3>Error: nothing appears and the terminal shows a syntax error</h3>
+<p><strong>What it means:</strong> a typo in the code — a missing <code>)</code>, an unclosed bracket, or a tag not closed.</p>
+<p><strong>Fix:</strong> read the file name and line the error points to, go to that line, and compare your code with the worked example. Fix one thing at a time.</p>
+<h3>Error: you renamed the component but not the import in <code>main.jsx</code></h3>
+<p><strong>What it means:</strong> you changed <code>function App()</code> to <code>function Home()</code>, but <code>main.jsx</code> still imports/uses <code>App</code>.</p>
+<p><strong>Fix:</strong> either rename it back to <code>App</code>, or update <code>main.jsx</code> to import and render <code>Home</code>. Pick one and keep the names consistent.</p>
+<h2>Checkpoints</h2>
+<p>Answer these before the assignment.</p>
+<ol>
+<li>In one sentence, what is a React component?</li>
+<li>Why do component names begin with a capital letter?</li>
+<li>If a file ends with <code>export default App</code>, what must the importing file's line look like?</li>
+<li>You save <code>App.jsx</code> and the browser goes blank with "App is not defined." Name the first thing you check.</li>
+<li>Which file renders <code>&lt;App /&gt;</code>, and did you need to edit it today?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded.</p>
+<h3>P1 — Change the words</h3>
+<p>In your working <code>App.jsx</code>, change the heading and paragraph text to describe a real UI part you might build (for example "Recipe card" and "This card will show one dish."). Save and confirm.</p>
+<h3>P2 — Add elements inside the wrapper</h3>
+<p>Inside the <code>&lt;div&gt;</code>, add an <code>&lt;h2&gt;</code> and a <code>&lt;ul&gt;</code> with two <code>&lt;li&gt;</code> items. Keep them all within the one wrapping <code>&lt;div&gt;</code>. Save and observe.</p>
+<h3>P3 — Break and fix the export</h3>
+<p>Do the worked example's Step 6 again from memory: make the export name wrong, observe the error, read it out loud, then fix it. Write down the exact message you saw.</p>
+<h3>P4 — Second component in the same file</h3>
+<p>Below <code>App</code>, add a second function:</p>
+<pre><code class="language-jsx">function SmallNote() {
+  return &lt;p&gt;Made by a designer learning React.&lt;/p&gt;
+}
+</code></pre>
+<p>Then inside <code>App</code>'s returned <code>&lt;div&gt;</code>, add <code>&lt;SmallNote /&gt;</code> on its own line. Save. If it does not work, write the error down and bring it to the checkpoints.</p>
+<h3>P5 — Name experiment</h3>
+<p>Temporarily rename <code>function App()</code> to <code>function app()</code> (lowercase) and save. Read what happens and write the error text. Then change it back to <code>App</code>.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No deep JSX rules yet (U12): why one root, <code>{}</code>, <code>className</code>, comments.</li>
+<li>No props (U13) or state (U17).</li>
+<li>No events or interactivity.</li>
+<li>No styling (Phase 4).</li>
+<li>No multiple-file components beyond what the practice touches.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U12 — JSX explained</strong> (why markup lives inside JavaScript, and the rules that make it work).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U11 Assignment — Your first component</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U11-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>Definition.</strong> In one sentence, what is a React component?</li>
+<li><strong>PascalCase.</strong> Why must component names start with a capital letter? Include what React does differently for a lowercase name.</li>
+<li><strong>Export and import.</strong> If a file ends with <code>export default App</code>, write the exact <code>import</code> line a sibling file needs, and explain what "default" means here.</li>
+<li><strong>Your edit.</strong> Describe what you changed in <code>App.jsx</code> and paste the full, final contents of your <code>App.jsx</code>.</li>
+<li><strong>The chain.</strong> Which file renders <code>&lt;App /&gt;</code>, and why did you not need to edit it in this unit?</li>
+<li><strong>Design bridge.</strong> Explain the component idea using a symbol/component you reuse in your design tool. Name what makes it reusable.</li>
+<li><strong>Error-reading practice.</strong> Paste the exact error text you saw when you broke the <code>export</code> on purpose in Practice P3. Explain, in your own words, what the message meant and how you fixed it.</li>
+<li><strong>Lowercase experiment.</strong> In Practice P5 you renamed <code>App</code> to <code>app</code>. What happened? Quote the error and explain why the capital letter matters.</li>
+</ol>
+<h3>2. <code>App.jsx</code></h3>
+<p>Your actual working file. It must:</p>
+<ul>
+<li>Define a component named <code>App</code> (capital A).</li>
+<li>Return markup inside a single wrapping element.</li>
+<li>End with <code>export default App</code>.</li>
+<li>Include at least a heading and one paragraph of your own wording (not the lesson's).</li>
+</ul>
+<h3>3. <code>screenshot.png</code> (or <code>.jpg</code>)</h3>
+<p>One screenshot of your browser showing your component's text rendered on the page.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>Folder named <code>U11-YourName</code> with all three files present.</li>
+<li><code>App.jsx</code> is real code copied from your project, and the app runs from it.</li>
+<li>The screenshot matches the words in <code>App.jsx</code>.</li>
+<li>If the page stayed blank, <code>answers.md</code> includes the exact console/terminal error and everything you tried.</li>
+</ul>
+<h2>Note on stuck submissions</h2>
+<p>A blank page plus an honest error log is a valid submission and earns effort marks. Never send nothing.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U11 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correct plain-sentence definition of a component</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains PascalCase rule (component vs HTML tag)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2, Q8</td>
+</tr>
+<tr>
+<td>Correct import line and meaning of default export</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Working <code>App.jsx</code> with component, single root, default export</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>App.jsx</code>, screenshot</td>
+</tr>
+<tr>
+<td>Describes the render chain and why <code>main.jsx</code> is untouched</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Design bridge is specific and genuinely reused</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Error-reading practice decoded (export mismatch)</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Lowercase-name experiment understood</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>App.jsx</code> file and screenshot are the <strong>evidence</strong> for the working-component criterion; without a running screenshot, cap that criterion at half.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: full for "a function that returns interface/markup/UI." "A part of a website" earns 2/3. "A file" earns 1/3.</li>
+<li>Q2: full requires the capital = your component vs lowercase = HTML element distinction. "It is just a convention" caps at 1/3.</li>
+<li>Q3: require the exact line <code>import App from './App.jsx'</code> (path may vary) and "default = the one main thing." Missing "default" meaning caps at 2/3.</li>
+<li><code>App.jsx</code>: full needs all three (function named <code>App</code>, one wrapping element, <code>export default App</code>). Missing the export caps at 2/4 — it is the unit's core skill.</li>
+<li>Q7: any genuine export/import mismatch error correctly decoded earns full. Do not require the exact wording.</li>
+<li>Q8: full for "lowercase makes React think it is an HTML tag, which does not exist." Partial for "it just does not work."</li>
+<li>Do not penalize small cosmetic differences in markup or wording.</li>
+</ul>
+<h3>Common weak submissions</h3>
+<ul>
+<li><code>App.jsx</code> still contains the untouched Vite starter content.</li>
+<li>Two sibling root elements with no wrapper (also a U12 error — note it, award partial here).</li>
+<li>Screenshot does not match the submitted <code>App.jsx</code>.</li>
+<li>Q3 copies a named-import pattern (<code>import { App }</code>) with no brace discussion.</li>
+<li>No error text provided for Q7/Q8.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U10-project-folder-tour/index.html">U10 The project folder tour</a>
+    <a class="next" href="../U12-jsx-explained/index.html">U12 JSX explained</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

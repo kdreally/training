@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U32 — Hosting a static React app | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U32</div>
+    <h1>Hosting a static React app</h1>
+    <span class="phase-badge ph6">Phase 6 — Shipping and craft</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U32 — Hosting a static React app</h1>
+<p><strong>Phase 6 — Shipping and craft</strong></p>
+<h2>Where you are</h2>
+<p>In <strong>U31</strong> you built your page into a <code>dist/</code> folder. It lives on your computer, and only you can see it. This unit gives it a <strong>public web address</strong> so anyone with the link can open it.</p>
+<p>We will use <strong>GitHub Pages</strong> because it is free, needs no credit card, and works for a designer with no server experience. You will not write any React in this unit. You will learn a new set of words — <em>static site</em>, <em>deploy</em>, <em>base path</em> — and one very common trap that catches almost everyone the first time.</p>
+<p>If hosting sounds like "server stuff" that is over your head: it is genuinely not. A static React app is just files, and this unit is about putting files somewhere the web can read them.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what <strong>static hosting</strong> is and why a built React app qualifies as static.</li>
+<li>Name three free hosts (GitHub Pages, Netlify, Vercel) and say one thing each is good at.</li>
+<li>Create a GitHub repository and publish a <code>dist/</code> build to GitHub Pages.</li>
+<li>Set the <strong><code>base</code> path</strong> correctly for a project site so assets load.</li>
+<li>Recognize and fix the classic <strong>404-after-deploy</strong> failure.</li>
+<li>Tell the difference between a <strong>project site</strong> and a <strong>user site</strong>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U08–U10</strong> — Node, npm, and the project folder.</li>
+<li><strong>U31</strong> — a successful <code>npm run build</code> and a healthy <code>dist/</code> folder.</li>
+<li>A free GitHub account (creating one is covered below).</li>
+<li>An internet connection.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>, most of it clicking through GitHub's website and waiting for the page to appear. Hosting can feel slow because after you change settings, GitHub takes a short while to publish. That wait is normal. Take it as an invitation to read the next section instead of refreshing.</p>
+<h2>Why this exists</h2>
+<p>Designers are used to sharing work through a link: a Figma prototype link, a PDF, a Dribbble post. A running website is no different in spirit — but the file you share has to live somewhere that is always on and reachable. That "somewhere" is a <strong>host</strong>.</p>
+<p>Without hosting, your work stops at your own laptop. With it, you can send your trainer, a client, or a friend a URL and they see the real thing, on their own device, without installing anything. This is also the last step of the capstone in <strong>U34</strong>, so getting it right here pays off directly.</p>
+<h2>Plain-language teaching</h2>
+<h3>Static sites and static hosting</h3>
+<p><strong>Static</strong> means: the files do not change based on who is asking. <code>dist/index.html</code> is the same file for every visitor. There is no database being queried to build the page on the fly.</p>
+<p><strong>Static hosting</strong> is a service that stores those fixed files and serves them over the web. When a visitor opens your address, the host hands them <code>index.html</code>, which then asks for the <code>.js</code> and <code>.css</code> files, and the browser paints your design.</p>
+<p><strong>What it is <em>not</em>:</strong> a static host is not running React for the visitor. React runs <em>in the browser</em> after the files arrive. The host only delivers files. That is why a built React app fits static hosting perfectly, and why the <code>dist/</code> folder from U31 is exactly what we upload.</p>
+<p><strong>Design bridge:</strong> a static host is like a public read-only share of your exported files. You picked the export; the host makes the export reachable to everyone.</p>
+<h3>Three free hosts (and why we pick one)</h3>
+<table>
+<thead>
+<tr>
+<th>Host</th>
+<th>Free?</th>
+<th>Best at</th>
+<th>Course default?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub Pages</strong></td>
+<td>Yes, public repos</td>
+<td>Living with your code on GitHub</td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td><strong>Netlify</strong></td>
+<td>Yes, generous free tier</td>
+<td>Drag-and-drop deploys; form handling</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td><strong>Vercel</strong></td>
+<td>Yes, hobby tier</td>
+<td>Framework projects; preview links</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+<p>All three are free for a project like this and none asks for payment. We walk through <strong>GitHub Pages</strong> because it keeps your code and your live page in one place and teaches the one gotcha (the <code>base</code> path) that every host has in some form.</p>
+<p>You are not expected to learn all three. Pick GitHub Pages for this course. Read the others only as a "this also exists" awareness.</p>
+<h3>The words you will meet on GitHub</h3>
+<p>A few GitHub terms, defined before you use them:</p>
+<ul>
+<li><strong>Repository (repo):</strong> a project folder hosted on GitHub. It has a name and contains files. Free and public for everyone.</li>
+<li><strong>Public:</strong> anyone can view it. GitHub Pages on the free plan requires a public repo.</li>
+<li><strong>Deploy:</strong> putting your files on the host so the world can load them. (Everyday meaning: "publish.")</li>
+<li><strong>GitHub Pages:</strong> GitHub's free static hosting feature. It reads files from your repo and serves them at a web address.</li>
+<li><strong>Project site:</strong> a Pages site served under a sub-path, at <code>https://&lt;username&gt;.github.io/&lt;repo-name&gt;/</code>. This is what you get for an ordinary repo.</li>
+<li><strong>User site:</strong> the special Pages site at <code>https://&lt;username&gt;.github.io/</code> (no sub-path). It only works if the repo is literally named <code>&lt;username&gt;.github.io</code>.</li>
+<li><strong><code>base</code> path:</strong> the sub-path prefix your built files live under. This is the heart of this unit.</li>
+</ul>
+<h3>The <code>base</code> path trap (read this twice)</h3>
+<p>By default, a Vite build writes its asset references as if the site lives at the <strong>domain root</strong>, like <code>https://example.com/assets/index.js</code>.</p>
+<p>But a project site does not live at the root. It lives at <code>https://&lt;username&gt;.github.io/&lt;repo-name&gt;/</code>. So the browser asks for:</p>
+<pre><code class="language-text">https://&lt;username&gt;.github.io/assets/index-5b6e9a0f.js     ← WRONG (missing repo name)
+</code></pre>
+<p>The file is actually at:</p>
+<pre><code class="language-text">https://&lt;username&gt;.github.io/&lt;repo-name&gt;/assets/index-5b6e9a0f.js
+</code></pre>
+<p>The fix is to tell Vite the sub-path, so it writes the correct reference. Open <code>vite.config.js</code> at the root of your project and set <code>base</code>:</p>
+<pre><code class="language-js">import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/my-page/',   // &lt;-- the repo name, wrapped in slashes
+})
+</code></pre>
+<p>Line by line:</p>
+<ul>
+<li><code>import { defineConfig } from 'vite'</code> — pulls in Vite's config helper (this is already in your project).</li>
+<li><code>import react from '@vitejs/plugin-react'</code> — the plugin that understands JSX (already there).</li>
+<li><code>plugins: [react()]</code> — keeps React working (already there).</li>
+<li><code>base: '/my-page/'</code> — the new line. Replace <code>my-page</code> with your <strong>exact repo name</strong>, keep the leading and trailing slashes.</li>
+</ul>
+<p>After editing, <strong>run <code>npm run build</code> again</strong> so <code>dist/</code> is regenerated with the corrected paths. Then upload.</p>
+<p><strong>Special case:</strong> if your repo is named <code>&lt;username&gt;.github.io</code> (the user site), the site lives at the root, so <code>base</code> stays the default <code>'/'</code>. If you used a normal repo name, you need the <code>base</code> line.</p>
+<h3>Publishing: the walkthrough</h3>
+<p>This path uses only your browser. No extra software, no command line.</p>
+<p><strong>Step 1 — Create the repository.</strong><br />
+1. Sign in at <code>https://github.com</code> (create a free account if needed).<br />
+2. Click the <strong>+</strong> in the top right, then <strong>New repository</strong>.<br />
+3. Name it, for example, <code>my-page</code>. Keep it <strong>Public</strong>.<br />
+4. Do <strong>not</strong> add a README. Click <strong>Create repository</strong>.</p>
+<p><strong>Step 2 — Upload the built files.</strong><br />
+1. On the empty repo page, click <strong>uploading an existing file</strong>.<br />
+2. Open your project's <code>dist/</code> folder on your computer.<br />
+3. Drag the <strong>contents</strong> of <code>dist/</code> (the <code>index.html</code> file and the <code>assets</code> folder) into the upload area. Do not drag the <code>dist</code> folder itself — you want <code>index.html</code> at the repo root.<br />
+4. Scroll down, click <strong>Commit changes</strong>.</p>
+<p>Result: your repo root now has <code>index.html</code> and <code>assets/</code>.</p>
+<p><strong>Step 3 — Turn on Pages.</strong><br />
+1. In the repo, click <strong>Settings</strong> (top menu).<br />
+2. In the left sidebar, click <strong>Pages</strong>.<br />
+3. Under <strong>Build and deployment → Source</strong>, choose <strong>Deploy from a branch</strong>.<br />
+4. Under <strong>Branch</strong>, choose <code>main</code> and folder <code>/ (root)</code>. Click <strong>Save</strong>.<br />
+5. Wait one to three minutes. A banner will show your live URL: <code>https://&lt;username&gt;.github.io/my-page/</code>.</p>
+<p><strong>Success looks like this:</strong> that URL opens your page in any browser, on any device, with no terminal running.</p>
+<h3>A quick word on the alternatives</h3>
+<p>If you ever want a second host: <strong>Netlify</strong> has a "drop" page where you drag your <code>dist/</code> folder and get a URL instantly (handy, no GitHub needed). <strong>Vercel</strong> links to a GitHub repo and rebuilds automatically on every change. Both are free for this scale. They are mentioned so the vocabulary is not strange, not because you need them now.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static site</td>
+<td>Fixed files served the same to everyone</td>
+<td>Not a page generated live by a database</td>
+</tr>
+<tr>
+<td>Static hosting</td>
+<td>A service that serves fixed files over the web</td>
+<td>Not running React on the server</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Publish your built files to a host</td>
+<td>Not the same as saving your source</td>
+</tr>
+<tr>
+<td>Repository (repo)</td>
+<td>A project folder hosted on GitHub</td>
+<td>Not a branch; it contains branches</td>
+</tr>
+<tr>
+<td>GitHub Pages</td>
+<td>GitHub's free static hosting</td>
+<td>Not paid, but needs a public repo on the free plan</td>
+</tr>
+<tr>
+<td>Project site</td>
+<td>Pages under <code>/&lt;repo-name&gt;/</code></td>
+<td>Not at the domain root</td>
+</tr>
+<tr>
+<td>User site</td>
+<td>Pages at <code>https://&lt;username&gt;.github.io/</code></td>
+<td>Only for a repo named <code>&lt;username&gt;.github.io</code></td>
+</tr>
+<tr>
+<td><code>base</code> path</td>
+<td>The sub-path prefix for your built assets</td>
+<td>Not the folder name on your computer</td>
+</tr>
+<tr>
+<td>404</td>
+<td>The server has nothing at that address</td>
+<td>Not "you broke the internet"; it names a wrong path</td>
+</tr>
+<tr>
+<td>Hard refresh</td>
+<td>Reload ignoring the browser cache</td>
+<td><code>Ctrl+Shift+R</code> (Windows/Linux), <code>Cmd+Shift+R</code> (macOS)</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> publish the U31 build as a project site named <code>my-page</code>, hitting the <code>base</code> trap, then fixing it.</p>
+<p><strong>Step 1 — First, do it wrong (on purpose).</strong> Build without setting <code>base</code>:</p>
+<pre><code class="language-bash">npm run build
+</code></pre>
+<p>Upload the <code>dist/</code> contents to a repo named <code>my-page</code>, enable Pages. Open <code>https://&lt;username&gt;.github.io/my-page/</code>.</p>
+<p><strong>Expected wrong result:</strong> blank page, console 404 on <code>https://&lt;username&gt;.github.io/assets/...</code>. You now <em>recognize</em> the failure instead of fearing it.</p>
+<p><strong>Step 2 — Add the <code>base</code> line.</strong> Edit <code>vite.config.js</code> so it reads:</p>
+<pre><code class="language-js">import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/my-page/',
+})
+</code></pre>
+<p><strong>Step 3 — Rebuild and re-upload.</strong></p>
+<pre><code class="language-bash">npm run build
+</code></pre>
+<p>Upload the contents of <code>dist/</code> again (GitHub overwrites matching files and adds the new hashed ones).</p>
+<p><strong>Step 4 — Hard refresh</strong> the live URL: <code>Ctrl+Shift+R</code> (Windows/Linux) or <code>Cmd+Shift+R</code> (macOS).</p>
+<p><strong>Expected result:</strong> the real page, fully styled. Copy the URL — that is the address you submit in U34.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Blank page with a 404 for a <code>.js</code> file (the base path)</h3>
+<p><strong>What you see:</strong> the live URL loads, but the page is blank (or shows a broken default). Press <code>F12</code> to open the browser's developer tools, click the <strong>Console</strong> or <strong>Network</strong> tab, and you find a red line like:</p>
+<pre><code class="language-text">GET https://&lt;username&gt;.github.io/assets/index-5b6e9a0f.js 404 (Not Found)
+</code></pre>
+<p><strong>Decoded:</strong> The <code>index.html</code> loaded, but the browser looked for your JavaScript at the domain root instead of under <code>/&lt;repo-name&gt;/</code>. The file was never there. This is the missing <code>base</code> path.</p>
+<p><strong>Fix:</strong> set <code>base: '/&lt;repo-name&gt;/'</code> in <code>vite.config.js</code>, run <code>npm run build</code> again, re-upload the contents of <code>dist/</code> (overwrite the old files), and wait for Pages to refresh. Reload with a hard refresh (<code>Ctrl+Shift+R</code>, or <code>Cmd+Shift+R</code> on macOS) to bypass the cached <code>index.html</code>.</p>
+<h3>Error 2 — "404 File not found" at the site URL</h3>
+<p><strong>What you see:</strong> the Pages URL itself shows GitHub's 404 page.</p>
+<p><strong>Decoded and fixed by cause:</strong><br />
+- <strong>Pages not enabled yet:</strong> check Settings → Pages shows your branch and root. Save if needed.<br />
+- <strong>Uploaded the <code>dist</code> folder instead of its contents:</strong> the repo root has a folder named <code>dist</code>, so <code>index.html</code> is not at the root. Move <code>index.html</code> and <code>assets</code> up to the root.<br />
+- <strong>Wrong branch/folder:</strong> confirm <code>main</code> and <code>/ (root)</code>.<br />
+- <strong>Repo is private:</strong> on the free plan, Pages needs a <strong>public</strong> repo. Change visibility in Settings.<br />
+- <strong>Still publishing:</strong> give it a few minutes. Newly enabled Pages is slow on the first publish.</p>
+<h3>Error 3 — The page loads but the CSS is missing (unstyled)</h3>
+<p><strong>What you see:</strong> content appears, but it looks like plain black text on white — no layout, colors, or fonts.</p>
+<p><strong>Decoded:</strong> almost always the same <code>base</code> problem, but only the <code>.css</code> file failed to load while the <code>.js</code> succeeded (often a caching quirk). Same fix: correct <code>base</code>, rebuild, re-upload.</p>
+<h3>Error 4 — It worked yesterday, now it is broken</h3>
+<p><strong>Decoded:</strong> either you re-uploaded without rebuilding (so old and new files mix), or the browser is showing a cached copy. Rebuild, re-upload the <strong>whole</strong> <code>dist/</code> contents, then hard refresh. If it persists, open the browser console and read the exact failing URL — the error names the file, just like in U31.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words:</p>
+<ol>
+<li>Why does a built React app count as a <em>static</em> site?</li>
+<li>What is the difference between a project site and a user site?</li>
+<li>In one sentence, what does the <code>base</code> path tell the build to do?</li>
+<li>A live page is blank and the console shows a 404 for a <code>.js</code> file. What is your first fix?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Before uploading, open your built <code>dist/index.html</code> in a text editor and find the line that references the <code>.js</code> file. Write down the path it uses. Now: will that path work at <code>https://&lt;username&gt;.github.io/my-page/</code>? Explain why or why not.</p>
+<h3>P2 — Change one value; observe</h3>
+<p>Deliberately change <code>base</code> to a wrong value (for example <code>'/wrong-name/'</code>), rebuild, and preview locally with <code>npm run preview</code>. What breaks? This proves <code>base</code> affects the asset URLs. Change it back to the correct value.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete: "The <code>base</code> path must match the <strong><em>_ part of my live URL, wrapped in </em></strong>_."</p>
+<h3>P4 — Fix this broken config</h3>
+<p>A classmate's <code>vite.config.js</code> looks like this and their project site at <code>.../portfolio/</code> is blank:</p>
+<pre><code class="language-js">import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  base: 'portfolio',
+})
+</code></pre>
+<p>Name <strong>two</strong> problems with the <code>base</code> value and give the corrected line.</p>
+<h3>P5 — Decode a 404</h3>
+<p>Paste this into your notes and explain it in your own words, naming which file failed and where the browser looked:</p>
+<pre><code class="language-text">GET https://samdesign.github.io/assets/index-5b6e9a0f.js 404 (Not Found)
+</code></pre>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No custom domain names (that is a later, optional topic beyond this course).</li>
+<li>No continuous deployment, GitHub Actions, or CI.</li>
+<li>No backend, APIs, or databases — the app stays static.</li>
+<li>No server administration or paid hosting.</li>
+<li>No changes to React components or styling beyond the <code>base</code> setting.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U33 — Working with developers</strong> (how to hand your design and your live page to an engineering team, and how to review their code as a designer).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U32 Assignment — Put your app on the web</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U32-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words. Short paragraphs or bullet lists are fine. Do not paste this file back unchanged.</p>
+<ol>
+<li><strong>Static, explained.</strong> In 4–6 lines, explain what makes a built React app a <em>static</em> site, and what the host is (and is not) doing for the visitor.</li>
+<li><strong>Hosts.</strong> Name three free hosts from the unit. Say one thing each is good at. State which one this course uses and why.</li>
+<li><strong>Project vs user site.</strong> Explain the difference, including the shape of each web address.</li>
+<li><strong>The base path.</strong> In your own words: what does the <code>base</code> setting tell the build to do, and why does a project site need a non-default value?</li>
+<li><strong>Your live URL.</strong> Paste the public URL of your deployed page. Confirm in one sentence that you opened it in a fresh browser tab (not the local preview) and that it works.</li>
+<li><strong>Decode a failure.</strong> Copy this console line and explain what went wrong and the fix:</li>
+</ol>
+<p><code>text
+   GET https://samdesign.github.io/assets/index-5b6e9a0f.js 404 (Not Found)</code><br />
+7. <strong>Explain in your own words.</strong> A teammate uploads their <code>dist/</code> folder but the site shows GitHub's 404 page. List two different causes you would check, in order, and what each check would reveal.</p>
+<h3>2. <code>deploy-log.md</code></h3>
+<p>Build this from your own project:</p>
+<pre><code class="language-markdown"># Deploy log — &lt;your page name&gt;
+
+- Repo name: &lt;your repo, e.g. my-page&gt;
+- Repo visibility: public
+- Pages source: main / (root)
+- Live URL: &lt;https://...&gt;
+
+## vite.config.js base value I used
+&lt;copy the base line exactly&gt;
+
+## If I hit the 404-after-deploy problem
+- What I saw: &lt;blank page / 404 in console / other&gt;
+- The failing URL from the console: &lt;paste it&gt;
+- What I changed: &lt;one or two lines&gt;
+- Result after fixing: &lt;worked / still broken&gt;
+</code></pre>
+<p>If your deploy worked on the first try, write "I did not hit the 404 problem" and skip that section. Honesty is the grade, not a struggle story.</p>
+<h3>3. <code>checklist.md</code></h3>
+<p>Copy and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My repo is public.
+- [ ] The repo root contains index.html (not a nested dist folder).
+- [ ] I set `base` to match my exact repo name, with leading and trailing slashes.
+- [ ] I ran `npm run build` again after editing vite.config.js.
+- [ ] I enabled Pages under Settings &gt; Pages (main, / root).
+- [ ] My live URL opens my styled page in a fresh tab.
+- [ ] I read the browser console at least once to confirm no 404s.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All three files present with the names above.</li>
+<li><code>deploy-log.md</code> contains your real repo name, real URL, and real <code>base</code> value.</li>
+<li>The error in Q6 is explained, not merely copied.</li>
+<li>The live URL genuinely loads the styled page.</li>
+<li>Checklist completed honestly.</li>
+</ul>
+<h2>If you cannot get it online</h2>
+<p>Do not fake a URL. Run the U00 stuck protocol, paste the exact error or the failing URL into <code>deploy-log.md</code>, and describe what you tried. A specific, honest failure with a decoded console error earns substantial credit; an invented URL earns none.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U32 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explains static site + host's role correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Names three free hosts with a plausible strength each</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Distinguishes project vs user site with address shapes</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Explains <code>base</code> correctly (sub-path prefix for assets)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4; <code>deploy-log.md</code></td>
+</tr>
+<tr>
+<td>Provides a working live URL on the correct pattern</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Decodes the 404 line, naming the file and the wrong location</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Lists two distinct deploy-404 causes with what each reveals</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Repo/Pages settings recorded accurately</td>
+<td>1</td>
+<td>No</td>
+<td><code>deploy-log.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q2: full only if all three are free options from the unit. Naming a paid host loses the point.</li>
+<li>Q3: award 1/2 if they describe project vs user sites but muddle the address shapes.</li>
+<li>Q4: award full only if <code>base</code> is tied to <em>asset URLs under a sub-path</em>. "It fixes the page" without the sub-path idea gets 1–2.</li>
+<li>Q5: award 3 only if the URL matches <code>https://&lt;username&gt;.github.io/&lt;repo&gt;/</code> (or a user-site root) and loads styled content. A localhost URL is 0. A URL that 404s or is blank gets 1 and a request to fix before marking the "must-have" satisfied.</li>
+<li>Q6: must contain: file = built <code>.js</code>; browser looked at domain root instead of <code>/&lt;repo&gt;/</code>; fix = set <code>base</code>, rebuild, re-upload, hard refresh.</li>
+<li>Q7: two distinct causes from: nested <code>dist</code> folder, Pages not enabled, wrong branch/folder, private repo, not finished publishing. Overlapping causes count once.</li>
+</ul>
+<h3>Common weak submissions</h3>
+<ul>
+<li>Reports <code>http://localhost:4173/</code> as the deployed URL (that is U31's preview).</li>
+<li>Copies the lesson's repo name or URL instead of their own.</li>
+<li>Says <code>base</code> is "the folder where my project is."</li>
+<li>Explains the 404 as "GitHub is broken."</li>
+<li>Enables Pages but never rebuilds after adding <code>base</code>, then reports a blank page without a diagnosis.</li>
+<li>Uploads the <code>dist</code> folder as a folder, leaving <code>index.html</code> nested.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U31-production-builds/index.html">U31 Production builds explained</a>
+    <a class="next" href="../U33-working-with-developers/index.html">U33 Working with developers</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

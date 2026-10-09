@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U15 — Layers and build cache | Docker for Developers & DevOps</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Docker for Developers & DevOps — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U15</div>
+    <h1>Layers and build cache</h1>
+    <span class="phase-badge ph3">Phase 3 — Building images</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U15 — Layers and build cache</h1>
+<p><strong>Phase 3 — Building images</strong></p>
+<h2>Where you are</h2>
+<p>You can write a Dockerfile, slim the build context, and name your images. This unit answers a question you may have been carrying since U11: <em>why does Docker sometimes rebuild everything, and sometimes finish in a second?</em> The answer is <strong>layers</strong> and the <strong>build cache</strong>. Understanding them turns builds from magic into a plan you control — and it explains why we copied <code>requirements.txt</code> before the source in U12.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a layer is and how each instruction produces one.</li>
+<li>Explain how Docker decides to reuse a cached layer.</li>
+<li>Explain why instruction order changes build speed, and order a Dockerfile for fast rebuilds.</li>
+<li>Invalidate the cache deliberately when you need a clean build.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12 — Dockerfile instructions.</strong> You need <code>FROM</code>, <code>WORKDIR</code>, <code>COPY</code>, <code>RUN</code>, <code>CMD</code>.</li>
+<li><strong>U13 — Build context.</strong> You need to know what files are available to <code>COPY</code>.</li>
+<li><strong>U14 — Tags.</strong> You need <code>docker images</code> and to be comfortable naming builds.</li>
+<li><strong>U08 — Images vs containers.</strong> This unit extends the image idea from U08.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>75–105 minutes</strong>. You will rebuild the same project several times and watch the output change. Reading build output carefully <em>is</em> the lesson.</p>
+<h2>Why this exists</h2>
+<p>Builds that take ten minutes when they could take ten seconds are a daily tax on developers. Worse, a cached build can hide a mistake: the output says "success" but the image still contains yesterday's file. Knowing how layers and cache behave lets you make builds fast <em>and</em> correct. It also explains a huge share of real-world Docker advice you will read elsewhere.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a layer is</h3>
+<p>An image is not one solid blob. It is a <strong>stack of layers</strong>, like transparent sheets laid one on top of another. Each instruction in your Dockerfile generally creates one new layer on top of the previous one.</p>
+<ul>
+<li><code>FROM python:3.12-slim</code> gives you the starting stack (the base image is itself many layers).</li>
+<li><code>WORKDIR /app</code> adds a thin layer recording the working directory.</li>
+<li><code>COPY requirements.txt .</code> adds a layer containing that file.</li>
+<li><code>RUN pip install ...</code> adds a layer containing the installed packages.</li>
+<li><code>COPY app.py .</code> adds a layer with your code.</li>
+</ul>
+<p>The final image is the whole stack. Layers are <strong>read-only</strong> and <strong>shared</strong>: if two images both start <code>FROM python:3.12-slim</code>, they reuse the same base layers on disk instead of storing them twice.</p>
+<p>At run time, a container adds one thin <strong>writable layer</strong> on top of the stack. Anything the running program writes there lives only as long as the container — which is exactly why data seems to disappear and why U17 introduces volumes. (That write layer is a preview for U17, not a task for this unit.)</p>
+<p>You can see the layers of an image with:</p>
+<pre><code class="language-text">docker history hello-flask:1.0
+</code></pre>
+<h3>What the build cache is</h3>
+<p>When Docker builds a layer, it saves the result. On the next build, before doing the work again, it asks: <em>has anything that affects this layer changed?</em> If not, it reuses the saved layer and prints <code>CACHED</code>. You get the same result in a fraction of the time.</p>
+<p>The cache key for a layer is essentially: <strong>the parent layer's content + the instruction itself + the files it uses.</strong> This has two consequences you must remember:</p>
+<ol>
+<li><strong>Change anything a layer depends on, and that layer is rebuilt.</strong> If the <code>COPY</code> instruction's source files changed, that <code>COPY</code> layer changes.</li>
+<li><strong>When a layer is rebuilt, every layer above it is rebuilt too.</strong> The stack has to be consistent. This is the part people miss: one early change can invalidate all the expensive work after it.</li>
+</ol>
+<h3>Why instruction order matters</h3>
+<p>This is the payoff from U12. Compare two orders for the same project.</p>
+<p><strong>Slow order</strong> (source first):</p>
+<pre><code class="language-dockerfile">COPY . .
+RUN pip install --no-cache-dir -r requirements.txt
+</code></pre>
+<p>Every time you edit any file, <code>COPY . .</code> changes, so the <code>RUN pip install</code> layer above it is invalidated and all packages reinstall. A one-character code change costs a full dependency install.</p>
+<p><strong>Fast order</strong> (dependencies first):</p>
+<pre><code class="language-dockerfile">COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+</code></pre>
+<p>Now editing <code>app.py</code> changes only the last <code>COPY</code>. The dependency install layer sits <em>below</em> it, so it stays <code>CACHED</code>. You edit code all day and never wait for a reinstall.</p>
+<p>The rule of thumb: <strong>put things that rarely change low in the file, and things that change often near the bottom.</strong></p>
+<h3>Invalidating the cache on purpose</h3>
+<p>Sometimes a cached layer is unwanted:</p>
+<ul>
+<li>A <code>RUN apt-get update</code> layer may hold a stale package list. Caching makes it fast but out of date.</li>
+<li>You suspect the image does not match the current source.</li>
+<li>You want a reproducible clean build to be sure.</li>
+</ul>
+<p>For those cases, use <code>--no-cache</code>:</p>
+<pre><code class="language-text">docker build --no-cache -t hello-flask:clean .
+</code></pre>
+<p>This tells Docker to ignore the cache and run every instruction again. Use it sparingly; it is the slow path by design.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Layer</td>
+<td>One read-only change in the image's stack, usually one instruction</td>
+<td>Not a separate file on disk you can edit</td>
+</tr>
+<tr>
+<td>Stack</td>
+<td>The ordered set of layers that make up an image</td>
+<td>Not a single monolithic file</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td>Saved layer results Docker reuses when nothing changed</td>
+<td>Not stored in your project folder</td>
+</tr>
+<tr>
+<td>Cache hit / <code>CACHED</code></td>
+<td>Docker reused a saved layer</td>
+<td>Not an error; it is the fast path</td>
+</tr>
+<tr>
+<td>Cache invalidation</td>
+<td>A change that forces a layer and everything above it to rebuild</td>
+<td>Only affects layers above the change</td>
+</tr>
+<tr>
+<td><code>docker history</code></td>
+<td>Shows the layers of an image</td>
+<td>Shows instructions, not your file contents</td>
+</tr>
+<tr>
+<td><code>--no-cache</code></td>
+<td>Build flag that ignores the cache</td>
+<td>Not needed for normal edits</td>
+</tr>
+<tr>
+<td>Writable layer</td>
+<td>The thin layer a container adds at run time</td>
+<td>Deleted when the container is removed</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We use the <code>hello-flask</code> project and prove the cache effect.</p>
+<h3>Step 1 — Build once (nothing cached)</h3>
+<pre><code class="language-text">docker build -t cache-demo:1 .
+</code></pre>
+<p><strong>What it does:</strong> builds the image; the first build runs every instruction.</p>
+<p><strong>What success looks like:</strong> every step is executed, with no <code>CACHED</code> markers, ending in a success line.</p>
+<h3>Step 2 — Change only the app code</h3>
+<p>Edit <code>app.py</code> to change the greeting. Then rebuild with a new tag:</p>
+<pre><code class="language-text">docker build -t cache-demo:2 .
+</code></pre>
+<p><strong>What it does:</strong> rebuilds after a source change.</p>
+<p><strong>What success looks like</strong> (with the fast order from U12):</p>
+<pre><code class="language-text">=&gt; [4/6] RUN pip install --no-cache-dir -r requirements.txt    CACHED
+=&gt; [6/6] COPY app.py .                                          0.1s
+</code></pre>
+<p>The dependency install shows <code>CACHED</code> even though the code changed. That is the whole benefit.</p>
+<p><strong>One decoded failure.</strong> If instead you see the <code>RUN pip install</code> step running again with no <code>CACHED</code>, the layer below it changed. The usual culprit is a <code>COPY . .</code> before the install, which drags every source file into that layer's key. Reorder to copy the dependency list first; see the slow-vs-fast orders above.</p>
+<h3>Step 3 — Inspect the layers</h3>
+<p><strong>What it does:</strong> lists the layers of the image and the instruction that created each.</p>
+<pre><code class="language-text">docker history cache-demo:2
+</code></pre>
+<p><strong>What success looks like:</strong> a table of rows, one per layer, with a <code>CREATED BY</code> column showing instructions such as <code>/bin/sh -c pip install ...</code>, newest on top.</p>
+<p><strong>One decoded failure.</strong> If every row shows the same timestamp and you expected variety, remember that <code>CACHED</code> layers were created earlier; <code>docker history</code> shows the original creation times, not the reuse times. That is normal.</p>
+<h3>Step 4 — Force a clean build</h3>
+<p><strong>What it does:</strong> rebuilds ignoring all cached layers.</p>
+<pre><code class="language-text">docker build --no-cache -t cache-demo:fresh .
+</code></pre>
+<p><strong>What success looks like:</strong> no <code>CACHED</code> markers anywhere; every step runs again.</p>
+<h3>Step 5 — Prove the cache is about inputs, not time</h3>
+<p>Without changing any file, rebuild:</p>
+<pre><code class="language-text">docker build -t cache-demo:3 .
+</code></pre>
+<p><strong>What success looks like:</strong> almost every layer is <code>CACHED</code>, even though time has passed. The cache keys on content, not on the clock.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>COPY . .</code> before installing dependencies</h3>
+<p><strong>What happens:</strong> every code edit reinstalls all packages.</p>
+<p><strong>Fix:</strong> Copy the dependency manifest and run the install <em>before</em> copying the rest of the source. This is the single most valuable reordering a beginner can make.</p>
+<h3>Error: trusting a stale <code>apt-get update</code></h3>
+<p><strong>What happens:</strong> a cached package list means <code>apt-get install</code> fetches old versions, or a package that should now exist is missing.</p>
+<p><strong>Fix:</strong> when package freshness matters, rebuild with <code>--no-cache</code>, or combine update and install in one <code>RUN</code> so they cache together and never drift apart.</p>
+<h3>Error: thinking the cache lives in your project</h3>
+<p><strong>What happens:</strong> you delete the build folder expecting a fresh build, but <code>CACHED</code> lines still appear.</p>
+<p><strong>Fix:</strong> the cache is managed by Docker, not stored in your project. Clear it deliberately with <code>--no-cache</code> (or broader pruning, which we discuss later) when you need to.</p>
+<h3>Error: assuming order does not matter</h3>
+<p><strong>What happens:</strong> you write a correct Dockerfile that is needlessly slow, then blame Docker.</p>
+<p><strong>Fix:</strong> order for the cache. Rarely changing steps low, frequently changing steps high. It is a design choice you now control.</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words before the assignment:</p>
+<ol>
+<li>What is a layer, and roughly how many does a five-instruction Dockerfile create?</li>
+<li>What two things make up a layer's cache key?</li>
+<li>Why does editing source code rebuild a <code>COPY . .</code> layer but not a <code>RUN pip install</code> layer placed below it?</li>
+<li>Give one situation where you would use <code>--no-cache</code> on purpose.</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do these before the assignment.</p>
+<h3>P1 — Watch the cache</h3>
+<p>Build a project once. Edit one file. Rebuild and record which steps are <code>CACHED</code>. Then reorder the Dockerfile so a dependency install comes before a broad <code>COPY . .</code>, and show the difference.</p>
+<h3>P2 — Break it on purpose</h3>
+<p>Place <code>COPY . .</code> above <code>RUN pip install -r requirements.txt</code>. Change one source file. Rebuild and observe the install re-running. Fix the order and prove the install is cached again.</p>
+<h3>P3 — Stale cache</h3>
+<p>Build an image that runs <code>RUN apt-get update &amp;&amp; apt-get install -y curl</code>. Then rebuild. Confirm that step is <code>CACHED</code>. Explain in one sentence when this could be a problem and how you would fix it.</p>
+<h3>P4 — Predict then run</h3>
+<p>Predict the <code>docker history</code> output for an image you built. Then run <code>docker history &lt;image&gt;</code> and compare the number of layers to the number of instructions you wrote. Note where extra/alias layers appear.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No volumes or data persistence — that is <strong>U17</strong>; we only previewed the writable layer.</li>
+<li>No multi-stage builds — that is <strong>U16</strong>, though it builds directly on layers.</li>
+<li>No registry layer sharing or push optimisation — that is Phase 6.</li>
+<li>No <code>buildx</code> cache backends or remote caches.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U16 — Multi-stage builds</strong> (using separate stages so build tools never reach the final image).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U15 Assignment — Prove the cache</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U15-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>Dockerfile.slow</code> and <code>Dockerfile.fast</code></h3>
+<p>Two versions of the same app's Dockerfile:<br />
+- <code>Dockerfile.slow</code> copies all source before installing dependencies.<br />
+- <code>Dockerfile.fast</code> copies the dependency manifest and installs before copying the rest.</p>
+<p>Both must build successfully.</p>
+<h3>2. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>What a layer is.</strong> Explain in 3–5 sentences what a layer is, how instructions relate to layers, and why layers can be shared between images.</li>
+<li><strong>Cache key.</strong> Explain what Docker compares to decide whether a layer can be reused.</li>
+<li><strong>Ordering.</strong> Explain why <code>Dockerfile.fast</code> makes code edits faster to rebuild than <code>Dockerfile.slow</code>. Refer to what you observed.</li>
+<li><strong>Invalidation.</strong> Explain what happens to layers <em>above</em> a changed layer, and why.</li>
+<li><strong>When to bypass.</strong> Describe two situations where you would use <code>--no-cache</code> and why.</li>
+<li><strong>Writable layer preview.</strong> In 1–2 sentences, describe the extra layer a running container adds and one consequence of it. (U17 covers this fully.)</li>
+</ol>
+<h3>3. <code>evidence.md</code></h3>
+<p>Paste, in order:<br />
+- The first build of <code>Dockerfile.fast</code> (no <code>CACHED</code> markers).<br />
+- A rebuild of <code>Dockerfile.fast</code>, where it shows the install step <code>CACHED</code>.<br />
+- A rebuild of <code>Dockerfile.slow</code> that re-runs the install step, demonstrating the slower behaviour.<br />
+- The output of <code>docker history</code> on the fast image, with the layer rows visible.</p>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy and mark <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] I read the U15 README fully (not only the assignment).
+- [ ] I built both Dockerfile.slow and Dockerfile.fast.
+- [ ] I saw a `CACHED` install step in the fast build.
+- [ ] I saw the install step re-run in the slow build.
+- [ ] I read the U15 rubric before writing answers.md.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both Dockerfiles are present and build.</li>
+<li><code>answers.md</code>, <code>evidence.md</code>, and <code>checklist.md</code> are present with those names.</li>
+<li>Evidence clearly contrasts <code>CACHED</code> and non-cached install steps.</li>
+<li>Every answer is in your own words.</li>
+</ul>
+<h2>Submission format recap</h2>
+<pre><code class="language-text">U15-YourName/
+  Dockerfile.slow
+  Dockerfile.fast
+  app.py
+  requirements.txt
+  answers.md
+  evidence.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U15 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Both Dockerfiles present and building</td>
+<td>3</td>
+<td>Yes</td>
+<td>files + <code>evidence.md</code></td>
+</tr>
+<tr>
+<td>Layer concept explained accurately</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Cache key correctly described (parent + instruction + inputs)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Ordering explained with reference to observation</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Invalidation of layers above a change explained</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Two sensible reasons to use <code>--no-cache</code></td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Writable-layer preview correct (data does not persist)</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Evidence contrasts <code>CACHED</code> and re-run install; <code>docker history</code> shown</td>
+<td>2</td>
+<td>No</td>
+<td><code>evidence.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award 2/3 if they know "each instruction makes a layer" but cannot say that layers are shared between images.</li>
+<li>Q2: award 1/3 if they think the cache is time-based rather than content-based (the single most common misconception). This is worth a note.</li>
+<li>Q3: award 2/3 if the explanation is right but the evidence does not show the <code>CACHED</code> install step.</li>
+<li>Q4: award 1/2 if they know later layers rebuild but not why (stack consistency).</li>
+<li>Evidence: a slow build that still shows <code>CACHED</code> indicates they did not actually trigger a source change; ask them to rerun with a real edit.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<ul>
+<li>Evidence that shows the cache working end to end is the core deliverable. If it is missing, the unit is "revise."</li>
+<li>Q5 and Q6 are nice-to-have; they extend the concept but do not gate progress.</li>
+<li>Do not penalize imperfect English. Penalize empty answers or pasted lesson text.</li>
+</ul>
+<h3>Cross-unit note for assessors</h3>
+<ul>
+<li>A learner who now naturally writes dependency-first Dockerfiles has internalised this unit. Watch for this in U16 and the capstone.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U14-tags-and-naming/index.html">U14 Tags and naming your images</a>
+    <a class="next" href="../U16-multi-stage-builds/index.html">U16 Multi-stage builds</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

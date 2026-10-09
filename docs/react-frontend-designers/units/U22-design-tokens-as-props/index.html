@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U22 — Design tokens as props | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U22</div>
+    <h1>Design tokens as props</h1>
+    <span class="phase-badge ph4">Phase 4 — Styling and design</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U22 — Design tokens as props</h1>
+<p><strong>Phase 4 — Styling and design</strong></p>
+<h2>Where you are</h2>
+<p>In U21 you styled a component with its own CSS file and kept class names from colliding. But you probably noticed a quiet problem: the same values keep repeating. <code>#2563eb</code> here, <code>8px</code> there, <code>12px</code> two files over. Copy-paste is not a design system; it is drift waiting to happen.</p>
+<p>This unit introduces <strong>design tokens</strong> — named values — and the mechanism that makes them real in CSS: <strong>CSS variables</strong>. Then we connect them to React props so a component can choose among tokens by name.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a design token is and why naming a value beats repeating it.</li>
+<li>Create a <code>tokens.css</code> file of CSS variables and import it once.</li>
+<li>Use <code>var(--token)</code> inside component stylesheets.</li>
+<li>Pass a token name as a prop and map it to a class (or a variable).</li>
+<li>Map your design tool's variables (Figma variables/styles) to names in <code>tokens.css</code>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U04 — CSS as presentation</strong>: properties and values, and what a stylesheet does.</li>
+<li><strong>U13 — Props as design properties</strong>: a component receives values from outside.</li>
+<li><strong>U20 — Styling options</strong>: <code>className</code> and our plain-CSS choice.</li>
+<li><strong>U21 — Component-scoped CSS</strong>: importing a stylesheet and the <code>card</code> / <code>card__element</code> / <code>card--modifier</code> naming habit.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>. There is one new CSS idea (variables) and one new React pattern (a prop that selects a named value). That is a manageable pair. Take a break after the vocabulary table if your head is full.</p>
+<h2>Why this exists</h2>
+<p>You already know this problem from design. If a client says "make the brand blue a little darker," a good design file updates one variable and every screen follows. A bad file has the blue typed in forty places, and you hunt for every one.</p>
+<p>A React app has the identical failure mode. If <code>#2563eb</code> is written in <code>Card.css</code>, <code>Button.css</code>, and <code>Badge.css</code>, a rebrand means editing all of them, and the day you miss one, the design is inconsistent in a way only a sharp eye will catch.</p>
+<p>Tokens solve this the way variables solve it in your design tool. And there is a second benefit a designer will appreciate instantly: <strong>naming</strong>. <code>--color-brand</code> is a decision. <code>#2563eb</code> is a mystery. Names let a team talk about the design instead of about hex codes.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a design token is</h3>
+<p>A <strong>design token</strong> is a named, reusable value that represents a design decision. Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Token name</th>
+<th>Value</th>
+<th>Design decision it represents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--color-brand</code></td>
+<td><code>#2563eb</code></td>
+<td>The primary brand blue</td>
+</tr>
+<tr>
+<td><code>--color-text</code></td>
+<td><code>#1e293b</code></td>
+<td>Default text color</td>
+</tr>
+<tr>
+<td><code>--space-md</code></td>
+<td><code>16px</code></td>
+<td>The standard medium gap</td>
+</tr>
+<tr>
+<td><code>--radius-md</code></td>
+<td><code>12px</code></td>
+<td>Standard corner rounding</td>
+</tr>
+<tr>
+<td><code>--font-size-lg</code></td>
+<td><code>1.125rem</code></td>
+<td>Large body/heading size</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>What it does:</strong> gives a value a name so the value is written once and referenced everywhere.</li>
+<li><strong>Success looks like:</strong> changing the one value in <code>tokens.css</code> visibly updates every component that uses that token.</li>
+<li><strong>One decoded failure:</strong> if you reference a token name that does not exist, CSS does not error. It silently uses the empty/fallback value, and the element looks unstyled or transparent. This is the single most common token bug, and we show you how to catch it below.</li>
+</ul>
+<p>A token is <strong>not</strong> the same as a component style. <code>.card { padding: 20px }</code> is a style. <code>--space-lg: 24px</code> is a token the style can use. Components decide <em>where</em> a value goes; tokens decide <em>what the value is</em>.</p>
+<h3>CSS variables: the mechanism</h3>
+<p>CSS has its own native way to store named values, called <strong>custom properties</strong> or <strong>CSS variables</strong>. They start with two dashes:</p>
+<pre><code class="language-css">:root {
+  --color-brand: #2563eb;
+}
+</code></pre>
+<ul>
+<li><code>:root</code> is a selector that matches the whole document. Defining tokens there makes them available everywhere.</li>
+<li><code>--color-brand</code> is the name. You choose it.</li>
+<li><code>#2563eb</code> is the value.</li>
+</ul>
+<p>To use a variable, wrap its name in <code>var(...)</code>:</p>
+<pre><code class="language-css">.button {
+  background: var(--color-brand);
+}
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> substitutes the stored value at that spot.</li>
+<li><strong>Success looks like:</strong> the button is brand blue.</li>
+<li><strong>One decoded failure:</strong> <code>background: color-brand;</code> (without <code>var(...)</code> and the double dash) is not a valid value. The browser ignores the whole declaration, and the button has no background. Misspelling the name inside <code>var()</code> fails the same silent way.</li>
+</ul>
+<p>Why not use a preprocessor or a JavaScript object for tokens? Plain CSS variables need <strong>no extra tools</strong>, are available in every modern browser, and are inspectable in Developer Tools. That matches our U20 rule: no new dependencies when the platform already does the job.</p>
+<h3>Passing a token name as a prop</h3>
+<p>Now the React half. Suppose a <code>Badge</code> can be one of several tones: neutral, success, warning. Each tone maps to a set of token-based colors.</p>
+<p>We pass the tone as a <strong>prop</strong> — a token <em>name</em> — and turn it into a class:</p>
+<pre><code class="language-jsx">&lt;Badge tone=&quot;success&quot; label=&quot;Active&quot; /&gt;
+</code></pre>
+<p>Inside, the component builds a class from the tone:</p>
+<pre><code class="language-jsx">const className = `badge badge--${tone}`;
+</code></pre>
+<p>If <code>tone</code> is <code>"success"</code>, the class becomes <code>badge badge--success</code>, and the component's stylesheet defines:</p>
+<pre><code class="language-css">.badge--success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+</code></pre>
+<p>Two things are happening, and it helps to keep them separate:</p>
+<ol>
+<li><strong>Prop → class name.</strong> The prop chooses <em>which</em> variant you get.</li>
+<li><strong>Class → token.</strong> The stylesheet maps that variant to named values.</li>
+</ol>
+<p>This split is deliberate. The component's JavaScript stays readable, and the actual colors live in CSS where a designer can find them. A commitment for later: because the class name is built from the prop value, the prop must match a class that exists. Pass <code>tone="sucess"</code> (typo) and no <code>badge--sucess</code> class exists, so the badge falls back to base styling with no error. "Valid values" are a convention, not something React enforces.</p>
+<h3>An alternative: passing the value directly</h3>
+<p>You will also see components that take the token name and apply it inline:</p>
+<pre><code class="language-jsx">&lt;span style={{ background: `var(--color-${tone}-bg)` }}&gt;
+</code></pre>
+<p>That works, but it spreads style logic into JSX and makes hover states impossible. We will use the <strong>class</strong> approach for components, and reserve inline variables for truly one-off, computed values.</p>
+<h3>Design bridge: Figma variables to <code>tokens.css</code></h3>
+<p>You have likely used Figma variables or published styles (color styles, text styles, effect styles). Those are tokens. The mapping is almost mechanical:</p>
+<table>
+<thead>
+<tr>
+<th>Figma</th>
+<th><code>tokens.css</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variable <code>color/brand</code></td>
+<td><code>--color-brand</code></td>
+</tr>
+<tr>
+<td>Variable <code>spacing/md</code></td>
+<td><code>--space-md</code></td>
+</tr>
+<tr>
+<td>Number variable <code>radius/md</code></td>
+<td><code>--radius-md</code></td>
+</tr>
+<tr>
+<td>Text style <code>body/large</code> size</td>
+<td><code>--font-size-lg</code></td>
+</tr>
+</tbody>
+</table>
+<p>Notice we translate the <code>/</code> in Figma's names to <code>-</code>. Slashes are not valid inside a CSS variable name. Keep the <em>word order</em> so the mapping stays obvious to anyone looking at both files.</p>
+<p>A practical habit: keep your token names in one place, and when Figma changes a value, change it in <code>tokens.css</code> only. If you find yourself editing a raw hex value inside <code>Card.css</code>, that hex should probably be a token.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Design token</td>
+<td>A named reusable design value</td>
+<td>Not the same as a component style</td>
+</tr>
+<tr>
+<td>CSS variable / custom property</td>
+<td>A native named value, written <code>--name</code> and used with <code>var(--name)</code></td>
+<td>Needs the double dash; <code>var()</code> is required to use it</td>
+</tr>
+<tr>
+<td><code>:root</code></td>
+<td>Selector for the whole document, where tokens are declared</td>
+<td>Not a class; do not add a dot</td>
+</tr>
+<tr>
+<td><code>var()</code></td>
+<td>The function that substitutes a token's value</td>
+<td>Missing it makes the value invalid and silently ignored</td>
+</tr>
+<tr>
+<td>Fallback</td>
+<td>A backup value in <code>var(--x, #000)</code> used if <code>--x</code> is missing</td>
+<td>Without one, a missing token becomes empty, not black</td>
+</tr>
+<tr>
+<td>Token name as prop</td>
+<td>Passing e.g. <code>tone="success"</code> to choose a variant</td>
+<td>React does not validate the value; typos fail quietly</td>
+</tr>
+<tr>
+<td>Modifier class</td>
+<td><code>badge--success</code>, chosen by the prop</td>
+<td>Must exist in CSS or nothing changes</td>
+</tr>
+<tr>
+<td>Drift</td>
+<td>Values diverging because they were copied, not shared</td>
+<td>The problem tokens exist to prevent</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We build a <code>Badge</code> component whose tone comes from a token name, with all values in <code>tokens.css</code>.</p>
+<h3>File 1 — <code>src/tokens.css</code></h3>
+<pre><code class="language-css">:root {
+  /* Colors */
+  --color-brand: #2563eb;
+  --color-text: #1e293b;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+
+  --color-neutral-bg: #f1f5f9;
+  --color-neutral-text: #334155;
+
+  --color-success-bg: #dcfce7;
+  --color-success-text: #166534;
+
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #92400e;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  /* Type */
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.9375rem;
+}
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Group comments (<code>/* Colors */</code>, <code>/* Spacing */</code>) are for humans reading the file; they cost nothing.</li>
+<li>Token names describe <strong>role</strong> (<code>--color-success-bg</code>), not appearance (<code>--color-green-100</code>). Role names survive a rebrand; color names do not.</li>
+<li>We give spacing a small scale (<code>xs</code>, <code>sm</code>, <code>md</code>) so values stay consistent, exactly like a spacing scale in Figma.</li>
+</ul>
+<h3>File 2 — <code>src/main.jsx</code> (import tokens once)</h3>
+<p>The token file must be loaded before components use it. Importing it once near the app's entry point is enough, because CSS variables declared on <code>:root</code> are global.</p>
+<pre><code class="language-jsx">import { StrictMode } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import &quot;./tokens.css&quot;;
+import App from &quot;./App.jsx&quot;;
+
+createRoot(document.getElementById(&quot;root&quot;)).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;
+);
+</code></pre>
+<ul>
+<li><code>import "./tokens.css";</code> — loads every token for the whole app.</li>
+<li>
+<p>The rest is the entry file you already met in U09/U10. Your actual <code>main.jsx</code> may look slightly different; the only change you must make is adding the tokens import.</p>
+</li>
+<li>
+<p><strong>Success looks like:</strong> Developer Tools' Styles panel for <code>:root</code> or <code>&lt;html&gt;</code> shows your tokens.</p>
+</li>
+<li><strong>One decoded failure:</strong> if you import tokens only inside one component, other components may load before it and miss the variables. Import once at the entry point.</li>
+</ul>
+<h3>File 3 — <code>src/components/Badge/Badge.jsx</code></h3>
+<pre><code class="language-jsx">import &quot;./Badge.css&quot;;
+
+const TONES = [&quot;neutral&quot;, &quot;success&quot;, &quot;warning&quot;];
+
+export default function Badge({ label, tone = &quot;neutral&quot; }) {
+  const safeTone = TONES.includes(tone) ? tone : &quot;neutral&quot;;
+  return &lt;span className={`badge badge--${safeTone}`}&gt;{label}&lt;/span&gt;;
+}
+</code></pre>
+<p>Line-by-line:</p>
+<ul>
+<li><code>const TONES = [...]</code> — the list of valid token names this component accepts. This is a plain JavaScript array (U06).</li>
+<li><code>tone = "neutral"</code> — the prop default (U13).</li>
+<li><code>TONES.includes(tone)</code> — checks the prop against the list; if it is not valid, fall back to <code>"neutral"</code>. This is our defense against the silent typo failure.</li>
+<li><code>`badge badge--${safeTone}`</code> — a JavaScript <strong>template literal</strong>: backticks with <code>${...}</code> inserting a value. It produces <code>"badge badge--success"</code>.</li>
+<li><code>&lt;span className={...}&gt;</code> — note the braces, because this is an expression, not a quoted string.</li>
+</ul>
+<p><strong>Predict-then-run:</strong> before reading File 4, predict the class string for <code>&lt;Badge tone="warning" label="Due" /&gt;</code>. It should be <code>badge badge--warning</code>.</p>
+<h3>File 4 — <code>src/components/Badge/Badge.css</code></h3>
+<pre><code class="language-css">.badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge--neutral {
+  background: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+}
+
+.badge--success {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.badge--warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+</code></pre>
+<ul>
+<li><code>.badge</code> holds the shape that every tone shares; each modifier supplies only colors.</li>
+<li>Every value is a <code>var(...)</code> token. Change <code>--radius-pill</code> once and every pill in the app changes.</li>
+</ul>
+<h3>File 5 — <code>src/App.jsx</code></h3>
+<pre><code class="language-jsx">import Badge from &quot;./components/Badge/Badge&quot;;
+
+export default function App() {
+  return (
+    &lt;main style={{ display: &quot;flex&quot;, gap: &quot;var(--space-sm)&quot;, padding: &quot;var(--space-md)&quot; }}&gt;
+      &lt;Badge label=&quot;Draft&quot; /&gt;
+      &lt;Badge label=&quot;Active&quot; tone=&quot;success&quot; /&gt;
+      &lt;Badge label=&quot;Due soon&quot; tone=&quot;warning&quot; /&gt;
+    &lt;/main&gt;
+  );
+}
+</code></pre>
+<ul>
+<li>The first badge uses the default tone (<code>neutral</code>).</li>
+<li>Notice the inline spacing uses <code>var(--space-sm)</code> — even a one-off inline style can reference tokens, though our component styles stay in CSS.</li>
+</ul>
+<p><strong>Success looks like:</strong> three badges, correctly colored, and one edit to <code>--color-brand</code> (if you use it anywhere) changes every place at once.</p>
+<h2>Common errors</h2>
+<h3>Error 1: A token name typo fails silently</h3>
+<p><strong>What you see:</strong> a badge is transparent or has default black text. No error in the console.</p>
+<p><strong>What it means:</strong> <code>background: var(--color-succes-bg)</code> (note the missing <code>s</code>) references a variable that does not exist. CSS treats the unknown variable as empty, so the declaration is invalid and dropped.</p>
+<p><strong>Fix:</strong> open Developer Tools (F12), select the element, and look at the Styles panel. A <code>var()</code> that did not resolve is often shown struck through. Compare the spelling, character by character, against <code>tokens.css</code>. Use the <code>:root</code> entry in the inspector as your reference.</p>
+<h3>Error 2: Forgetting <code>var()</code> or the double dash</h3>
+<p><strong>What you see:</strong> a property is ignored.</p>
+<p><strong>What it means:</strong> <code>color: --color-text</code> and <code>color: color-text</code> are not how variables are used. The correct form is <code>color: var(--color-text)</code>.</p>
+<p><strong>Fix:</strong> use <code>var(--name)</code> exactly.</p>
+<h3>Error 3: Importing <code>tokens.css</code> in the wrong place (or not at all)</h3>
+<p><strong>What you see:</strong> components render without any token values; borders, backgrounds, and spacing disappear.</p>
+<p><strong>What it means:</strong> the token variables were never declared on <code>:root</code>, so every <code>var()</code> is empty.</p>
+<p><strong>Fix:</strong> ensure <code>import "./tokens.css";</code> appears once, early, in <code>main.jsx</code>. Check the browser's Styles panel for <code>:root</code> to confirm the tokens are loaded.</p>
+<h3>Error 4: Passing an invalid tone and seeing no change</h3>
+<p><strong>What you see:</strong> <code>&lt;Badge tone="sucess"&gt;</code> (typo) renders a plain neutral badge. Nothing error.</p>
+<p><strong>What it means:</strong> the class <code>badge--sucess</code> does not exist. React faithfully built a class name for a class you never wrote.</p>
+<p><strong>Fix:</strong> our <code>TONES.includes(tone)</code> guard converts unknown tones to <code>neutral</code>, and the list documents the valid values. When extending a component, add the new value to the list <strong>and</strong> write the matching modifier class.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is a design token, and how is it different from a component style?</li>
+<li>Why do we declare tokens on <code>:root</code> and import the token file once?</li>
+<li>Given <code>&lt;Badge tone="warning" /&gt;</code>, what exact class string reaches the <code>&lt;span&gt;</code>?</li>
+<li>Your badge's color is missing with no error. Where do you look and why?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Predict the class strings for <code>&lt;Badge label="x" /&gt;</code> and <code>&lt;Badge label="x" tone="success" /&gt;</code>. Then check File 3.</p>
+<h3>P2 — Change one value</h3>
+<p>In <code>tokens.css</code>, change <code>--radius-pill</code> from <code>999px</code> to <code>6px</code>. Predict how the badges change, then apply. Confirm every badge changed with one edit.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Add a <code>--color-danger-bg</code> and <code>--color-danger-text</code> token pair, then add a <code>.badge--danger</code> rule and <code>"danger"</code> to the <code>TONES</code> array. Render <code>&lt;Badge label="Blocked" tone="danger" /&gt;</code>.</p>
+<h3>P4 — Debug this broken snippet</h3>
+<pre><code class="language-css">.badge {
+  background: var(--color-sucess-bg);
+  color: color-success-text;
+}
+</code></pre>
+<p>Name <strong>two</strong> distinct problems.</p>
+<h3>P5 — Inspection practice</h3>
+<p>Open Developer Tools (F12), select a badge, and find the <code>var()</code> declarations in the Styles panel. Confirm you can trace each value back to a name. Write one sentence on how this mirrors reading a Figma variable's value.</p>
+<h3>P6 — Design bridge</h3>
+<p>Take three variables from a real Figma file or style guide you use. Give each a CSS token name and a value. Note any name that had to change because <code>/</code> is not allowed in CSS.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No responsive breakpoints or media queries (U23).</li>
+<li>No accessibility contrast audit yet (U24) — though good tokens make contrast easier.</li>
+<li>No component library or Storybook.</li>
+<li>No build-time theme switching or runtime theme context (that is later, if at all).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U23 — Responsive layouts in React</strong>: we arrange token-spaced components so they adapt to smaller and larger screens.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U22 Assignment — Tokens and a tone-driven component</h1>
+<p>Submit to your trainer in <strong>one folder or zip</strong> named <code>U22-YourName</code>.</p>
+<p>You will create a shared token file and one component whose variant is chosen by a token name passed as a prop.</p>
+<h2>Files to submit</h2>
+<h3>1. <code>tokens.css</code></h3>
+<p>A token file with at least:</p>
+<ul>
+<li>Three color tokens (a text color and two variant pairs, or a documented equivalent).</li>
+<li>Two spacing tokens.</li>
+<li>One radius token.</li>
+<li>One font-size token.</li>
+</ul>
+<p>Group them with comments. Name tokens by <strong>role</strong> (what they mean), not by appearance (what they look like).</p>
+<h3>2. Your component (folder <code>component/</code>)</h3>
+<pre><code class="language-text">component/
+  YourComponent/
+    YourComponent.jsx
+    YourComponent.css
+  App.jsx
+</code></pre>
+<ul>
+<li>The component must accept a <code>tone</code> (or similarly named) prop that chooses among <strong>at least three</strong> named variants.</li>
+<li>It must define the list of valid values and guard against an invalid one (like the <code>TONES.includes(...)</code> pattern).</li>
+<li><code>YourComponent.css</code> must express its colors, spacing, radius, and font size using <code>var(--token)</code> — <strong>no raw hex or pixel values</strong> for those groupings.</li>
+<li><code>App.jsx</code> renders the component in every valid variant.</li>
+</ul>
+<p>Pick your own component: a <code>StatusPill</code>, <code>Alert</code>, <code>Tag</code>, <code>StatChip</code>, or similar. Do not reuse the lesson's <code>Badge</code> unchanged.</p>
+<h3>3. <code>answers.md</code></h3>
+<p>Answer in your own words:</p>
+<ol>
+<li><strong>Token vs style.</strong> Explain the difference between a design token and a component style, with one example of each from your own files.</li>
+<li><strong><code>:root</code> and the import.</strong> Why do we declare tokens on <code>:root</code>, and why is the token file imported once instead of in every component?</li>
+<li><strong>Prop → class → token.</strong> Trace one instance end to end: the prop you pass, the class string it becomes, and the tokens that class uses.</li>
+<li><strong>Drift.</strong> Describe a specific value in your component that would drift if you had copied it instead of tokenizing it.</li>
+<li><strong>Invalid tone.</strong> Explain what happens if someone passes a variant that does not exist, and how your guard changes that behavior.</li>
+<li><strong>Design bridge.</strong> Show a table mapping at least three Figma variables or styles to your token names and values. Note any name you had to adjust for CSS rules.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] My token file is imported once in the entry file (main.jsx).
+- [ ] Component colors/spacing/radius/font-size use var() tokens, not raw values.
+- [ ] My component has at least three named variants.
+- [ ] I guard against an invalid variant value.
+- [ ] All variants visibly render in App.jsx.
+- [ ] I inspected a token in Developer Tools and confirmed it resolves.
+- [ ] I read the U22 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All files present with the exact names above.</li>
+<li>Changing one token value visibly updates every use of it.</li>
+<li>No raw color/spacing/radius/font-size values in the component stylesheet (except legitimately one-off values, which you must call out in <code>answers.md</code>).</li>
+<li>Written answers are in your own words.</li>
+</ul>
+<h2>Predict-then-run requirement</h2>
+<p>Before running, write the exact class string your component produces for <strong>each</strong> variant. Then run and confirm. State any prediction you got wrong.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U22 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Token file has the required token types, grouped and role-named</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>tokens.css</code></td>
+</tr>
+<tr>
+<td>Token file imported once in the entry file</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>main.jsx</code></td>
+</tr>
+<tr>
+<td>Component has at least three named variants</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>YourComponent.jsx</code></td>
+</tr>
+<tr>
+<td>Component guards against an invalid variant</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>YourComponent.jsx</code></td>
+</tr>
+<tr>
+<td>Component stylesheet uses <code>var()</code> tokens, not raw values</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>YourComponent.css</code></td>
+</tr>
+<tr>
+<td>All variants render in <code>App.jsx</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>App.jsx</code></td>
+</tr>
+<tr>
+<td>Explains token vs style with their own examples</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Traces prop → class → token correctly</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Names a concrete drift risk</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Figma → token mapping table is concrete</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+</tbody>
+</table>
+<h2>What the assessor should look for</h2>
+<ul>
+<li><strong>Tokens (5):</strong> required types present; names describe role (<code>--color-success-bg</code>) rather than appearance (<code>--green-100</code>) — role naming may be a few points lower if consistently appearance-based, with a note. Comments grouping sections are a plus but not required.</li>
+<li><strong>Import (2):</strong> <code>tokens.css</code> imported once, early, in the entry file, not duplicated.</li>
+<li><strong>Variants + guard (7):</strong> three or more variants; guard present (a list + <code>includes</code>, a lookup object, or a documented map). A component with no guard loses the guard row but may keep the variants row.</li>
+<li><strong><code>var()</code> usage (5):</strong> the count of raw hex/px values for the tokenized groups. One or two legitimate exceptions (e.g. a <code>1px</code> border or <code>0</code>) are fine; broad raw colors/spacing are not. Require the learner to have called out exceptions in <code>answers.md</code>.</li>
+<li><strong>Q1 (3):</strong> must give both a token example and a distinct style example from their own work.</li>
+<li><strong>Q3 (2):</strong> a correct, specific trace. Vague descriptions of "props choose styles" without the actual class string earn partial.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>If a raw value is repeated three or more times in their CSS, note it as the exact drift the unit warns about, even if the score row is only slightly reduced.</li>
+<li>If variants exist but the stylesheet hardcodes colors (no tokens), award variants points but 0–1 on the <code>var()</code> row — the unit's central skill is missing.</li>
+<li>If the guard uses a lookup object, that is fully acceptable; do not require <code>includes</code>.</li>
+<li>Immediate-fallback styling (e.g. <code>var(--color-x, #ccc)</code>) is a legitimate bonus technique; mention it positively but do not require it.</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Tokens created but never used; component still full of hex values.</li>
+<li>A single token for everything (one color reused for unrelated roles), ending the benefit of role naming.</li>
+<li>No guard, so a typo silently strips styles.</li>
+<li><code>tokens.css</code> imported inside each component rather than once.</li>
+<li>Mapping table invented from nothing rather than from a real or realistic design file.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U21-component-scoped-css/index.html">U21 Component-scoped CSS</a>
+    <a class="next" href="../U23-responsive-layouts/index.html">U23 Responsive layouts in React</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

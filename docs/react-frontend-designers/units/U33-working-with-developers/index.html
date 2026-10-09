@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U33 — Working with developers | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U33</div>
+    <h1>Working with developers</h1>
+    <span class="phase-badge ph6">Phase 6 — Shipping and craft</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U33 — Working with developers</h1>
+<p><strong>Phase 6 — Shipping and craft</strong></p>
+<h2>Where you are</h2>
+<p>You can now design a page, build it in React, and put it online. Most real work is not solo, though. You will hand designs to engineers, and engineers will hand code back to you for review. That exchange has its own vocabulary, and getting the words right is the difference between a smooth build and a week of "that is not what I meant."</p>
+<p>This unit is about the handoff loop: <strong>design → code → review → fix</strong>. You will learn what to give an engineer so they build the thing you designed, and how to review their work like a designer without reading every line of code.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a <strong>design system</strong> and a <strong>tokens file</strong> give an engineering team.</li>
+<li>Write a <strong>component spec</strong> an engineer can build from without guessing.</li>
+<li>Do a <strong>visual QA pass</strong> on a pull request: compare the deployed preview to the design, across states and screen sizes.</li>
+<li>Phrase review feedback so it is specific, evidence-based, and easy to act on.</li>
+<li>Include <strong>accessibility notes</strong> in a handoff instead of leaving them implicit.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U22</strong> — design tokens (color, spacing, radius) as CSS variables.</li>
+<li><strong>U23</strong> — responsive layouts and breakpoints.</li>
+<li><strong>U24</strong> — accessibility basics: semantics, labels, contrast, focus.</li>
+<li><strong>U13</strong> and <strong>U17</strong> — props and state, so specs and review comments use the same words the code does.</li>
+<li><strong>U31</strong> and <strong>U32</strong> — builds and hosting, so you can read a preview link.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. There is no terminal work in this unit, which may feel strange this late in the course. The effort here is writing and judgment. Keep a real or imagined component in mind as you read so the templates have something to attach to.</p>
+<h2>Why this exists</h2>
+<p>Handoff is where good design quietly dies. A beautiful mockup with no states, no spacing rules, and no accessibility notes becomes a broken build six weeks later. Engineers are not mind-readers, and they are usually not designers. When the design is ambiguous, they make reasonable guesses — and those guesses are what ship.</p>
+<p>The flip side is review. If your only feedback is "make it feel cleaner," nobody can act on it, and you will be re-reviewing the same thing forever. Designers who learn to hand off precisely and review kindly-but-clearly are trusted with more of the product. This unit is that skill, made explicit.</p>
+<h2>Plain-language teaching</h2>
+<h3>What "handoff" means</h3>
+<p><strong>Handoff</strong> is the moment design work moves to whoever builds it. In the old model, a designer exported screens and threw them over a wall. In the modern model, design and engineering work in a loop: design, build, review, adjust, repeat.</p>
+<p>Handoff is not a single event. It is a <strong>conversation carried by artifacts</strong>: a spec, a tokens file, a preview link, and review notes on the code. Each artifact answers a question the engineer would otherwise have to guess.</p>
+<p><strong>What it is <em>not</em>:</strong> handoff is not "here are the pixels, good luck." A Figma file alone is not a handoff; it is raw material.</p>
+<h3>What a design system and a tokens file give engineers</h3>
+<p>A <strong>design system</strong> is your team's shared library of visual decisions: colors, type scale, spacing, radii, shadows, and the rules for using them, plus the components built from them.</p>
+<p>The machine-readable heart of a design system is the <strong>tokens file</strong>. <strong>Design tokens</strong> are named values for those decisions — <code>--color-brand</code>, <code>--space-3</code>, <code>--radius-md</code> — defined once and reused everywhere. In <strong>U22</strong> you wrote these as CSS custom properties. That same file is gold to an engineer.</p>
+<p>Why engineers love a tokens file:</p>
+<ul>
+<li><strong>One source of truth.</strong> Changing <code>--color-brand</code> updates every button, link, and badge at once, exactly like editing a color <em>style</em> in a design tool.</li>
+<li><strong>No guessing.</strong> They write <code>var(--space-3)</code>, not <code>padding: 11px</code>, so the spacing matches your scale.</li>
+<li><strong>Reviewable.</strong> A missing token or a hard-coded hex is obvious in review.</li>
+</ul>
+<p><strong>Design bridge:</strong> tokens are to code what shared styles and variables are to a design tool. You already do this instinctually; a tokens file just exports the habit for machines.</p>
+<h3>Writing a component spec</h3>
+<p>A <strong>component spec</strong> is a short document describing one component precisely enough to build. It is the modern, precise version of the old "redline." Keep it to one page. A useful template:</p>
+<pre><code class="language-markdown"># Component: PriceTag
+
+## Purpose
+Shows the current price, with an optional strikethrough original price.
+
+## Anatomy
+- Label (optional, e.g. &quot;Sale&quot;)
+- Current price (required)
+- Original price (optional, shown struck through)
+
+## Props
+| Prop | Type | Required? | Default | Notes |
+|------|------|-----------|---------|-------|
+| currentPrice | number | Yes | — | Rendered with currency symbol |
+| originalPrice | number | No | none | If present, shown struck through |
+| label | string | No | none | Small uppercase badge |
+
+## Tokens used
+- Text: --color-text, --color-text-muted
+- Badge: --color-sale-bg, --color-sale-text
+- Spacing: --space-1, --space-2
+- Radius: --radius-sm
+
+## States
+- Default
+- With original price
+- Loading (skeleton)
+- Truncation: long prices must not overflow the container
+
+## Responsive
+- Same at all breakpoints; text wraps rather than clips.
+
+## Accessibility
+- The struck-through original price includes a screen-reader label &quot;was&quot; so it is not read as the current price.
+- Contrast of badge text on badge background meets 4.5:1.
+- Price is text, not an image.
+
+## Do not
+- Do not hard-code hex colors; use tokens.
+- Do not make the whole tag a link; the product title links, not the price.
+</code></pre>
+<p>Every section exists to remove a guess. Props match the vocabulary from <strong>U13</strong>; states match the interactive thinking from <strong>U17</strong>.</p>
+<h3>Reviewing a pull request as a designer</h3>
+<p>A <strong>pull request (PR)</strong> is a proposed change to the code, stored on GitHub, that teammates can review before it is merged. When an engineer opens a PR, you can:</p>
+<ul>
+<li>Read the <strong>description</strong> (what they changed and why).</li>
+<li>Open the <strong>preview deploy</strong> — a temporary link, often auto-created by the host or a service, showing the change running.</li>
+<li>Add <strong>comments</strong> on specific lines or on the PR overall.</li>
+<li>Mark comments <strong>blocking</strong> (must fix before merge) or <strong>non-blocking</strong> (nice to have).</li>
+</ul>
+<p><strong>Visual QA</strong> is your job on a PR: you compare the running preview to the design, on purpose, across the cases that break.</p>
+<p>Your visual QA checklist:</p>
+<ol>
+<li><strong>Default state</strong> matches the design.</li>
+<li><strong>Interactive states</strong>: hover, focus, active, disabled, loading, error, empty.</li>
+<li><strong>Screen sizes</strong>: at least one narrow (mobile) and one wide breakpoint, per <strong>U23</strong>.</li>
+<li><strong>Content stress</strong>: very long text, very short text, missing image, zero items.</li>
+<li><strong>Tokens</strong>: spacing, color, and radius match the scale (not one-off values).</li>
+<li><strong>Accessibility</strong>: keyboard focus visible, labels present, contrast passes, heading order sane, per <strong>U24</strong>.</li>
+<li><strong>Regression</strong>: things that worked before still work.</li>
+</ol>
+<p><strong>What it is <em>not</em>:</strong> visual QA is not reading the source code. Review the running result. If you spot a code detail (like a hard-coded color), point it out, but you do not need to understand every line to do your job well.</p>
+<h3>Communication vocabulary (and how to phrase feedback)</h3>
+<p>Good review feedback has three parts: <strong>observation</strong> (what you see), <strong>reference</strong> (the design or token it should match), and a <strong>question or request</strong>.</p>
+<p><strong>Weak:</strong> "This button feels off." — Nobody can act on it.<br />
+<strong>Strong:</strong> "The primary button's padding looks like 12px, but the spec uses <code>--space-4</code> (16px). Is this intentional, or should it match the token?" — Observable, specific, actionable.</p>
+<p>More phrasing patterns:</p>
+<ul>
+<li>"In the design, the card gap is <code>--space-3</code>; here it looks like <code>--space-2</code>. Which is right?"</li>
+<li>"On a 375px-wide screen the title overlaps the image. Can we wrap it?"</li>
+<li>"The focus ring is not visible when I Tab to the link. Blocking: keyboard users cannot see where they are."</li>
+<li>"Non-blocking: the badge is 1px wider than the mockup; fine to leave if it matches the token."</li>
+</ul>
+<p><strong>Blocking</strong> vs <strong>non-blocking</strong> matters. Reserve blocking for things that break usability, accessibility, or the design's intent. Everything else is a preference, and preferences noted kindly keep the relationship healthy.</p>
+<h3>Accessibility notes in handoff</h3>
+<p>Accessibility is cheapest when it is a handoff artifact, not a bug report later. Put it in the spec, in words an engineer can implement:</p>
+<ul>
+<li><strong>Contrast:</strong> state the required ratio (4.5:1 for body text, 3:1 for large text and UI borders).</li>
+<li><strong>Labels:</strong> say which controls need a visible or screen-reader-only label; a placeholder is not a label.</li>
+<li><strong>Focus order:</strong> describe the intended Tab order for interactive parts.</li>
+<li><strong>Alt text:</strong> provide the actual alt text for meaningful images; mark decorative images as decorative.</li>
+<li><strong>Heading order:</strong> specify which text is the h1, h2, and so on — one h1 per page.</li>
+<li><strong>Keyboard:</strong> list any custom interaction that must work without a mouse.</li>
+</ul>
+<p>These lines cost you two minutes and save an engineer a redesign.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Handoff</td>
+<td>Moving design to whoever builds it, with artifacts</td>
+<td>Not a single export moment</td>
+</tr>
+<tr>
+<td>Design system</td>
+<td>Shared library of tokens, rules, and components</td>
+<td>Not just a UI kit file</td>
+</tr>
+<tr>
+<td>Design token</td>
+<td>A named value like <code>--space-3</code> for a design decision</td>
+<td>Not a raw pixel value</td>
+</tr>
+<tr>
+<td>Tokens file</td>
+<td>The CSS/token file holding all tokens</td>
+<td>Not the whole design system</td>
+</tr>
+<tr>
+<td>Component spec</td>
+<td>One-page precise description of a component</td>
+<td>Not the same as a mockup</td>
+</tr>
+<tr>
+<td>Pull request (PR)</td>
+<td>A proposed code change open for review</td>
+<td>Not a finished merge</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>The lines that changed in a PR</td>
+<td>Not the whole file history</td>
+</tr>
+<tr>
+<td>Preview deploy</td>
+<td>A temporary live link showing a PR running</td>
+<td>Not production</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>Comments on a PR before merging</td>
+<td>Not a rewrite of the code</td>
+</tr>
+<tr>
+<td>Blocking comment</td>
+<td>Must fix before merge</td>
+<td>Not "I dislike it"</td>
+</tr>
+<tr>
+<td>Non-blocking comment</td>
+<td>Nice to have; can be ignored</td>
+<td>Still worth writing down</td>
+</tr>
+<tr>
+<td>Regression</td>
+<td>Something that worked before but broke</td>
+<td>Not a new bug from new code</td>
+</tr>
+<tr>
+<td>Acceptance criteria</td>
+<td>The stated conditions for "done"</td>
+<td>Not the same as the design</td>
+</tr>
+<tr>
+<td>Visual QA</td>
+<td>Comparing the running preview to the design</td>
+<td>Not reading source code</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Scenario:</strong> An engineer opens a PR adding the <code>PriceTag</code> component. You review it.</p>
+<p><strong>The PR description</strong> reads: "Adds PriceTag per spec. Preview: <code>https://preview.example.app/pr-142/</code>."</p>
+<p><strong>Your visual QA, written as review comments:</strong></p>
+<pre><code class="language-text">Default state: matches spec. Good.
+
+Blocking:
+- At 375px wide, a long price like &quot;$1,234,567.89&quot; overflows the card.
+  It should wrap or truncate. Test with the longest price in the spec.
+
+Non-blocking:
+- Badge text contrast looks under 4.5:1 (light orange on white).
+  Spec calls for --color-sale-text on --color-sale-bg. Can we confirm the ratio?
+
+Questions:
+- The struck-through original price is read as the current price by my screen
+  reader. Spec asked for a &quot;was&quot; label. Was that included?
+</code></pre>
+<p>That review is specific, uses design vocabulary, separates blocking from nice-to-have, and never says "this feels wrong." An engineer can work through it in minutes.</p>
+<h2>Common errors</h2>
+<h3>Error 1 — Handing off only the default state</h3>
+<p><strong>What happens:</strong> You provide one screen showing the normal state. The engineer builds exactly that. Later, hover, focus, disabled, loading, and error states are invented by the engineer — and they do not match your intent.</p>
+<p><strong>Fix:</strong> In every spec, list the states explicitly (default, hover, focus, disabled, loading, error, empty). Even "there is no hover state" is useful information.</p>
+<h3>Error 2 — Feedback as taste instead of evidence</h3>
+<p><strong>What happens:</strong> A comment like "the spacing feels cramped" leads to a guessing game and re-review.</p>
+<p><strong>Fix:</strong> Name the token, the breakpoint, and what you observed: "The gap is <code>--space-1</code>; the spec says <code>--space-3</code>. Which should ship?"</p>
+<h3>Error 3 — Reviewing the code instead of the preview</h3>
+<p><strong>What happens:</strong> You spend an hour reading JavaScript you are still learning, feel out of your depth, and miss an obvious visual bug visible in the preview.</p>
+<p><strong>Fix:</strong> Review the running result first. Compare it to the design across states and screen sizes. Read code only to confirm a specific suspicion (like a hard-coded color).</p>
+<h3>Error 4 — Treating accessibility as someone else's job</h3>
+<p><strong>What happens:</strong> Accessibility never appears in the design or the spec, so it never appears in the build. It becomes a costly fix later.</p>
+<p><strong>Fix:</strong> Add the accessibility checklist to your handoff template so it is never optional.</p>
+<h3>Decoding a failure — a vague review comment</h3>
+<p>You receive this on your own PR and cannot tell what is wanted:</p>
+<pre><code class="language-text">This doesn't feel like the design.
+</code></pre>
+<p><strong>Decoded:</strong> This is a taste statement with no observation, reference, or request. It is not actionable. Your move is not to guess-rebuild, but to ask one clarifying question: "Which element, and which token or screen should it match?" You can also model the good behavior yourself by turning a future comment of yours into observation + reference + request. Reading vague feedback is a skill too — it usually means "look at this area again," not "change everything."</p>
+<h2>Checkpoints</h2>
+<p>Answer in your own words:</p>
+<ol>
+<li>What three kinds of artifact make up a modern handoff?</li>
+<li>What does a tokens file save an engineer from doing?</li>
+<li>What are the three parts of actionable review feedback?</li>
+<li>Name three items from the visual QA checklist.</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Take the <code>PriceTag</code> spec above. Before reading the "States" section, write down the states you think it should have. Then compare. What did you miss?</p>
+<h3>P2 — Change one value; observe</h3>
+<p>Rewrite the weak comment "the badge color is weird" as a strong comment with observation, reference, and request.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Complete: "A blocking comment is for issues that <strong><em>_; a non-blocking comment is </em></strong>_."</p>
+<h3>P4 — Write a small spec</h3>
+<p>Pick one component you have built in this course (a button, a card, a header). Write a one-page spec using the template. You are not expected to get every token name right — name the <em>decisions</em> and where they come from.</p>
+<h3>P5 — Decode a bot comment</h3>
+<p>An accessibility checker leaves this on a PR:</p>
+<pre><code class="language-text">[contrast-checker] Element .badge has contrast ratio 3.1:1 (required 4.5:1 for normal text).
+</code></pre>
+<p>Explain in your own words what failed, which vocabulary from this unit it maps to, and how you would phrase the fix as a review comment.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>See <a href="#rubric">Rubric</a>. Read it before you start.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No writing production code or fixing the PR yourself.</li>
+<li>No Git command line — PRs are handled through GitHub's website, as introduced in U32.</li>
+<li>No deep code review of logic, performance, or architecture.</li>
+<li>No tooling setup (no Storybook, no design-token pipelines).</li>
+<li>No negotiation skills beyond clear, kind phrasing.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U34 — Capstone: design a page, build it in React, host it</strong> (the full deliverable that combines everything from U00 to U33).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U33 Assignment — Spec it, hand it off, review it</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U33-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>component-spec.md</code></h3>
+<p>Write a one-page component spec using the template from the unit. You may reuse a component you built earlier in the course, or design a new small one. It must be plausible enough that an engineer could build it without asking you questions.</p>
+<p>Required sections:<br />
+- Purpose<br />
+- Anatomy<br />
+- Props table (name, type, required?, default, notes)<br />
+- Tokens used (name the decisions and the token names, e.g. <code>--space-2</code>)<br />
+- States (at least default plus three others)<br />
+- Responsive behavior<br />
+- Accessibility notes<br />
+- Do not (at least one)</p>
+<h3>2. <code>handoff-notes.md</code></h3>
+<p>Answer these prompts in your own words:</p>
+<ol>
+<li><strong>Handoff artifacts.</strong> In 4–6 lines, explain what a modern handoff includes and why a Figma file alone is not enough.</li>
+<li><strong>Tokens.</strong> In your own words, what does a tokens file give an engineer? Give one concrete example of a change that becomes easy because of tokens.</li>
+<li><strong>Spec reasoning.</strong> Pick one required section from your spec and explain what would go wrong if you omitted it.</li>
+<li><strong>Accessibility notes.</strong> Why is accessibility cheapest when it is in the handoff rather than reported later? Reference at least two items from the unit's accessibility list.</li>
+<li><strong>Explain in your own words.</strong> Rewrite this weak review comment as a strong, actionable one: <em>"The layout looks weird on my laptop."</em> Use the observation + reference + request pattern.</li>
+</ol>
+<h3>3. <code>review-practice.md</code></h3>
+<p>Imagine an engineer opened a PR adding your component. Write <strong>three</strong> review comments for it:</p>
+<ul>
+<li>One <strong>blocking</strong> comment (a real usability or accessibility problem).</li>
+<li>One <strong>non-blocking</strong> comment (a preference or small polish).</li>
+<li>One <strong>question</strong> comment (something to confirm, not assume).</li>
+</ul>
+<p>Each must use observation + reference + request, and each must name a token, a state, a breakpoint, or an accessibility rule. Label each as Blocking, Non-blocking, or Question.</p>
+<p>Then decode this bot comment in 2–4 lines and say how you would turn it into a review comment:</p>
+<pre><code class="language-text">[contrast-checker] Element .badge has contrast ratio 3.1:1 (required 4.5:1 for normal text).
+</code></pre>
+<h3>4. <code>checklist.md</code></h3>
+<p>Copy and mark each item <code>[x]</code> when true:</p>
+<pre><code class="language-markdown">- [ ] My spec lists at least four states (not only the default).
+- [ ] My spec uses token names, not raw pixel or hex values.
+- [ ] My spec has an accessibility section with specifics.
+- [ ] Each of my three review comments contains observation + reference + request.
+- [ ] One comment is explicitly blocking and one is explicitly non-blocking.
+- [ ] I typed the bot comment's ratio and required value correctly when decoding it.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>All four files present with the names above.</li>
+<li>The spec could be built by a competent engineer without follow-up questions.</li>
+<li>Review comments are specific and reference evidence, not taste.</li>
+<li>The bot comment is decoded in your own words.</li>
+</ul>
+<h2>If you have never received a real PR</h2>
+<p>That is completely fine. This unit's review practice is simulated. Use your own component and write the comments as if the PR existed. The skill being graded is the phrasing and the criteria, not access to a live repo.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U33 Rubric</h1>
+<p>Visible to learners. Total <strong>24 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component spec is complete (all required sections present)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>component-spec.md</code></td>
+</tr>
+<tr>
+<td>Spec uses tokens/variables, not raw one-off values</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>component-spec.md</code></td>
+</tr>
+<tr>
+<td>Spec states cover at least four meaningful states</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>component-spec.md</code></td>
+</tr>
+<tr>
+<td>Spec accessibility notes are specific and implementable</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>component-spec.md</code></td>
+</tr>
+<tr>
+<td>Handoff artifacts explained (spec + tokens + preview + review)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>handoff-notes.md</code> Q1</td>
+</tr>
+<tr>
+<td>Tokens explained with a concrete example</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>handoff-notes.md</code> Q2</td>
+</tr>
+<tr>
+<td>Weak comment rewritten with observation + reference + request</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>handoff-notes.md</code> Q5</td>
+</tr>
+<tr>
+<td>Three review comments use the pattern and correct labels</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>review-practice.md</code></td>
+</tr>
+<tr>
+<td>Bot comment decoded accurately (failure + fix phrasing)</td>
+<td>2</td>
+<td>No</td>
+<td><code>review-practice.md</code></td>
+</tr>
+<tr>
+<td>Checklist present and honest</td>
+<td>1</td>
+<td>No</td>
+<td><code>checklist.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Spec completeness: award 3/4 if one minor section is thin; 1–2 if states or accessibility are missing entirely.</li>
+<li>Token usage: award 0 if the spec is all hex/pixel literals; award partial if a few tokens are named but most values are raw.</li>
+<li>Q5 (rewrite): full only if the rewritten comment names a specific element and a reference (breakpoint, token, or state).</li>
+<li>Review practice: each of the three comments is worth 1 point; label must match content (a "blocking" comment about a 1px preference loses its point).</li>
+<li>Bot decode: must map 3.1:1 &lt; 4.5:1 to a contrast failure and phrase a fix; "it failed accessibility" alone gets 1/2.</li>
+<li>Do not penalize imperfect English or unknown exact token names. Penalize taste-only feedback and hand-waving.</li>
+</ul>
+<h3>Common weak submissions</h3>
+<ul>
+<li>Spec is really a mockup description: no props table, no states.</li>
+<li>States listed as "normal, normal-hover" with no loading/error/empty/disabled.</li>
+<li>Review comments like "looks good" or "make it pop."</li>
+<li>Labels used carelessly: everything marked blocking.</li>
+<li>Bot comment decoded as "the badge is fine."</li>
+<li>Accessibility section says only "make it accessible."</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U32-hosting-a-static-react-app/index.html">U32 Hosting a static React app</a>
+    <a class="next" href="../U34-capstone-design-build-host/index.html">U34 Capstone: design a page, build it in React, host it</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

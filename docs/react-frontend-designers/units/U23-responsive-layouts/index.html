@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U23 — Responsive layouts in React | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U23</div>
+    <h1>Responsive layouts in React</h1>
+    <span class="phase-badge ph4">Phase 4 — Styling and design</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U23 — Responsive layouts in React</h1>
+<p><strong>Phase 4 — Styling and design</strong></p>
+<h2>Where you are</h2>
+<p>You can now style a single component with its own CSS (U21) and keep its values in shared tokens (U22). But components do not live alone — they sit in a page that must work on a narrow phone and a wide laptop. That is <strong>responsive layout</strong>.</p>
+<p>Responsiveness is a design skill you already have. This unit simply maps it onto the code tools that implement it: flexbox, <code>flex-wrap</code>, media queries, and the mobile-first mindset.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Refresh flexbox: main axis, cross axis, <code>justify-content</code>, <code>align-items</code>, <code>gap</code>.</li>
+<li>Use <code>flex-wrap</code> so items reflow instead of shrinking to unreadable widths.</li>
+<li>Write a <strong>media query</strong> that changes layout at a breakpoint.</li>
+<li>Apply a <strong>mobile-first</strong> approach with <code>min-width</code>.</li>
+<li>Choose between <strong>fluid</strong> and <strong>fixed</strong> sizing, and say why.</li>
+<li>Explain why responsiveness lives in CSS, not in React state.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U04 — CSS as presentation</strong>: the box model and a first look at flexbox.</li>
+<li><strong>U14 — Composing components</strong>: how several components share a page.</li>
+<li><strong>U21 — Component-scoped CSS</strong>: component stylesheets and naming.</li>
+<li><strong>U22 — Design tokens as props</strong>: <code>tokens.css</code> and <code>var()</code>.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>90–120 minutes</strong>. The good news: responsive layout is mostly CSS you have seen before, seen more precisely. If flexbox still feels slippery, this unit is where it clicks for many designers.</p>
+<h2>Why this exists</h2>
+<p>Your responsive frames in a design tool are the <em>picture</em> of how a layout adapts. Code needs the <em>rules</em> that produce that picture. Those rules are not React-specific — they are CSS — but React gives you a clean place to apply them: the component's own stylesheet.</p>
+<p>A frequent beginner mistake is trying to make React "detect the screen size" and render different components per breakpoint. That is usually the hard, fragile path. The easy, durable path is to render the same markup and let CSS reflow it. This unit teaches that path and explains when the exception applies.</p>
+<h2>Plain-language teaching</h2>
+<h3>Flexbox, precisely</h3>
+<p>Flexbox lays out a container's direct children along a line. Two imaginary lines matter:</p>
+<ul>
+<li>The <strong>main axis</strong> is the direction items flow. Set it with <code>flex-direction</code>. The default is <code>row</code> (left to right).</li>
+<li>The <strong>cross axis</strong> is perpendicular to the main axis.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>What it does</th>
+<th>Designer translation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>display: flex</code></td>
+<td>Turns the container into a flex layout</td>
+<td>"This frame uses auto-layout"</td>
+</tr>
+<tr>
+<td><code>flex-direction: row</code> / <code>column</code></td>
+<td>Sets the main axis</td>
+<td>Auto-layout horizontal / vertical</td>
+</tr>
+<tr>
+<td><code>justify-content</code></td>
+<td>Distributes items along the main axis</td>
+<td>"Space between", "center" on the primary axis</td>
+</tr>
+<tr>
+<td><code>align-items</code></td>
+<td>Aligns items on the cross axis</td>
+<td>Top / center / bottom alignment</td>
+</tr>
+<tr>
+<td><code>gap</code></td>
+<td>Space between items</td>
+<td>Auto-layout gap</td>
+</tr>
+<tr>
+<td><code>flex-wrap: wrap</code></td>
+<td>Lets items move to a new line when they do not fit</td>
+<td>"Wrap" in auto-layout</td>
+</tr>
+</tbody>
+</table>
+<p>If the auto-layout comparison is clicking, good: you already think in main axis and cross axis, just with different names.</p>
+<h3>The one property that unlocks responsiveness: <code>flex-wrap</code></h3>
+<p>By default flex tries to fit everything on one line, shrinking items as needed. On a narrow screen, five cards shrink to slivers with unreadable text. Adding <code>flex-wrap: wrap</code> tells the browser: "if the next item does not fit, start a new line."</p>
+<pre><code class="language-css">.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> items flow onto multiple lines as space runs out.</li>
+<li><strong>Success looks like:</strong> on a wide screen, one row; on a narrow screen, the same items stack into two or three rows.</li>
+<li><strong>One decoded failure:</strong> if items have no sensible width, wrapping alone changes little because each item still tries to be its natural size. Pair <code>flex-wrap</code> with a width rule (see fluid sizing below).</li>
+</ul>
+<h3>Media queries</h3>
+<p>A <strong>media query</strong> is a CSS rule that applies only when a condition about the screen is true — most often its width.</p>
+<pre><code class="language-css">@media (min-width: 640px) {
+  .row {
+    flex-direction: row;
+  }
+}
+</code></pre>
+<p>Read it aloud: "when the viewport is at least 640 pixels wide, apply these styles."</p>
+<ul>
+<li><code>@media</code> starts the condition.</li>
+<li><code>(min-width: 640px)</code> is the condition. <strong>Viewport</strong> means the visible page area (the browser window's content area), not the whole monitor.</li>
+<li>
+<p><code>640px</code> is a <strong>breakpoint</strong> — a width at which the design changes.</p>
+</li>
+<li>
+<p><strong>What it does:</strong> lets a layout have one set of rules for small screens and another for larger ones.</p>
+</li>
+<li><strong>Success looks like:</strong> resizing the browser window visibly changes the layout at 640px.</li>
+<li><strong>One decoded failure:</strong> writing <code>@media min-width: 640px</code> (missing parentheses) or <code>@media (min-width 640px)</code> (missing colon) makes the rule invalid and it is ignored silently. The exact spelling matters. If your breakpoint "does nothing," read the query character by character.</li>
+</ul>
+<h3>Mobile-first and <code>min-width</code></h3>
+<p><strong>Mobile-first</strong> means you write the styles for the smallest screen first, then <em>add</em> changes for larger screens using <code>min-width</code>.</p>
+<pre><code class="language-css">/* Base: small screens. Stack vertically. */
+.row { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+/* 640px and up: go horizontal. */
+@media (min-width: 640px) {
+  .row { flex-direction: row; gap: var(--space-md); }
+}
+</code></pre>
+<p>Why this order? Most users are on small screens, so the default favors them; and each <code>min-width</code> block only describes the <em>change</em>, which keeps rules short. This mirrors your design workflow if you design mobile frames first.</p>
+<p>You will also see <code>max-width</code> (styles for screens <em>up to</em> a width). It is not wrong, but mixing <code>min-width</code> and <code>max-width</code> carelessly creates gaps where neither rule applies. Pick mobile-first <code>min-width</code> and stay consistent for this course.</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Base styles apply to</th>
+<th>Rule reads as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mobile-first (<code>min-width</code>)</td>
+<td>Small screens</td>
+<td>"At 640px <strong>and up</strong>, do this"</td>
+</tr>
+<tr>
+<td>Desktop-first (<code>max-width</code>)</td>
+<td>Large screens</td>
+<td>"At 640px <strong>and below</strong>, do this"</td>
+</tr>
+</tbody>
+</table>
+<h3>Breakpoints</h3>
+<p>A <strong>breakpoint</strong> is a viewport width where your layout changes. Common starting set (not laws):</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Width</th>
+<th>Typical change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sm</code></td>
+<td>640px</td>
+<td>Stack → row for simple rows</td>
+</tr>
+<tr>
+<td><code>md</code></td>
+<td>768px</td>
+<td>Two-column grids begin</td>
+</tr>
+<tr>
+<td><code>lg</code></td>
+<td>1024px</td>
+<td>Sidebar appears / wider grids</td>
+</tr>
+</tbody>
+</table>
+<p>Put these widths in your tokens file as comments (CSS variables cannot be used inside media query conditions in plain CSS), so the whole team agrees. Example:</p>
+<pre><code class="language-css">/* Breakpoints (documentation only — media queries need literal values) */
+/* sm: 640px  |  md: 768px  |  lg: 1024px */
+</code></pre>
+<ul>
+<li><strong>Success looks like:</strong> every component that changes at a breakpoint uses the same three widths.</li>
+<li><strong>One decoded failure:</strong> inventing a new breakpoint (say 713px) for one component creates a layout that changes where nothing else does, which looks broken when pages are composed. Reuse the shared set.</li>
+</ul>
+<h3>Fluid vs fixed sizing</h3>
+<p><strong>Fixed</strong> sizing sets an exact size: <code>width: 320px</code>. It is predictable and good for things that genuinely have a fixed size (an avatar, an icon).</p>
+<p><strong>Fluid</strong> sizing lets an element flex with available space:</p>
+<pre><code class="language-css">.card {
+  flex: 1 1 260px;
+  max-width: 100%;
+}
+</code></pre>
+<ul>
+<li><code>flex: 1 1 260px</code> reads as: grow to fill space (first <code>1</code>), shrink if needed (second <code>1</code>), but aim for a <strong>base width</strong> of 260px before deciding to wrap.</li>
+<li><code>max-width: 100%</code> prevents a card from growing wider than its container.</li>
+</ul>
+<p>This pairing is the modern replacement for manually counting columns. You give a card a comfortable minimum and let the number per row fall out of the container width.</p>
+<ul>
+<li><strong>What it does:</strong> cards fill the row and wrap naturally.</li>
+<li><strong>Success looks like:</strong> three cards on a wide screen, two on a tablet, one on a phone — with no media query needed for the count.</li>
+<li><strong>One decoded failure:</strong> a fixed <code>width: 400px</code> on a 360px phone causes horizontal scrolling. Prefer <code>flex-basis</code> plus <code>max-width: 100%</code>, and test by narrowing the window.</li>
+</ul>
+<h3>Why this lives in CSS, not React</h3>
+<p>React renders structure and responds to data. The viewport width is a <em>rendering</em> detail the browser already knows. Media queries are evaluated by the browser, which is faster and works even before JavaScript runs.</p>
+<p>You will occasionally branch in React — for example, rendering a compact menu component versus a full one. That is valid, but reach for it only when the two states are genuinely different <em>components</em>, not merely different <em>styles</em>. The default is: same JSX, CSS reflows.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main axis</td>
+<td>Direction flex items flow (<code>flex-direction</code>)</td>
+<td>Swaps when direction is <code>column</code></td>
+</tr>
+<tr>
+<td>Cross axis</td>
+<td>Perpendicular to the main axis</td>
+<td><code>justify-content</code> is main; <code>align-items</code> is cross</td>
+</tr>
+<tr>
+<td><code>flex-wrap</code></td>
+<td>Allows items to move to new lines</td>
+<td>Does not set item width by itself</td>
+</tr>
+<tr>
+<td>Media query</td>
+<td>CSS that applies under a screen condition</td>
+<td>Needs parentheses and a colon; wrong syntax fails silently</td>
+</tr>
+<tr>
+<td>Viewport</td>
+<td>The visible page area</td>
+<td>Not the physical monitor</td>
+</tr>
+<tr>
+<td>Breakpoint</td>
+<td>Width where layout changes</td>
+<td>Not a component prop; a CSS condition</td>
+</tr>
+<tr>
+<td>Mobile-first</td>
+<td>Small screen is the base; add rules upward</td>
+<td>Uses <code>min-width</code>, not <code>max-width</code></td>
+</tr>
+<tr>
+<td><code>min-width</code> / <code>max-width</code></td>
+<td>"and up" / "and below"</td>
+<td>Mixing them creates dead zones</td>
+</tr>
+<tr>
+<td>Fluid sizing</td>
+<td>Size flexes with space (<code>flex</code>, <code>%</code>)</td>
+<td>Not the same as no sizing</td>
+</tr>
+<tr>
+<td>Fixed sizing</td>
+<td>Exact size (<code>px</code>)</td>
+<td>Fine for avatars/icons, risky for main layout</td>
+</tr>
+<tr>
+<td><code>flex-basis</code></td>
+<td>The starting size before growing/shrinking</td>
+<td>Not the final size</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A responsive card row: one column on phones, two on tablets, three on laptops, driven by tokens and a single base width.</p>
+<h3>File 1 — <code>src/components/CardRow/CardRow.jsx</code></h3>
+<pre><code class="language-jsx">import Card from &quot;../Card/Card&quot;;
+import &quot;./CardRow.css&quot;;
+
+export default function CardRow({ items }) {
+  return (
+    &lt;section className=&quot;cardRow&quot;&gt;
+      {items.map((item) =&gt; (
+        &lt;Card key={item.id} title={item.title}&gt;
+          {item.body}
+        &lt;/Card&gt;
+      ))}
+    &lt;/section&gt;
+  );
+}
+</code></pre>
+<p>Line-by-line:</p>
+<ul>
+<li><code>import Card ...</code> — we reuse the U21 <code>Card</code> component, which already uses tokens.</li>
+<li><code>import "./CardRow.css";</code> — this component's layout styles.</li>
+<li><code>{items.map(...)}</code> — rendering a list from U15. Each item needs a stable <code>key</code>.</li>
+<li><code>&lt;Card ...&gt;</code> — the card's own styles come from <code>Card.css</code>; the row only arranges them.</li>
+</ul>
+<h3>File 2 — <code>src/components/CardRow/CardRow.css</code></h3>
+<pre><code class="language-css">.cardRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+/* 640px and up: simple horizontal flow with wrapping */
+@media (min-width: 640px) {
+  .cardRow {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .cardRow &gt; * {
+    flex: 1 1 260px;
+    max-width: 100%;
+  }
+}
+</code></pre>
+<p>Notes:</p>
+<ul>
+<li>Base (mobile): a single column with a small gap. Perfect for a phone.</li>
+<li>At 640px and up: switch to a row that wraps, with cards aiming for 260px and growing to fill.</li>
+<li><code>.cardRow &gt; *</code> applies to the direct children (the cards) without needing to edit <code>Card.css</code>. The <code>*</code> means "any element."</li>
+<li>Number of columns is <strong>not</strong> hard-coded. It falls out of the container width: 1024px ≈ three 260px cards, 640px ≈ two, 360px ≈ one.</li>
+</ul>
+<p>This is a full responsive layout in about fifteen lines.</p>
+<h3>File 3 — <code>index.html</code> (the viewport meta tag)</h3>
+<p>For media queries and mobile scaling to behave, the page needs one line in the HTML <code>&lt;head&gt;</code>:</p>
+<pre><code class="language-html">&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+</code></pre>
+<ul>
+<li><strong>What it does:</strong> tells the browser to treat the page width as the device width and to start at normal zoom.</li>
+<li><strong>Success looks like:</strong> on a phone, the page fits the screen instead of appearing zoomed out.</li>
+<li><strong>One decoded failure:</strong> if this tag is missing, mobile browsers assume a desktop width (~980px) and zoom out, so your mobile styles may appear not to trigger. Projects created with Vite include this line already (you saw <code>index.html</code> in U10); only worry about it if your page is missing it.</li>
+</ul>
+<h3>How to test it</h3>
+<ol>
+<li>Run <code>npm run dev</code> and open the local URL.</li>
+<li>Press <strong>F12</strong> to open Developer Tools.</li>
+<li>Click the device toolbar icon (or press <strong>Ctrl+Shift+M</strong>; on macOS <strong>Cmd+Shift+M</strong>).</li>
+<li>Choose a phone width, then drag the handle wider. Watch the cards reflow from one column to two to three.</li>
+<li>In the Styles panel, confirm your <code>@media (min-width: 640px)</code> block becomes active above 640px and inactive below.</li>
+</ol>
+<p>That is the whole workflow: narrow the window, watch the layout respond, inspect which rules are active.</p>
+<h2>Common errors</h2>
+<h3>Error 1: Media query has a syntax typo</h3>
+<p><strong>What you see:</strong> the breakpoint appears to do nothing; the layout never changes.</p>
+<p><strong>What it means:</strong> <code>@media min-width: 640px { }</code> or <code>@media (min-width 640px) { }</code> is invalid, so the browser discards it without complaint.</p>
+<p><strong>Fix:</strong> use <code>@media (min-width: 640px) { }</code> — parentheses around the condition and a colon between the feature and value. In Developer Tools, check whether the query's rules are struck through or the block is greyed out.</p>
+<h3>Error 2: Horizontal scrolling on a phone</h3>
+<p><strong>What you see:</strong> the page scrolls sideways; content is cut off on the right.</p>
+<p><strong>What it means:</strong> something has a fixed width wider than the screen, for example <code>width: 400px</code> on a 360px viewport. Fixed widths do not shrink.</p>
+<p><strong>Fix:</strong> prefer <code>flex: 1 1 &lt;basis&gt;</code> with <code>max-width: 100%</code>, or use <code>max-width</code> instead of <code>width</code>. Test by dragging the device toolbar to a small phone width.</p>
+<h3>Error 3: Cards shrink to unreadable slivers</h3>
+<p><strong>What you see:</strong> five cards squeeze onto one line, each a few pixels wide.</p>
+<p><strong>What it means:</strong> flex defaults to keeping one line. Without <code>flex-wrap: wrap</code>, items shrink instead of wrapping.</p>
+<p><strong>Fix:</strong> add <code>flex-wrap: wrap</code> (and a sensible <code>flex-basis</code>). Now items move to the next line rather than collapsing.</p>
+<h3>Error 4: Mixing <code>min-width</code> and <code>max-width</code> creates a dead zone</h3>
+<p><strong>What you see:</strong> between, say, 700px and 800px, the layout is neither the mobile nor the desktop version.</p>
+<p><strong>What it means:</strong> a <code>max-width: 700px</code> block and a <code>min-width: 800px</code> block leave the range between them with only base styles.</p>
+<p><strong>Fix:</strong> choose one direction — mobile-first <code>min-width</code> — and use a consistent breakpoint set.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In a flex row, which property distributes items on the main axis, and which aligns them on the cross axis?</li>
+<li>What does <code>flex-wrap: wrap</code> change about how items are placed?</li>
+<li>Read <code>@media (min-width: 768px)</code> aloud, then explain why <code>min-width</code> fits a mobile-first approach.</li>
+<li>Why do we render the same JSX and let CSS handle the reflow, instead of branching in React by screen size?</li>
+<li>A card has <code>width: 400px</code> and causes sideways scrolling on a phone. What would you change?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Read and predict</h3>
+<p>Given a <code>.cardRow</code> built exactly as in the worked example, predict how many cards appear per row at 360px, 700px, and 1100px. Then test with the device toolbar and check your prediction.</p>
+<h3>P2 — Change one value</h3>
+<p>Change the base width in <code>flex: 1 1 260px</code> to <code>flex: 1 1 400px</code>. Predict how the number of cards per row changes at 1100px, then test.</p>
+<h3>P3 — Fill in the blank</h3>
+<p>Write a media query that turns a <code>.gallery</code> into a two-column structured layout at 768px and up. (You may use <code>display: grid; grid-template-columns: repeat(2, 1fr);</code> or a flex equivalent.) Check that the base is a single column.</p>
+<h3>P4 — Debug this broken snippet</h3>
+<pre><code class="language-css">@media (max-width: 640px) and (min-width: 768px) {
+  .cardRow { flex-direction: row; }
+}
+</code></pre>
+<p>Explain why this rule can never apply.</p>
+<h3>P5 — Inspection practice</h3>
+<p>Open Developer Tools' device toolbar. With the responsive view, slowly drag the width and watch the Styles panel. Find the moment your media query activates, and note the exact width in <code>answers.md</code> for the assignment.</p>
+<h3>P6 — Design bridge</h3>
+<p>Take a component from a real design file with responsive frames. Write, in words, the rule for each frame: what changes, and at which breakpoint. Then translate one into a <code>@media</code> block.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No CSS Grid in depth (the worked example uses flex only).</li>
+<li>No container queries.</li>
+<li>No responsive images or <code>srcset</code> (U25 touches assets).</li>
+<li>No animations or transitions (U29).</li>
+<li>No JavaScript-based screen-size detection; that is deliberately avoided here.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U24 — Accessibility</strong>: we make the components and layouts you have built usable by everyone, including keyboard and screen-reader users.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U23 Assignment — A responsive layout</h1>
+<p>Submit to your trainer in <strong>one folder or zip</strong> named <code>U23-YourName</code>.</p>
+<p>You will make one layout that visibly changes across the shared breakpoints, and explain your choices.</p>
+<h2>Files to submit</h2>
+<h3>1. Your layout (folder <code>layout/</code>)</h3>
+<pre><code class="language-text">layout/
+  ResponsiveRow/
+    ResponsiveRow.jsx
+    ResponsiveRow.css
+  App.jsx
+</code></pre>
+<ul>
+<li>Pick a content set with <strong>at least four items</strong> (cards, articles, stats, team members — your choice). You may reuse your U21 or U22 component.</li>
+<li>Single column on the smallest screen; more columns as the viewport grows.</li>
+<li>Use <strong>mobile-first</strong> <code>min-width</code> media queries.</li>
+<li>Use at least <strong>two</strong> of the shared breakpoints (640px and 768px or 1024px).</li>
+<li>Use <code>flex-wrap</code> and a fluid <code>flex: 1 1 &lt;basis&gt;</code>; no fixed widths that cause horizontal scroll.</li>
+<li>Use <code>var(--token)</code> spacing if you have a <code>tokens.css</code> from U22.</li>
+<li><code>index.html</code> must include the viewport meta tag (or note that Vite's default already has it).</li>
+</ul>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li><strong>Terms.</strong> Define main axis, cross axis, and breakpoint in your own words.</li>
+<li><strong>The rules.</strong> Paste your media query block and explain, sentence by sentence, what changes at that width.</li>
+<li><strong>Mobile-first.</strong> Why did we write the small-screen styles first? Give one practical reason from your own file.</li>
+<li><strong>Fluid vs fixed.</strong> Name one element in your layout that should be fluid and one that should be fixed, with a reason for each.</li>
+<li><strong>CSS vs React.</strong> Explain why this layout does not use React state or a screen-size check.</li>
+<li><strong>Inspection.</strong> Report the exact viewport width (from the device toolbar) at which your layout changes, as you observed it.</li>
+<li><strong>Design bridge.</strong> For one component, describe its responsive frames in words and match each to a breakpoint.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] Base styles are mobile-first (single column).
+- [ ] I used `min-width` media queries, not `max-width`.
+- [ ] I used at least two shared breakpoints (640/768/1024).
+- [ ] `flex-wrap` is set on the row.
+- [ ] No element causes horizontal scrolling at 360px.
+- [ ] The viewport meta tag is present.
+- [ ] I tested by dragging the device toolbar in Developer Tools.
+- [ ] I read the U23 rubric before submitting.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>At least four items render and visibly reflow across widths.</li>
+<li>No horizontal scrollbar at 360px wide.</li>
+<li>Media queries use consistent <code>min-width</code> breakpoints.</li>
+<li>Written answers are in your own words.</li>
+</ul>
+<h2>Predict-then-run requirement</h2>
+<p>Before testing, write in <code>answers.md</code> how many items you expect per row at 360px, 700px, and 1100px. After testing, record any difference and explain it.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U23 Rubric</h1>
+<p>Visible to learners. Total <strong>30 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Layout reflows across at least two shared breakpoints</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>ResponsiveRow.css</code></td>
+</tr>
+<tr>
+<td>Base styles are mobile-first with <code>min-width</code> queries</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>ResponsiveRow.css</code></td>
+</tr>
+<tr>
+<td><code>flex-wrap</code> and a fluid <code>flex: 1 1 &lt;basis&gt;</code> used</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>ResponsiveRow.css</code></td>
+</tr>
+<tr>
+<td>No horizontal scrolling at 360px</td>
+<td>4</td>
+<td>Yes</td>
+<td>testing / <code>App.jsx</code></td>
+</tr>
+<tr>
+<td>Viewport meta tag present (or correctly noted)</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>index.html</code> / <code>answers.md</code></td>
+</tr>
+<tr>
+<td>Defines main axis, cross axis, breakpoint correctly</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains the media query change line by line</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Fluid-vs-fixed choice is concrete and reasoned</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Explains why responsiveness lives in CSS</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q5</td>
+</tr>
+<tr>
+<td>Records observed breakpoint width</td>
+<td>1</td>
+<td>No</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+</tbody>
+</table>
+<h2>What the assessor should look for</h2>
+<ul>
+<li><strong>Reflow (6):</strong> four or more items change arrangement across widths. Test by narrowing the browser, not by reading alone.</li>
+<li><strong>Mobile-first (5):</strong> base rules target small screens; <code>min-width</code> blocks add desktop changes. A submission that starts desktop-first with <code>max-width</code> loses most of this row — note it, because it is a deliberate teaching point.</li>
+<li><strong>Fluid sizing (4):</strong> <code>flex-wrap</code> present; children use <code>flex: 1 1 &lt;basis&gt;</code> (or equivalent) and <code>max-width: 100%</code>. Fixed <code>width</code> on the main items loses points here.</li>
+<li><strong>No horizontal scroll (4):</strong> verify at 360px. If there is a scrollbar, identify the culprit (usually a fixed width or a long unbroken string) in feedback.</li>
+<li><strong>Q1 (3):</strong> all three terms must be correct; a swapped main/cross axis answer is a common partial.</li>
+<li><strong>Q2 (2):</strong> sentence-by-sentence is not literally required; a clear explanation of what changes and why is enough.</li>
+</ul>
+<h2>Partial credit notes (assessors)</h2>
+<ul>
+<li>If the layout reflows only via a fixed-width hack (e.g. fixed px widths plus no wrap), award reflow points partially and explain the fluid alternative.</li>
+<li>If <code>max-width</code> is used but the design is still coherent, deduct on the mobile-first row but do not zero the layout rows.</li>
+<li>A single breakpoint when two were requested caps the reflow row at 4/6.</li>
+<li>Do not penalize a grid-based solution if it meets the outcomes; the outcome is responsive behavior, not flex specifically. (Grid was out of scope but is a legitimate extra.)</li>
+</ul>
+<h2>Common weak submissions</h2>
+<ul>
+<li>Three fixed columns that never change.</li>
+<li>Desktop-first <code>max-width</code> queries.</li>
+<li>Horizontal scrolling at phone width, unnoticed.</li>
+<li>Media query typos, so the breakpoint silently does nothing.</li>
+<li><code>answers.md</code> recites the lesson instead of reporting their own observations.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U22-design-tokens-as-props/index.html">U22 Design tokens as props</a>
+    <a class="next" href="../U24-accessibility/index.html">U24 Accessibility</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

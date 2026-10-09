@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U09 — npm, a dev server, and a Vite project | React.js Frontend for Designers</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">React.js Frontend for Designers — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U09</div>
+    <h1>npm, a dev server, and a Vite project</h1>
+    <span class="phase-badge ph2">Phase 2 — Running React</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U09 — npm, a dev server, and a Vite project</h1>
+<p><strong>Phase 2 — Running React</strong></p>
+<h2>Where you are</h2>
+<p>In U08 you installed Node.js and confirmed <code>node --version</code> and <code>npm --version</code> worked. You also met the terminal and learned <code>cd</code> and how to list files.</p>
+<p>Now you will use the second program that came with Node — <strong>npm</strong> — to create a real React project on your computer and run it in a browser. This is the moment the course stops being abstract. By the end of this unit there will be a working React app on your machine, and you will have opened it from a <strong>dev server</strong>.</p>
+<p>You will not write React code yet. This unit is about getting a clean, running project and understanding each command you typed.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what npm is and the two jobs it does for you.</li>
+<li>Explain what a dev server is and why the page updates by itself.</li>
+<li>Create a project with <code>npm create vite@latest</code>.</li>
+<li>Choose React and JavaScript during the scaffold prompts, and say what that choice means.</li>
+<li>Install a project's dependencies with <code>npm install</code>.</li>
+<li>Start the project with <code>npm run dev</code> and open it at a <code>localhost</code> URL.</li>
+<li>Stop a running dev server safely.</li>
+<li>Read one common failure (<code>command not found</code> / <code>EADDRINUSE</code> style) and name the fix.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U08</strong> — Node.js and npm installed and verified (<code>node --version</code>, <code>npm --version</code>), and you can use <code>cd</code> and list files in the terminal.</li>
+<li><strong>U00</strong> — the stuck protocol.</li>
+<li><strong>U07</strong> — you have seen what an "import" does at a high level; this unit uses the word but does not ask you to write one.</li>
+</ul>
+<p>You do <strong>not</strong> need to understand React yet. U11 is where you first write a component.</p>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. Downloading packages depends on your internet; the first <code>npm install</code> can take a few minutes and may look "stuck." It usually is not. Plan a break after the project starts.</p>
+<h2>Why this exists</h2>
+<p>Imagine you had to prepare a design for print by hand: every image colour-converted, every font converted to outlines, every page exported, one at a time. You would not do that by hand each time you moved a rectangle. You would use a tool that watches your file and re-exports automatically.</p>
+<p>Running a React project has the same shape. Your React source files are not what the browser runs. Something must translate them and serve the result. <strong>npm</strong> fetches that something, and the <strong>dev server</strong> runs it — watching your files and refreshing the page when you save. U09 is where you set up that workshop.</p>
+<h2>Plain-language teaching</h2>
+<h3>What npm is</h3>
+<p><strong>npm</strong> stands for <strong>Node Package Manager</strong>. It arrived with Node.js in U08. It does two jobs:</p>
+<ol>
+<li><strong>Downloads packages.</strong> A <strong>package</strong> is a folder of code someone else wrote, ready to reuse. React itself is a package. The Vite tool is a package. Your project will need several dozen packages, which all come from npm.</li>
+<li><strong>Runs scripts.</strong> A <strong>script</strong> is a shortcut command stored in your project. Instead of remembering a long command, you type a short name like <code>npm run dev</code>, and npm looks up what that name should do.</li>
+</ol>
+<p><strong>Think of it as:</strong> npm is a combination of a <em>supply store</em> (it fetches parts) and a <em>button panel</em> (named shortcuts that run things).</p>
+<p><strong>What it is not:</strong> npm is not React, not a browser, and not the thing that makes your page look good. It is plumbing.</p>
+<h3>What a dev server is</h3>
+<p>A <strong>server</strong> is a program that waits for requests and answers them. Your computer can already serve files to your own browser; that is what a <strong>local</strong> dev server does. "Local" means it lives on your machine and is reachable only from your machine.</p>
+<p>The dev server does two things you care about:</p>
+<ol>
+<li><strong>It serves your page</strong> at an address like <code>http://localhost:5173</code>, so you can view it in a browser.</li>
+<li><strong>It watches your files.</strong> When you save a change, the dev server notices, rebuilds the part that changed, and tells the browser to update. The page "reloads" without you pressing refresh.</li>
+</ol>
+<p><strong>Think of it as:</strong> the dev server is a live prototype link in a design tool. Instead of "update design → wait → share new link → refresh," you get "save file → the open page changes." The <strong>hot reload</strong> (some tools call it <em>HMR</em>, Hot Module Replacement) is that automatic refresh.</p>
+<p><strong>Why we need it at all:</strong> because React code must be translated before the browser can run it. A plain double-click of your files would not work. The dev server does the translation continuously.</p>
+<h3>What <code>localhost</code> means</h3>
+<p><code>localhost</code> is the name your computer uses for itself. <code>http://localhost:5173</code> means "port 5173 on this very machine." A <strong>port</strong> is a numbered door on a computer; different programs listen at different doors so requests do not collide. Vite usually picks port <code>5173</code>, but if that door is busy it will use the next free one (<code>5174</code>, etc.). Always read the exact URL the terminal prints.</p>
+<h3>What "scaffolding" means</h3>
+<p>To <strong>scaffold</strong> a project is to generate the starting folder structure from a template. <code>create-vite</code> is a scaffolding tool. It asks a few questions, then writes a small, working project for you. You are not expected to build this structure by hand.</p>
+<h3>What <code>package.json</code> and <code>node_modules</code> are (preview)</h3>
+<p>You will tour these fully in U10. For now, know two names you will see flash by:</p>
+<ul>
+<li><strong><code>package.json</code></strong> — the project's "recipe card": its name, its scripts, and the list of packages it depends on. A plain text file you can read.</li>
+<li><strong><code>node_modules</code></strong> — the folder where all downloaded packages actually live. It is huge and you should never edit it by hand.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>npm</td>
+<td>Node Package Manager; fetches packages and runs scripts</td>
+<td>Not Node itself; a separate command</td>
+</tr>
+<tr>
+<td>Package</td>
+<td>A reusable folder of code, downloaded by npm</td>
+<td>Not the same as your project</td>
+</tr>
+<tr>
+<td>Dependency</td>
+<td>A package your project needs to run</td>
+<td>"Dependencies" is the umbrella word</td>
+</tr>
+<tr>
+<td>Script</td>
+<td>A named shortcut command in <code>package.json</code></td>
+<td>Not a <code>.js</code> file necessarily</td>
+</tr>
+<tr>
+<td>Dev server</td>
+<td>Local program that serves your app and auto-reloads</td>
+<td>Not the internet; only your machine</td>
+</tr>
+<tr>
+<td>Hot reload / HMR</td>
+<td>Automatic page update when you save</td>
+<td>Not the same as pressing refresh</td>
+</tr>
+<tr>
+<td>Scaffold</td>
+<td>Generate a starter project from a template</td>
+<td>Not "install by hand"</td>
+</tr>
+<tr>
+<td>localhost</td>
+<td>Your own computer as a network address</td>
+<td>Not a website on the internet</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>A numbered "door" a program listens on</td>
+<td>Vite's default is 5173</td>
+</tr>
+<tr>
+<td>Vite</td>
+<td>The build tool/scaffolder this course uses</td>
+<td>Pronounced "veet" (French for "fast")</td>
+</tr>
+<tr>
+<td><code>npm create vite@latest</code></td>
+<td>Command that scaffolds a new Vite project</td>
+<td>Not the same as <code>npm install</code></td>
+</tr>
+<tr>
+<td><code>npm install</code></td>
+<td>Downloads all packages the project needs</td>
+<td>Run inside the project folder</td>
+</tr>
+<tr>
+<td><code>npm run dev</code></td>
+<td>Starts the dev server</td>
+<td>Must be run inside the project folder</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>We will create a project called <code>my-first-react-app</code> on the Desktop. Use only the shell for your operating system; the prompts are identical.</p>
+<h3>Step 1 — Go to the place you want the project</h3>
+<p><strong>Why:</strong> <code>create-vite</code> makes a <strong>new folder</strong> in your current location. Choose where that folder should live before you run it.</p>
+<p>Windows (PowerShell):</p>
+<pre><code class="language-text">cd $HOME
+cd Desktop
+</code></pre>
+<p>macOS / Linux (bash):</p>
+<pre><code class="language-text">cd ~
+cd Desktop
+</code></pre>
+<p><em>What it does:</em> <code>cd $HOME</code> (Windows) or <code>cd ~</code> (macOS/Linux) moves to your home folder; <code>cd Desktop</code> enters the Desktop. If you do not have a Desktop folder, <code>cd $HOME</code> / <code>cd ~</code> is fine and the project will sit in your home folder.</p>
+<p><em>What success looks like:</em> the prompt changes to name the Desktop; no error text.</p>
+<p><em>One decoded failure:</em> <code>cd : Cannot find path ... Desktop because it does not exist.</code> Your Desktop may be named differently or missing (common on some Linux desktops). Fix: run your listing command (<code>Get-ChildItem</code> or <code>ls</code>) to see the real folder names, and pick one that exists.</p>
+<h3>Step 2 — Scaffold the project</h3>
+<p>Type this exactly:</p>
+<pre><code class="language-text">npm create vite@latest my-first-react-app
+</code></pre>
+<p><em>What it does:</em> downloads and runs <code>create-vite</code>, the official scaffolding tool, and creates a folder named <code>my-first-react-app</code> containing a starter project. The <code>@latest</code> part means "use the newest published version."</p>
+<p><em>What success looks like:</em> you are asked a few questions, in this order:</p>
+<pre><code class="language-text">✔ Select a framework: › React
+✔ Select a variant: › JavaScript
+</code></pre>
+<p>Choose <strong>React</strong> with the arrow keys and Enter. Then choose <strong>JavaScript</strong> (not TypeScript) with the arrow keys and Enter. This course uses plain JavaScript on purpose; TypeScript adds a second language to learn and is not needed here.</p>
+<p>You may also be asked to confirm the package name; pressing Enter accepts the default.</p>
+<p>After it finishes you will see text like:</p>
+<pre><code class="language-text">Scaffolding project in C:\Users\designer\Desktop\my-first-react-app...
+
+Done. Now run:
+
+  cd my-first-react-app
+  npm install
+  npm run dev
+</code></pre>
+<p><em>One decoded failure:</em> <code>npm : The term 'npm' is not recognized ...</code>. This means npm is not found — usually because your terminal was opened before Node was installed, or Node itself is missing. Fix from U08: close the terminal, open a fresh one, confirm <code>npm --version</code> works. Do not continue until it does.</p>
+<p><strong>A second common failure:</strong> you accidentally picked <strong>TypeScript</strong> at the variant prompt. Nothing is broken, but your project files will end in <code>.tsx</code> and oddly-typed code. Fix: delete the new folder and run the create command again to pick <strong>JavaScript</strong>, or ask your trainer — do not try to convert by hand while learning.</p>
+<h3>Step 3 — Move into the project</h3>
+<pre><code class="language-text">cd my-first-react-app
+</code></pre>
+<p><em>What it does:</em> enters the folder that was just created, so the next commands act on it.</p>
+<p><em>What success looks like:</em> the prompt now includes <code>my-first-react-app</code>; no error text.</p>
+<p><em>One decoded failure:</em> <code>cd : Cannot find path ... my-first-react-app because it does not exist.</code> Usually a typo, or you are not in the folder where you scaffolded it. Fix: list files (<code>Get-ChildItem</code> / <code>ls</code>) and look for the exact folder name.</p>
+<h3>Step 4 — Install the dependencies</h3>
+<pre><code class="language-text">npm install
+</code></pre>
+<p><em>What it does:</em> reads the project's recipe card (<code>package.json</code>), downloads every package the project needs, and stores them in <code>node_modules</code>. This is where React and Vite actually get fetched.</p>
+<p><em>What success looks like:</em> a progress display and a line at the end like:</p>
+<pre><code class="language-text">added 154 packages, and audited 155 packages in 12s
+</code></pre>
+<p>Your count and time will differ. Warnings in yellow about "vulnerabilities" are common and are <strong>not</strong> a reason to panic or run the suggested fixes — the suggested fixes can break the project. Note them and move on.</p>
+<p><em>One decoded failure:</em> if you see a long list of <code>npm error code ETIMEDOUT</code> or <code>network</code> lines, your internet or a proxy/firewall blocked the download. Fix: check your connection and try <code>npm install</code> again; if you are on a work network, a proxy may need configuring, which is a good question to bring to your trainer.</p>
+<p><strong>A second common failure:</strong> running <code>npm install</code> in the wrong folder gives <code>npm error ... ENOENT: no such file or directory, open '...\package.json'</code>. That means there is no <code>package.json</code> here — you are not inside the project folder. Fix: <code>cd my-first-react-app</code> first.</p>
+<h3>Step 5 — Start the dev server</h3>
+<pre><code class="language-text">npm run dev
+</code></pre>
+<p><em>What it does:</em> runs the script named <code>dev</code> from <code>package.json</code>, which starts the Vite dev server.</p>
+<p><em>What success looks like:</em></p>
+<pre><code class="language-text">  VITE v5.4.0  ready in 320 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+</code></pre>
+<p>The exact port may be <code>5173</code> or, if that door is busy, the next free one. Copy the <strong>Local</strong> URL.</p>
+<p><strong>Important:</strong> this command <strong>does not finish and does not give your prompt back.</strong> That is expected. The dev server keeps running and watching files. To keep using the terminal, open a <strong>second</strong> terminal window.</p>
+<p><em>One decoded failure:</em> <code>npm error Missing script: "dev"</code>. This means you are in a folder whose <code>package.json</code> has no <code>dev</code> script — usually the wrong folder (for example your home folder, not the project). Fix: <code>cd my-first-react-app</code> and run again. It can also mean the scaffold did not use Vite; re-scaffold if so.</p>
+<p><strong>A second common failure:</strong> <code>Error: listen EADDRINUSE: address already in use :::5173</code>. Port 5173 is already taken (often by a dev server you left running). Fix: either stop the other server (go to its terminal and press <strong>Ctrl + C</strong>), or let Vite choose another port — press <strong>q</strong> then Enter to quit, or restart and accept the next port.</p>
+<h3>Step 6 — Open the page</h3>
+<p>In your web browser, type or paste the <strong>Local</strong> URL from the terminal (for example <code>http://localhost:5173</code>) and press Enter.</p>
+<p><em>What success looks like:</em> the default Vite + React starter page appears, usually with a logo, a "Vite + React" heading, and a button that counts clicks. That page is proof the whole workshop is running.</p>
+<p><em>One decoded failure:</em> the browser says <strong>"This site can't be reached" / "Unable to connect."</strong> The dev server is not running. Fix: check that <code>npm run dev</code> is still active in its terminal window. If that terminal was closed, the server stopped; run <code>npm run dev</code> again.</p>
+<h3>Step 7 — Stop the server safely</h3>
+<p>Go to the terminal window running the dev server and press <strong>Ctrl + C</strong> (on macOS this may also be Control + C; if your Terminal uses Cmd for copy, Ctrl + C still interrupts the running command). The process stops and you get your prompt back.</p>
+<p><em>What success looks like:</em> the terminal prints <code>^C</code> and returns to a prompt.</p>
+<p><em>One decoded failure:</em> nothing seems to happen because you pressed it in a different (idle) terminal. Fix: make sure the <em>dev server</em> window is focused; the one showing the running output is the right one.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>npm : The term 'npm' is not recognized</code> (Windows) / <code>npm: command not found</code> (macOS/Linux)</h3>
+<p><strong>What it means:</strong> the shell cannot find npm. Usually Node/npm was installed after this terminal opened, or Node is not installed.</p>
+<p><strong>Fix:</strong> open a <strong>fresh</strong> terminal and run <code>npm --version</code>. If it still fails, revisit U08.</p>
+<h3>Error: <code>npm error Missing script: "dev"</code></h3>
+<p><strong>What it means:</strong> there is no <code>dev</code> script in the <code>package.json</code> of the folder you are in.</p>
+<p><strong>Fix:</strong> you are almost certainly in the wrong folder. <code>cd</code> into the project and try again.</p>
+<h3>Error: <code>EADDRINUSE: address already in use</code></h3>
+<p><strong>What it means:</strong> the port the server wants is occupied by another running server.</p>
+<p><strong>Fix:</strong> stop the other dev server with <strong>Ctrl + C</strong>, or accept Vite's offer of a different port and use the new URL.</p>
+<h3>Error: browser shows "can't be reached"</h3>
+<p><strong>What it means:</strong> you opened the URL but no server is answering there.</p>
+<p><strong>Fix:</strong> confirm <code>npm run dev</code> is running and still shows the same port; then use the exact URL it printed.</p>
+<h3>Error: yellow "vulnerabilities" warnings after install</h3>
+<p><strong>What it means:</strong> npm's audit tool noticed packages with known issues. For a learning project this is normal noise.</p>
+<p><strong>Fix:</strong> ignore it. Do <strong>not</strong> follow the "run <code>npm audit fix --force</code>" suggestion during this course; it can change package versions and break the project.</p>
+<h2>Checkpoints</h2>
+<p>Answer these in your own words before the assignment.</p>
+<ol>
+<li>Name the two jobs npm does.</li>
+<li>What is a dev server, and what does "hot reload" save you from doing?</li>
+<li>What does <code>localhost</code> mean, and what is a port?</li>
+<li>Which command scaffolds a project, and which command downloads its packages?</li>
+<li>Why does <code>npm run dev</code> not return your prompt, and how do you stop it?</li>
+</ol>
+<h2>Practice exercises</h2>
+<p>Ungraded. Do them at your own pace.</p>
+<h3>P1 — Scaffold a second project</h3>
+<p>Create a second project named <code>practice-app</code> with <code>npm create vite@latest practice-app</code>, choosing React + JavaScript. Do not do anything else with it yet.</p>
+<h3>P2 — Read before install</h3>
+<p>Open <code>practice-app/package.json</code> in any text editor. Find the <code>"scripts"</code> section. Write down the names of two scripts and what command each runs.</p>
+<h3>P3 — Run and stop</h3>
+<p>Inside <code>practice-app</code>, run <code>npm install</code>, then <code>npm run dev</code>. Open the URL in your browser. Then stop the server with <strong>Ctrl + C</strong>.</p>
+<h3>P4 — Deliberate error: wrong folder</h3>
+<p>From your home folder (not the project), run <code>npm run dev</code> and read the error. Write down the exact message. Then <code>cd</code> into the project and run it correctly.</p>
+<h3>P5 — Port collision</h3>
+<p>With one dev server running, open a second terminal, go to the project, and run <code>npm run dev</code> again. Read what Vite does. Stop both servers when done.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No React code yet — no components, no JSX (U11 and U12).</li>
+<li>No editing of project files beyond reading <code>package.json</code>.</li>
+<li>No styling, props, or state.</li>
+<li>No production build (<code>npm run build</code> is U31).</li>
+<li>No deployment or hosting (U32).</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U10 — The project folder tour</strong> (what every file and folder is, and which ones you may touch).</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U09 Assignment — A running Vite + React project</h1>
+<p>Submit the following to your trainer in <strong>one folder or zip</strong> named:</p>
+<p><code>U09-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<p>Answer in your own words.</p>
+<ol>
+<li><strong>npm's two jobs.</strong> In 3–5 sentences, explain what npm is and the two jobs it does.</li>
+<li><strong>Dev server.</strong> What is a dev server? Explain, in your own words, what "hot reload" means and the manual step it removes.</li>
+<li><strong>localhost and ports.</strong> What does <code>localhost</code> mean? What is a port? What port did Vite use for you?</li>
+<li><strong>Commands in order.</strong> List, in order, the four commands you ran to go from an empty Desktop to a page in the browser (the <code>cd</code>, the scaffold, the install, the run). For each, one sentence on what it did.</li>
+<li><strong>The scaffold choices.</strong> You chose <strong>React</strong> and <strong>JavaScript</strong>. Why JavaScript and not TypeScript in this course? (One or two sentences. If unsure, say what you would ask the trainer.)</li>
+<li><strong>Stop the server.</strong> How do you stop the dev server, and what clue tells you it has stopped?</li>
+<li><strong>Error-reading practice.</strong> Describe the deliberate error from Practice P4 (running <code>npm run dev</code> in the wrong folder). Quote the message you saw and explain what it was telling you.</li>
+<li><strong>Warning vs error.</strong> After <code>npm install</code> you likely saw yellow warnings about "vulnerabilities." Explain why those are not the same as an error, and what you did about them.</li>
+</ol>
+<h3>2. <code>commands.md</code></h3>
+<p>A copy-paste log of the exact terminal session you used, with a one-line comment above each real command saying what it did. Example format:</p>
+<pre><code class="language-text"># go to home folder
+cd $HOME
+
+# enter Desktop
+cd Desktop
+
+# scaffold the project
+npm create vite@latest my-first-react-app
+...
+</code></pre>
+<p>Redact anything private (like your username in a path); replace it with <code>&lt;you&gt;</code>.</p>
+<h3>3. <code>screenshot.png</code> (or <code>.jpg</code>)</h3>
+<p>One screenshot of your <strong>browser</strong> showing your running app at the <code>localhost</code> URL, with the URL bar visible so the port can be read. A second screenshot of the <strong>terminal</strong> showing <code>npm run dev</code> output is welcome but optional.</p>
+<h2>Definition of done</h2>
+<ul>
+<li>Folder named <code>U09-YourName</code> with all three files present.</li>
+<li>The screenshot shows a real running app with a visible <code>localhost</code> URL and port.</li>
+<li><code>commands.md</code> reflects your actual session, not a copy of the lesson.</li>
+<li>If you could not get the app running, you submitted <code>answers.md</code> and <code>commands.md</code> with the exact error text and everything you tried.</li>
+</ul>
+<h2>Note on stuck submissions</h2>
+<p>A documented failure is a valid submission. Never send nothing. Use the U00 stuck protocol and include your notes.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U09 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Explains npm's two jobs (packages + scripts)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Explains dev server and hot reload clearly</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Correct <code>localhost</code> / port explanation with real port</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3, screenshot</td>
+</tr>
+<tr>
+<td>Correct command sequence and purposes</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4, <code>commands.md</code></td>
+</tr>
+<tr>
+<td>Explains how to stop the dev server</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q6</td>
+</tr>
+<tr>
+<td>Error-reading practice decoded</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q7</td>
+</tr>
+<tr>
+<td>Distinguishes warnings from errors</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q8</td>
+</tr>
+</tbody>
+</table>
+<p>The screenshot is the <strong>evidence</strong> that the project ran; without a working screenshot, cap the localhost/dev-server criteria at half unless the written description is unusually strong and consistent.</p>
+<h3>Partial credit notes (assessors)</h3>
+<ul>
+<li>Q1: award 3/4 if they name downloading packages and running scripts but describe npm as "the tool that makes React work"; award 1/4 for "it installs stuff" only.</li>
+<li>Q2: full requires the automatic-on-save idea. "It shows the website" earns 2/4.</li>
+<li>Q3: require a plausible port (5173 or a Vite-assigned alternative). A student who reports a different tool's port but explains it correctly gets full.</li>
+<li>Q4: order must be sensible: enter location → scaffold → <code>cd</code> into project → install → run. Missing <code>cd</code> into the project is a common, partly-correct answer; award 2/3.</li>
+<li>Q6: Ctrl + C accepted. Full if they also note the terminal returns to a prompt.</li>
+<li>Q7: any genuine wrong-folder error and correct decoding earns full.</li>
+<li>Q8: full for "warnings are advisory, not failures, and I left them alone." Award 0 if they ran <code>audit fix --force</code> and broke the project — then help them rebuild.</li>
+</ul>
+<h3>Common weak submissions</h3>
+<ul>
+<li>Screenshot shows the Vite page but URL bar cropped out (port unverifiable) — partial credit only.</li>
+<li><code>commands.md</code> is a copy of the lesson with the student's name pasted in.</li>
+<li>Q2 confuses the dev server with the internet or with hosting.</li>
+<li>Q4 has commands in the wrong order.</li>
+<li>Claims success with no screenshot and no real terminal output.</li>
+</ul></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U08-installing-node/index.html">U08 Installing Node.js safely</a>
+    <a class="next" href="../U10-project-folder-tour/index.html">U10 The project folder tour</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>
