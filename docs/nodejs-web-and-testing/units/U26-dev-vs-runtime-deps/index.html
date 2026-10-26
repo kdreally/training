@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U26 — Dev vs runtime dependencies | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U26</div>
+    <h1>Dev vs runtime dependencies</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U26 — Dev vs runtime dependencies</h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>Not every package ships with production. Some exist only to <strong>build or test</strong>. That split is <code>dependencies</code> vs <code>devDependencies</code>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define runtime vs development dependency.</li>
+<li>Install with <code>--save-dev</code> and read the result in package.json.</li>
+<li>Place a hypothetical test runner in the correct bucket.</li>
+<li>Explain why the split matters (install size, production deploys).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U24</strong>, <strong>U25</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>When Phase 5 adds a test runner, you must put it in the right place without superstition.</p>
+<h2>Plain-language teaching</h2>
+<h3>Runtime dependency</h3>
+<p>Needed to <strong>run the app</strong> for real users: web framework, DB client, <code>ms</code> if used in production code.</p>
+<p>Listed under <code>"dependencies"</code>.</p>
+<h3>Development dependency</h3>
+<p>Needed to <strong>develop or test</strong> the app, not to serve users in production: test runners, formatters, linters, build tools.</p>
+<p>Listed under <code>"devDependencies"</code>.</p>
+<h3>Install as dev</h3>
+<pre><code class="language-bash">npm install --save-dev some-dev-tool
+</code></pre>
+<p>(Exact tool optional here; you can install a tiny dev tool your trainer approves, or only write the conceptual answers if offline.)</p>
+<p>Example shape after a dev install:</p>
+<pre><code class="language-json">&quot;devDependencies&quot;: {
+  &quot;some-dev-tool&quot;: &quot;^1.2.3&quot;
+}
+</code></pre>
+<h3>Production installs (awareness)</h3>
+<p>In deployment pipelines you may see:</p>
+<pre><code class="language-bash">npm install --production
+</code></pre>
+<p>or modern equivalents that skip devDependencies. That keeps production leaner.</p>
+<h3>Where a test runner goes</h3>
+<p><strong>devDependencies.</strong> Users hitting your API do not need your test framework installed on the server (generally).</p>
+<h3>Where Express goes (preview)</h3>
+<p><strong>dependencies</strong> — the server needs it to run (if you choose Express later).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dependencies</code></td>
+<td>Runtime packages</td>
+<td></td>
+</tr>
+<tr>
+<td><code>devDependencies</code></td>
+<td>Develop/test packages</td>
+<td></td>
+</tr>
+<tr>
+<td><code>--save-dev</code> / <code>-D</code></td>
+<td>Install as devDependency</td>
+<td></td>
+</tr>
+<tr>
+<td>Production</td>
+<td>Real deployed running app</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — sorting drill</h2>
+<table>
+<thead>
+<tr>
+<th>Package role</th>
+<th>Bucket</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP framework used by server</td>
+<td>dependencies</td>
+</tr>
+<tr>
+<td>Test runner</td>
+<td>devDependencies</td>
+</tr>
+<tr>
+<td>Assertion lib only for tests</td>
+<td>devDependencies</td>
+</tr>
+<tr>
+<td><code>ms</code> used in production feature</td>
+<td>dependencies</td>
+</tr>
+<tr>
+<td><code>ms</code> used only in a throwaway script never shipped</td>
+<td>maybe dev — judgment</td>
+</tr>
+</tbody>
+</table>
+<h2>Common errors</h2>
+<h3>Error: Putting everything in dependencies “just in case”</h3>
+<p>Bloated production installs; unclear intent.</p>
+<h3>Error: Putting runtime libs in devDependencies</h3>
+<p>Production install may omit them → app crashes when deployed.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Runtime vs dev dependency?</li>
+<li>Flag for dev install?</li>
+<li>Where does a test runner go?</li>
+<li>Why production might skip devDeps?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Sort 6 imaginary packages into buckets with reasons.</h3>
+<h3>P2 — Read a package.json (yours) and label each dep.</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Actually configuring Jest/Vitest yet</li>
+<li>Peer dependencies</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U27 — Client vs server; what backend means</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U26 Assignment — <code>U26-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define dependencies vs devDependencies with examples.</li>
+<li>Sorting table (package idea → bucket → why) for at least 6 items including: express-like framework, test runner, lint tool, db driver, dayjs in API code, types package (if unknown, reason).</li>
+<li>What goes wrong if test runner is only in dependencies? If express is only in devDependencies?</li>
+<li>Write the npm command to add a dev dependency named <code>cowsay</code> <strong>or</strong> explain without installing if network blocked — trainer accepts either with honesty.</li>
+<li>How will you use this unit when Phase 5 arrives? (4–6 sentences)</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U26 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions + examples</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Sorting table quality</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Misplacement failure modes</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>install -D awareness</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Phase 5 connection</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U25-npm-scripts/index.html">U25 Scripts in `package.json`</a>
+    <a class="next" href="../U27-client-vs-server/index.html">U27 Client vs server; what “backend” means here</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

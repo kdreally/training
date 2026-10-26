@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U45 — Testing HTTP/APIs | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U45</div>
+    <h1>Testing HTTP/APIs</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U45 — Testing HTTP/APIs</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Your app speaks HTTP. Tests should speak HTTP too: <strong>request in, status/body out</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain API/HTTP tests.</li>
+<li>Use a simple approach to hit your Express <code>app</code> without manual curl each time.</li>
+<li>Assert status codes and JSON bodies.</li>
+<li>Cover happy and error paths over HTTP.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U36</strong> (<code>app</code> export), <strong>U40</strong>, <strong>U34–U35</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>90–130 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Unit tests can pass while routes are wrong. HTTP tests guard the <strong>contract clients rely on</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>API test</h3>
+<p>An <strong>HTTP/API test</strong> sends an HTTP request to your app and checks the response status, headers, and body.</p>
+<h3>Approach A — <code>fetch</code> against running server</h3>
+<p>Start server, <code>fetch("http://localhost:3000/health")</code>, assert.<br />
+Downside: port management, leftover processes.</p>
+<h3>Approach B — inject requests into Express app (preferred learning path)</h3>
+<p>Use a helper library <strong>or</strong> Node’s test patterns with <code>http</code> + <code>app.listen</code> on ephemeral port.</p>
+<p><strong>Lightweight pattern</strong> (no extra package): listen on port <code>0</code> (OS picks free port), then fetch.</p>
+<pre><code class="language-javascript">const test = require(&quot;node:test&quot;);
+const assert = require(&quot;node:assert/strict&quot;);
+const app = require(&quot;../src/app&quot;);
+
+function listen(app) {
+  return new Promise(function (resolve) {
+    const server = app.listen(0, function () {
+      const { port } = server.address();
+      resolve({ server, base: &quot;http://127.0.0.1:&quot; + port });
+    });
+  });
+}
+
+test(&quot;GET /health returns ok&quot;, async function () {
+  const { server, base } = await listen(app);
+  try {
+    const res = await fetch(base + &quot;/health&quot;);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.deepEqual(body, { ok: true });
+  } finally {
+    server.close();
+  }
+});
+</code></pre>
+<p>Requires Node version with global <code>fetch</code> (modern LTS). Close server in <code>finally</code>.</p>
+<h3>What to assert</h3>
+<ul>
+<li>Status code</li>
+<li>Critical JSON fields</li>
+<li>Error messages you promised</li>
+</ul>
+<h3>Reset state</h3>
+<p>If in-memory store is shared, call <code>reset()</code> in arrange — export reset from store.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API test</td>
+<td>HTTP contract test</td>
+<td></td>
+</tr>
+<tr>
+<td>Ephemeral port</td>
+<td>Port 0 → OS assigns</td>
+<td></td>
+</tr>
+<tr>
+<td>Contract</td>
+<td>Promised request/response behavior</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Health test above; add POST /notes 201 and 400 tests similarly.</p>
+<h2>Common errors</h2>
+<h3>Error: Not closing server</h3>
+<p>Hangs or port leaks. Use <code>finally</code>.</p>
+<h3>Error: Shared state across tests</h3>
+<p>Reset store.</p>
+<h3>Error: Asserting entire huge body unnecessarily</h3>
+<p>Assert what matters.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is an API test?</li>
+<li>Why export app without listen?</li>
+<li>Why port 0?</li>
+<li>Why finally close?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — health + notes create + 400 over HTTP</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full browser e2e</li>
+<li>Load testing</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U46 — Test doubles (gentle)</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U45 Assignment — <code>U45-YourName</code></h1>
+<h2>Deliver API tests (≥5) including:</h2>
+<ul>
+<li>GET /health 200</li>
+<li>POST valid note 201</li>
+<li>POST invalid 400</li>
+<li>GET list includes created</li>
+<li>GET missing id 404</li>
+</ul>
+<p>Use app + listen(0) + fetch or trainer-approved alternative.</p>
+<h2><code>answers.md</code></h2>
+<p>Explain approach; how state reset works; one flake you avoided; transcript npm test.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U45 Rubric — 30 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥5 HTTP tests covering required cases</td>
+<td>15</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Server cleanup / no hang</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>State isolation</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>npm test evidence</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U44-integration-tests/index.html">U44 Integration tests: units working together</a>
+    <a class="next" href="../U46-test-doubles-light/index.html">U46 Test doubles (gentle): stub/fake/mock</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

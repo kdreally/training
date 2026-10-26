@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U51 — Refactoring with tests as a safety net | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U51</div>
+    <h1>Refactoring with tests as a safety net</h1>
+    <span class="phase-badge ph6">Phase 6 — Craft and capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U51 — Refactoring with tests as a safety net</h1>
+<p><strong>Phase 6 — Craft</strong></p>
+<h2>Where you are</h2>
+<p>Capstone works. Now improve structure <strong>without changing behavior</strong> — tests prove it.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define refactoring.</li>
+<li>Perform a small refactor with tests green before/after.</li>
+<li>List safe refactors vs risky changes.</li>
+<li>Use tests as permission to clean code.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U50</strong> (or equivalent suite)</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Fear freezes messy code. Tests unfreeze improvement.</p>
+<h2>Plain-language teaching</h2>
+<h3>Refactoring</h3>
+<p><strong>Refactoring</strong> = change internal structure without changing external behavior.</p>
+<p>Not: new features. Not: bugfixes (those change behavior intentionally).</p>
+<h3>Workflow</h3>
+<ol>
+<li>Tests green</li>
+<li>Make a small structural change</li>
+<li>Tests still green</li>
+<li>Commit/save checkpoint</li>
+<li>Repeat</li>
+</ol>
+<h3>Safe examples</h3>
+<ul>
+<li>Rename variables for clarity</li>
+<li>Extract function</li>
+<li>Split file</li>
+<li>Move validation helper</li>
+</ul>
+<h3>Risky (not pure refactors)</h3>
+<ul>
+<li>Changing status codes</li>
+<li>Altering validation rules</li>
+<li>Renaming JSON fields clients use</li>
+</ul>
+<p>Those need deliberate test updates as <strong>requirement changes</strong>.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Refactor</td>
+<td>Same behavior, better structure</td>
+</tr>
+<tr>
+<td>Safety net</td>
+<td>Tests that catch breaks</td>
+</tr>
+<tr>
+<td>Behavior</td>
+<td>Externally observable results</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Extract <code>sendJson</code> helper; tests stay green.</p>
+<h2>Common errors</h2>
+<h3>Error: Big-bang rewrite</h3>
+<p>Small steps.</p>
+<h3>Error: Refactor + feature mixed</h3>
+<p>Separate commits/submissions mentally.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Refactor definition?</li>
+<li>Workflow steps?</li>
+<li>Example safe vs unsafe?</li>
+<li>Role of tests?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — one extract-function refactor on capstone</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>Next unit</h2>
+<p><strong>U52 — README for another human</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U51 Assignment — <code>U51-YourName</code></h1>
+<ol>
+<li>On your capstone (copy), perform ≥2 pure refactors.</li>
+<li>Show <code>npm test</code> green after.</li>
+<li><code>answers.md</code>: describe each refactor; why behavior unchanged; what test would catch a mistake.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U51 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥2 real refactors</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Tests remain green</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Behavior-preservation reasoning</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U50-capstone/index.html">U50 Capstone: feature + unit + API tests</a>
+    <a class="next" href="../U52-readme-for-humans/index.html">U52 README and run instructions for another human</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

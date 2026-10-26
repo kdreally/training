@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U56 — HTML as structure | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U56</div>
+    <h1>HTML as structure</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U56 — HTML as structure</h1>
+<p><strong>Phase 7</strong></p>
+<h2>Where you are</h2>
+<p>Frontend is the browser side. <strong>HTML</strong> describes <strong>structure</strong> of a page — headings, forms, lists — not styling and not full program logic.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain HTML as a document tree of elements.</li>
+<li>Write a valid minimal page with <code>!doctype</code>, <code>html</code>, <code>head</code>, <code>body</code>.</li>
+<li>Use headings, paragraphs, lists, links, forms, buttons, labels.</li>
+<li>Open an HTML file in a browser and view source.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U55</strong></li>
+<li>Text editor; any modern browser</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Playwright and DOM JS both need a real structure. Broken HTML makes automation and scripting miserable.</p>
+<h2>Plain-language teaching</h2>
+<h3>HTML</h3>
+<p><strong>HTML</strong> (HyperText Markup Language) marks up content with <strong>tags</strong> so the browser knows what each piece <em>is</em>.</p>
+<pre><code class="language-html">&lt;p&gt;This is a paragraph.&lt;/p&gt;
+</code></pre>
+<ul>
+<li><code>&lt;p&gt;</code> open tag  </li>
+<li><code>&lt;/p&gt;</code> close tag  </li>
+<li>Content in between  </li>
+</ul>
+<p>Some elements are empty-ish: <code>&lt;br&gt;</code>, <code>&lt;img …&gt;</code> (void elements — details as needed).</p>
+<h3>Minimal page</h3>
+<pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;title&gt;Notes UI&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Notes&lt;/h1&gt;
+    &lt;p&gt;Welcome.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;!doctype html&gt;</code></td>
+<td>“This is HTML5”</td>
+</tr>
+<tr>
+<td><code>&lt;head&gt;</code></td>
+<td>Metadata for browser/tab (title, charset)</td>
+</tr>
+<tr>
+<td><code>&lt;body&gt;</code></td>
+<td>Visible content</td>
+</tr>
+<tr>
+<td><code>lang="en"</code></td>
+<td>Language hint</td>
+</tr>
+</tbody>
+</table>
+<h3>Nesting = tree</h3>
+<p>Elements nest inside elements. That tree becomes the <strong>DOM</strong> (U58). Invalid nesting confuses browsers and tools.</p>
+<h3>Common structural elements</h3>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>h1</code>–<code>h6</code></td>
+<td>Headings (one main <code>h1</code> per page is a good habit)</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Paragraph</td>
+</tr>
+<tr>
+<td><code>ul</code>/<code>ol</code>/<code>li</code></td>
+<td>Lists</td>
+</tr>
+<tr>
+<td><code>a href="..."</code></td>
+<td>Link</td>
+</tr>
+<tr>
+<td><code>form</code></td>
+<td>Group inputs for submit</td>
+</tr>
+<tr>
+<td><code>label</code></td>
+<td>Names an input (accessibility + click target)</td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td>Text field, etc.</td>
+</tr>
+<tr>
+<td><code>button</code></td>
+<td>Clickable action</td>
+</tr>
+<tr>
+<td><code>main</code>, <code>header</code>, <code>nav</code>, <code>section</code></td>
+<td>Landmarks (semantic HTML)</td>
+</tr>
+</tbody>
+</table>
+<h3>Form skeleton (you will wire JS later)</h3>
+<pre><code class="language-html">&lt;form id=&quot;note-form&quot;&gt;
+  &lt;label for=&quot;title&quot;&gt;Title&lt;/label&gt;
+  &lt;input id=&quot;title&quot; name=&quot;title&quot; type=&quot;text&quot; /&gt;
+  &lt;button type=&quot;submit&quot;&gt;Add note&lt;/button&gt;
+&lt;/form&gt;
+&lt;ul id=&quot;note-list&quot;&gt;&lt;/ul&gt;
+</code></pre>
+<p><code>id</code> attributes give hooks for JS and tests. Prefer meaningful ids; later also <code>data-testid</code> (U62).</p>
+<h3>Open the file</h3>
+<p>Save as <code>index.html</code>. Double-click or browser → File open, or drag into browser.<br />
+URL may look like <code>file:///.../index.html</code>. Later we <strong>serve</strong> files over HTTP (U61) — needed for <code>fetch</code> to APIs cleanly.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Element / tag</td>
+<td>Building block of HTML</td>
+<td></td>
+</tr>
+<tr>
+<td>Attribute</td>
+<td>Extra info on a tag (<code>href</code>, <code>id</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td>Semantic HTML</td>
+<td>Tags that describe meaning</td>
+<td>Not only <code>div</code> soup</td>
+</tr>
+<tr>
+<td>Nesting</td>
+<td>Elements inside elements</td>
+<td></td>
+</tr>
+<tr>
+<td>Void element</td>
+<td>No closing content pair</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Build the notes skeleton above; open in browser; confirm heading and form show.</p>
+<h2>Common errors</h2>
+<h3>Error: Forgetting <code>label</code> / <code>for</code> / <code>id</code> match</h3>
+<p>Screen readers and humans suffer; Playwright role locators get harder.</p>
+<h3>Error: Using <code>div</code> for everything</h3>
+<p>Works, but poorer structure. Prefer semantic tags when they fit.</p>
+<h3>Error: Unclosed tags</h3>
+<p>Browsers guess; your DOM tree may not match your mental model.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>head vs body?</li>
+<li>Why labels?</li>
+<li>What does nesting create?</li>
+<li>Why <code>id</code> on form controls?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — about page</h3>
+<p><code>about.html</code> with heading, two paragraphs, a list, a link home.</p>
+<h3>P2 — notes skeleton</h3>
+<p><code>index.html</code> with form + empty list.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>CSS beauty</li>
+<li>Form submission behavior (U59)</li>
+<li>React components</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U57 — CSS as presentation</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U56 Assignment — <code>U56-YourName</code></h1>
+<h2>Files</h2>
+<ul>
+<li><code>index.html</code> — notes UI skeleton: <code>h1</code>, short intro, form with labeled title input + submit button, empty <code>ul#note-list</code></li>
+<li><code>about.html</code> — second page with link back to index</li>
+<li><code>answers.md</code> — define HTML, element, attribute, semantic HTML; explain label/input pairing; screenshot or describe what browser shows</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U56 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid-ish minimal page structure</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Form with label+input+button</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>List hook + second page/link</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U55-why-frontend-browser-runtime/index.html">U55 Why a frontend; the browser as a different runtime</a>
+    <a class="next" href="../U57-css-as-presentation/index.html">U57 CSS as presentation</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

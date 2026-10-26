@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U55 — Why a frontend; the browser as a different runtime | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U55</div>
+    <h1>Why a frontend; the browser as a different runtime</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U55 — Why a frontend; the browser as a different runtime</h1>
+<p><strong>Phase 7 — Frontend (Track B)</strong></p>
+<h2>Where you are</h2>
+<p>You can build and test <strong>backends</strong>. Users usually do not curl JSON all day. They use <strong>pages in a browser</strong>. This track teaches enough frontend to serve real people — then tests that UI with Playwright.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain frontend vs backend in one conversation diagram.</li>
+<li>Contrast <strong>Node runtime</strong> vs <strong>browser runtime</strong>.</li>
+<li>Name what this track will and will not teach (no React yet).</li>
+<li>State how Playwright fits later (UI automation, not now).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U27–U36</strong> strongly; <strong>U50</strong> API ideal.</li>
+<li>Phase 5 testing culture (<strong>U37+</strong>) before Phase 8.</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Jumping to “install React + Playwright” smuggles ten ideas. We name the destination and the <strong>browser as a place JS runs</strong> — different from Node.</p>
+<h2>Plain-language teaching</h2>
+<h3>The missing piece of the web conversation</h3>
+<table>
+<thead>
+<tr>
+<th>Side</th>
+<th>Runs where</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend (you built)</td>
+<td>Node on a server/machine</td>
+<td>Data, rules, HTTP API</td>
+</tr>
+<tr>
+<td>Frontend (this track)</td>
+<td><strong>Browser</strong> on the user’s machine</td>
+<td>Structure, look, interaction, call API</td>
+</tr>
+</tbody>
+</table>
+<p>Same human goal (e.g. manage notes); two programs cooperating over HTTP.</p>
+<h3>Browser runtime ≠ Node</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Browser</th>
+<th>Node</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary job</td>
+<td>Show documents/apps to humans</td>
+<td>Run general programs/servers</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>Yes — page as objects</td>
+<td>No (unless you add libraries)</td>
+</tr>
+<tr>
+<td><code>fs</code> / listen on ports</td>
+<td>No (normal pages)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>JS language core</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p><code>document</code>, <code>window</code>, clicking buttons: <strong>browser world</strong>.<br />
+<code>require('http')</code>, <code>npm test</code> for API: <strong>Node world</strong>.</p>
+<p>You already know JS <em>language</em>. You are learning <strong>new APIs and environment</strong>.</p>
+<h3>What we will build</h3>
+<p>A <strong>small multi-page or single-page-ish UI</strong> in plain HTML/CSS/JS that:</p>
+<ul>
+<li>Lists items from your API</li>
+<li>Creates items via a form</li>
+<li>Shows errors clearly</li>
+</ul>
+<p>Served as <strong>static files</strong> (and later by Express). No framework required for competence.</p>
+<h3>What we will not prioritize</h3>
+<ul>
+<li>React/Vue/Svelte (later optional)</li>
+<li>Fancy design systems</li>
+<li>Pixel-perfect art</li>
+<li>CSS-in-JS wars</li>
+</ul>
+<h3>Where Playwright sits (preview only)</h3>
+<p><strong>Playwright</strong> is a tool that <strong>drives a real browser</strong> like a careful robot user: open page, click, fill, assert text. That is Phase 8. First you need a page worth testing.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>Browser-side UI program/docs</td>
+<td>Not “the designer only”</td>
+</tr>
+<tr>
+<td>Browser runtime</td>
+<td>Where page JS executes</td>
+<td>Not Node</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>Browser’s object model of the page</td>
+<td>Later unit deepens</td>
+</tr>
+<tr>
+<td>Static files</td>
+<td>HTML/CSS/JS files sent as-is</td>
+<td>Not “no JavaScript”</td>
+</tr>
+<tr>
+<td>SPA</td>
+<td>Single-page app pattern</td>
+<td>Not required here</td>
+</tr>
+<tr>
+<td>E2E / UI test</td>
+<td>Browser-level automated check</td>
+<td>Playwright later</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — full path for “add a note”</h2>
+<ol>
+<li>User opens <code>http://localhost:3000/</code> (HTML page).</li>
+<li>Browser runs page JS; <code>fetch</code> POST to <code>/api/notes</code>.</li>
+<li>Your Express API validates and stores.</li>
+<li>Page updates the list from GET <code>/api/notes</code>.</li>
+<li>(Later) Playwright does steps 1–4 without a human hand.</li>
+</ol>
+<h2>Common errors</h2>
+<h3>Error: “I already did HTML in 2019 so skip”</h3>
+<p>You may skim syntax; still learn <strong>how it connects to your API and tests</strong>.</p>
+<h3>Error: Treating frontend as only CSS beauty</h3>
+<p>Structure + behavior + honest errors matter more than gradients.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Frontend vs backend one sentence each?</li>
+<li>Name one API the browser has that Node does not.</li>
+<li>Name one API Node has that a normal page does not.</li>
+<li>Why not Playwright on day one of this track?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Diagram</h3>
+<p>ASCII: Browser ↔ HTTP ↔ Your API ↔ memory store.</p>
+<h3>P2 — Inventory</h3>
+<p>List 3 user actions your notes API still needs a UI for.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Writing HTML/CSS yet</li>
+<li>Installing Playwright</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U56 — HTML as structure</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U55 Assignment — <code>U55-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define frontend, backend, browser runtime, static files.</li>
+<li>Table: 5 capabilities → Browser / Node / Both.</li>
+<li>Diagram of user adding a note through UI + API (numbered steps).</li>
+<li>What this track will build; what it will not (from unit + your words).</li>
+<li>How Playwright will fit later (3–5 sentences; no install).</li>
+<li>Prerequisites you personally still need to revise before U56.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U55 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Capability table</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Diagram/steps</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Scope honesty</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Playwright preview sense</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Self-prereq note</td>
+<td>1</td>
+<td>N</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U54-ethics-secrets-deps/index.html">U54 Ethics: dependencies, secrets, not shipping keys</a>
+    <a class="next" href="../U56-html-as-structure/index.html">U56 HTML as structure</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U29 — HTTP fundamentals | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U29</div>
+    <h1>HTTP fundamentals</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U29 — HTTP fundamentals</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>You know hosts and ports. <strong>HTTP</strong> is the conversation rules most web backends speak.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define HTTP as request/response protocol.</li>
+<li>Identify method, path, headers, body, status code.</li>
+<li>Explain common methods GET/POST and status families 2xx/4xx/5xx.</li>
+<li>Read a simple raw HTTP example.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U27</strong>, <strong>U28</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Frameworks hide HTTP. Hiding without understanding creates helpless developers. We learn the conversation first.</p>
+<h2>Plain-language teaching</h2>
+<h3>HTTP is a protocol</h3>
+<p>A <strong>protocol</strong> is an agreed set of rules for communication.<br />
+<strong>HTTP</strong> (Hypertext Transfer Protocol) defines how clients and servers exchange <strong>requests</strong> and <strong>responses</strong>.</p>
+<h3>Request parts</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Method</strong></td>
+<td>Verb: what kind of action</td>
+<td><code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code></td>
+</tr>
+<tr>
+<td><strong>Path</strong></td>
+<td>Which resource</td>
+<td><code>/api/books</code>, <code>/health</code></td>
+</tr>
+<tr>
+<td><strong>Headers</strong></td>
+<td>Metadata lines</td>
+<td><code>Content-Type: application/json</code></td>
+</tr>
+<tr>
+<td><strong>Body</strong></td>
+<td>Optional payload</td>
+<td>JSON for POST</td>
+</tr>
+</tbody>
+</table>
+<p><strong>GET</strong> usually means “read/fetch.”<br />
+<strong>POST</strong> usually means “submit/create.”<br />
+Conventions, widely followed.</p>
+<h3>Response parts</h3>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Status code</strong></td>
+<td>Numeric outcome</td>
+<td><code>200</code>, <code>404</code>, <code>500</code></td>
+</tr>
+<tr>
+<td><strong>Headers</strong></td>
+<td>Metadata</td>
+<td><code>Content-Type: application/json</code></td>
+</tr>
+<tr>
+<td><strong>Body</strong></td>
+<td>Optional payload</td>
+<td><code>{"ok":true}</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Status code families</h3>
+<table>
+<thead>
+<tr>
+<th>Range</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2xx</strong></td>
+<td>Success (<code>200 OK</code>, <code>201 Created</code>)</td>
+</tr>
+<tr>
+<td><strong>3xx</strong></td>
+<td>Redirect (awareness)</td>
+</tr>
+<tr>
+<td><strong>4xx</strong></td>
+<td>Client problem (<code>400</code> bad request, <code>404</code> not found, <code>401</code> unauthorized)</td>
+</tr>
+<tr>
+<td><strong>5xx</strong></td>
+<td>Server problem (<code>500</code> internal error)</td>
+</tr>
+</tbody>
+</table>
+<h3>Example exchange (conceptual)</h3>
+<p>Request:</p>
+<pre><code class="language-http">GET /health HTTP/1.1
+Host: localhost:3000
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-http">HTTP/1.1 200 OK
+Content-Type: application/json
+
+{&quot;ok&quot;:true}
+</code></pre>
+<h3>Idempotent idea (light)</h3>
+<p>Repeating a GET should not change server state (ideally). POST often does create/change. Useful when designing APIs.</p>
+<h3>HTTPS</h3>
+<p>HTTPS is HTTP over an encrypted channel. Learning servers often use plain HTTP on localhost. Production uses HTTPS. Details later if ever needed.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol</td>
+<td>Agreed rules</td>
+<td></td>
+</tr>
+<tr>
+<td>Method / verb</td>
+<td>GET/POST/…</td>
+<td>Not JS method only</td>
+</tr>
+<tr>
+<td>Status code</td>
+<td>Numeric result</td>
+<td>Not your grade</td>
+</tr>
+<tr>
+<td>Header</td>
+<td>Metadata field</td>
+<td></td>
+</tr>
+<tr>
+<td>Body</td>
+<td>Payload</td>
+<td></td>
+</tr>
+<tr>
+<td>Resource</td>
+<td>Thing identified by path</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — classify</h2>
+<ul>
+<li>Browser opens <code>http://localhost:3000/health</code> → typically <strong>GET</strong> <code>/health</code></li>
+<li>Submitting JSON to create a note → often <strong>POST</strong> <code>/notes</code> with body</li>
+<li>Missing route → <strong>404</strong></li>
+<li>Your code throws unhandled → often <strong>500</strong> if you map it that way</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: Putting sensitive data in GET URLs carelessly</h3>
+<p>URLs get logged; prefer bodies/headers for secrets (and better auth later).</p>
+<h3>Error: Using 200 for every failure</h3>
+<p>Clients need status codes. Prefer honest 4xx/5xx.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Parts of a request?</li>
+<li>Parts of a response?</li>
+<li>Meaning of 404 vs 500?</li>
+<li>GET vs POST typical use?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Status matching</h3>
+<p>Match scenarios to codes: success JSON, unknown path, invalid JSON body, server crash.</p>
+<h3>P2 — Design</h3>
+<p>List 3 routes for a tiny notes API (method + path + purpose).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Coding server</li>
+<li>All HTTP headers</li>
+<li>HTTP/2 details</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U30 — JSON for APIs</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U29 Assignment — <code>U29-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define HTTP, method, path, header, body, status code.</li>
+<li>Table: 200, 201, 400, 401, 404, 500 — plain meaning + one example situation each.</li>
+<li>Design a mini library API: at least 4 endpoints (method, path, what it does, success status).</li>
+<li>Write a fictional raw request and matching success response for one endpoint (text).</li>
+<li>Why status codes matter to clients and tests (5–8 sentences).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U29 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Status table</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>API design coherent</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Raw request/response</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Status codes rationale</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U28-address-port-listen/index.html">U28 Networks for programmers: address, port, listen</a>
+    <a class="next" href="../U30-json-for-apis/index.html">U30 JSON as a common API data format</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

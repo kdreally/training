@@ -10,6 +10,7 @@ Static training courses published to GitHub Pages. Each course is a self-contain
 |--------|---------------|
 | [courses/ai-in-the-sdlc](./courses/ai-in-the-sdlc) | Working developers learning a vendor-neutral, project-local coding-agent workflow |
 | [courses/docker-developers-devops](./courses/docker-developers-devops) | Developers and DevOps practitioners learning containers |
+| [courses/nodejs-web-and-testing](./courses/nodejs-web-and-testing) | Learners building Node.js backends, automated tests, then a browser frontend and Playwright |
 | [courses/react-frontend-designers](./courses/react-frontend-designers) | Designers who want to build real React interfaces |
 
 ## Where the rules live
@@ -50,5 +51,6 @@ style.css            # shared styles
 - [x] Course scaffolds + curriculum maps
 - [x] AI-in-the-SDLC course units **U00–U29** (30 units)
 - [x] Docker course units **U00–U35** (36 units)
+- [x] Node.js Web & Testing course units **U00–U74** (75 units)
 - [x] React course units **U00–U34** (35 units)
 - [x] Published via GitHub Pages (`docs/`)

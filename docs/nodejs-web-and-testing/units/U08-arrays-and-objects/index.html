@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U08 — Data shapes: arrays and objects | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U08</div>
+    <h1>Data shapes: arrays and objects</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U08 — Data shapes: arrays and objects</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>Single values are not enough. Programs need <strong>lists</strong> and <strong>labeled records</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create and read arrays; use length and indexes.</li>
+<li>Loop over arrays with <code>for</code>.</li>
+<li>Create objects; read/write properties.</li>
+<li>Choose array vs object for simple cases.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U04–U07</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–110 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>APIs send lists of records. Tests check properties. Config is often an object. This is everyday data shape literacy.</p>
+<h2>Plain-language teaching</h2>
+<h3>Arrays — ordered lists</h3>
+<p>An <strong>array</strong> holds an ordered list of values.</p>
+<pre><code class="language-javascript">let nums = [10, 20, 30];
+</code></pre>
+<ul>
+<li>Index starts at <strong>0</strong>: <code>nums[0]</code> is <code>10</code>, <code>nums[1]</code> is <code>20</code>, <code>nums[2]</code> is <code>30</code>.</li>
+<li><code>nums.length</code> is <code>3</code>.</li>
+</ul>
+<h3>Changing and appending (basic)</h3>
+<pre><code class="language-javascript">nums[1] = 25;
+nums.push(40); // add at end → [10, 25, 30, 40]
+</code></pre>
+<h3>Loop all items</h3>
+<pre><code class="language-javascript">let total = 0;
+for (let i = 0; i &lt; nums.length; i = i + 1) {
+  total = total + nums[i];
+}
+</code></pre>
+<p>Pattern: index from <code>0</code> to <code>length - 1</code>.</p>
+<h3>Objects — labeled bags of values</h3>
+<p>An <strong>object</strong> maps <strong>property names</strong> (keys) to values.</p>
+<pre><code class="language-javascript">let user = {
+  name: &quot;Ada&quot;,
+  age: 36,
+  active: true
+};
+</code></pre>
+<p>Read:</p>
+<pre><code class="language-javascript">user.name  // &quot;Ada&quot;
+user[&quot;age&quot;] // 36
+</code></pre>
+<p>Write:</p>
+<pre><code class="language-javascript">user.age = 37;
+</code></pre>
+<h3>Arrays of objects (very common)</h3>
+<pre><code class="language-javascript">let books = [
+  { title: &quot;Dune&quot;, pages: 412 },
+  { title: &quot;Neuromancer&quot;, pages: 271 }
+];
+books[0].title // &quot;Dune&quot;
+</code></pre>
+<h3>Choosing shapes</h3>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Prefer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ordered collection of similar things</td>
+<td>Array</td>
+</tr>
+<tr>
+<td>One thing with named fields</td>
+<td>Object</td>
+</tr>
+<tr>
+<td>Many records</td>
+<td>Array of objects</td>
+</tr>
+</tbody>
+</table>
+<h3>Nested access</h3>
+<pre><code class="language-javascript">let order = {
+  id: 9,
+  items: [&quot;tea&quot;, &quot;honey&quot;]
+};
+order.items[1] // &quot;honey&quot;
+</code></pre>
+<p>Go left to right: object → property → index.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Array</td>
+<td>Ordered list</td>
+<td>Not the same as object</td>
+</tr>
+<tr>
+<td>Index</td>
+<td>Position number from 0</td>
+<td>Not from 1</td>
+</tr>
+<tr>
+<td>Element / item</td>
+<td>One value in an array</td>
+<td></td>
+</tr>
+<tr>
+<td>Object</td>
+<td>Key–value collection</td>
+<td>Not “OOP class” yet</td>
+</tr>
+<tr>
+<td>Property / key</td>
+<td>Name of a field on an object</td>
+<td></td>
+</tr>
+<tr>
+<td>push</td>
+<td>Add to end of array</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<pre><code class="language-javascript">function sumPages(books) {
+  let total = 0;
+  for (let i = 0; i &lt; books.length; i = i + 1) {
+    total = total + books[i].pages;
+  }
+  return total;
+}
+
+let shelf = [
+  { title: &quot;A&quot;, pages: 100 },
+  { title: &quot;B&quot;, pages: 50 }
+];
+sumPages(shelf) // 150
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: Off-by-one on indexes</h3>
+<p>Last index is <code>length - 1</code>. <code>arr[arr.length]</code> is <code>undefined</code>.</p>
+<h3>Error: <code>for (let i = 0; i &lt;= arr.length; i++)</code></h3>
+<p>Uses <code>&lt;=</code> → one step too far. Use <code>i &lt; arr.length</code>.</p>
+<h3>Error: Confusing <code>[]</code> and <code>{}</code></h3>
+<p><code>[]</code> array, <code>{}</code> object.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is <code>["a","b"][0]</code>?</li>
+<li>Why does indexing start at 0 (as a practical fact to remember)?</li>
+<li>How do you read property <code>title</code> from object <code>book</code>?</li>
+<li>When array of objects?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Index</h3>
+<p><code>let colors = ["red", "green", "blue"]</code> — values of <code>colors[2]</code>, <code>colors.length</code>, <code>colors[3]</code>?</p>
+<h3>P2 — Loop</h3>
+<p>Function <code>maxNumber(arr)</code> assuming non-empty array of numbers.</p>
+<h3>P3 — Object</h3>
+<p>Object for a course unit: <code>id</code>, <code>title</code>, <code>minutes</code>. Create one literal.</p>
+<h3>P4 — Filter-by-hand</h3>
+<p>Count how many users in an array have <code>active === true</code> (write loop).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li><code>map</code>/<code>filter</code>/<code>forEach</code> (can come later)</li>
+<li>Classes / prototypes</li>
+<li>Deep copy / reference theory beyond basics</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U09 — Errors and reading messages</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U08 Assignment — <code>U08-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define array, index, object, property. Why index from 0 as a fact of JS?</li>
+<li>Given <code>let xs = [3, 6, 9, 12]</code>, what are <code>xs[0]</code>, <code>xs[3]</code>, <code>xs.length</code>, <code>xs[4]</code>?</li>
+<li>Write <code>function average(nums)</code> for a non-empty number array (loop + return). Show result for <code>[2, 4, 6]</code>.</li>
+<li>Write an object <code>product</code> with <code>id</code>, <code>name</code>, <code>price</code>. Then an array <code>cart</code> of two products. Write expression for the price of the first cart item.</li>
+<li>Write <code>function findTitle(books, id)</code> where books is an array of <code>{id, title}</code>. Return title string if found, or <code>null</code> if not. Explain your loop approach briefly.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U08 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Indexing answers (3,12,4,undefined)</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>average([2,4,6]) → 4</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>object + cart shape correct</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>findTitle correct logic + null case</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U07-functions/index.html">U07 Functions: name a process</a>
+    <a class="next" href="../U09-errors-reading-messages/index.html">U09 Errors: mistakes, exceptions, reading messages</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

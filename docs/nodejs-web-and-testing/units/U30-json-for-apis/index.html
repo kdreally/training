@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U30 — JSON as a common API data format | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U30</div>
+    <h1>JSON as a common API data format</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U30 — JSON as a common API data format</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>HTTP can carry many body types. APIs often use <strong>JSON</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain JSON vs JavaScript object.</li>
+<li>Read/write simple JSON text.</li>
+<li>Use <code>JSON.parse</code> and <code>JSON.stringify</code> in Node.</li>
+<li>Set expectations for <code>Content-Type: application/json</code>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U08</strong> objects/arrays, <strong>U29</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>50–80 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>You will send and receive JSON constantly. Parse errors will happen. Meet them now.</p>
+<h2>Plain-language teaching</h2>
+<h3>JSON</h3>
+<p><strong>JSON</strong> (JavaScript Object Notation) is a <strong>text format</strong> for structured data. Language-independent; very common on the web.</p>
+<p>Example text:</p>
+<pre><code class="language-json">{
+  &quot;title&quot;: &quot;Dune&quot;,
+  &quot;pages&quot;: 412,
+  &quot;tags&quot;: [&quot;sf&quot;, &quot;classic&quot;]
+}
+</code></pre>
+<h3>JSON vs JS object</h3>
+<table>
+<thead>
+<tr>
+<th>JS object in code</th>
+<th>JSON text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Can have functions, undefined, comments (in JS files)</td>
+<td>No functions; no comments; keys in double quotes</td>
+</tr>
+<tr>
+<td>Lives in memory as values</td>
+<td>Lives as a string on the wire/disk</td>
+</tr>
+</tbody>
+</table>
+<h3>Convert in Node</h3>
+<pre><code class="language-javascript">const obj = { ok: true, n: 3 };
+const text = JSON.stringify(obj);
+console.log(text); // '{&quot;ok&quot;:true,&quot;n&quot;:3}'
+
+const back = JSON.parse(text);
+console.log(back.n); // 3
+</code></pre>
+<ul>
+<li><strong><code>JSON.stringify</code></strong> — value → JSON string  </li>
+<li><strong><code>JSON.parse</code></strong> — JSON string → value  </li>
+</ul>
+<p>Invalid JSON → <code>JSON.parse</code> throws → handle carefully (U09).</p>
+<h3>Content-Type</h3>
+<p>When sending JSON bodies, servers/clients often set:</p>
+<pre><code class="language-text">Content-Type: application/json
+</code></pre>
+<p>So the other side knows how to interpret the body.</p>
+<h3>Types in JSON</h3>
+<p>Objects, arrays, strings, numbers, booleans, <code>null</code>.<br />
+No <code>undefined</code>. No dates as a special type (usually ISO strings).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JSON</td>
+<td>Text data format</td>
+<td>Not identical to JS</td>
+</tr>
+<tr>
+<td>stringify</td>
+<td>To JSON text</td>
+<td></td>
+</tr>
+<tr>
+<td>parse</td>
+<td>From JSON text</td>
+<td></td>
+</tr>
+<tr>
+<td>Content-Type</td>
+<td>Header declaring body format</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<pre><code class="language-javascript">const payload = JSON.stringify({ message: &quot;hi&quot; });
+const data = JSON.parse(payload);
+console.log(data.message);
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: <code>JSON.parse([object Object])</code></h3>
+<p>You stringified poorly or concatenated an object. Log types.</p>
+<h3>Error: Trailing commas in JSON</h3>
+<pre><code class="language-json">{ &quot;a&quot;: 1, }
+</code></pre>
+<p>Invalid JSON. JS objects allow trailing commas; JSON does not.</p>
+<h3>Error: Single quotes in JSON</h3>
+<p>JSON strings use double quotes.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>JSON vs JS object?</li>
+<li>What does parse do?</li>
+<li>Why Content-Type matters?</li>
+<li>Name one JSON limitation vs JS.</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — stringify/parse round trip</h3>
+<h3>P2 — fix invalid JSON samples on paper</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>JSON Schema</li>
+<li>Streaming JSON</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U31 — Minimal HTTP server with Node <code>http</code></strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U30 Assignment — <code>U30-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>jsonPlay.js</code></h3>
+<ul>
+<li>Build a JS object representing a book</li>
+<li><code>stringify</code> and log</li>
+<li><code>parse</code> a JSON string you write as a string literal</li>
+<li>Log one property from parsed value</li>
+<li>Intentionally demonstrate try/catch around bad JSON (log a clear message)</li>
+</ul>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>JSON vs JS object (own words).</li>
+<li>Why APIs like JSON.</li>
+<li>Three invalid JSON examples + why invalid.</li>
+<li>Transcript of <code>node jsonPlay.js</code>.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U30 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jsonPlay demonstrates stringify/parse</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Bad JSON handled/shown</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Conceptual answers</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Invalid JSON examples</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td>1</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U29-http-fundamentals/index.html">U29 HTTP fundamentals</a>
+    <a class="next" href="../U31-minimal-http-server/index.html">U31 Minimal HTTP server with Node `http`</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

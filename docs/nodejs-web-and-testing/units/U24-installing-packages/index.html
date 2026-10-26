@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U24 — Installing packages, `node_modules`, lockfiles | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U24</div>
+    <h1>Installing packages, `node_modules`, lockfiles</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U24 — Installing packages, <code>node_modules</code>, lockfiles</h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>You have <code>package.json</code>. Now the first <strong>deliberate</strong> third-party install — a tiny package — with full understanding of what appears on disk.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Install one small package with npm and use it in code.</li>
+<li>Explain <code>node_modules</code> and why you usually do not edit it by hand.</li>
+<li>Explain <code>package-lock.json</code> purpose.</li>
+<li>Add a dependency entry’s meaning in <code>package.json</code>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U19–U23</strong></li>
+<li>Network access for registry</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>This is the moment many courses start — we arrive <strong>prepared</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>Choose a simple package</h3>
+<p>We will use <strong><code>ms</code></strong> — a tiny package that converts time strings like <code>"2 days"</code> to milliseconds. Small surface area; easy to understand.</p>
+<p>(If <code>ms</code> is unavailable, trainer may substitute another tiny utility. Same lessons.)</p>
+<h3>Install into a project</h3>
+<pre><code class="language-bash">mkdir u24-project
+cd u24-project
+npm init -y
+npm install ms
+</code></pre>
+<p>What you should observe:</p>
+<ol>
+<li>Download activity in the terminal</li>
+<li><code>package.json</code> gains a <code>dependencies</code> entry for <code>ms</code></li>
+<li>A <code>package-lock.json</code> file appears/updates</li>
+<li>A <code>node_modules</code> folder appears with package files inside</li>
+</ol>
+<h3>Use it</h3>
+<p><code>index.js</code>:</p>
+<pre><code class="language-javascript">const ms = require(&quot;ms&quot;);
+
+const twoDays = ms(&quot;2 days&quot;);
+console.log(twoDays);
+</code></pre>
+<pre><code class="language-bash">node index.js
+</code></pre>
+<p>You should see a large number (milliseconds in two days: <code>172800000</code>).</p>
+<p>Note: <code>require("ms")</code> has <strong>no</strong> <code>./</code> — Node looks inside <code>node_modules</code> for package names.</p>
+<h3>What <code>node_modules</code> is</h3>
+<p>A folder where npm places installed packages (and their dependencies).  </p>
+<p><strong>Do not hand-edit</strong> code inside <code>node_modules</code> for real work — reinstalls wipe changes.<br />
+<strong>Do not</strong> usually submit <code>node_modules</code> to trainers if they say “install yourself”; they can run <code>npm install</code> from lockfile. Follow trainer policy.</p>
+<h3>What <code>package-lock.json</code> is</h3>
+<p>A <strong>lockfile</strong> recording the <strong>exact</strong> versions npm resolved (including transitive deps).  </p>
+<p>Purpose: another machine (or future you) gets the <strong>same</strong> tree when running <code>npm install</code>.</p>
+<p><code>package.json</code> may say “ms at a compatible range.”<br />
+<code>package-lock.json</code> says “exactly these versions.”</p>
+<h3>Reinstall from lockfile</h3>
+<p>If you delete <code>node_modules</code> but keep <code>package.json</code> + lockfile:</p>
+<pre><code class="language-bash">npm install
+</code></pre>
+<p>Restores packages.</p>
+<h3>Uninstall (awareness)</h3>
+<pre><code class="language-bash">npm uninstall ms
+</code></pre>
+<p>Removes dependency metadata and package (generally).</p>
+<h3>Security note</h3>
+<p>You just executed a trust decision. For <code>ms</code> the risk is low and purpose is learning. Always keep U21 checklist for future installs.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm install &lt;name&gt;</code></td>
+<td>Add + download package</td>
+<td></td>
+</tr>
+<tr>
+<td><code>dependencies</code></td>
+<td>Runtime deps listed in package.json</td>
+<td></td>
+</tr>
+<tr>
+<td><code>node_modules</code></td>
+<td>Installed packages folder</td>
+<td>Not your source code home</td>
+</tr>
+<tr>
+<td>Lockfile</td>
+<td>Exact resolution record</td>
+<td>Not the same as package.json</td>
+</tr>
+<tr>
+<td>Bare require</td>
+<td><code>require("ms")</code> package name</td>
+<td>vs <code>require("./local")</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>See install + <code>ms("2 days")</code> above.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>Cannot find module 'ms'</code></h3>
+<p>Forgot install, wrong folder, or deleted <code>node_modules</code>. Run <code>npm install</code> in project root.</p>
+<h3>Error: Installing globally by accident</h3>
+<p><code>npm install -g</code> affects global environment. This course uses <strong>local</strong> project installs unless told otherwise.</p>
+<h3>Error: Editing node_modules to “fix” something</h3>
+<p>Your fix vanishes. Fix your code or choose versions deliberately.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What four things change/appear after <code>npm install ms</code>?</li>
+<li>Why bare <code>require("ms")</code> works?</li>
+<li>Lockfile vs package.json?</li>
+<li>Why not edit node_modules?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — install and run</h3>
+<p>As above.</p>
+<h3>P2 — delete node_modules and restore</h3>
+<p><code>npm install</code> again; run.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Express (later)</li>
+<li>Dev vs prod deps deep (U26)</li>
+<li>Publishing</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U25 — Scripts in package.json</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U24 Assignment — <code>U24-YourName</code></h1>
+<p>Submit <code>u24-project/</code> with:</p>
+<ul>
+<li><code>package.json</code> (includes <code>ms</code> dependency)</li>
+<li><code>package-lock.json</code></li>
+<li><code>index.js</code> using <code>ms</code> and logging at least one conversion</li>
+<li><strong>Do not</strong> submit <code>node_modules</code> unless trainer requires it</li>
+<li><code>answers.md</code>:</li>
+</ul>
+<ol>
+<li>Step-by-step what npm did when you installed <code>ms</code>.</li>
+<li>Explain node_modules and lockfile roles.</li>
+<li>Why require("ms") has no <code>./</code>.</li>
+<li>Transcript of install + node index.js.</li>
+<li>What you would do on a second computer to run this project (file list + commands).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U24 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>package.json has ms dep</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>lockfile present</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>index.js works conceptually</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations of npm/node_modules/lock</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Second-computer restore plan</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U23-package-json/index.html">U23 `package.json` as a project manifest</a>
+    <a class="next" href="../U25-npm-scripts/index.html">U25 Scripts in `package.json`</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U27 — Client vs server; what “backend” means here | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U27</div>
+    <h1>Client vs server; what “backend” means here</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U27 — Client vs server; what “backend” means here</h1>
+<p><strong>Phase 4 — Backend web applications</strong></p>
+<h2>Where you are</h2>
+<p>Tooling foundation is in place. Now web architecture words — <strong>before</strong> writing servers.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define client, server, backend, frontend in course terms.</li>
+<li>Describe a request/response conversation in plain language.</li>
+<li>Explain why this course focuses on the server side.</li>
+<li>Draw a simple diagram of browser → server.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11</strong>, Phase 3 complete recommended</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>“Backend developer” is a job title, not a definition. We define the <strong>roles in a conversation</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>Two roles</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Client</strong></td>
+<td>Asks for something; starts a request (browser, mobile app, another server)</td>
+</tr>
+<tr>
+<td><strong>Server</strong></td>
+<td>Listens; handles requests; sends responses</td>
+</tr>
+</tbody>
+</table>
+<h3>Frontend vs backend (course usage)</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frontend</strong></td>
+<td>Client-side UI (pages, buttons) — mostly out of path</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td>Server-side logic and data access — <strong>our focus</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>backend web application</strong> is a server program that speaks a web protocol (usually <strong>HTTP</strong>) to clients.</p>
+<h3>The conversation</h3>
+<ol>
+<li>Client sends a <strong>request</strong>: “GET me <code>/health</code>.”</li>
+<li>Server work: maybe read memory/DB, build answer.</li>
+<li>Server sends a <strong>response</strong>: “200 OK” + body <code>{"ok":true}</code>.</li>
+</ol>
+<p>You will implement the server side of this conversation.</p>
+<h3>Many clients, one server program</h3>
+<p>Your Node process can handle many requests over time (async helps). Clients come and go.</p>
+<h3>APIs</h3>
+<p>An <strong>API</strong> (Application Programming Interface) here often means: the set of HTTP requests your server understands and the responses it promises.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client</td>
+<td>Requester</td>
+<td>Not always a human</td>
+</tr>
+<tr>
+<td>Server</td>
+<td>Listener/responder</td>
+<td>Not always a separate physical machine — can be your laptop</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Server-side app</td>
+<td></td>
+</tr>
+<tr>
+<td>Request / response</td>
+<td>Message pair</td>
+<td></td>
+</tr>
+<tr>
+<td>API</td>
+<td>Defined interface for program talk</td>
+<td>Not only “third-party SaaS”</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — restaurant analogy (and its limit)</h2>
+<p>Client = diner ordering. Server = kitchen.<br />
+<strong>Limit:</strong> HTTP is more rigid and less intelligent than a waiter. Analogies help; protocol details (U29) matter more.</p>
+<h2>Common errors</h2>
+<h3>Error: Thinking server means “cloud only”</h3>
+<p>Your laptop can run a server on <code>localhost</code> for learning.</p>
+<h3>Error: Thinking backend means only database</h3>
+<p>Backend includes logic, validation, HTTP shaping — DB is optional/later.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Client vs server?</li>
+<li>What is backend in this course?</li>
+<li>Steps of request/response?</li>
+<li>Can your PC be a server?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Diagram</h3>
+<p>ASCII diagram of phone app → your Node API → response JSON.</p>
+<h3>P2 — Label</h3>
+<p>For online banking: which parts client, which backend? (guessing ok; reason)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Coding a server yet</li>
+<li>HTTP field details (soon)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U28 — Address, port, listen</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U27 Assignment — <code>U27-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define client, server, backend, frontend, API as used here.</li>
+<li>ASCII or structured diagram of a GET request for weather data from a phone to a Node server.</li>
+<li>Why backend-first for learning? (own words + course reasons)</li>
+<li>Scenario: you open a news website. Name one client action and one server responsibility.</li>
+<li>Misconception you used to hold (or heard) about “backend,” corrected.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U27 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Diagram clear</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Backend-first rationale</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>News scenario</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Misconception correction</td>
+<td>2</td>
+<td>N</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U26-dev-vs-runtime-deps/index.html">U26 Dev vs runtime dependencies</a>
+    <a class="next" href="../U28-address-port-listen/index.html">U28 Networks for programmers: address, port, listen</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

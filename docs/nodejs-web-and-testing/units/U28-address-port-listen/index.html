@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U28 — Networks for programmers: address, port, listen | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U28</div>
+    <h1>Networks for programmers: address, port, listen</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U28 — Networks for programmers: address, port, listen</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>Client/server roles exist. Now: <strong>where</strong> a server can be reached on a machine.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain host, localhost, IP address at beginner level.</li>
+<li>Explain what a <strong>port</strong> is.</li>
+<li>Explain what it means to <strong>listen</strong> on a port.</li>
+<li>Read a URL piece: <code>http://localhost:3000/path</code></li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U27</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>45–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p><code>localhost:3000</code> looks like magic runes. It is an address. We decode it.</p>
+<h2>Plain-language teaching</h2>
+<h3>Host</h3>
+<p>A <strong>host</strong> is a computer on a network. It may have an <strong>IP address</strong> (numeric network address).</p>
+<h3>localhost</h3>
+<p><strong>localhost</strong> means “this same computer.”<br />
+IP often associated: <code>127.0.0.1</code>.</p>
+<p>When learning, client and server both run on your machine: browser or <code>curl</code> → <code>localhost</code>.</p>
+<h3>Port</h3>
+<p>A computer has many possible <strong>ports</strong> — numbered doors for network conversations.</p>
+<p>Examples you will see:</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Common association</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>80</td>
+<td>HTTP default</td>
+</tr>
+<tr>
+<td>443</td>
+<td>HTTPS default</td>
+</tr>
+<tr>
+<td>3000, 4000, 8080</td>
+<td>Dev servers (convention, not law)</td>
+</tr>
+</tbody>
+</table>
+<p>Your Node app <strong>listens</strong> on a chosen port, e.g. 3000.</p>
+<p>Only one process can listen on a given port at a time (generally). “Port in use” means another program is already there.</p>
+<h3>Listen</h3>
+<p>When a server <strong>listens</strong>, it waits for incoming connections on host+port.</p>
+<p>Until it listens, clients cannot connect to that service.</p>
+<h3>URL anatomy (HTTP)</h3>
+<pre><code class="language-text">http://localhost:3000/health
+│      │         │    │
+│      │         │    └─ path
+│      │         └─ port
+│      └─ host
+└─ scheme (protocol)
+</code></pre>
+<h3>Firewall awareness</h3>
+<p>Corporate networks may block ports. Localhost learning is usually fine.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>localhost</td>
+<td>This machine</td>
+<td>Not “the internet”</td>
+</tr>
+<tr>
+<td>IP address</td>
+<td>Numeric host address</td>
+<td></td>
+</tr>
+<tr>
+<td>Port</td>
+<td>Numbered endpoint on a host</td>
+<td>Not USB port</td>
+</tr>
+<tr>
+<td>Listen</td>
+<td>Wait for connections</td>
+<td></td>
+</tr>
+<tr>
+<td>Path</td>
+<td>Part of URL after host/port</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Server listens on <code>3000</code>. Client requests <code>http://127.0.0.1:3000/</code>.<br />
+Host matches local machine; port matches listener; path <code>/</code> is the resource path.</p>
+<h2>Common errors</h2>
+<h3>Error: Confusing port with path</h3>
+<p><code>/3000</code> is a path. <code>:3000</code> is a port.</p>
+<h3>Error: Two apps on same port</h3>
+<p>EADDRINUSE style errors — stop the other process or choose another port.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is localhost?</li>
+<li>What is a port?</li>
+<li>What does listen mean?</li>
+<li>Parse <code>http://localhost:4000/api/books</code>.</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Parse three URLs into scheme/host/port/path.</h3>
+<h3>P2 — Explain “port 3000 already in use” to a beginner.</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>DNS deep dive</li>
+<li>HTTPS certificates</li>
+<li>Writing listen code (next HTTP units)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U29 — HTTP fundamentals</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U28 Assignment — <code>U28-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define host, localhost, IP, port, listen, path.</li>
+<li>Parse into parts:<br />
+   a) <code>http://localhost:3000/</code><br />
+   b) <code>http://127.0.0.1:8080/health</code><br />
+   c) <code>http://localhost:3000/api/items/1</code></li>
+<li>Why use ports instead of one giant pipe?</li>
+<li>Two processes want port 3000 — what happens, what do you do?</li>
+<li>Diagram: Node listening on 3000; client on same machine requests <code>/hello</code>.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U28 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>URL parsing</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Ports rationale</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Port conflict handling</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Diagram</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U27-client-vs-server/index.html">U27 Client vs server; what “backend” means here</a>
+    <a class="next" href="../U29-http-fundamentals/index.html">U29 HTTP fundamentals</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

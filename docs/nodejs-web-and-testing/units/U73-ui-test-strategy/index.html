@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U73 — UI test strategy vs unit/API pyramid | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U73</div>
+    <h1>UI test strategy vs unit/API pyramid</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U73 — UI test strategy vs unit/API pyramid</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>You can write unit, API, full-stack e2e, and stubbed UI tests. Strategy prevents a slow, brittle mountain of Playwright.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Place UI/E2E at the top of the pyramid with clear jobs.</li>
+<li>Choose the cheapest honest layer for a risk.</li>
+<li>Prune redundant Playwright tests.</li>
+<li>Write a short test strategy for your notes app.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U47</strong>, <strong>U71–U72</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Teams drown in e2e. You will not.</p>
+<h2>Plain-language teaching</h2>
+<h3>Updated pyramid</h3>
+<pre><code class="language-text">         /  E2E UI (Playwright)  \     few journeys
+        /------------------------\
+       /   HTTP API tests         \   contract
+      /----------------------------\
+     /  integration (modules)       \
+    /--------------------------------\
+   /  unit (pure + store rules)       \  many, fast
+  --------------------------------------
+</code></pre>
+<h3>Job descriptions</h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td>Rules: validation, store ids, pure helpers</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Status codes, JSON bodies, auth later</td>
+</tr>
+<tr>
+<td>E2E</td>
+<td>Critical user journeys &amp; wiring</td>
+</tr>
+<tr>
+<td>Stubbed UI</td>
+<td>Hard-to-force UI error states</td>
+</tr>
+</tbody>
+</table>
+<h3>Decision questions</h3>
+<ol>
+<li>Can a unit test catch this cheaper?  </li>
+<li>Is it part of the HTTP contract? → API test  </li>
+<li>Does it need a real browser (DOM, fetch wiring, labels)? → Playwright  </li>
+<li>Is it the same journey twice? → delete one  </li>
+</ol>
+<h3>Example pruning</h3>
+<ul>
+<li>10 Playwright tests all creating notes with different titles → keep 1–2  </li>
+<li>Title trim rule → unit test; one e2e for “empty shows error”  </li>
+</ul>
+<h3>Speed budget (mental)</h3>
+<p>If e2e suite needs coffee every run, you over-invested at the top. Prefer fixing lower layers.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test strategy</td>
+<td>Written choices about what to test where</td>
+</tr>
+<tr>
+<td>Redundant test</td>
+<td>Same risk covered again without new info</td>
+</tr>
+<tr>
+<td>Critical journey</td>
+<td>Path business/users cannot afford broken</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Write a one-page strategy for notes app: list unit/API/e2e counts targets and journey names.</p>
+<h2>Common errors</h2>
+<h3>Error: “Playwright only” portfolio</h3>
+<p>Looks impressive; fails as a feedback loop.</p>
+<h3>Error: Zero e2e because “unit is enough”</h3>
+<p>Wiring bugs ship.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Job of e2e vs API?</li>
+<li>Two pruning heuristics?</li>
+<li>When stubbed UI?</li>
+<li>What is a critical journey for your app?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — inventory your tests by layer</h3>
+<h3>P2 — cut or justify each Playwright test</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Enterprise QA org charts</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U74 — Frontend + Playwright capstone</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U73 Assignment — <code>U73-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Pyramid ASCII + layer jobs in your words.</li>
+<li>Inventory table: every automated test you have → layer → risk covered.</li>
+<li>Prune plan: what to delete/merge/keep in Playwright (even if you only plan).</li>
+<li>One-page strategy for assessor: how to run unit/API/e2e; what green means.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U73 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pyramid + jobs</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Inventory quality</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Prune plan sensible</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Run strategy for assessor</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U72-network-mocking/index.html">U72 Network: mock/stub API in browser tests (when earned)</a>
+    <a class="next" href="../U74-frontend-playwright-capstone/index.html">U74 Capstone: frontend + Playwright</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

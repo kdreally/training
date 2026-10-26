@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U72 — Network: mock/stub API in browser tests (when earned) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U72</div>
+    <h1>Network: mock/stub API in browser tests (when earned)</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U72 — Network: mock/stub API in browser tests (when earned)</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>Full-stack e2e is valuable and sometimes <strong>slow or awkward</strong> (backend down, error paths hard to force). Playwright can <strong>intercept</strong> network calls and return fake responses. Use this with judgment — not as a way to avoid testing the real stack.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain request interception / route mocking.</li>
+<li>Stub a GET/POST with <code>page.route</code>.</li>
+<li>Test an error UI path without breaking the real API.</li>
+<li>Know when to prefer real e2e instead.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U60</strong>, <strong>U71</strong>, <strong>U46</strong> doubles mindset</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>You already know doubles. Browser network stubs are doubles for <strong>HTTP from the page’s point of view</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>When stubbing helps</h3>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Real API</th>
+<th>Stub</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prove UI+API wiring</td>
+<td>Best</td>
+<td>Weak</td>
+</tr>
+<tr>
+<td>Prove UI shows “server says 500”</td>
+<td>Hard to force</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Backend flaky in class</td>
+<td>Painful</td>
+<td>Useful temporarily</td>
+</tr>
+<tr>
+<td>Contract of API</td>
+<td>Prefer API tests</td>
+<td>Don’t only stub</td>
+</tr>
+</tbody>
+</table>
+<h3><code>page.route</code> sketch</h3>
+<pre><code class="language-javascript">test(&quot;shows error when list API fails&quot;, async function ({ page }) {
+  await page.route(&quot;**/api/notes&quot;, async function (route) {
+    if (route.request().method() === &quot;GET&quot;) {
+      await route.fulfill({
+        status: 500,
+        contentType: &quot;application/json&quot;,
+        body: JSON.stringify({ error: &quot;nope&quot; })
+      });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.goto(&quot;/&quot;);
+  await expect(page.getByTestId(&quot;error&quot;)).toContainText(&quot;nope&quot;);
+});
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>page.route(urlPattern, handler)</code></td>
+<td>Intercept matching requests</td>
+</tr>
+<tr>
+<td><code>fulfill</code></td>
+<td>Respond with fake payload</td>
+</tr>
+<tr>
+<td><code>continue</code></td>
+<td>Let request hit real server</td>
+</tr>
+</tbody>
+</table>
+<h3>Risks</h3>
+<ul>
+<li>Stubed tests can green while API is dead  </li>
+<li>Stubs drift from real JSON shapes  </li>
+<li>Too many stubs → testing a fantasy app  </li>
+</ul>
+<p><strong>Rule:</strong> keep a core of <strong>real</strong> full-stack journeys (U71). Add stubs for <strong>hard error paths</strong> or UI-only branches.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Intercept / route</td>
+<td>Catch request in the browser automation layer</td>
+<td>Not Express router</td>
+</tr>
+<tr>
+<td>Fulfill</td>
+<td>Fake response</td>
+<td></td>
+</tr>
+<tr>
+<td>Continue</td>
+<td>Pass through to network</td>
+<td></td>
+</tr>
+<tr>
+<td>Contract drift</td>
+<td>Stub shape ≠ real API</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Stub GET 500 → assert error region; separate real test still loads notes from API.</p>
+<h2>Common errors</h2>
+<h3>Error: Route pattern not matching</h3>
+<p>Wrong path/glob → real server still called or never stubbed. Log requests while debugging.</p>
+<h3>Error: Stubbing everything</h3>
+<p>You no longer have e2e — say so and keep real tests.</p>
+<h3>Error: Forgetting method checks</h3>
+<p>GET stub accidentally catches POST.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What problem does route mocking solve?</li>
+<li>fulfill vs continue?</li>
+<li>When prefer real e2e?</li>
+<li>What is contract drift?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — one stubbed failure UI test</h3>
+<h3>P2 — keep ≥2 real network tests</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full service virtualization platforms</li>
+<li>HAR replay deep dive</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U73 — UI test strategy vs the pyramid</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U72 Assignment — <code>U72-YourName</code></h1>
+<ol>
+<li>One Playwright test using <code>page.route</code> for an API error (or slow) path; asserts UI.</li>
+<li>Confirm real full-stack tests still exist (≥2).</li>
+<li><code>answers.md</code>: when to stub vs not; contract drift; paste stub test name + what it proves that unit tests don’t.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U72 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working route stub test</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Real e2e still present</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Judgment writing</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U71-fullstack-e2e/index.html">U71 Full stack E2E: UI + their API</a>
+    <a class="next" href="../U73-ui-test-strategy/index.html">U73 UI test strategy vs unit/API pyramid</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

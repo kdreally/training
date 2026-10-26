@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U71 — Full stack E2E: UI + their API | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U71</div>
+    <h1>Full stack E2E: UI + their API</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U71 — Full stack E2E: UI + their API</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>Pieces work. Now treat <strong>one user journey</strong> as the product: browser UI + real API + real store — started reliably for tests.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Configure Playwright <code>webServer</code> to start your app (or document a solid manual protocol).</li>
+<li>Write multi-step journeys that hit real endpoints through the UI.</li>
+<li>Keep e2e few and valuable.</li>
+<li>Read failures as UI vs API vs test-setup.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U61</strong>, <strong>U68–U70</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>The point of Playwright here is <strong>confidence in the assembled system</strong>, not mocking the world away (that’s U72 optional).</p>
+<h2>Plain-language teaching</h2>
+<h3>webServer config</h3>
+<p>Playwright can start your app before tests:</p>
+<pre><code class="language-javascript">// playwright.config.js
+const { defineConfig } = require(&quot;@playwright/test&quot;);
+
+module.exports = defineConfig({
+  testDir: &quot;./e2e&quot;,
+  use: {
+    baseURL: &quot;http://127.0.0.1:3000&quot;
+  },
+  webServer: {
+    command: &quot;node src/server.js&quot;,
+    url: &quot;http://127.0.0.1:3000/api/health&quot;,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000
+  }
+});
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>command</code></td>
+<td>How to start the app</td>
+</tr>
+<tr>
+<td><code>url</code></td>
+<td>Wait until this URL responds (ready check)</td>
+</tr>
+<tr>
+<td><code>reuseExistingServer</code></td>
+<td>Locally reuse if already running; CI usually fresh</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td>How long to wait for boot</td>
+</tr>
+</tbody>
+</table>
+<p>Use a <strong>health</strong> endpoint so “server accepted TCP” is not enough — app is ready.</p>
+<p>Set <code>NODE_ENV=test</code> in command if you need reset routes:</p>
+<pre><code class="language-text">command: &quot;cross-env NODE_ENV=test node src/server.js&quot;
+</code></pre>
+<p>(On Windows without cross-env, use a small npm script that sets env portably, or document PowerShell env syntax your OS needs.)</p>
+<h3>Journey quality bar</h3>
+<p>Good e2e:</p>
+<ul>
+<li>Create item via UI → appears  </li>
+<li>Validation error via UI  </li>
+<li>Optional: reload page → data still from API  </li>
+</ul>
+<p>Avoid cloning every unit case.</p>
+<h3>Debugging failure layers</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Look at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>webServer timeout</td>
+<td>start command, port, health path</td>
+</tr>
+<tr>
+<td>goto refused</td>
+<td>baseURL vs listen host</td>
+</tr>
+<tr>
+<td>UI error message from API</td>
+<td>backend validation/logs</td>
+</tr>
+<tr>
+<td>Element not found</td>
+<td>locator/markup</td>
+</tr>
+<tr>
+<td>Intermittent</td>
+<td>isolation/waits</td>
+</tr>
+</tbody>
+</table>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>webServer</td>
+<td>Playwright-managed app start</td>
+<td>Not Express middleware</td>
+</tr>
+<tr>
+<td>Ready URL</td>
+<td>Probe that app is up</td>
+<td></td>
+</tr>
+<tr>
+<td>Full stack e2e</td>
+<td>UI + real backend path</td>
+<td></td>
+</tr>
+<tr>
+<td>CI</td>
+<td>Machine that should not reuse random local servers</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><code>npx playwright test</code> alone boots server, runs journeys, exits.</p>
+<h2>Common errors</h2>
+<h3>Error: Ready URL is <code>/</code> but static slow/wrong</h3>
+<p>Prefer <code>/api/health</code> JSON.</p>
+<h3>Error: Port already in use with reuseExistingServer false</h3>
+<p>Kill old process or change port consistently in app + config.</p>
+<h3>Error: Server command wrong working directory</h3>
+<p>Run from package root; use npm script <code>"start": "node src/server.js"</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What webServer does?</li>
+<li>Why health URL?</li>
+<li>What belongs in e2e vs unit?</li>
+<li>reuseExistingServer local vs CI?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — webServer config green from cold</h3>
+<h3>P2 — 3 high-value journeys only</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Deployed staging e2e</li>
+<li>Multi-service docker compose</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U72 — Network mock/stub in browser tests</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U71 Assignment — <code>U71-YourName</code></h1>
+<h2>Deliver</h2>
+<ul>
+<li><code>webServer</code> (or ironclad documented start + trainer approval) so e2e is runnable</li>
+<li>≥3 full-stack journeys (create, validation, plus reload-or-list persistence)</li>
+<li>Isolation still works</li>
+<li><code>answers.md</code>: config explained; cold-run steps; how you triage a failure; why these 3 journeys earn their keep</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U71 Rubric — 30 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reliable app start for tests</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>≥3 valuable journeys</td>
+<td>12</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Isolation preserved</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations / triage</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U70-isolation-fixtures/index.html">U70 Fixtures, beforeEach, test isolation</a>
+    <a class="next" href="../U72-network-mocking/index.html">U72 Network: mock/stub API in browser tests (when earned)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

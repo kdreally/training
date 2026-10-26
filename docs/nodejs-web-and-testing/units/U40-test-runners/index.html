@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U40 — Test runners: discover, run, report | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U40</div>
+    <h1>Test runners: discover, run, report</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U40 — Test runners: discover, run, report</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>You can assert in a script. A <strong>test runner</strong> finds many tests, runs them, and reports pass/fail cleanly.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a test runner does.</li>
+<li>Use Node’s built-in test runner (<code>node:test</code>) with <code>node:assert</code>.</li>
+<li>Add an <code>npm test</code> script.</li>
+<li>Read a pass/fail report.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U25</strong>, <strong>U26</strong>, <strong>U39</strong></li>
+<li>Node 18+ recommended (built-in test runner)</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Hand-running <code>node check1.js &amp;&amp; node check2.js</code> does not scale. Runners are the packaging for automated tests.</p>
+<h2>Plain-language teaching</h2>
+<h3>Test runner jobs</h3>
+<ol>
+<li><strong>Discover</strong> test files</li>
+<li><strong>Run</strong> tests (often isolated)</li>
+<li><strong>Report</strong> which passed/failed</li>
+<li>Set process <strong>exit code</strong> (0 success, non-zero failure) for humans and CI later</li>
+</ol>
+<h3>Why Node built-in first</h3>
+<p>No extra package required to start. Fits our “earn dependencies” culture. Third-party runners (Jest, etc.) can come later if needed.</p>
+<h3>First test file</h3>
+<p><code>math.test.js</code>:</p>
+<pre><code class="language-javascript">const test = require(&quot;node:test&quot;);
+const assert = require(&quot;node:assert/strict&quot;);
+
+function add(a, b) {
+  return a + b;
+}
+
+test(&quot;add sums two numbers&quot;, function () {
+  assert.equal(add(2, 3), 5);
+});
+
+test(&quot;add handles negatives&quot;, function () {
+  assert.equal(add(-1, 1), 0);
+});
+</code></pre>
+<p>Run:</p>
+<pre><code class="language-bash">node --test math.test.js
+</code></pre>
+<p>Or many files:</p>
+<pre><code class="language-bash">node --test
+</code></pre>
+<p>(Node discovers <code>*.test.js</code> patterns depending on version/docs — be explicit with paths if unsure.)</p>
+<h3>package.json script</h3>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;test&quot;: &quot;node --test&quot;
+}
+</code></pre>
+<pre><code class="language-bash">npm test
+</code></pre>
+<p><code>test</code> script belongs with dev workflow; runner is built-in so no devDependency required yet.</p>
+<h3>Anatomy</h3>
+<pre><code class="language-javascript">test(&quot;readable name of behavior&quot;, function () {
+  // arrange
+  // act
+  // assert
+});
+</code></pre>
+<p>Names should read like specifications (U38).</p>
+<h3>Failure report</h3>
+<p>Shows which test name failed and assertion details. Use U09 skills.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test runner</td>
+<td>Tool that runs tests + reports</td>
+<td>Not only CI</td>
+</tr>
+<tr>
+<td>Test case</td>
+<td>One <code>test(...)</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Exit code</td>
+<td>0/ok vs non-zero/fail</td>
+<td></td>
+</tr>
+<tr>
+<td><code>node:test</code></td>
+<td>Built-in runner module</td>
+<td></td>
+</tr>
+<tr>
+<td>Discover</td>
+<td>Find test files</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Two tests green; break one; see red name; fix.</p>
+<h2>Common errors</h2>
+<h3>Error: Old Node without test runner</h3>
+<p>Upgrade Node LTS (U12).</p>
+<h3>Error: Forgetting npm test script</h3>
+<p>Document command in README anyway.</p>
+<h3>Error: Vague test names</h3>
+<p><code>test("test1")</code> helps no one.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Four jobs of a runner?</li>
+<li>Command to run tests?</li>
+<li>Why built-in first?</li>
+<li>What does non-zero exit mean?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — math.test.js + npm test</h3>
+<h3>P2 — force one failure; read report</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Mocking</li>
+<li>Coverage</li>
+<li>Jest config mazes</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U41 — Unit tests</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U40 Assignment — <code>U40-YourName</code></h1>
+<h2>Project</h2>
+<ul>
+<li><code>lib.js</code> with at least 2 pure functions</li>
+<li><code>lib.test.js</code> with ≥4 <code>test(...)</code> cases using <code>node:test</code> + assert</li>
+<li><code>package.json</code> with <code>"test": "node --test"</code></li>
+<li><code>answers.md</code>: runner definition; transcript of npm test pass; transcript or description of a forced failure; why test names matter</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U40 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functions + ≥4 tests</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>npm test script</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Conceptual answers</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Pass evidence</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Failure reading</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U39-assertions/index.html">U39 Assertions: claiming what should be true</a>
+    <a class="next" href="../U41-unit-tests/index.html">U41 Unit tests: one unit of behavior</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U07 — Functions: name a process | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U07</div>
+    <h1>Functions: name a process</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U07 — Functions: name a process</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>You can sequence, decide, and repeat. Functions let you <strong>package</strong> a process, <strong>name</strong> it, and <strong>reuse</strong> it with different inputs.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain parameter, argument, return value.</li>
+<li>Write simple functions that return values.</li>
+<li>Trace calls with a call stack intuition (light).</li>
+<li>Prefer return values over only printing (when computing).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U03–U06</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–110 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Without functions, programs become long copy-paste noodles. With functions, you build <strong>vocabulary of actions</strong>: <code>sum</code>, <code>isEven</code>, <code>clamp</code>. Modules and tests later all hang on this idea.</p>
+<h2>Plain-language teaching</h2>
+<h3>A function is a reusable recipe</h3>
+<p>A <strong>function</strong> is a named block of code that:</p>
+<ol>
+<li>Optionally accepts <strong>inputs</strong> (parameters)</li>
+<li>Does work</li>
+<li>Optionally <strong>returns</strong> an output value</li>
+</ol>
+<pre><code class="language-javascript">function add(a, b) {
+  return a + b;
+}
+
+let result = add(2, 3); // result is 5
+</code></pre>
+<h3>Parameters vs arguments</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+<th>In example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parameter</td>
+<td>Placeholder name in the definition</td>
+<td><code>a</code>, <code>b</code></td>
+</tr>
+<tr>
+<td>Argument</td>
+<td>Actual value you pass when calling</td>
+<td><code>2</code>, <code>3</code></td>
+</tr>
+</tbody>
+</table>
+<p>Call: <code>add(2, 3)</code> — arguments <code>2</code> and <code>3</code> fill parameters <code>a</code> and <code>b</code> for that call.</p>
+<h3><code>return</code> sends a value out</h3>
+<pre><code class="language-javascript">function double(n) {
+  return n * 2;
+}
+</code></pre>
+<p><code>return</code> <strong>ends</strong> the function and provides the value of the call expression <code>double(4)</code> → <code>8</code>.</p>
+<p>Without <code>return</code>, a function returns <code>undefined</code> by default.</p>
+<h3>Calling is an expression (when it returns)</h3>
+<pre><code class="language-javascript">let x = double(5) + 1; // 11
+</code></pre>
+<h3>Why return beats only printing (for logic)</h3>
+<pre><code class="language-javascript">function doubleBad(n) {
+  console.log(n * 2); // displays, but gives undefined to callers
+}
+</code></pre>
+<p>If another part of the program needs the number, <strong>return</strong> it. Display is separate. (<code>console.log</code> details deepen in Phase 2; treat it as “show on screen.”)</p>
+<h3>Local names</h3>
+<pre><code class="language-javascript">function area(width, height) {
+  let product = width * height;
+  return product;
+}
+</code></pre>
+<p><code>product</code> exists <strong>inside</strong> the function. Outer code does not see it. This is <strong>scope</strong> (light version): inner names stay local unless returned or outer.</p>
+<h3>Multiple returns</h3>
+<pre><code class="language-javascript">function max2(a, b) {
+  if (a &gt;= b) {
+    return a;
+  }
+  return b;
+}
+</code></pre>
+<p>First executed <code>return</code> wins; function stops.</p>
+<h3>Pure-ish thinking (gentle)</h3>
+<p>Functions that only use inputs and return outputs (no hidden outside edits) are easier to test later. Prefer that shape when you can.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Function</td>
+<td>Named reusable process</td>
+<td>Not “mathematical function only”</td>
+</tr>
+<tr>
+<td>Parameter</td>
+<td>Input slot name</td>
+<td>Not the value itself</td>
+</tr>
+<tr>
+<td>Argument</td>
+<td>Value passed in</td>
+<td>Not “debate argument”</td>
+</tr>
+<tr>
+<td>Return</td>
+<td>Send value back to caller</td>
+<td>Not “press Enter key”</td>
+</tr>
+<tr>
+<td>Call / invoke</td>
+<td>Run the function</td>
+<td></td>
+</tr>
+<tr>
+<td>Scope</td>
+<td>Where a name is visible</td>
+<td>Deep rules later</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<pre><code class="language-javascript">function isEven(n) {
+  return n % 2 === 0;
+}
+
+function labelNumber(n) {
+  if (isEven(n)) {
+    return &quot;even&quot;;
+  }
+  return &quot;odd&quot;;
+}
+
+let a = labelNumber(7); // &quot;odd&quot;
+let b = labelNumber(8); // &quot;even&quot;
+</code></pre>
+<p>Functions call functions. Build small bricks.</p>
+<h2>Common errors</h2>
+<h3>Error: Forgetting <code>return</code></h3>
+<p>You compute inside but caller gets <code>undefined</code>.</p>
+<h3>Error: Confusing defining with calling</h3>
+<pre><code class="language-javascript">function greet(name) {
+  return &quot;Hi, &quot; + name;
+}
+// Not run until:
+greet(&quot;Ada&quot;);
+</code></pre>
+<h3>Error: Using parameters outside</h3>
+<p><code>a</code> from <code>function add(a,b)</code> is not available below the function in outer code.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Parameter vs argument?</li>
+<li>What does <code>return</code> do to function execution?</li>
+<li>What is the value of a call if there is no <code>return</code>?</li>
+<li>Why return computed values instead of only printing them?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Trace</h3>
+<pre><code class="language-javascript">function triple(n) {
+  return n * 3;
+}
+let x = triple(4);
+let y = triple(x);
+</code></pre>
+<p>Values of <code>x</code> and <code>y</code>?</p>
+<h3>P2 — Write</h3>
+<p><code>function min2(a, b)</code> returning the smaller.</p>
+<h3>P3 — Write</h3>
+<p><code>function clamp(n, min, max)</code> — if n below min return min; if above max return max; else n.</p>
+<h3>P4 — Compose</h3>
+<p><code>function sumSquares(a, b)</code> returns <code>a*a + b*b</code> (can use a helper <code>square</code> if you want).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Arrow functions (optional later; same idea)</li>
+<li>Closures deep dive</li>
+<li><code>this</code></li>
+<li>Methods vs functions deep OOP</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U08 — Arrays and objects</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U07 Assignment — <code>U07-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define function, parameter, argument, return, call.</li>
+<li>Trace:</li>
+</ol>
+<pre><code class="language-javascript">function calc(a, b) {
+  let s = a + b;
+  return s * 2;
+}
+let r = calc(3, 4);
+</code></pre>
+<p>What is <code>r</code>? What are arguments vs parameters here?</p>
+<ol start="3">
+<li>
+<p>Write <code>function grade(score)</code> returning <code>"A"</code> if score≥90, <code>"B"</code> if ≥80, <code>"C"</code> if ≥70, else <code>"D"</code>. Show return values for 95, 80, 69.</p>
+</li>
+<li>
+<p>Write <code>function factorialHint(n)</code> that for n≥1 multiplies 1..n with a loop and returns the product. Show for n=5 (120). If n&lt;1 return 1.</p>
+</li>
+<li>
+<p>Explain in your own words why a function that <strong>returns</strong> a discount amount is more reusable than one that only <code>console.log</code>s it.</p>
+</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U07 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Trace r=14; param/arg correct</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>grade() correct for three inputs</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>factorial-style loop return 120</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Return vs print explanation solid</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U06-repetition-loops/index.html">U06 Repetition (loops)</a>
+    <a class="next" href="../U08-arrays-and-objects/index.html">U08 Data shapes: arrays and objects</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

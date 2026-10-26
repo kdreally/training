@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U13 — The terminal as a tool | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U13</div>
+    <h1>The terminal as a tool</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U13 — The terminal as a tool</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>Node is installed. You need a reliable way to <strong>navigate folders</strong> and <strong>run commands</strong>. That tool is the <strong>terminal</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a terminal/shell is for.</li>
+<li>Print the current directory; list files; change directory.</li>
+<li>Use absolute vs relative paths at a basic level.</li>
+<li>Create a course practice folder and prove you are in it.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12</strong> (Node installed)</li>
+<li>Ability to open a terminal app</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Almost every Node workflow is: open terminal → go to project folder → run a command. If navigation is scary, every later unit is scary. We remove the scare carefully.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a terminal is</h3>
+<p>A <strong>terminal</strong> (terminal emulator) is a text window where you type <strong>commands</strong> for the operating system and tools.</p>
+<p>A <strong>shell</strong> is the program that interprets those commands (PowerShell, cmd, bash, zsh…).</p>
+<p>You type a line, press Enter, see text output.</p>
+<h3>Why developers use it</h3>
+<ul>
+<li>Precise control</li>
+<li>Same habits for servers and local machines</li>
+<li>Scripts and tools are often CLI-first (command-line interface)</li>
+</ul>
+<h3>The prompt</h3>
+<p>You will see something like:</p>
+<pre><code class="language-text">C:\Users\You&gt;
+</code></pre>
+<p>or</p>
+<pre><code class="language-text">you@computer:~$
+</code></pre>
+<p>That means: ready for a command. The important part is <strong>which folder you are in</strong>.</p>
+<h3>Current working directory</h3>
+<p>The <strong>current working directory (cwd)</strong> is “where you are” in the folder tree. Commands often act relative to here.</p>
+<h3>Commands to learn now</h3>
+<p>Windows <strong>PowerShell</strong> (adjust if you use cmd):</p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>PowerShell</th>
+<th>macOS/Linux (bash/zsh)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where am I?</td>
+<td><code>pwd</code> or <code>Get-Location</code></td>
+<td><code>pwd</code></td>
+</tr>
+<tr>
+<td>List files</td>
+<td><code>dir</code> or <code>ls</code></td>
+<td><code>ls</code></td>
+</tr>
+<tr>
+<td>Change folder</td>
+<td><code>cd path</code></td>
+<td><code>cd path</code></td>
+</tr>
+<tr>
+<td>Go up one folder</td>
+<td><code>cd ..</code></td>
+<td><code>cd ..</code></td>
+</tr>
+<tr>
+<td>Make folder</td>
+<td><code>mkdir name</code></td>
+<td><code>mkdir name</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>cd</code> means <strong>change directory</strong>.</p>
+<h3>Paths</h3>
+<p>A <strong>path</strong> is an address for a file or folder.</p>
+<ul>
+<li><strong>Absolute path</strong> — full address from the root (<code>C:\Users\You\projects</code> or <code>/home/you/projects</code>)</li>
+<li><strong>Relative path</strong> — from where you are now (<code>.\notes</code> or <code>../other</code>)</li>
+</ul>
+<p><code>..</code> means parent folder.<br />
+<code>.</code> means current folder.</p>
+<h3>Spaces in paths</h3>
+<p>Prefer folder names <strong>without spaces</strong> for this course: <code>atlrn-work</code> not <code>my work</code>.<br />
+If you must use spaces, quote paths: <code>cd "my work"</code>.</p>
+<h3>Create a playground</h3>
+<pre><code class="language-powershell">cd ~
+mkdir atlrn-work
+cd atlrn-work
+pwd
+</code></pre>
+<p>(<code>~</code> home directory works in PowerShell and bash.)</p>
+<p>You should see a path ending in <code>atlrn-work</code>.</p>
+<h3>Running programs</h3>
+<p>You already ran <code>node -v</code>. That works when <code>node</code> is on PATH (U12). Later: <code>node file.js</code> from the folder that contains the file (U14).</p>
+<h3>Danger sense (gentle)</h3>
+<p>Do not run commands you do not understand from random websites. In this course, every command is explained first.</p>
+<p>Avoid destructive commands you have not been taught (<code>rm -rf</code>, format, etc.). We will not ask for those.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Terminal</td>
+<td>Text UI for commands</td>
+<td>Not “the computer itself”</td>
+</tr>
+<tr>
+<td>Shell</td>
+<td>Command interpreter</td>
+<td></td>
+</tr>
+<tr>
+<td>Command</td>
+<td>Instruction you type</td>
+<td></td>
+</tr>
+<tr>
+<td>cwd</td>
+<td>Current folder</td>
+<td></td>
+</tr>
+<tr>
+<td>Path</td>
+<td>Location address</td>
+<td></td>
+</tr>
+<tr>
+<td><code>cd</code></td>
+<td>Change directory</td>
+<td></td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>Command-line interface</td>
+<td>Opposite of pure GUI</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<pre><code class="language-text">pwd
+→ C:\Users\Sam
+
+mkdir atlrn-work
+cd atlrn-work
+pwd
+→ C:\Users\Sam\atlrn-work
+
+mkdir u13
+cd u13
+cd ..
+pwd
+→ C:\Users\Sam\atlrn-work
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: Running commands in the wrong folder</h3>
+<p><code>node app.js</code> fails with “cannot find module/file” because you are not where <code>app.js</code> is.<br />
+<strong>Fix:</strong> <code>pwd</code> / <code>ls</code> / <code>cd</code> first.</p>
+<h3>Error: Mixing path slash styles blindly</h3>
+<p>Windows accepts <code>\</code> and often <code>/</code>. Prefer what your shell shows. Copy paths carefully.</p>
+<h3>Error: Typo in folder name</h3>
+<p><code>cd atlern-work</code> fails. List directories and retype.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is cwd?</li>
+<li>What does <code>cd ..</code> do?</li>
+<li>Absolute vs relative path?</li>
+<li>Why avoid spaces in project folder names?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Navigate</h3>
+<p>Create <code>atlrn-work/u13-practice</code>. Move into it. List contents. Go up. Prove with <code>pwd</code>.</p>
+<h3>P2 — Path story</h3>
+<p>Write the absolute path of your <code>atlrn-work</code> folder.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Shell scripting</li>
+<li>Git</li>
+<li>Permissions deep dive</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U14 — Running a JavaScript file with Node</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U13 Assignment — <code>U13-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define terminal, shell, cwd, path, command.</li>
+<li>Absolute vs relative path — one example each from <em>your</em> machine.</li>
+<li>Paste a command transcript (copy text) showing: create <code>atlrn-work</code> (or use existing), <code>cd</code> into it, <code>mkdir u13-submit</code>, <code>cd</code> into it, <code>pwd</code>, list files. Redact personal usernames if required by policy but keep structure.</li>
+<li>What would you do if <code>node hello.js</code> said file not found, but you know you created <code>hello.js</code> somewhere?</li>
+<li>List the navigation commands you will rely on daily.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U13 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Path examples correct kind</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript shows real navigation</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>File-not-found recovery reasoning</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Daily commands list</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U12-installing-node/index.html">U12 Installing Node.js safely and verifying</a>
+    <a class="next" href="../U14-running-a-js-file/index.html">U14 Running a `.js` file with Node</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

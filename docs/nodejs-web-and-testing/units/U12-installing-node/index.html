@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U12 — Installing Node.js safely and verifying | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U12</div>
+    <h1>Installing Node.js safely and verifying</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U12 — Installing Node.js safely and verifying</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>You know what Node is. Now you put it on your machine and <strong>prove</strong> it works.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Install Node.js LTS from a trusted source (or via a version manager if trainer prefers).</li>
+<li>Verify with <code>node -v</code> and <code>npm -v</code>.</li>
+<li>Explain what those commands mean (npm appears as a program name; deep npm comes in Phase 3).</li>
+<li>Capture proof for your trainer.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U11</strong></li>
+<li>Permission to install software on your computer.</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>45–90 minutes</strong> (installers vary).</p>
+<h2>Why this exists</h2>
+<p>Running files requires the runtime. Guessing you “probably installed it” causes ghost bugs. Verification is part of the craft.</p>
+<h2>Plain-language teaching</h2>
+<h3>What you are installing</h3>
+<p>The <strong>Node.js</strong> installer (or package) gives you:</p>
+<ol>
+<li>The <code>node</code> program — runs JS files / evaluates JS.</li>
+<li>Often <strong>npm</strong> — a package manager program (we explain fully in Phase 3; for now it is just “something that comes along”).</li>
+</ol>
+<h3>LTS means “more stable track”</h3>
+<p><strong>LTS</strong> = Long Term Support. Prefer the <strong>LTS</strong> version on the official site unless your trainer specifies otherwise.</p>
+<h3>Trusted source</h3>
+<p>Prefer:</p>
+<ul>
+<li>Official site: <code>https://nodejs.org</code></li>
+<li>Or a trainer-approved version manager (nvm, fnm, etc.)</li>
+</ul>
+<p>Avoid random “cracked tools” sites.</p>
+<h3>Install (high level)</h3>
+<ol>
+<li>Download LTS for your OS (Windows / macOS / Linux).</li>
+<li>Run the installer; accept defaults unless trainer says otherwise.</li>
+<li><strong>Close and reopen</strong> your terminal after install (so PATH updates).</li>
+<li>Verify (below).</li>
+</ol>
+<p><strong>PATH</strong> is the list of folders your system searches for programs. If <code>node</code> is “not recognized,” the terminal cannot find it — often fixed by restarting the terminal or fixing PATH (ask trainer with screenshots).</p>
+<h3>Verify</h3>
+<p>Open a <strong>terminal</strong> (Command Prompt, PowerShell, Terminal.app, etc.):</p>
+<pre><code class="language-bash">node -v
+</code></pre>
+<p>You should see a version like <code>v20.x.x</code> or similar (numbers vary).</p>
+<pre><code class="language-bash">npm -v
+</code></pre>
+<p>You should see a version number (npm ships with Node).</p>
+<p>What these mean:</p>
+<ul>
+<li><code>node</code> — the program name</li>
+<li><code>-v</code> — “print version” (common convention)</li>
+<li>Success = version printed, no “not recognized” error</li>
+</ul>
+<h3>Optional REPL peek</h3>
+<pre><code class="language-bash">node
+</code></pre>
+<p>You may enter an interactive prompt. Type <code>1 + 1</code> then Enter. Type <code>.exit</code> to leave.<br />
+Full REPL skills optional; running files is U14.</p>
+<h3>Windows notes</h3>
+<ul>
+<li>Prefer “Add to PATH” if the installer offers it.</li>
+<li>PowerShell and Command Prompt both work; stay consistent.</li>
+<li>If <code>node</code> fails, fully quit and reopen the terminal; reboot if needed.</li>
+</ul>
+<h3>macOS / Linux notes</h3>
+<ul>
+<li>Installers and package managers differ; official packages or trainer guidance.</li>
+<li>Same verification commands.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Installer</td>
+<td>Program that installs software</td>
+<td></td>
+</tr>
+<tr>
+<td>LTS</td>
+<td>Stable support track</td>
+<td>Not always “newest shiny”</td>
+</tr>
+<tr>
+<td>PATH</td>
+<td>Where OS looks for commands</td>
+<td></td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td>Text window to run commands</td>
+<td>Not the browser</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>Release identifier</td>
+<td></td>
+</tr>
+<tr>
+<td>npm</td>
+<td>Package manager CLI (Phase 3)</td>
+<td>Not required to understand fully yet</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — success</h2>
+<pre><code class="language-text">&gt; node -v
+v22.11.0
+
+&gt; npm -v
+10.9.0
+</code></pre>
+<p>Numbers will differ. Shape matters: versions print cleanly.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>node</code> is not recognized / command not found</h3>
+<p><strong>Meaning:</strong> Terminal cannot find the <code>node</code> program.<br />
+<strong>Try:</strong> New terminal window; confirm install; PATH help from trainer with screenshot.</p>
+<h3>Error: Very old Node from years ago</h3>
+<p><strong>Meaning:</strong> Another install is first on PATH.<br />
+<strong>Try:</strong> <code>where node</code> (Windows) or <code>which node</code> (mac/Linux); ask trainer.</p>
+<h3>Error: Installing without admin rights</h3>
+<p><strong>Meaning:</strong> Corporate machines block installs.<br />
+<strong>Try:</strong> Trainer/IT path; portable options only if approved.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does LTS mean for your choice?</li>
+<li>What two commands verify install?</li>
+<li>Why reopen the terminal after installing?</li>
+<li>What does “command not found” mean?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Install + verify</h3>
+<p>Install LTS. Run both version commands.</p>
+<h3>P2 — Notes</h3>
+<p>Write your OS name and the two version outputs in a text file (assignment will require this).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Using npm to install packages (Phase 3)</li>
+<li>Project setup</li>
+<li>Writing server code</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U13 — The terminal as a tool</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U12 Assignment — <code>U12-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Where did you download Node from? Why is source trust important?</li>
+<li>What is LTS in your own words?</li>
+<li>Paste outputs of <code>node -v</code> and <code>npm -v</code> (text, not only screenshot).</li>
+<li>What OS and terminal app did you use?</li>
+<li>If anything failed, describe the stuck protocol notes; if nothing failed, describe one hypothetical fix for “command not found.”</li>
+</ol>
+<h3><code>proof.txt</code> (or <code>proof.png</code>)</h3>
+<p>Exact version command outputs, or a screenshot showing them.</p>
+<h2>Definition of done</h2>
+<p>Node runs; versions recorded; questions answered.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U12 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trusted source + trust explanation</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>LTS understanding</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Valid node -v output present</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>npm -v present (or honest note if missing)</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>OS/terminal documented</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Failure/hypothetical PATH reasoning</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U11-what-nodejs-is/index.html">U11 What Node.js is</a>
+    <a class="next" href="../U13-the-terminal/index.html">U13 The terminal as a tool</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

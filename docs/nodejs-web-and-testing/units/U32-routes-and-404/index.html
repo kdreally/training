@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U32 — Multiple routes, 404, separating handlers | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U32</div>
+    <h1>Multiple routes, 404, separating handlers</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U32 — Multiple routes, 404, separating handlers</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>One server works. Now: several routes, honest <strong>404</strong>, and cleaner structure.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Route multiple GET paths.</li>
+<li>Return <code>404</code> with a clear body for unknown paths.</li>
+<li>Extract handler functions for readability.</li>
+<li>Keep method checks explicit.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U31</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Real APIs have many endpoints. Spaghetti <code>if</code> chains need structure before frameworks.</p>
+<h2>Plain-language teaching</h2>
+<h3>Router idea (manual)</h3>
+<pre><code class="language-javascript">function sendJson(res, status, obj) {
+  const body = JSON.stringify(obj);
+  res.statusCode = status;
+  res.setHeader(&quot;Content-Type&quot;, &quot;application/json&quot;);
+  res.end(body);
+}
+
+function sendText(res, status, text) {
+  res.statusCode = status;
+  res.setHeader(&quot;Content-Type&quot;, &quot;text/plain; charset=utf-8&quot;);
+  res.end(text);
+}
+
+const server = http.createServer(function (req, res) {
+  const { method, url } = req;
+
+  if (method === &quot;GET&quot; &amp;&amp; url === &quot;/&quot;) {
+    return sendText(res, 200, &quot;home\n&quot;);
+  }
+  if (method === &quot;GET&quot; &amp;&amp; url === &quot;/health&quot;) {
+    return sendJson(res, 200, { ok: true });
+  }
+  if (method === &quot;GET&quot; &amp;&amp; url === &quot;/time&quot;) {
+    return sendJson(res, 200, { now: Date.now() });
+  }
+
+  sendJson(res, 404, { error: &quot;not found&quot; });
+});
+</code></pre>
+<h3>404 is a success of design</h3>
+<p>Telling the client “unknown route” is correct behavior — not a crash.</p>
+<h3>Method not allowed (optional awareness)</h3>
+<p>If path exists for GET but client uses POST, some APIs return <code>405</code>. You may use <code>404</code> simply for now, or start distinguishing.</p>
+<h3>Separate modules (optional stretch)</h3>
+<p><code>handlers.js</code> exports functions; <code>server.js</code> routes. Applies U16.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Route</td>
+<td>Method + path mapping</td>
+<td></td>
+</tr>
+<tr>
+<td>Handler</td>
+<td>Function that handles a route</td>
+<td></td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not found</td>
+<td>Not always “server down”</td>
+</tr>
+<tr>
+<td>Helper</td>
+<td>Shared send utility</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Unknown path <code>/nope</code> → <code>404</code> + <code>{"error":"not found"}</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: Falling through without response</h3>
+<p>Every path must end a response exactly once.</p>
+<h3>Error: Typos in path strings</h3>
+<p><code>/heath</code> vs <code>/health</code> — 404 is a clue.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why return 404 JSON?</li>
+<li>Why helpers like <code>sendJson</code>?</li>
+<li>What must every request end with?</li>
+<li>How would you add <code>/about</code>?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — three routes + 404</h3>
+<h3>P2 — move helpers to another file (stretch)</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Express Router</li>
+<li>Path parameters <code>/items/:id</code> (can approximate later)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U33 — Why frameworks; introduce Express deliberately</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U32 Assignment — <code>U32-YourName</code></h1>
+<h2><code>server.js</code> (and optional modules)</h2>
+<p>Must support:</p>
+<ul>
+<li><code>GET /</code> text home</li>
+<li><code>GET /health</code> → <code>{ ok: true }</code></li>
+<li><code>GET /version</code> → <code>{ version: "1.0.0" }</code> (or your string)</li>
+<li>anything else → <code>404</code> JSON <code>{ error: "not found" }</code></li>
+</ul>
+<p>Use helper(s) for sending responses.</p>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Explain routing approach.</li>
+<li>Why 404 is good design.</li>
+<li>How you tested each route.</li>
+<li>One refactor you made for clarity.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U32 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three routes correct</td>
+<td>9</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>404 JSON</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Helpers / structure</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Testing notes</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U31-minimal-http-server/index.html">U31 Minimal HTTP server with Node `http`</a>
+    <a class="next" href="../U33-express-deliberately/index.html">U33 Why frameworks exist; Express deliberately</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

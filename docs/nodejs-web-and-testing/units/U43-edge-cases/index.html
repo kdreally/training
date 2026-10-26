@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U43 — Edge cases and deliberate failure cases | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U43</div>
+    <h1>Edge cases and deliberate failure cases</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U43 — Edge cases and deliberate failure cases</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Happy-path tests are not enough. Edges and failures pin real behavior.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Inventory edge cases for a function/API.</li>
+<li>Write tests that expect errors/validation failures.</li>
+<li>Test empty, zero, boundary, duplicate, missing.</li>
+<li>Explain “characterization” when behavior is unclear.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U41–U42</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Production is all edges. Tests that only check ideal input lie by omission.</p>
+<h2>Plain-language teaching</h2>
+<h3>Edge case</h3>
+<p>An <strong>edge case</strong> is an uncommon but valid (or provocatively invalid) input at the boundary of assumptions.</p>
+<p>Examples for notes:</p>
+<ul>
+<li>title of only spaces</li>
+<li>very long title</li>
+<li>missing body</li>
+<li>id <code>0</code> or negative</li>
+<li>empty list</li>
+<li>non-numeric id param</li>
+</ul>
+<h3>Deliberate failure cases</h3>
+<p>Tests where the <strong>correct</strong> outcome is failure: 400/404/throw.</p>
+<pre><code class="language-javascript">test(&quot;validateTitle rejects whitespace-only&quot;, function () {
+  assert.equal(validateTitle(&quot;   &quot;).ok, false);
+});
+</code></pre>
+<h3>Boundary thinking</h3>
+<p>If rule is <code>length &gt;= 1</code>, test length 0 and 1.<br />
+If max 100, test 100 and 101.</p>
+<h3>Characterization tests</h3>
+<p>When legacy behavior is unclear, write a test that documents <strong>current</strong> behavior, then decide if it is desired. Honesty over fantasy.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edge case</td>
+<td>Boundary scenario</td>
+<td>Not only “errors”</td>
+</tr>
+<tr>
+<td>Failure case</td>
+<td>Expected reject/error path</td>
+<td></td>
+</tr>
+<tr>
+<td>Boundary</td>
+<td>On either side of a limit</td>
+<td></td>
+</tr>
+<tr>
+<td>Characterization</td>
+<td>Document actual behavior</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Add tests for whitespace title and missing note id.</p>
+<h2>Common errors</h2>
+<h3>Error: Only invalid cases</h3>
+<p>Still keep happy paths. Balance.</p>
+<h3>Error: Undefined edges</h3>
+<p>If unspecified, pick a rule, document it, test it.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Edge vs happy path?</li>
+<li>Why test failures?</li>
+<li>Boundary example?</li>
+<li>Characterization use?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — brainstorm 10 edges for notes API</h3>
+<h3>P2 — automate at least 5</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Fuzz testing full theory</li>
+<li>Property-based testing</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U44 — Integration tests</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U43 Assignment — <code>U43-YourName</code></h1>
+<ol>
+<li>List ≥10 edge/failure cases (markdown table).</li>
+<li>Automate ≥5 of them as tests (unit level preferred).</li>
+<li><code>answers.md</code>: which edges you deferred and why; one characterization decision if any.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U43 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥10 listed edges</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>≥5 automated</td>
+<td>12</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Deferred reasoning</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Quality of edge choices</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U42-aaa-and-naming/index.html">U42 Arrange–Act–Assert; naming tests</a>
+    <a class="next" href="../U44-integration-tests/index.html">U44 Integration tests: units working together</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

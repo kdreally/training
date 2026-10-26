@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U49 — Coverage as a flashlight, not a score | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U49</div>
+    <h1>Coverage as a flashlight, not a score</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U49 — Coverage as a flashlight, not a score</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Tools can measure which lines ran during tests. <strong>Coverage</strong> is useful — and dangerously misused.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define code coverage.</li>
+<li>Run a simple coverage tool if available, or reason without it.</li>
+<li>Interpret uncovered lines as questions, not shame.</li>
+<li>Reject coverage% as a sole quality metric.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U40–U45</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Managers sometimes worship 100%. That produces empty tests. You will use coverage as a <strong>flashlight</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>Coverage</h3>
+<p><strong>Code coverage</strong> measures which parts of code executed while tests ran (lines/branches).</p>
+<p>High coverage means “tests touched this code,” <strong>not</strong> “code is correct.”</p>
+<h3>Flashlight use</h3>
+<p>Uncovered lines ask: “Did we forget a case?”<br />
+Maybe that branch is dead and should be deleted.<br />
+Maybe you need a test.</p>
+<h3>Not a trophy</h3>
+<p>100% with weak asserts is worse than 70% with sharp tests.<br />
+Assert quality &gt; coverage number.</p>
+<h3>Running coverage (optional tool)</h3>
+<p>Node ecosystem often uses <code>c8</code> or <code>nodejs --experimental-test-coverage</code> depending on version.</p>
+<p>Example exploration (try; if unavailable, write conceptual answers):</p>
+<pre><code class="language-bash">node --test --experimental-test-coverage
+</code></pre>
+<p>or install <code>c8</code> as devDependency and run <code>npx c8 npm test</code> — only after understanding U26.</p>
+<p>If tooling fights you, skip install and complete conceptual assignment — honesty over cargo cult.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line coverage</td>
+<td>Lines executed</td>
+<td></td>
+</tr>
+<tr>
+<td>Branch coverage</td>
+<td>if/else paths</td>
+<td></td>
+</tr>
+<tr>
+<td>False confidence</td>
+<td>High % weak tests</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Uncovered <code>404</code> branch → add API test for missing id.</p>
+<h2>Common errors</h2>
+<h3>Error: Writing tests only to raise %</h3>
+<p>Tests without meaningful asserts.</p>
+<h3>Error: Ignoring uncovered error handlers</h3>
+<p>Those are often production paths.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What coverage measures?</li>
+<li>What it does not prove?</li>
+<li>Flashlight meaning?</li>
+<li>Why 100% can be fake?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — list 3 uncovered risks you suspect without tools</h3>
+<h3>P2 — try coverage flag if available</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Corporate coverage gates debate full essay</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U50 — Capstone: feature + tests together</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U49 Assignment — <code>U49-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define coverage; what it does/doesn’t prove.</li>
+<li>If you ran a coverage tool: paste summary + 2 insights. If not: explain blocker + 3 hypothesized weak spots in your suite.</li>
+<li>Rewrite a weak test (or invent one) into a stronger assert; explain.</li>
+<li>Policy you recommend for this course’s projects regarding coverage numbers.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U49 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coverage concept accuracy</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Tool run or honest alternative analysis</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Strengthening asserts</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Sensible policy</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U48-regression-tests/index.html">U48 Regression: a bug becomes a test</a>
+    <a class="next" href="../U50-capstone/index.html">U50 Capstone: feature + unit + API tests</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

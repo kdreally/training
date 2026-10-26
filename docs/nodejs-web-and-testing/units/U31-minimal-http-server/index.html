@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U31 — Minimal HTTP server with Node `http` | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U31</div>
+    <h1>Minimal HTTP server with Node `http`</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U31 — Minimal HTTP server with Node <code>http</code></h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>HTTP and JSON make sense. Now you <strong>listen</strong> and <strong>respond</strong> using Node’s built-in <code>http</code> module — <strong>no Express yet</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create a server with <code>http.createServer</code>.</li>
+<li>Listen on a port.</li>
+<li>Respond to <code>GET /</code> with plain text and to <code>GET /health</code> with JSON.</li>
+<li>Stop the server (Ctrl+C) and explain the long-running process.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U17</strong>, <strong>U18</strong> light, <strong>U28–U30</strong></li>
+<li>Terminal skills</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Frameworks wrap this. If you can do it raw, frameworks become optional tools, not magic.</p>
+<h2>Plain-language teaching</h2>
+<h3>A server process stays running</h3>
+<p>Unlike <code>node hello.js</code> that prints and exits, a server <strong>keeps running</strong> waiting for requests until you stop it.</p>
+<h3>Minimal server</h3>
+<p><code>server.js</code>:</p>
+<pre><code class="language-javascript">const http = require(&quot;http&quot;);
+
+const server = http.createServer(function (req, res) {
+  res.statusCode = 200;
+  res.setHeader(&quot;Content-Type&quot;, &quot;text/plain; charset=utf-8&quot;);
+  res.end(&quot;Hello, server\n&quot;);
+});
+
+const PORT = 3000;
+server.listen(PORT, function () {
+  console.log(&quot;Listening on http://localhost:&quot; + PORT);
+});
+</code></pre>
+<p>Run:</p>
+<pre><code class="language-bash">node server.js
+</code></pre>
+<p>Leave it running. In a <strong>second</strong> terminal or browser:</p>
+<ul>
+<li>Visit <code>http://localhost:3000/</code></li>
+<li>Or: <code>curl http://localhost:3000/</code></li>
+</ul>
+<p>You should see <code>Hello, server</code>.</p>
+<p>Stop server: focus terminal → <strong>Ctrl+C</strong>.</p>
+<h3>Request object (<code>req</code>)</h3>
+<p>Useful fields:</p>
+<ul>
+<li><code>req.method</code> — <code>GET</code>, <code>POST</code>, …</li>
+<li><code>req.url</code> — path + query string (e.g. <code>/health</code> or <code>/search?q=1</code>)</li>
+</ul>
+<h3>Response object (<code>res</code>)</h3>
+<ul>
+<li><code>res.statusCode = 200</code></li>
+<li><code>res.setHeader(name, value)</code></li>
+<li><code>res.end(body)</code> — send body and finish</li>
+</ul>
+<h3>Branch on path</h3>
+<pre><code class="language-javascript">const http = require(&quot;http&quot;);
+
+const server = http.createServer(function (req, res) {
+  if (req.method === &quot;GET&quot; &amp;&amp; req.url === &quot;/health&quot;) {
+    const body = JSON.stringify({ ok: true });
+    res.statusCode = 200;
+    res.setHeader(&quot;Content-Type&quot;, &quot;application/json&quot;);
+    res.end(body);
+    return;
+  }
+
+  res.statusCode = 200;
+  res.setHeader(&quot;Content-Type&quot;, &quot;text/plain; charset=utf-8&quot;);
+  res.end(&quot;Hello, server\n&quot;);
+});
+
+server.listen(3000, function () {
+  console.log(&quot;Listening on http://localhost:3000&quot;);
+});
+</code></pre>
+<h3>Why <code>return</code> after responding</h3>
+<p>Prevents accidentally sending twice in longer handlers.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>createServer</code></td>
+<td>Make HTTP server object</td>
+<td></td>
+</tr>
+<tr>
+<td>Listen</td>
+<td>Bind port + accept</td>
+<td></td>
+</tr>
+<tr>
+<td><code>req</code> / <code>res</code></td>
+<td>Request / response objects</td>
+<td></td>
+</tr>
+<tr>
+<td><code>res.end</code></td>
+<td>Finish response</td>
+<td></td>
+</tr>
+<tr>
+<td>Long-running process</td>
+<td>Does not exit immediately</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Hit <code>/health</code> → JSON <code>{"ok":true}</code>. Hit <code>/</code> → plain hello.</p>
+<h2>Common errors</h2>
+<h3>Error: Port in use</h3>
+<p>Change <code>PORT</code> or stop the other process.</p>
+<h3>Error: Browser shows forever loading</h3>
+<p>You never called <code>res.end</code>. Always end the response.</p>
+<h3>Error: Comparing <code>req.url</code> with extras</h3>
+<p><code>/health?x=1</code> is not <code>=== "/health"</code>. For now keep paths clean; parse later if needed.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why doesn’t the process exit?</li>
+<li>Role of <code>res.end</code>?</li>
+<li>How do you test locally?</li>
+<li>How do you stop the server?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — plain server</h3>
+<h3>P2 — add <code>/health</code> JSON</h3>
+<h3>P3 — curl both routes</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Express</li>
+<li>POST bodies</li>
+<li>Routing libraries</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U32 — Multiple routes and 404</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U31 Assignment — <code>U31-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>server.js</code></h3>
+<ul>
+<li>Listens on 3000 (or document another port)</li>
+<li><code>GET /</code> → <code>200</code> text message of your choice</li>
+<li><code>GET /health</code> → <code>200</code> JSON <code>{ "ok": true }</code></li>
+</ul>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Explain createServer, listen, req, res, end.</li>
+<li>How you tested (browser and/or curl) + what you saw.</li>
+<li>What happens if you forget res.end?</li>
+<li>Transcript starting server + one request proof.</li>
+<li>Why learn raw <code>http</code> before Express?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U31 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server listens</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>GET / works</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>GET /health JSON</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Conceptual explanations</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Testing evidence</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Raw-before-framework rationale</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U30-json-for-apis/index.html">U30 JSON as a common API data format</a>
+    <a class="next" href="../U32-routes-and-404/index.html">U32 Multiple routes, 404, separating handlers</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

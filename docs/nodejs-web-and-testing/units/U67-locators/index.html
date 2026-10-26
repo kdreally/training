@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U67 — Locators: role, text, test id | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U67</div>
+    <h1>Locators: role, text, test id</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U67 — Locators: role, text, test id</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>You can open a page. <strong>Locators</strong> are how Playwright finds elements — choose them so tests survive redesigns.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Prefer role- and label-based locators.</li>
+<li>Use <code>getByTestId</code> with your U62 hooks.</li>
+<li>Avoid brittle CSS/XPath as a first resort.</li>
+<li>Read “strict mode” violations and narrow locators.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U62</strong>, <strong>U66</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p><code>page.locator("div &gt; div:nth-child(3) &gt; span")</code> is a future outage. Locator choice is a design skill.</p>
+<h2>Plain-language teaching</h2>
+<h3>Locator</h3>
+<p>A <strong>locator</strong> is a lazy handle describing <strong>how to find</strong> element(s). Playwright resolves it when you act or assert, and can <strong>retry</strong> until ready (U69).</p>
+<h3>Preferred order (course guidance)</h3>
+<ol>
+<li><strong>Role + name</strong> — how users and assistive tech see it  </li>
+<li><strong>Label</strong> — form fields  </li>
+<li><strong>Test id</strong> — when you own the app and need stability  </li>
+<li><strong>Text</strong> — careful with duplicates  </li>
+<li><strong>CSS</strong> — last resort for learning projects  </li>
+</ol>
+<h3>Examples</h3>
+<pre><code class="language-javascript">page.getByRole(&quot;button&quot;, { name: &quot;Add note&quot; });
+page.getByLabel(&quot;Title&quot;);
+page.getByTestId(&quot;note-title&quot;);
+page.getByText(&quot;Could not load notes&quot;);
+</code></pre>
+<h3>Test id</h3>
+<p>Requires markup: <code>data-testid="note-title"</code> (default). Configure alternate attribute only if you must.</p>
+<pre><code class="language-javascript">await page.getByTestId(&quot;note-submit&quot;).click();
+</code></pre>
+<h3>Strict mode</h3>
+<p>If a locator matches <strong>multiple</strong> elements, many actions throw. Good — ambiguity is a bug in the test or the page. Narrow:</p>
+<ul>
+<li>Better name/role  </li>
+<li><code>.filter({ hasText: "…" })</code>  </li>
+<li>test id on the exact control  </li>
+</ul>
+<h3>Anti-patterns</h3>
+<pre><code class="language-javascript">// brittle
+page.locator(&quot;.css-ab12x &gt; span&quot;)
+page.locator(&quot;xpath=//div[3]/button&quot;)
+</code></pre>
+<p>OK for emergencies; not your default.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Locator</td>
+<td>Find strategy</td>
+<td>Not the element snapshot only</td>
+</tr>
+<tr>
+<td>Role</td>
+<td>ARIA/semantic role (button, heading)</td>
+<td></td>
+</tr>
+<tr>
+<td>Accessible name</td>
+<td>Name exposed to a11y tree</td>
+<td>Often label/button text</td>
+</tr>
+<tr>
+<td>Strict mode</td>
+<td>Fail on multiple matches</td>
+<td></td>
+</tr>
+<tr>
+<td>Test id</td>
+<td>data-testid hook</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Rewrite a CSS-based click into <code>getByRole("button", { name: "Add note" })</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: Wrong role</h3>
+<p>A clickable <code>div</code> is not a button. Fix markup (U62) or use test id.</p>
+<h3>Error: Partial name mismatch</h3>
+<p><code>name: "Add"</code> may not match <code>"Add note"</code> depending on options; be precise.</p>
+<h3>Error: Duplicate “Title” labels on page</h3>
+<p>Use test id or nest locator in a form: <code>page.getByTestId("note-form").getByLabel("Title")</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Preferred locator order?</li>
+<li>Why strict mode helps?</li>
+<li>When test id is appropriate?</li>
+<li>Why avoid nth-child CSS?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — list every control on notes page with best locator</h3>
+<h3>P2 — one test using only role/label/testid (no raw CSS)</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full locator API encyclopedia</li>
+<li>Frame/shadow DOM deep dives</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U68 — Actions: click, fill, submit</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U67 Assignment — <code>U67-YourName</code></h1>
+<ol>
+<li>Table of ≥6 page elements → chosen locator + reason.</li>
+<li>Update/write ≥2 tests using role/label/testid only.</li>
+<li><code>answers.md</code>: strict mode story (real or forced duplicate); why CSS nth-child is brittle.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U67 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Locator table quality</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Tests avoid brittle CSS</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Strict mode / brittleness writing</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U66-first-playwright-test/index.html">U66 First Playwright test: goto and assert text</a>
+    <a class="next" href="../U68-actions-forms/index.html">U68 Actions: click, fill, submit</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U41 — Unit tests: one unit of behavior | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U41</div>
+    <h1>Unit tests: one unit of behavior</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U41 — Unit tests: one unit of behavior</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Runner works. <strong>Unit tests</strong> focus on a small unit — usually a pure function or small module — <strong>in isolation</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define unit test in course terms.</li>
+<li>Test store/logic modules without starting HTTP.</li>
+<li>Choose what counts as a “unit” at beginner scale.</li>
+<li>Keep tests fast and deterministic.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U40</strong>, notes store logic from Phase 4</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>HTTP tests are valuable but slower and broader. Unit tests pin core rules cheaply.</p>
+<h2>Plain-language teaching</h2>
+<h3>Unit test</h3>
+<p>A <strong>unit test</strong> checks one unit of behavior with minimal dependencies — often pure functions or a module with in-memory state reset per test.</p>
+<h3>Example: notesStore</h3>
+<p><code>notesStore.js</code> exports <code>createNote</code>, <code>listNotes</code>, <code>getNote</code>, <code>reset</code> (reset helps tests).</p>
+<pre><code class="language-javascript">// notesStore.test.js
+const test = require(&quot;node:test&quot;);
+const assert = require(&quot;node:assert/strict&quot;);
+const store = require(&quot;./notesStore&quot;);
+
+test(&quot;createNote assigns incrementing ids&quot;, function () {
+  store.reset();
+  const a = store.createNote(&quot;A&quot;, &quot;&quot;);
+  const b = store.createNote(&quot;B&quot;, &quot;&quot;);
+  assert.equal(a.id, 1);
+  assert.equal(b.id, 2);
+});
+
+test(&quot;getNote returns null when missing&quot;, function () {
+  store.reset();
+  assert.equal(store.getNote(99), null);
+});
+</code></pre>
+<h3>Isolation</h3>
+<p>Each test should start from a <strong>known state</strong>. Shared mutable store without reset causes order-dependent flakes.</p>
+<h3>What not to unit-test first</h3>
+<ul>
+<li>Full Express wiring (that’s closer to integration/API tests)</li>
+<li>Third-party library internals</li>
+</ul>
+<p>Test <strong>your</strong> rules: validation helpers, store, pure transforms.</p>
+<h3>Speed</h3>
+<p>Unit tests should feel instant. If they need network, they may not be unit tests.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit test</td>
+<td>Small isolated behavior check</td>
+<td>Not “one assert only” always</td>
+</tr>
+<tr>
+<td>Isolation</td>
+<td>Limited dependencies / clean state</td>
+<td></td>
+</tr>
+<tr>
+<td>Deterministic</td>
+<td>Same result each run</td>
+<td></td>
+</tr>
+<tr>
+<td>Fixture/reset</td>
+<td>Known starting state</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Above id increment tests.</p>
+<h2>Common errors</h2>
+<h3>Error: Tests depend on order</h3>
+<p>Test B expects data from test A. Reset always.</p>
+<h3>Error: Testing console output only</h3>
+<p>Prefer return values and state.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Unit test definition?</li>
+<li>Why reset store?</li>
+<li>What belongs in unit vs API tests?</li>
+<li>Why fast matters?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — unit tests for notesStore</h3>
+<h3>P2 — unit tests for a validateTitle helper</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Mocks/spies heavy</li>
+<li>HTTP supertest yet</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U42 — Arrange–Act–Assert and naming</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U41 Assignment — <code>U41-YourName</code></h1>
+<h2>Deliver</h2>
+<ul>
+<li><code>notesStore.js</code> (or similar) with reset + create/list/get</li>
+<li><code>notesStore.test.js</code> ≥6 unit tests including missing id, list after creates, reset clears</li>
+<li><code>npm test</code> green</li>
+<li><code>answers.md</code>: what is the unit; how isolation achieved; one test that failed while developing and what it taught</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U41 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Store module testable</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>≥6 solid unit tests</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Isolation/reset</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Reflection answers</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U40-test-runners/index.html">U40 Test runners: discover, run, report</a>
+    <a class="next" href="../U42-aaa-and-naming/index.html">U42 Arrange–Act–Assert; naming tests</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

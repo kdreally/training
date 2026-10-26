@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U05 — Decisions (branching) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U05</div>
+    <h1>Decisions (branching)</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U05 — Decisions (branching)</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>Programs can remember values. Real programs also <strong>choose</strong> different paths: if this, do that.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Evaluate boolean conditions.</li>
+<li>Trace <code>if</code> / <code>else if</code> / <code>else</code>.</li>
+<li>Write small decision algorithms in JS form.</li>
+<li>Use <code>&amp;&amp;</code>, <code>||</code>, <code>!</code> carefully at a basic level.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U03</strong>, <strong>U04</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Without branching, a program does the same path every time. Passwords, discounts, permissions, HTTP status choices — all need decisions.</p>
+<h2>Plain-language teaching</h2>
+<h3>Conditions are boolean expressions</h3>
+<p>A <strong>condition</strong> is an expression whose value should be <code>true</code> or <code>false</code>.</p>
+<pre><code class="language-javascript">age &gt;= 18
+score === 100
+name !== &quot;&quot;
+</code></pre>
+<h3><code>if</code> chooses a path</h3>
+<pre><code class="language-javascript">let age = 20;
+let message;
+
+if (age &gt;= 18) {
+  message = &quot;adult&quot;;
+} else {
+  message = &quot;minor&quot;;
+}
+// message is &quot;adult&quot;
+</code></pre>
+<p>Structure:</p>
+<pre><code class="language-javascript">if (condition) {
+  // runs only when condition is true
+} else {
+  // runs only when condition is false
+}
+</code></pre>
+<p>The <code>{ }</code> <strong>block</strong> groups statements controlled by the decision.</p>
+<h3><code>else if</code> chains</h3>
+<pre><code class="language-javascript">let score = 75;
+let grade;
+
+if (score &gt;= 90) {
+  grade = &quot;A&quot;;
+} else if (score &gt;= 70) {
+  grade = &quot;B&quot;;
+} else {
+  grade = &quot;C&quot;;
+}
+</code></pre>
+<p>Only <strong>one</strong> branch runs. First matching condition wins.</p>
+<h3>Comparison operators (review)</h3>
+<table>
+<thead>
+<tr>
+<th>Op</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>===</code></td>
+<td>equal (strict)</td>
+</tr>
+<tr>
+<td><code>!==</code></td>
+<td>not equal (strict)</td>
+</tr>
+<tr>
+<td><code>&gt;</code> <code>&lt;</code> <code>&gt;=</code> <code>&lt;=</code></td>
+<td>ordering</td>
+</tr>
+</tbody>
+</table>
+<h3>Combining conditions</h3>
+<table>
+<thead>
+<tr>
+<th>Op</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>and (both true)</td>
+<td><code>age &gt;= 13 &amp;&amp; age &lt;= 19</code></td>
+</tr>
+<tr>
+<td><code>\|\|</code></td>
+<td>or (at least one true)</td>
+<td><code>role === "admin" \|\| role === "owner"</code></td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>not (flip boolean)</td>
+<td><code>!isBroken</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Precedence care:</strong> when unsure, use parentheses:</p>
+<pre><code class="language-javascript">(age &gt;= 13) &amp;&amp; (age &lt;= 19)
+</code></pre>
+<h3>Truth and accidental values (warning only)</h3>
+<p>JS can treat non-booleans as truthy/falsy inside <code>if (value)</code>.<br />
+<strong>This course prefers explicit conditions</strong> early: <code>if (count === 0)</code> not clever tricks.</p>
+<h3>Nested if</h3>
+<p>You <em>can</em> put <code>if</code> inside <code>if</code>. Prefer flat <code>else if</code> chains when possible — easier to trace.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Branch</td>
+<td>A path the program might take</td>
+<td>Not git branch (later/other)</td>
+</tr>
+<tr>
+<td>Condition</td>
+<td>Boolean question</td>
+<td>Not the whole if-statement</td>
+</tr>
+<tr>
+<td>Block</td>
+<td><code>{ ... }</code> group of statements</td>
+<td>Not an array</td>
+</tr>
+<tr>
+<td>Boolean operators</td>
+<td><code>&amp;&amp;</code> <code>\|\|</code> <code>!</code></td>
+<td>Not arithmetic</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<pre><code class="language-javascript">let temperature = 3;
+let coat;
+
+if (temperature &lt; 5) {
+  coat = &quot;heavy&quot;;
+} else if (temperature &lt; 15) {
+  coat = &quot;light&quot;;
+} else {
+  coat = &quot;none&quot;;
+}
+// coat is &quot;heavy&quot;
+</code></pre>
+<p>Change temperature to <code>10</code> → <code>"light"</code>. To <code>20</code> → <code>"none"</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: Using <code>=</code> inside condition</h3>
+<pre><code class="language-javascript">if (age = 18) { // assigns! almost always wrong here
+</code></pre>
+<p>Use <code>===</code>.</p>
+<h3>Error: Overlapping conditions in wrong order</h3>
+<p>If you check <code>score &gt;= 70</code> before <code>score &gt;= 90</code>, an A score might become B. <strong>Order matters.</strong></p>
+<h3>Error: Missing braces while learning</h3>
+<p>Always use <code>{ }</code> in this course, even for one line.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What type should a condition produce?</li>
+<li>In an if/else if/else chain, how many branches run?</li>
+<li>What is wrong with <code>if (x = 5)</code>?</li>
+<li>English meaning of <code>a &amp;&amp; b</code>?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Trace</h3>
+<pre><code class="language-javascript">let n = 4;
+let label;
+if (n % 2 === 0) {
+  label = &quot;even&quot;;
+} else {
+  label = &quot;odd&quot;;
+}
+</code></pre>
+<h3>P2 — Write</h3>
+<p>JS-style: if <code>hours</code> is greater than 40, <code>pay</code> is <code>hours * 15</code>, else <code>hours * 10</code>. Assume <code>hours</code> already set.</p>
+<h3>P3 — Combine</h3>
+<p>Condition for: age at least 18 <strong>and</strong> hasPass is true.</p>
+<h3>P4 — Grade chain</h3>
+<p>Write if/else if/else for scores: A ≥90, B ≥80, C ≥70, else D.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li><code>switch</code> (optional later)</li>
+<li>Loops (U06)</li>
+<li>Ternary operator <code>? :</code> (optional later)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U06 — Repetition (loops)</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U05 Assignment — <code>U05-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define condition, branch, block; explain <code>&amp;&amp;</code> and <code>||</code>.</li>
+<li>Trace with a table for <code>score = 82</code> and for <code>score = 95</code>:</li>
+</ol>
+<pre><code class="language-javascript">let grade;
+if (score &gt;= 90) {
+  grade = &quot;A&quot;;
+} else if (score &gt;= 80) {
+  grade = &quot;B&quot;;
+} else {
+  grade = &quot;C&quot;;
+}
+</code></pre>
+<ol start="3">
+<li>
+<p>Write complete JS (on paper/in file as text) for:<br />
+   Input names: <code>password</code> (string).<br />
+   If length of password is less than 8 (<code>password.length &lt; 8</code>), set <code>status</code> to <code>"too short"</code>, else <code>"ok"</code>.<br />
+   (Using <code>.length</code> is allowed: it means “how many characters.”)</p>
+</li>
+<li>
+<p>Fix and explain:</p>
+</li>
+</ol>
+<pre><code class="language-javascript">if (role = &quot;admin&quot;) {
+  access = &quot;full&quot;;
+}
+</code></pre>
+<ol start="5">
+<li>Write a chain: <code>temp</code> number → <code>bucket</code> is <code>"cold"</code> if temp &lt; 10, <code>"warm"</code> if temp &lt; 25, else <code>"hot"</code>. Show results for temp 5, 15, 30.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U05 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions + boolean ops</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Traces correct (B and A)</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Password length decision correct</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Identifies <code>=</code> bug; fix uses <code>===</code></td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Temp buckets + three results correct</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U04-names-assignment-state/index.html">U04 Names, assignment, and state</a>
+    <a class="next" href="../U06-repetition-loops/index.html">U06 Repetition (loops)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

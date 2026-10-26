@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U48 — Regression: a bug becomes a test | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U48</div>
+    <h1>Regression: a bug becomes a test</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U48 — Regression: a bug becomes a test</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Bugs will happen. Professionals <strong>trap</strong> them so they cannot return silently.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define regression test.</li>
+<li>Follow bug → failing test → fix → green workflow.</li>
+<li>Write a regression test from a bug report.</li>
+<li>Prefer the smallest layer that catches the bug.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U41–U45</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Fixing without a test invites infinite recurrence.</p>
+<h2>Plain-language teaching</h2>
+<h3>Regression</h3>
+<p>A <strong>regression</strong> is when something that worked (or was fixed) breaks again.<br />
+A <strong>regression test</strong> fails if that bug returns.</p>
+<h3>Workflow</h3>
+<ol>
+<li>Reproduce bug (manual or automated attempt)</li>
+<li>Write a test that <strong>fails</strong> because of the bug (red)</li>
+<li>Fix code</li>
+<li>Test <strong>passes</strong> (green)</li>
+<li>Keep the test forever (or until requirement changes)</li>
+</ol>
+<h3>Example</h3>
+<p>Bug: whitespace-only title accepted.<br />
+Test: POST/ create with <code>"   "</code> expects 400.<br />
+Fix validation.<br />
+Test stays.</p>
+<h3>Choose layer</h3>
+<p>If pure validator bug → unit test.<br />
+If only wrong status mapping → API test.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regression</td>
+<td>Re-break</td>
+<td></td>
+</tr>
+<tr>
+<td>Red-green</td>
+<td>Fail then pass</td>
+<td>TDD-related</td>
+</tr>
+<tr>
+<td>Reproduce</td>
+<td>Make bug happen again</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Whitespace title regression as above.</p>
+<h2>Common errors</h2>
+<h3>Error: Fix without test</h3>
+<p>“I’ll remember.” You will not.</p>
+<h3>Error: Huge vague test</h3>
+<p>Pin the bug precisely.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Regression meaning?</li>
+<li>Four workflow steps?</li>
+<li>Why keep the test?</li>
+<li>Layer choice?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — invent a bug in store, trap it</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Production incident management full process</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U49 — Coverage as a flashlight</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U48 Assignment — <code>U48-YourName</code></h1>
+<ol>
+<li>Introduce (or document) a real bug in your notes project intentionally if needed.</li>
+<li>Write a regression test that fails on the bug.</li>
+<li>Fix the bug; show test pass.</li>
+<li><code>answers.md</code>: narrative red→green; why chosen layer; paste test name + key assert.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U48 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clear bug narrative</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Regression test appropriate</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Fix + green</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Layer reasoning</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U47-test-pyramid/index.html">U47 Kinds of tests map (pyramid thinking)</a>
+    <a class="next" href="../U49-coverage-flashlight/index.html">U49 Coverage as a flashlight, not a score</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

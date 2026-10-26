@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U46 — Test doubles (gentle): stub/fake/mock | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U46</div>
+    <h1>Test doubles (gentle): stub/fake/mock</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U46 — Test doubles (gentle): stub/fake/mock</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Sometimes a real dependency is slow, nondeterministic, or external. <strong>Test doubles</strong> stand in — only when pain is real.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define stub, fake, mock in plain language (course-simple).</li>
+<li>Replace a time/email dependency with a fake in a unit test.</li>
+<li>Know when <em>not</em> to mock (prefer real in-memory store).</li>
+<li>Avoid mock-heavy tests that assert nothing useful.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U41</strong>, <strong>U44</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Mock culture can become theater. We introduce doubles as <strong>tools for specific pains</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>The problem</h3>
+<p>Function <code>sendWelcome(user, mailer)</code> should call mailer. Real mailer sends email — bad for automated tests.</p>
+<h3>Double</h3>
+<p>A <strong>test double</strong> is a stand-in for a dependency in tests.</p>
+<table>
+<thead>
+<tr>
+<th>Kind (simple)</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stub</strong></td>
+<td>Returns fixed data</td>
+</tr>
+<tr>
+<td><strong>Fake</strong></td>
+<td>Working simplified implementation (in-memory DB)</td>
+</tr>
+<tr>
+<td><strong>Mock</strong></td>
+<td>Records how it was called; test asserts on calls</td>
+</tr>
+</tbody>
+</table>
+<p>Exact industry definitions vary; keep these practical.</p>
+<h3>Example fake mailer</h3>
+<pre><code class="language-javascript">function createFakeMailer() {
+  const sent = [];
+  return {
+    sent: sent,
+    send: function (to, subject) {
+      sent.push({ to: to, subject: subject });
+    }
+  };
+}
+
+test(&quot;sendWelcome sends one email&quot;, function () {
+  const mailer = createFakeMailer();
+  sendWelcome({ email: &quot;a@b.c&quot;, name: &quot;Ada&quot; }, mailer);
+  assert.equal(mailer.sent.length, 1);
+  assert.equal(mailer.sent[0].to, &quot;a@b.c&quot;);
+});
+</code></pre>
+<p>Design code to <strong>accept dependencies as parameters</strong> (injection) so tests can pass fakes.</p>
+<h3>When not to double</h3>
+<ul>
+<li>Your own in-memory store — use the real one</li>
+<li>Pure functions — no need</li>
+<li>When a fake becomes as complex as production</li>
+</ul>
+<h3>Danger</h3>
+<p>Mocks that only verify “function was called” without checking outcomes can green while product is wrong. Prefer checking <strong>results</strong> and <strong>meaningful interactions</strong>.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test double</td>
+<td>Stand-in dependency</td>
+<td></td>
+</tr>
+<tr>
+<td>Stub</td>
+<td>Fixed response</td>
+<td></td>
+</tr>
+<tr>
+<td>Fake</td>
+<td>Simplified real behavior</td>
+<td></td>
+</tr>
+<tr>
+<td>Mock</td>
+<td>Call-centered double</td>
+<td>Overused word</td>
+</tr>
+<tr>
+<td>Injection</td>
+<td>Pass deps in</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Fake mailer above.</p>
+<h2>Common errors</h2>
+<h3>Error: Mocking everything</h3>
+<p>Tests mirror implementation; refactors break tests without catching bugs.</p>
+<h3>Error: No injection seam</h3>
+<p>If <code>sendWelcome</code> hardcodes real mailer, testing is painful. Refactor signature.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why doubles exist?</li>
+<li>Stub vs fake vs mock (course defs)?</li>
+<li>When avoid mocking?</li>
+<li>What is injection?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — write a function with injected clock or mailer + tests</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Sinon/Jest mock deep APIs</li>
+<li>Partial mocking modules by magic</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U47 — Test kinds map / pyramid</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U46 Assignment — <code>U46-YourName</code></h1>
+<ol>
+<li>Implement <code>notifyUser(user, mailer)</code> or <code>greetWithClock(name, clock)</code> using injection.</li>
+<li>Tests using a fake/stub (≥3 asserts total).</li>
+<li><code>answers.md</code>: definitions; when you would mock HTTP vs not; risk of over-mocking.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U46 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Injection design</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Working double + tests</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Written judgment</td>
+<td>7</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U45-http-api-tests/index.html">U45 Testing HTTP/APIs</a>
+    <a class="next" href="../U47-test-pyramid/index.html">U47 Kinds of tests map (pyramid thinking)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

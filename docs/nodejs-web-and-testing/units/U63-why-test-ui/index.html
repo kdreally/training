@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U63 — Why test the UI; manual browser checklist | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U63</div>
+    <h1>Why test the UI; manual browser checklist</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U63 — Why test the UI; manual browser checklist</h1>
+<p><strong>Phase 8 — Browser tests with Playwright</strong></p>
+<h2>Where you are</h2>
+<p>You have a real UI on top of your API. Phase 5 taught automated checks for logic and HTTP. <strong>UI tests</strong> check what a human sees and does in the browser. Start <strong>manual</strong> — same pedagogy as U37.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what UI/E2E tests protect that API tests do not.</li>
+<li>Write a manual browser test plan for your notes UI.</li>
+<li>Execute it and record pass/fail.</li>
+<li>Name limits of UI testing (speed, flakiness foreshadow).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U61–U62</strong>, <strong>U37–U38</strong> mindset</li>
+<li>Running full-stack app</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Automating a broken or undefined UI journey multiplies pain. Manual plans define <strong>expected user-visible behavior</strong> first.</p>
+<h2>Plain-language teaching</h2>
+<h3>What API tests do not see</h3>
+<table>
+<thead>
+<tr>
+<th>API test can prove</th>
+<th>UI test can prove</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST returns 201</td>
+<td>Form submit shows the new title in the list</td>
+</tr>
+<tr>
+<td>400 JSON error</td>
+<td>Error text appears for the user</td>
+</tr>
+<tr>
+<td>JSON shape</td>
+<td>Button is usable; page did not go blank</td>
+</tr>
+</tbody>
+</table>
+<p>Wiring bugs live between <code>fetch</code>, DOM updates, and wrong element ids.</p>
+<h3>Manual UI case shape</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td>Short journey name</td>
+</tr>
+<tr>
+<td>Setup</td>
+<td>Server running; empty DB/memory if needed</td>
+</tr>
+<tr>
+<td>Steps</td>
+<td>Open URL → type → click → observe</td>
+</tr>
+<tr>
+<td>Expected</td>
+<td>Visible text, no console panic</td>
+</tr>
+<tr>
+<td>Actual</td>
+<td>What you saw</td>
+</tr>
+<tr>
+<td>Pass?</td>
+<td>Y/N</td>
+</tr>
+</tbody>
+</table>
+<h3>Example cases</h3>
+<ol>
+<li>Home shows heading and empty list (or known state)</li>
+<li>Create note → appears in list</li>
+<li>Empty title → error visible; list unchanged</li>
+<li>Refresh → data still there (if API-backed)</li>
+<li>Keyboard: Tab to field, type, Enter submits</li>
+</ol>
+<h3>Limits (honest)</h3>
+<ul>
+<li>Slower than unit tests  </li>
+<li>More moving parts (browser, timing)  </li>
+<li>Should <strong>not</strong> replace unit/API tests (pyramid still holds; U73)</li>
+</ul>
+<p>Automation (Playwright) will run these journeys faster and more often — after install and concepts (U64–U66).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI test</td>
+<td>Check interface behavior</td>
+<td></td>
+</tr>
+<tr>
+<td>E2E</td>
+<td>End-to-end path through system</td>
+<td>Sometimes = UI + API together</td>
+</tr>
+<tr>
+<td>Journey</td>
+<td>Multi-step user flow</td>
+<td></td>
+</tr>
+<tr>
+<td>Smoke test</td>
+<td>Thin “is it alive” check</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Fill a table while clicking through create + validation on your app.</p>
+<h2>Common errors</h2>
+<h3>Error: Only testing happy path in the browser</h3>
+<p>Empty title and failed fetch matter.</p>
+<h3>Error: No setup notes</h3>
+<p>“Works on my machine with leftover notes” is not a plan.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What can UI tests catch that API tests miss?</li>
+<li>Parts of a manual UI case?</li>
+<li>Why still keep unit/API tests?</li>
+<li>What will Playwright automate later?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — ≥8 manual UI cases</h3>
+<h3>P2 — execute and fill Actual/Pass</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Installing Playwright yet</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U64 — Browser automation and what Playwright is</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U63 Assignment — <code>U63-YourName</code></h1>
+<h2><code>manual-ui-plan.md</code></h2>
+<p>≥8 browser cases for your notes UI (setup, steps, expected, actual, pass). Include ≥3 failure/edge journeys.</p>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>UI vs API test responsibilities.</li>
+<li>Which case failed or felt fragile?</li>
+<li>What you want automation to own first.</li>
+<li>Emotional note: UI fail ≠ you fail (your protocol).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U63 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥8 cases with structure</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Failure/edge journeys</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Actual/Pass filled</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Conceptual answers</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U62-a11y-test-hooks/index.html">U62 Small UI structure, a11y basics, stable test hooks</a>
+    <a class="next" href="../U64-what-playwright-is/index.html">U64 Browser automation; what Playwright is (and is not)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

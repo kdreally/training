@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U44 — Integration tests: units working together | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U44</div>
+    <h1>Integration tests: units working together</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U44 — Integration tests: units working together</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Unit tests cover pieces. <strong>Integration tests</strong> check that pieces cooperate.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define integration test in course terms.</li>
+<li>Test route module + store together without full network if possible.</li>
+<li>Or test app modules wired, still focusing on collaboration.</li>
+<li>Know the cost: slower, broader failures.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U36</strong>, <strong>U41</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>All units green separately can still fail when wired. Integration tests catch “forgot to call store from route.”</p>
+<h2>Plain-language teaching</h2>
+<h3>Integration test</h3>
+<p>Checks <strong>multiple units together</strong>: e.g. validation helper + store + route handler function.</p>
+<p>Not necessarily the entire system with real network (that can be API/e2e).</p>
+<h3>Example style</h3>
+<p>Export a handler or use Express <code>app</code> with a lightweight request helper (U45 deepens HTTP). For this unit, you may:</p>
+<pre><code class="language-javascript">// Pseudo-structure
+test(&quot;creating a note via service layer lists it&quot;, function () {
+  store.reset();
+  notesService.create({ title: &quot;A&quot; });
+  const list = notesService.list();
+  assert.equal(list.length, 1);
+});
+</code></pre>
+<p>If <code>notesService</code> wraps store + validation, testing it is integration-ish versus pure store unit tests.</p>
+<h3>Granularity honesty</h3>
+<p>Industry names blur. In this course:</p>
+<ul>
+<li><strong>Unit</strong> — one module, heavy isolation</li>
+<li><strong>Integration</strong> — several of <em>your</em> modules together</li>
+<li><strong>API/HTTP test</strong> — full HTTP contract (U45)</li>
+</ul>
+<p>Label your files <code>*.integration.test.js</code> if helpful.</p>
+<h3>Cost</h3>
+<p>Failures may not pinpoint the exact line. Still valuable.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Integration test</td>
+<td>Multi-unit collaboration</td>
+<td>Not only “with real DB”</td>
+</tr>
+<tr>
+<td>Seam</td>
+<td>Boundary between units</td>
+<td></td>
+</tr>
+<tr>
+<td>Wiring</td>
+<td>Connecting modules</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Service create+list integration test above.</p>
+<h2>Common errors</h2>
+<h3>Error: Duplicating every unit test at integration level</h3>
+<p>Pick collaboration risks, not clones.</p>
+<h3>Error: No reset between tests</h3>
+<p>Same as unit tests — clean state.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Integration vs unit?</li>
+<li>Example collaboration risk?</li>
+<li>Cost of broader tests?</li>
+<li>How does this differ from HTTP tests?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — write ≥3 integration tests for notes service+store</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Real external DB</li>
+<li>Docker</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U45 — Testing HTTP/APIs</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U44 Assignment — <code>U44-YourName</code></h1>
+<ul>
+<li>Provide modules that collaborate (store + service or routes logic)</li>
+<li>≥3 integration tests with clear names</li>
+<li><code>answers.md</code>: define integration; what risk each test covers; what you still leave to unit/API tests</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U44 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥3 integration tests</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Real multi-unit collaboration</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Written distinctions</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U43-edge-cases/index.html">U43 Edge cases and deliberate failure cases</a>
+    <a class="next" href="../U45-http-api-tests/index.html">U45 Testing HTTP/APIs</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U50 — Capstone: feature + unit + API tests | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U50</div>
+    <h1>Capstone: feature + unit + API tests</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U50 — Capstone: feature + unit + API tests</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Assemble a coherent mini-project proving backend + testing craft.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Ship a small notes/tasks API with clear README.</li>
+<li>Include unit tests and HTTP tests.</li>
+<li>Use npm scripts for start and test.</li>
+<li>Submit something a human assessor can run and grade.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>Phase 4–5 skills (<strong>U31–U49</strong> as applicable)</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>4–10 hours</strong> across days. Permission to pace.</p>
+<h2>Why this exists</h2>
+<p>Scattered exercises are not the same as an integrated artifact. Capstone is evidence.</p>
+<h2>Plain-language teaching</h2>
+<h3>Minimum product</h3>
+<p><strong>Task/Notes API</strong> (pick one domain):</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/health</code></td>
+<td><code>{ ok: true }</code></td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/items</code></td>
+<td>list</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/items/:id</code></td>
+<td>one or 404</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/items</code></td>
+<td>create with validation → 201/400</td>
+</tr>
+<tr>
+<td>(optional)</td>
+<td>PATCH/DELETE</td>
+<td>if you can test them</td>
+</tr>
+</tbody>
+</table>
+<p>In-memory persistence OK.</p>
+<h3>Minimum tests</h3>
+<ul>
+<li>≥6 unit tests on store/validation</li>
+<li>≥5 HTTP tests on contracts</li>
+<li><code>npm test</code> green</li>
+<li>At least one regression-style edge (whitespace title, etc.)</li>
+</ul>
+<h3>Project shape</h3>
+<p>Prefer U36 layout: <code>src/app.js</code>, <code>src/server.js</code>, tests beside or under <code>test/</code>.</p>
+<h3>README must include</h3>
+<ul>
+<li>What it is</li>
+<li>Node version assumption</li>
+<li><code>npm install</code></li>
+<li><code>npm start</code></li>
+<li><code>npm test</code></li>
+<li>Example curls</li>
+</ul>
+<h3>Assessment mindset</h3>
+<p>Assessor clones/opens folder, installs, tests, starts, curls. Reduce friction.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capstone</td>
+<td>Culminating project</td>
+</tr>
+<tr>
+<td>Smoke check</td>
+<td>Quick sanity run</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Your U35–U45 project cleaned and completed is enough if it meets the table.</p>
+<h2>Common errors</h2>
+<h3>Error: Features without tests</h3>
+<p>Capstone requires both.</p>
+<h3>Error: Unreadable README</h3>
+<p>Assessor cannot run → lost points.</p>
+<h3>Error: Committed <code>node_modules</code></h3>
+<p>Usually omit; keep lockfile.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Minimum routes?</li>
+<li>Minimum tests?</li>
+<li>Scripts required?</li>
+<li>README contents?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — gap checklist against your project</h3>
+<h3>P2 — full green run on clean install simulation</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Deploy to cloud</li>
+<li>Frontend SPA</li>
+<li>Auth/OAuth</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U51 — Refactoring with tests</strong> (Phase 6 craft)</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U50 Capstone Assignment — <code>U50-YourName</code></h1>
+<p>Submit project folder (zip) with source, package.json, lockfile, tests, README. No node_modules unless required.</p>
+<h2>Definition of done checklist (include as <code>CHECKLIST.md</code>)</h2>
+<pre><code class="language-markdown">- [ ] GET /health
+- [ ] CRUD-ish list/get/create (min)
+- [ ] Validation 400s
+- [ ] In-memory store
+- [ ] ≥6 unit tests
+- [ ] ≥5 HTTP tests
+- [ ] npm test green
+- [ ] npm start works
+- [ ] README complete
+- [ ] answers.md reflection
+</code></pre>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Architecture tour (files).</li>
+<li>What you tested at which layer and why.</li>
+<li>Hardest bug + how tests helped (or would have).</li>
+<li>What you would add with one more week.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U50 Capstone Rubric — 50 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Routes meet minimum contract</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Validation + error responses</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Project structure + scripts</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Unit tests quality/count</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>HTTP tests quality/count</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>README runnable</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Reflection</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
+<p>Assessor: prefer running <code>npm install &amp;&amp; npm test</code>. Partial credit for incomplete but honest work.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U49-coverage-flashlight/index.html">U49 Coverage as a flashlight, not a score</a>
+    <a class="next" href="../U51-refactor-with-tests/index.html">U51 Refactoring with tests as a safety net</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

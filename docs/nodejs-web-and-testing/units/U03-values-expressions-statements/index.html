@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U03 — Values, expressions, and statements | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U03</div>
+    <h1>Values, expressions, and statements</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U03 — Values, expressions, and statements</h1>
+<p><strong>Phase 1 — First principles</strong></p>
+<h2>Where you are</h2>
+<p>You know what a program is. Now: the smallest pieces of meaning inside a program — <strong>values</strong>, <strong>expressions</strong>, and <strong>statements</strong> — using <strong>JavaScript</strong> spelling.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Identify numbers, strings, booleans, and <code>undefined</code>/<code>null</code> at a beginner level.</li>
+<li>Evaluate simple expressions by hand.</li>
+<li>Tell expression vs statement apart in simple cases.</li>
+<li>Read JS literals without running a tool yet.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U02</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Programs manipulate <strong>values</strong>. If “value” is foggy, everything later (functions, JSON, HTTP bodies) stays foggy. We pin it down now.</p>
+<h2>Plain-language teaching</h2>
+<h3>Values are pieces of data</h3>
+<p>A <strong>value</strong> is a single piece of data the language understands.</p>
+<p>JavaScript values you meet early:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Plain idea</th>
+<th>Examples (JS spelling)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Number</td>
+<td>Numeric quantity</td>
+<td><code>0</code>, <code>12</code>, <code>-3</code>, <code>2.5</code></td>
+</tr>
+<tr>
+<td>String</td>
+<td>Text</td>
+<td><code>"hello"</code>, <code>'Amina'</code></td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td>Yes/no truth</td>
+<td><code>true</code>, <code>false</code></td>
+</tr>
+<tr>
+<td>null</td>
+<td>Intentional empty</td>
+<td><code>null</code></td>
+</tr>
+<tr>
+<td>undefined</td>
+<td>Missing / not set yet</td>
+<td><code>undefined</code></td>
+</tr>
+</tbody>
+</table>
+<p>You will meet objects and arrays in <strong>U08</strong>. Not required yet.</p>
+<h3>Literals</h3>
+<p>A <strong>literal</strong> is a value written directly in code: <code>42</code>, <code>"hi"</code>, <code>true</code>.</p>
+<h3>Expressions produce values</h3>
+<p>An <strong>expression</strong> is code that <strong>produces a value</strong>.</p>
+<p>Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Expression</th>
+<th>Value when evaluated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>2 + 3</code></td>
+<td><code>5</code></td>
+</tr>
+<tr>
+<td><code>"Hi, " + "Sam"</code></td>
+<td><code>"Hi, Sam"</code></td>
+</tr>
+<tr>
+<td><code>10 &gt; 3</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>7</code></td>
+<td><code>7</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Evaluate</strong> means: figure out the value.</p>
+<h3>Operators</h3>
+<p>An <strong>operator</strong> combines or transforms values: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>&gt;</code>, <code>===</code>, etc.</p>
+<p>For now:</p>
+<ul>
+<li>Arithmetic: <code>+ - * / %</code> (<code>%</code> is remainder)</li>
+<li>String join: <code>+</code> between strings concatenates</li>
+<li>Comparison: <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>===</code>, <code>!==</code></li>
+</ul>
+<p><strong><code>===</code></strong> means “same value and same kind” (strict equality). Prefer it over <code>==</code> in this course. We will not rely on the weird corners of <code>==</code>.</p>
+<h3>Statements do work</h3>
+<p>A <strong>statement</strong> is an instruction that <strong>does something</strong>. It may contain expressions.</p>
+<p>In early JS, you will see statements like:</p>
+<pre><code class="language-javascript">let total = 2 + 3;
+console.log(total);
+</code></pre>
+<ul>
+<li><code>2 + 3</code> is an <strong>expression</strong> (value <code>5</code>).</li>
+<li><code>let total = 2 + 3;</code> is a <strong>statement</strong> (creates a name and stores a value) — names are <strong>U04</strong>.</li>
+<li>For this unit, focus on reading expressions even inside statements.</li>
+</ul>
+<p>Rough test:</p>
+<ul>
+<li>If it makes sense to ask “what value is that?”, it is expression-like.</li>
+<li>If it is a full instruction line that <em>does</em> something, it is statement-like.</li>
+</ul>
+<h3>Types (lightly)</h3>
+<p>The <strong>type</strong> of a value is what kind it is (number, string, …).</p>
+<p>JavaScript is <strong>dynamically typed</strong>: you do not declare types on every line the way some languages force you to. Values still <em>have</em> types at runtime.</p>
+<p>Mixing types can surprise you:</p>
+<pre><code class="language-javascript">&quot;2&quot; + 2    // &quot;22&quot;  (string join, not arithmetic)
+</code></pre>
+<p>We will prefer clarity: know whether you mean numbers or text.</p>
+<h3>Strings are not “words only”</h3>
+<p>Strings can hold digits as <strong>text</strong>: <code>"42"</code> is not the number <code>42</code>.</p>
+<h3>Booleans are not strings</h3>
+<p><code>true</code> is not <code>"true"</code>. Different values.</p>
+<h3>Parentheses</h3>
+<p>Parentheses control order:</p>
+<pre><code class="language-text">(2 + 3) * 4  →  20
+2 + (3 * 4)  →  14
+</code></pre>
+<p>Same idea as school math.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Value</td>
+<td>A piece of data</td>
+<td>Not the same as “variable” (U04)</td>
+</tr>
+<tr>
+<td>Literal</td>
+<td>Value written directly</td>
+<td>Not a metaphor</td>
+</tr>
+<tr>
+<td>Expression</td>
+<td>Code that produces a value</td>
+<td>Not always a full line</td>
+</tr>
+<tr>
+<td>Evaluate</td>
+<td>Compute the value of an expression</td>
+<td>Not “judge quality”</td>
+</tr>
+<tr>
+<td>Operator</td>
+<td>Symbol that combines values</td>
+<td>Not the same as a function (yet)</td>
+</tr>
+<tr>
+<td>Statement</td>
+<td>Instruction that performs an action</td>
+<td>Not always producing a value you use</td>
+</tr>
+<tr>
+<td>Type</td>
+<td>Kind of value</td>
+<td>Not “typing on a keyboard”</td>
+</tr>
+<tr>
+<td>String</td>
+<td>Text value</td>
+<td>Not only English words</td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td>true/false</td>
+<td>Not “yes”/“no” strings</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — evaluate by hand</h2>
+<p>Expressions:</p>
+<pre><code class="language-javascript">3 * 4 + 2
+</code></pre>
+<p>Steps: <code>3 * 4</code> → <code>12</code>; <code>12 + 2</code> → <code>14</code>.</p>
+<pre><code class="language-javascript">&quot;Node&quot; + &quot;js&quot;
+</code></pre>
+<p>→ <code>"Nodejs"</code></p>
+<pre><code class="language-javascript">10 % 3
+</code></pre>
+<p>→ <code>1</code> (3 fits into 10 three times; remainder 1)</p>
+<pre><code class="language-javascript">5 === 5
+</code></pre>
+<p>→ <code>true</code></p>
+<pre><code class="language-javascript">5 === &quot;5&quot;
+</code></pre>
+<p>→ <code>false</code> (number vs string)</p>
+<h2>Common errors</h2>
+<h3>Error: <code>"10" + 1</code> expected to be <code>11</code></h3>
+<p><strong>Got:</strong> <code>"101"</code>.<br />
+<strong>Why:</strong> <code>+</code> with a string becomes concatenation.<br />
+<strong>Fix:</strong> Convert deliberately later; for now, notice types.</p>
+<h3>Error: Treating <code>=</code> as equality</h3>
+<p><strong>Reality:</strong> <code>=</code> will mean assignment (U04). Equality is <code>===</code>.</p>
+<h3>Error: Fear of <code>undefined</code> / <code>null</code></h3>
+<p><strong>Reality:</strong> They are ordinary values meaning “missing” / “empty.” You will use them carefully later.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is a value? Give three examples of different kinds.</li>
+<li>What does it mean to evaluate <code>2 * (3 + 1)</code>?</li>
+<li>Is <code>2 + 2</code> an expression? Why?</li>
+<li>Why is <code>5 === "5"</code> false?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Kind of value</h3>
+<p>Label each: number, string, boolean, or other:</p>
+<p><code>0</code>, <code>"0"</code>, <code>false</code>, <code>"false"</code>, <code>3.14</code>, <code>null</code></p>
+<h3>P2 — Evaluate</h3>
+<p>Find values:</p>
+<ol>
+<li><code>6 / 2</code></li>
+<li><code>7 % 2</code></li>
+<li><code>"a" + "b" + "c"</code></li>
+<li><code>4 &gt; 10</code></li>
+<li><code>(1 + 2) * (3 + 4)</code></li>
+<li><code>9 === 9</code></li>
+<li><code>9 === "9"</code></li>
+</ol>
+<h3>P3 — Expression or statement (best guess)</h3>
+<ul>
+<li><code>2 + 2</code></li>
+<li><code>let x = 2 + 2;</code> (even if <code>let</code> is new: the whole line is a statement)</li>
+<li><code>true</code></li>
+<li><code>console.log(1);</code> (statement that causes display — details later)</li>
+</ul>
+<h3>P4 — Predict the trap</h3>
+<p>What is <code>"5" + 3</code>? What would you <em>want</em> if you meant arithmetic?</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Variables in depth (U04)</li>
+<li>Running code in Node (Phase 2)</li>
+<li>Objects/arrays (U08)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U04 — Names, assignment, and state</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U03 Assignment</h1>
+<p>Submit: <code>U03-YourName</code> → <code>answers.md</code></p>
+<ol>
+<li>Define value, expression, evaluate, literal, type (own words).</li>
+<li>Table with 6 literals: write each literal, its type, one sentence use-case.</li>
+<li>Evaluate (show steps if multi-step):<br />
+   a) <code>2 + 3 * 4</code><br />
+   b) <code>(2 + 3) * 4</code><br />
+   c) <code>"Hi " + "there"</code><br />
+   d) <code>11 % 4</code><br />
+   e) <code>8 === 8</code><br />
+   f) <code>8 === "8"</code><br />
+   g) <code>"2" + 2</code></li>
+<li>Explain in 3–6 sentences why <code>"2" + 2</code> differs from <code>2 + 2</code>.</li>
+<li>Mark each as expression-like or statement-like and why:<br />
+   - <code>100</code><br />
+   - <code>100 + 1</code><br />
+   - <code>let score = 100 + 1;</code><br />
+   - <code>false</code></li>
+</ol>
+<p>Rubric: <a href="#rubric">Rubric</a></p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U03 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions accurate enough</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Literals table types correct</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Evaluations correct (esp. precedence, ===, concat trap)</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Clear explanation of <code>"2"+2</code> vs <code>2+2</code></td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Expression vs statement judgments reasonable</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U02-what-a-program-is/index.html">U02 What a computer program is</a>
+    <a class="next" href="../U04-names-assignment-state/index.html">U04 Names, assignment, and state</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

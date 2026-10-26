@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U62 — Small UI structure, a11y basics, stable test hooks | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U62</div>
+    <h1>Small UI structure, a11y basics, stable test hooks</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U62 — Small UI structure, a11y basics, stable test hooks</h1>
+<p><strong>Phase 7</strong></p>
+<h2>Where you are</h2>
+<p>UI + API work. Before Playwright, make the page <strong>usable</strong> and <strong>locatable</strong> without brittle CSS hacks.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Use labels, buttons, and landmarks more carefully.</li>
+<li>Add <code>data-testid</code> (or role-friendly markup) for stable automation hooks.</li>
+<li>Show status/error regions clearly.</li>
+<li>Prefer user-facing names over “div soup.”</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U56–U61</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Playwright can click “the third div.” That test breaks when you restyle. <strong>Accessible, semantic markup</strong> helps humans <em>and</em> stable tests.</p>
+<h2>Plain-language teaching</h2>
+<h3>Accessibility (a11y) — beginner slice</h3>
+<p><strong>Accessibility</strong> means more people can use the UI (keyboard, screen readers, clarity). You will not master WCAG here. You will do basics:</p>
+<ol>
+<li>Every input has a <strong>visible label</strong> tied with <code>for</code>/<code>id</code>.</li>
+<li>Use <strong><code>&lt;button&gt;</code></strong> for actions (not clickable <code>div</code>s).</li>
+<li>Errors are <strong>text in the page</strong>, not only color.</li>
+<li>One main heading; logical order.</li>
+</ol>
+<h3>Stable test hooks</h3>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CSS class <code>.btn-blue</code></td>
+<td>Easy</td>
+<td>Changes with design</td>
+</tr>
+<tr>
+<td>Complex CSS path</td>
+<td>—</td>
+<td>Brittle</td>
+</tr>
+<tr>
+<td>Role + accessible name</td>
+<td>User-centric</td>
+<td>Needs good markup</td>
+</tr>
+<tr>
+<td><code>data-testid="note-form"</code></td>
+<td>Stable for apps you own</td>
+<td>Not shown to users; do not overuse</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code class="language-html">&lt;form id=&quot;note-form&quot; data-testid=&quot;note-form&quot;&gt;
+  &lt;label for=&quot;title&quot;&gt;Title&lt;/label&gt;
+  &lt;input id=&quot;title&quot; name=&quot;title&quot; data-testid=&quot;note-title&quot; /&gt;
+  &lt;button type=&quot;submit&quot; data-testid=&quot;note-submit&quot;&gt;Add note&lt;/button&gt;
+&lt;/form&gt;
+&lt;p id=&quot;error&quot; data-testid=&quot;error&quot; role=&quot;alert&quot;&gt;&lt;/p&gt;
+&lt;ul id=&quot;note-list&quot; data-testid=&quot;note-list&quot;&gt;&lt;/ul&gt;
+</code></pre>
+<p><code>role="alert"</code> helps announce errors to assistive tech (basic pattern).</p>
+<h3>Structure checklist before Phase 8</h3>
+<ul>
+<li>[ ] Can use the form with keyboard only (Tab, Enter)</li>
+<li>[ ] Empty submit shows an error message in the DOM</li>
+<li>[ ] List region has a stable test id</li>
+<li>[ ] Primary actions are real buttons</li>
+<li>[ ] Page still works after a light CSS change (hooks not only on colors)</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a11y</td>
+<td>Accessibility</td>
+<td>Not “features for later”</td>
+</tr>
+<tr>
+<td>Accessible name</td>
+<td>Name assistive tech uses (often label text)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>data-testid</code></td>
+<td>Hook attribute for tests</td>
+<td>Not a secret security feature</td>
+</tr>
+<tr>
+<td>Landmark</td>
+<td>Regions like <code>main</code>, <code>nav</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Brittle selector</td>
+<td>Breaks on tiny UI churn</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Refactor your notes page: labels, <code>role="alert"</code> error, test ids on form/input/button/list.</p>
+<h2>Common errors</h2>
+<h3>Error: Placeholder instead of label</h3>
+<p>Placeholders disappear; labels stay. Use both if you want, not placeholder alone.</p>
+<h3>Error: <code>div</code> with click handler as “button”</h3>
+<p>Keyboard and semantics suffer; Playwright role=button may miss it.</p>
+<h3>Error: Test ids on every single span</h3>
+<p>Reserve for meaningful controls and assertions.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why labels matter for a11y and tests?</li>
+<li>When use <code>data-testid</code>?</li>
+<li>Why prefer button elements?</li>
+<li>What makes a selector brittle?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — audit page with checklist</h3>
+<h3>P2 — keyboard-only create a note</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full WCAG audit</li>
+<li>Aria-everything deep dive</li>
+<li>Playwright install (next phase)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U63 — Why test the UI; manual browser checklist</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U62 Assignment — <code>U62-YourName</code></h1>
+<h2>Deliver</h2>
+<p>Updated UI with:</p>
+<ul>
+<li>Proper labels</li>
+<li>Real submit button</li>
+<li>Visible error region (<code>role="alert"</code> ok)</li>
+<li><code>data-testid</code> on form, title field, submit, list, error</li>
+</ul>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Define a11y (course level) and brittle selector.</li>
+<li>Table: 4 elements → test id + why.</li>
+<li>Keyboard-only test notes (what you tried).</li>
+<li>What you will tell Playwright to click/fill (plain language journey).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U62 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Labels + button semantics</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Error region</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Sensible data-testids</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Written a11y/brittleness</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Keyboard notes + journey</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U61-static-plus-api/index.html">U61 Serving static frontend + API together</a>
+    <a class="next" href="../U63-why-test-ui/index.html">U63 Why test the UI; manual browser checklist</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

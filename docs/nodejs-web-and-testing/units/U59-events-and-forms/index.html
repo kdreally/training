@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U59 — Events and forms | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U59</div>
+    <h1>Events and forms</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U59 — Events and forms</h1>
+<p><strong>Phase 7</strong></p>
+<h2>Where you are</h2>
+<p>You can change the DOM. Users <strong>act</strong>: click, type, submit. <strong>Events</strong> let JS react.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Attach click and submit listeners.</li>
+<li>Prevent full page reload on form submit.</li>
+<li>Read input values and clear fields.</li>
+<li>Update the list on each submit (local only; API next).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U58</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>UI without events is a poster. Playwright will later <strong>fire</strong> the same kinds of actions.</p>
+<h2>Plain-language teaching</h2>
+<h3>Events</h3>
+<p>An <strong>event</strong> is something that happened: click, submit, keydown, load…</p>
+<p>You <strong>listen</strong> with a function (handler):</p>
+<pre><code class="language-javascript">const button = document.querySelector(&quot;#go&quot;);
+button.addEventListener(&quot;click&quot;, function () {
+  console.log(&quot;clicked&quot;);
+});
+</code></pre>
+<h3>Form submit</h3>
+<p>Browsers default to sending the form and <strong>reloading</strong> the page. For JS-driven UIs we often:</p>
+<pre><code class="language-javascript">const form = document.querySelector(&quot;#note-form&quot;);
+const input = document.querySelector(&quot;#title&quot;);
+const list = document.querySelector(&quot;#note-list&quot;);
+
+form.addEventListener(&quot;submit&quot;, function (event) {
+  event.preventDefault(); // stop full reload
+  const title = input.value.trim();
+  if (title === &quot;&quot;) {
+    alert(&quot;Title required&quot;); // replace with nicer UI later
+    return;
+  }
+  const li = document.createElement(&quot;li&quot;);
+  li.textContent = title;
+  list.appendChild(li);
+  input.value = &quot;&quot;;
+  input.focus();
+});
+</code></pre>
+<h3><code>event.preventDefault()</code></h3>
+<p>Stops the browser’s default action (here: navigate/reload on submit). Critical for SPA-like pages and for predictable Playwright tests.</p>
+<h3>Input values</h3>
+<p><code>input.value</code> is a string — same spirit as reading form data. Trim for validation.</p>
+<h3>Local-only state</h3>
+<p>This unit may keep notes <strong>only in the page</strong>. Refresh loses them. Connecting to your API is <strong>U60–U61</strong>.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Event</td>
+<td>Something that happened</td>
+<td></td>
+</tr>
+<tr>
+<td>Listener / handler</td>
+<td>Function that runs on event</td>
+<td></td>
+</tr>
+<tr>
+<td><code>preventDefault</code></td>
+<td>Cancel browser default action</td>
+<td></td>
+</tr>
+<tr>
+<td>Submit</td>
+<td>Form send attempt</td>
+<td>Not only button click</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Type a title, submit, see list item, input clears.</p>
+<h2>Common errors</h2>
+<h3>Error: Listening to button click only, not form submit</h3>
+<p>Enter key may not run your logic. Prefer form <code>submit</code>.</p>
+<h3>Error: Forgetting preventDefault</h3>
+<p>Page reloads; list “resets”; feels like a bug.</p>
+<h3>Error: Not trimming input</h3>
+<p>Whitespace-only titles sneak in (you know this from API validation).</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is an event listener?</li>
+<li>Why preventDefault on submit?</li>
+<li>How do you read the text field?</li>
+<li>What happens on refresh with local-only list?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — working local notes form</h3>
+<h3>P2 — show error message in a <code>&lt;p id="error"&gt;</code> instead of alert</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>fetch/API</li>
+<li>Playwright</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U60 — fetch to your API; CORS idea</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U59 Assignment — <code>U59-YourName</code></h1>
+<h2>Files</h2>
+<p>Working local notes UI: form submit adds item, rejects empty/whitespace, clears input, shows error in page (not only alert).</p>
+<h2><code>answers.md</code></h2>
+<p>Define event, listener, preventDefault; why form submit; refresh behavior; how this prepares Playwright actions.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U59 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Submit adds list item</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>preventDefault used</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Empty validation in UI</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Clear input</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>7</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U58-dom-browser-js/index.html">U58 JavaScript in the browser; the DOM</a>
+    <a class="next" href="../U60-fetch-and-cors/index.html">U60 `fetch` to your API; the CORS idea</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

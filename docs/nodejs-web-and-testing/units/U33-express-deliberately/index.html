@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U33 — Why frameworks exist; Express deliberately | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U33</div>
+    <h1>Why frameworks exist; Express deliberately</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U33 — Why frameworks exist; Express deliberately</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>You built routing by hand. Now a <strong>framework</strong> can reduce boilerplate — as a <strong>choice</strong>, not a religion.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a web framework buys you.</li>
+<li>Install Express as a runtime dependency.</li>
+<li>Recreate <code>/</code>, <code>/health</code>, and 404 with Express.</li>
+<li>Compare Express code to your raw <code>http</code> code.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U24–U26</strong>, <strong>U31–U32</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Express is popular. Using it without raw HTTP creates superstition. You earned it.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a framework is</h3>
+<p>A <strong>framework</strong> provides structure and helpers for a class of programs.<br />
+A <strong>web framework</strong> helps with routing, request parsing, responses, middleware (plug-in pipeline).</p>
+<h3>Tradeoffs</h3>
+<table>
+<thead>
+<tr>
+<th>Gains</th>
+<th>Costs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Less boilerplate</td>
+<td>Another dependency</td>
+</tr>
+<tr>
+<td>Conventions</td>
+<td>Magic if you skip fundamentals</td>
+</tr>
+<tr>
+<td>Ecosystem</td>
+<td>Version upgrades</td>
+</tr>
+</tbody>
+</table>
+<h3>Install Express in a project</h3>
+<pre><code class="language-bash">mkdir u33-express
+cd u33-express
+npm init -y
+npm install express
+</code></pre>
+<h3>Minimal Express app</h3>
+<p><code>server.js</code>:</p>
+<pre><code class="language-javascript">const express = require(&quot;express&quot;);
+const app = express();
+
+app.get(&quot;/&quot;, function (req, res) {
+  res.status(200).type(&quot;text&quot;).send(&quot;Hello, Express\n&quot;);
+});
+
+app.get(&quot;/health&quot;, function (req, res) {
+  res.status(200).json({ ok: true });
+});
+
+app.use(function (req, res) {
+  res.status(404).json({ error: &quot;not found&quot; });
+});
+
+const PORT = 3000;
+app.listen(PORT, function () {
+  console.log(&quot;Listening on http://localhost:&quot; + PORT);
+});
+</code></pre>
+<pre><code class="language-bash">node server.js
+</code></pre>
+<h3>Mapping concepts</h3>
+<table>
+<thead>
+<tr>
+<th>Raw http</th>
+<th>Express</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>createServer</code> callback</td>
+<td><code>app.get</code> / <code>app.post</code> / …</td>
+</tr>
+<tr>
+<td><code>res.end</code></td>
+<td><code>res.send</code> / <code>res.json</code></td>
+</tr>
+<tr>
+<td>manual 404 at end</td>
+<td><code>app.use</code> fallback</td>
+</tr>
+<tr>
+<td><code>server.listen</code></td>
+<td><code>app.listen</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Middleware teaser</h3>
+<p><code>app.use(fn)</code> runs functions on requests. JSON body parsing:</p>
+<pre><code class="language-javascript">app.use(express.json());
+</code></pre>
+<p>Needed before reading <code>req.body</code> on POST (U34–U35).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td>Structured toolkit</td>
+<td>Not Node itself</td>
+</tr>
+<tr>
+<td>Express</td>
+<td>Popular Node web framework</td>
+<td>Not the only one</td>
+</tr>
+<tr>
+<td>Middleware</td>
+<td>Functions in a request pipeline</td>
+<td></td>
+</tr>
+<tr>
+<td><code>app.get</code></td>
+<td>Register GET route</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Same routes as U32, less manual header code via <code>res.json</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: Forgetting <code>npm install express</code></h3>
+<p><code>Cannot find module 'express'</code>.</p>
+<h3>Error: 404 middleware registered <em>before</em> routes</h3>
+<p>Order matters. Define routes first; 404 last.</p>
+<h3>Error: Treating Express as the only way</h3>
+<p>You can still use raw <code>http</code>. Express is optional convenience.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why frameworks?</li>
+<li>One cost of frameworks?</li>
+<li>Express equivalent of res.end JSON?</li>
+<li>Why route order matters for 404?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — rebuild health app in Express</h3>
+<h3>P2 — side-by-side note: 5 lines raw vs Express for same route</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full middleware ecosystem</li>
+<li>Template engines / frontend</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U34 — Validation and error responses</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U33 Assignment — <code>U33-YourName</code></h1>
+<h2>Project with Express</h2>
+<ul>
+<li><code>package.json</code> + lockfile (no node_modules required in submit)</li>
+<li><code>server.js</code> with GET <code>/</code>, GET <code>/health</code>, 404 JSON fallback</li>
+<li><code>answers.md</code>:</li>
+</ul>
+<ol>
+<li>What Express bought you vs U31/U32.</li>
+<li>What it cost (dependency, learning, opacity).</li>
+<li>Mapping table raw→Express for 4 concepts.</li>
+<li>How you installed Express and which dependency bucket.</li>
+<li>Test evidence for routes.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U33 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Express app routes + 404</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>package.json has express dep</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Tradeoff discussion</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Mapping table</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Test evidence</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U32-routes-and-404/index.html">U32 Multiple routes, 404, separating handlers</a>
+    <a class="next" href="../U34-validation-error-responses/index.html">U34 Validation and error responses</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

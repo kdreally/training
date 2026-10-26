@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U64 — Browser automation; what Playwright is (and is not) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U64</div>
+    <h1>Browser automation; what Playwright is (and is not)</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U64 — Browser automation; what Playwright is (and is not)</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>You have a manual UI plan. <strong>Browser automation</strong> means a program drives a browser to perform those steps. <strong>Playwright</strong> is one such tool.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define browser automation / E2E UI testing in plain words.</li>
+<li>Explain Playwright’s role vs unit tests vs API tests.</li>
+<li>Know Playwright is not a browser replacement for users; not a unit test runner for pure functions.</li>
+<li>Preview install pieces without installing yet (next unit).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U63</strong>, packages/npm (<strong>U19–U26</strong>), Phase 5 culture</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>45–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>“Just add Playwright” without a mental model creates copy-paste config fear. Name the tool and its job first.</p>
+<h2>Plain-language teaching</h2>
+<h3>Browser automation</h3>
+<p>A <strong>library/driver</strong> launches or connects to a browser (Chromium, Firefox, WebKit), then:</p>
+<ol>
+<li>Opens a URL  </li>
+<li>Finds elements (locators)  </li>
+<li>Types, clicks, navigates  </li>
+<li>Asserts text/visibility/URL  </li>
+<li>Reports pass/fail  </li>
+</ol>
+<p>Like a careful intern following your manual plan very fast.</p>
+<h3>What Playwright is</h3>
+<p><strong>Playwright</strong> (by Microsoft) is a <strong>browser automation toolkit</strong> with a first-class <strong>test runner</strong> (<code>@playwright/test</code>) popular for end-to-end web tests.</p>
+<p>It can:</p>
+<ul>
+<li>Control Chromium/Firefox/WebKit  </li>
+<li>Auto-wait for elements (U69 deepens)  </li>
+<li>Record traces on failure (later awareness)  </li>
+<li>Run headed (see browser) or headless (no visible window)</li>
+</ul>
+<h3>What Playwright is not</h3>
+<table>
+<thead>
+<tr>
+<th>Not this</th>
+<th>Reality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A replacement for unit tests</td>
+<td>Still use <code>node:test</code> for pure logic</td>
+</tr>
+<tr>
+<td>A replacement for API tests</td>
+<td>HTTP contract tests stay cheaper for APIs</td>
+</tr>
+<tr>
+<td>“The browser” users install</td>
+<td>Drives browsers for tests</td>
+</tr>
+<tr>
+<td>Magic that fixes flaky product code</td>
+<td>Flaky app → flaky tests</td>
+</tr>
+<tr>
+<td>Only visual screenshot tool</td>
+<td>Can do screenshots; main path is interaction + assertions</td>
+</tr>
+</tbody>
+</table>
+<h3>How it fits the pyramid</h3>
+<pre><code class="language-text">        [ Playwright UI/E2E ]   ← few, high-value journeys
+     [ HTTP/API tests ]
+  [ integration ]
+[ many unit tests ]
+</code></pre>
+<h3>Pieces you will meet (preview)</h3>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@playwright/test</code></td>
+<td>npm package: test runner + API</td>
+</tr>
+<tr>
+<td>Browser binaries</td>
+<td>Downloaded Chromium etc. for tests</td>
+</tr>
+<tr>
+<td><code>playwright.config.js</code></td>
+<td>How tests run (base URL, webServer…)</td>
+</tr>
+<tr>
+<td>Spec files</td>
+<td><code>*.spec.js</code> tests you write</td>
+</tr>
+</tbody>
+</table>
+<p>Install and first green test: <strong>U65–U66</strong>.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automation</td>
+<td>Program performs steps</td>
+<td>Not CI alone</td>
+</tr>
+<tr>
+<td>Headless</td>
+<td>Browser without visible UI</td>
+<td>Still a real browser engine</td>
+</tr>
+<tr>
+<td>Headed</td>
+<td>You see the browser</td>
+<td>Good for debugging</td>
+</tr>
+<tr>
+<td>Locator</td>
+<td>Way to find an element</td>
+<td>U67</td>
+</tr>
+<tr>
+<td>Spec</td>
+<td>Test file/case</td>
+<td></td>
+</tr>
+<tr>
+<td>WebServer config</td>
+<td>Auto-start app for tests</td>
+<td>U71</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — map one manual case</h2>
+<p>Manual: “Submit empty title → see error.”<br />
+Playwright (concept): goto <code>/</code> → click submit → expect error test id visible with text.</p>
+<p>You will write real syntax soon.</p>
+<h2>Common errors</h2>
+<h3>Error: Planning to re-test every unit rule only in Playwright</h3>
+<p>Slow and brittle. Keep unit/API tests; UI for journeys and wiring.</p>
+<h3>Error: Thinking headless means “fake browser”</h3>
+<p>Headless is still a browser engine; just not drawn on screen.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does browser automation do?</li>
+<li>Playwright vs node:test roles?</li>
+<li>Headless meaning?</li>
+<li>Why few E2E tests?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Rewrite 5 manual cases as future Playwright titles</h3>
+<h3>P2 — Pyramid: where does each of your existing test kinds sit?</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>npm install playwright</li>
+<li>Writing specs</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U65 — Installing Playwright with understanding</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U64 Assignment — <code>U64-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define browser automation, Playwright, headless, locator (preview-level).</li>
+<li>Table: unit / API / Playwright — one question each answers for your notes app.</li>
+<li>Five future test titles from U63 mapped to automation.</li>
+<li>Two misuses of Playwright (over-testing, replacing unit tests, etc.).</li>
+<li>What install will need to put on your machine (from preview table) — checklist only.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U64 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Layer table</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Five titles</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Misuse awareness</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Install preview checklist</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U63-why-test-ui/index.html">U63 Why test the UI; manual browser checklist</a>
+    <a class="next" href="../U65-install-playwright/index.html">U65 Installing Playwright (with understanding)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

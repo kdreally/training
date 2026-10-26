@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U15 — Input and output basics | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U15</div>
+    <h1>Input and output basics</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U15 — Input and output basics</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>You can print. Now: <strong>outputs</strong>, <strong>command-line arguments</strong> as simple input, and a first look at <strong>reading a file</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain stdin/stdout at a beginner level.</li>
+<li>Read <code>process.argv</code> for simple CLI args.</li>
+<li>Write a tiny program that takes a name argument and greets.</li>
+<li>Read a text file with <code>fs.readFileSync</code> (blocking, simple).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U14</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Programs that only hardcode data are demos. Real programs take <strong>input</strong> and produce <strong>output</strong>. Servers later take network input; start smaller.</p>
+<h2>Plain-language teaching</h2>
+<h3>Output you already know</h3>
+<p><code>console.log(value)</code> writes a line to <strong>standard output</strong> (stdout) — usually your terminal.</p>
+<h3>Standard streams (picture)</h3>
+<table>
+<thead>
+<tr>
+<th>Stream</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stdin</td>
+<td>Input into the program</td>
+</tr>
+<tr>
+<td>stdout</td>
+<td>Normal output</td>
+</tr>
+<tr>
+<td>stderr</td>
+<td>Error output (also often terminal)</td>
+</tr>
+</tbody>
+</table>
+<p>You need not master all three now. Know that printing is stdout.</p>
+<h3>Command-line arguments</h3>
+<p>When you run:</p>
+<pre><code class="language-bash">node greet.js Ada
+</code></pre>
+<p>Node makes arguments available on <strong><code>process.argv</code></strong> — an <strong>array of strings</strong>.</p>
+<p>Typical shape:</p>
+<table>
+<thead>
+<tr>
+<th>Index</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>path to node</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>path to your script</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>first user argument</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>second user argument…</td>
+</tr>
+</tbody>
+</table>
+<p>So <code>Ada</code> is often <code>process.argv[2]</code>.</p>
+<pre><code class="language-javascript">const name = process.argv[2];
+console.log(&quot;Hello, &quot; + name);
+</code></pre>
+<p>If missing:</p>
+<pre><code class="language-javascript">const name = process.argv[2];
+if (name === undefined) {
+  console.log(&quot;Please provide a name&quot;);
+} else {
+  console.log(&quot;Hello, &quot; + name);
+}
+</code></pre>
+<h3>Why arguments matter</h3>
+<p>They let you reuse one program with different inputs without editing the file each time — a tiny CLI.</p>
+<h3>Reading a file (sync, honest simplicity)</h3>
+<p>Node can talk to the operating system. The built-in <strong><code>fs</code></strong> module (file system) can read files.</p>
+<pre><code class="language-javascript">const fs = require(&quot;fs&quot;);
+const text = fs.readFileSync(&quot;note.txt&quot;, &quot;utf8&quot;);
+console.log(text);
+</code></pre>
+<ul>
+<li><code>require("fs")</code> loads Node’s file system module (modules: U16–U17 deepen this).</li>
+<li><code>readFileSync</code> reads the whole file and returns a string when using <code>"utf8"</code>.</li>
+<li><strong>Sync</strong> means “wait until finished before continuing” — simple for learning; async comes when needed.</li>
+</ul>
+<p>Run from the folder that contains <code>note.txt</code>.</p>
+<h3>Writing a file (optional peek)</h3>
+<pre><code class="language-javascript">fs.writeFileSync(&quot;out.txt&quot;, &quot;saved\n&quot;, &quot;utf8&quot;);
+</code></pre>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stdout</td>
+<td>Normal program output</td>
+<td></td>
+</tr>
+<tr>
+<td>Argument (CLI)</td>
+<td>Value after the command</td>
+<td>Not function argument only</td>
+</tr>
+<tr>
+<td><code>process.argv</code></td>
+<td>Array of CLI args</td>
+<td>Indexes 0–1 are special</td>
+</tr>
+<tr>
+<td><code>fs</code></td>
+<td>File system module</td>
+<td></td>
+</tr>
+<tr>
+<td>utf8</td>
+<td>Text encoding for files</td>
+<td></td>
+</tr>
+<tr>
+<td>Sync</td>
+<td>Wait for completion</td>
+<td>Opposite of async</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><code>greet.js</code>:</p>
+<pre><code class="language-javascript">const name = process.argv[2];
+if (name === undefined) {
+  console.log(&quot;Usage: node greet.js &lt;name&gt;&quot;);
+} else {
+  console.log(&quot;Hello, &quot; + name);
+}
+</code></pre>
+<pre><code class="language-bash">node greet.js Sam
+</code></pre>
+<pre><code class="language-text">Hello, Sam
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: <code>undefined</code> name</h3>
+<p>Forgot argument or wrong index (used <code>[1]</code> instead of <code>[2]</code>).</p>
+<h3>Error: <code>ENOENT</code> file not found</h3>
+<p>Wrong cwd or filename. Check <code>ls</code> and path.</p>
+<h3>Error: Treating numbers from argv as numbers automatically</h3>
+<p><code>process.argv</code> values are <strong>strings</strong>. <code>"2" + "2"</code> is <code>"22"</code>. Convert later with <code>Number(...)</code> when needed.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is usually in <code>process.argv[2]</code>?</li>
+<li>Why are CLI args useful?</li>
+<li>What does <code>readFileSync</code> do?</li>
+<li>Why does cwd matter for file reads?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — greet</h3>
+<p>Build <code>greet.js</code> as above.</p>
+<h3>P2 — sum args</h3>
+<p><code>node sum.js 3 4</code> logs <code>7</code> (convert with <code>Number</code>).</p>
+<h3>P3 — file</h3>
+<p>Create <code>note.txt</code>, write a program that prints its contents.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Interactive prompts libraries</li>
+<li>Full async fs</li>
+<li>HTTP</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U16 — Modules: splitting code across files</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U15 Assignment — <code>U15-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>greet.js</code></h3>
+<p>As taught; usage message if no name.</p>
+<h3><code>sum.js</code></h3>
+<p><code>node sum.js 10 5</code> prints <code>15</code>. If fewer than 2 args, print a usage line.</p>
+<h3><code>show.js</code> + <code>note.txt</code></h3>
+<p><code>note.txt</code> contains exactly one line of text you choose. <code>show.js</code> prints file contents via <code>readFileSync</code>.</p>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Explain <code>process.argv</code> indexes 0,1,2.</li>
+<li>Why convert argv to Number for math?</li>
+<li>Transcript of running all three programs.</li>
+<li>One error you hit (or forced) with files/args.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U15 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>greet.js behavior</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>sum.js correct + usage</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>show.js + note.txt</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>argv explanation</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Number conversion explanation</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U14-running-a-js-file/index.html">U14 Running a `.js` file with Node</a>
+    <a class="next" href="../U16-modules-local/index.html">U16 Modules: splitting code across files</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

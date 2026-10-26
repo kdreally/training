@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U01 — What we are building toward | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U01</div>
+    <h1>What we are building toward</h1>
+    <span class="phase-badge ph0">Phase 0 — Orientation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U01 — What we are building toward</h1>
+<p><strong>Phase 0 — Orientation</strong></p>
+<h2>Where you are</h2>
+<p>You know how units and assessment work (U00). Now you get an honest map of the <strong>destination</strong> and the <strong>path</strong> — without pretending you already understand every stop.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>State the course destination in plain language.</li>
+<li>Name the main phases in order and why that order exists.</li>
+<li>Explain what is <strong>in scope</strong> and <strong>out of scope</strong>.</li>
+<li>Point to where automated testing sits (not as an afterthought).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00</strong> completed (or at least read).</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>30–50 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Without a map, every new word feels random. With a map, new words have a parking space. You are not expected to understand servers or tests yet — only to know they are coming and why they come late.</p>
+<h2>Plain-language teaching</h2>
+<h3>The destination (one paragraph)</h3>
+<p>By the end of the main path, you will write <strong>small backend web applications</strong> in <strong>Node.js</strong>: programs that wait for <strong>network requests</strong> and send <strong>responses</strong> (often <strong>JSON</strong> data). You will also write <strong>automated tests</strong> — small programs that check your programs — so you can change code without living in fear.</p>
+<p>You will not become “a senior engineer in six weeks.” You will become someone who can <strong>build a small API</strong>, <strong>explain it</strong>, and <strong>test it</strong> without cargo-culting commands.</p>
+<h3>Why backend first</h3>
+<p>A <strong>backend</strong> is the part of a web system that runs on a server (a computer that waits for requests). It is a good first web target because:</p>
+<ol>
+<li>You can learn <strong>real programming</strong> without fighting layout/CSS.</li>
+<li><strong>HTTP</strong> (the conversation browsers and apps use) is learnable as request → response.</li>
+<li><strong>Tests</strong> for backends can be clear: “When I send X, I should get Y.”</li>
+</ol>
+<p>Browser UI frameworks are mostly <strong>out of the main path</strong>. If we ever need a tiny HTML page to call your API, we will say so explicitly.</p>
+<h3>The phases (remember the <em>order</em>, not every detail)</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Name</th>
+<th>In one sentence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Orientation</td>
+<td>How to learn here; where we are going.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>First principles</td>
+<td>What programs are; values, decisions, functions, errors.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Node.js</td>
+<td>Running JavaScript files outside the browser.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Packages</td>
+<td>Why reuse code; what packages and package managers are.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Backend web</td>
+<td>Servers, HTTP, routes, simple APIs.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Automated tests</td>
+<td>Why automate; unit, integration, API tests.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Craft</td>
+<td>Polish, refactoring with tests, optional extras.</td>
+</tr>
+</tbody>
+</table>
+<h3>Why this order is non-negotiable</h3>
+<p>Imagine someone says on day one: “Just run <code>npm install express</code> and write a route.”</p>
+<p>That sentence smuggles in:</p>
+<ul>
+<li>a package manager (<code>npm</code>)</li>
+<li>installing (<code>install</code>)</li>
+<li>a package (<code>express</code>)</li>
+<li>a web framework concept (<code>route</code>)</li>
+</ul>
+<p>…without explaining <strong>why packages exist</strong>. This course refuses that cruelty.</p>
+<p><strong>Rule you can trust:</strong><br />
+<strong>why packages → what a package is → what a package manager is → then install commands.</strong><br />
+Same pattern for servers and tests.</p>
+<h3>Where testing sits</h3>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Relationship to tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Early programming</td>
+<td>You check work <strong>manually</strong> (eyes + checklist).</td>
+</tr>
+<tr>
+<td>After small modules exist</td>
+<td>You learn <strong>assertions</strong> and a <strong>test runner</strong>.</td>
+</tr>
+<tr>
+<td>After a server exists</td>
+<td>You test <strong>HTTP</strong> behavior (“API tests”).</td>
+</tr>
+<tr>
+<td>Throughout later work</td>
+<td>Tests become a <strong>safety net</strong> for change.</td>
+</tr>
+</tbody>
+</table>
+<p>Testing is not a punishment module bolted on at the end. It is a skill equal to writing the app.</p>
+<h3>What “done with the course” looks like (concrete)</h3>
+<p>You might build something like:</p>
+<ul>
+<li>A small API: create/list/get simple resources (e.g. notes, books, tasks).</li>
+<li>Validation: bad input gets a clear error response.</li>
+<li>Tests: pure logic tested in isolation; HTTP tested with requests.</li>
+<li>A README that tells another human how to run app + tests.</li>
+</ul>
+<p>Exact capstone details appear in later units. For now, hold the shape.</p>
+<h3>What we will not pretend</h3>
+<table>
+<thead>
+<tr>
+<th>We will not pretend…</th>
+<th>Because…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>That you already know the terminal</td>
+<td>We teach it when needed</td>
+</tr>
+<tr>
+<td>That npm is obvious</td>
+<td>We earn it in Phase 3</td>
+</tr>
+<tr>
+<td>That frameworks are mandatory day one</td>
+<td>Core HTTP first</td>
+</tr>
+<tr>
+<td>That “real developers don’t need tests”</td>
+<td>That is folklore, not craft</td>
+</tr>
+<tr>
+<td>That struggle means you chose the wrong career</td>
+<td>Struggle is the default</td>
+</tr>
+</tbody>
+</table>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend</td>
+<td>Program that serves data/logic over a network</td>
+<td>Not “the database only”</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>What users see in a browser/app UI</td>
+<td>Mostly out of main path here</td>
+</tr>
+<tr>
+<td>API</td>
+<td>A defined way for programs to talk (often over HTTP)</td>
+<td>Not a specific product</td>
+</tr>
+<tr>
+<td>Node.js</td>
+<td>A way to run JavaScript outside the browser</td>
+<td>Not a programming language by itself</td>
+</tr>
+<tr>
+<td>Package</td>
+<td>Reusable code someone published for others</td>
+<td>Not the same as “package manager”</td>
+</tr>
+<tr>
+<td>Automated test</td>
+<td>A program that checks another program</td>
+<td>Not a school exam</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td>Common request/response rules for the web</td>
+<td>Not “the internet” as a whole</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Destination sentence (memorize a version of this):</strong></p>
+<blockquote>
+<p>I will write Node.js backend programs that speak HTTP, and I will write automated tests that check those programs.</p>
+</blockquote>
+<p><strong>Order sentence:</strong></p>
+<blockquote>
+<p>I learn programming ideas → run them with Node → use packages honestly → build a server → automate checks.</p>
+</blockquote>
+<p>If you can say both without looking, you are oriented.</p>
+<h2>Common errors</h2>
+<h3>Error: Trying to skip to “the web part”</h3>
+<p><strong>What happens:</strong> Vocabulary avalanche; confidence crash.</p>
+<p><strong>Fix:</strong> Trust the spine. Phase 1–3 are not filler; they remove magic.</p>
+<h3>Error: Thinking testing is optional “extra credit”</h3>
+<p><strong>What happens:</strong> You build something you are afraid to change.</p>
+<p><strong>Fix:</strong> Treat Phase 5 as core. Manual checking is only the on-ramp.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In one sentence, what is the course destination?</li>
+<li>Why do packages come before <code>npm install</code>?</li>
+<li>Name one thing that is out of main-path scope.</li>
+<li>When do automated tests show up relative to servers?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Teach-back</h3>
+<p>Explain the course destination to an imaginary friend who has never programmed. Use no more than 8 sentences. Avoid unexplained jargon; if you use a term, define it.</p>
+<h3>P2 — Phase cards</h3>
+<p>Write the six phase names on paper. Shuffle. Reorder them correctly. Check against this unit.</p>
+<h3>P3 — Scope fence</h3>
+<p>List 3 topics you might be curious about that this course will <strong>not</strong> prioritize (e.g. fancy CSS, Kubernetes). Crossing them off reduces anxiety.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Installing tools</li>
+<li>Writing code</li>
+<li>Deep definitions of HTTP or npm (later units)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U02 — What a computer program is</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U01 Assignment — Destination map</h1>
+<p>Submit folder/zip: <code>U01-YourName</code></p>
+<h2><code>answers.md</code></h2>
+<ol>
+<li><strong>Destination.</strong> Write the course destination in your own words (4–8 sentences). Include: Node.js, backend/HTTP, automated tests.</li>
+<li><strong>Order.</strong> List phases 0–5 in order. For each, one plain sentence.</li>
+<li><strong>Why order matters.</strong> Give one example of a “cruel day-one command” and what hidden ideas it contains.</li>
+<li><strong>Scope.</strong> Name two things in scope and two out of main-path scope.</li>
+<li><strong>Testing place.</strong> Where does testing sit in the journey? (Not “at the end and ignore until then.”)</li>
+<li><strong>Personal goal.</strong> What would <em>you</em> like to be able to build by the end (keep it small and honest)?</li>
+</ol>
+<h2><code>checklist.md</code></h2>
+<pre><code class="language-markdown">- [ ] I can state the destination without reading.
+- [ ] I accept the phase order even if I am impatient for “web.”
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>All questions answered in your own words; checklist complete.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U01 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Destination includes Node + backend/HTTP + tests</td>
+<td>5</td>
+<td>Y</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Phases 0–5 correct order with sensible one-liners</td>
+<td>5</td>
+<td>Y</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Explains why order matters with a concrete smuggling example</td>
+<td>4</td>
+<td>Y</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>In/out of scope mostly accurate</td>
+<td>3</td>
+<td>Y</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Testing framed as core skill with a place in the path</td>
+<td>2</td>
+<td>Y</td>
+<td>Q5</td>
+</tr>
+<tr>
+<td>Personal goal is small/realistic</td>
+<td>1</td>
+<td>N</td>
+<td>Q6</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U00-how-this-course-works/index.html">U00 How this course works</a>
+    <a class="next" href="../U02-what-a-program-is/index.html">U02 What a computer program is</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

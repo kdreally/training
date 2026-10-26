@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U69 — Waiting, auto-wait, and flakiness | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U69</div>
+    <h1>Waiting, auto-wait, and flakiness</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U69 — Waiting, auto-wait, and flakiness</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>UI tests sometimes <strong>pass then fail</strong> without code “logic” changes. That is often <strong>timing</strong>. Playwright’s <strong>auto-wait</strong> helps — if you use <code>expect</code> and locators correctly.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why UI tests flake.</li>
+<li>Prefer auto-waiting assertions over <code>setTimeout</code> / fixed <code>waitForTimeout</code>.</li>
+<li>Use <code>expect</code> retrying as the default wait mechanism.</li>
+<li>Know when an explicit wait is justified (rare).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U68</strong>, <strong>U18</strong> async intuition</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Learners blame themselves for flakes. Usually the test assumed the network/DOM was ready <strong>instantly</strong>. We teach the real model.</p>
+<h2>Plain-language teaching</h2>
+<h3>Flaky test</h3>
+<p>A <strong>flaky</strong> test sometimes passes and sometimes fails <strong>without meaningful product change</strong> — often race conditions.</p>
+<h3>Why races happen</h3>
+<ol>
+<li><code>goto</code> finished but JS still fetching  </li>
+<li>Click happened before button enabled  </li>
+<li>Assert ran before list re-rendered  </li>
+<li>Shared state from a previous test  </li>
+</ol>
+<h3>Auto-wait (Playwright idea)</h3>
+<p>Before acting, Playwright waits for elements to be <strong>actionable</strong> (attached, visible, stable, enabled — details simplified).<br />
+<code>expect</code> <strong>retries</strong> until timeout if condition not yet true.</p>
+<pre><code class="language-javascript">// Good: expect retries until text appears or timeout
+await expect(page.getByTestId(&quot;note-list&quot;)).toContainText(&quot;Buy milk&quot;);
+</code></pre>
+<pre><code class="language-javascript">// Bad default: fixed sleep
+await page.waitForTimeout(3000); // brittle, slow, still can fail
+</code></pre>
+<p>Fixed sleeps are <strong>not</strong> your first tool. They make suites slow and still race.</p>
+<h3>Timeouts</h3>
+<p>If something never appears, test fails after timeout. That failure is information: wrong locator, app bug, or server not running.</p>
+<p>Increase timeout only with a reason — not as a lifestyle.</p>
+<h3>Explicit waits (occasional)</h3>
+<pre><code class="language-javascript">await page.getByTestId(&quot;note-list&quot;).waitFor({ state: &quot;visible&quot; });
+</code></pre>
+<p>Prefer assert-style expects when they express the outcome you care about.</p>
+<h3>Debugging flakes</h3>
+<ol>
+<li>Run headed  </li>
+<li>Use Playwright trace/UI mode when available (<code>npx playwright test --ui</code> or <code>--trace on</code> — explore after basics)  </li>
+<li>Check for shared server state (U70)  </li>
+<li>Log API errors in UI  </li>
+</ol>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flaky</td>
+<td>Intermittent pass/fail</td>
+<td>Not “random computer hate”</td>
+</tr>
+<tr>
+<td>Auto-wait</td>
+<td>Built-in waiting before actions/expects</td>
+<td></td>
+</tr>
+<tr>
+<td>Race</td>
+<td>Order of completion not guaranteed</td>
+<td></td>
+</tr>
+<tr>
+<td>Timeout</td>
+<td>Max wait before fail</td>
+<td></td>
+</tr>
+<tr>
+<td>Deterministic</td>
+<td>Same result each run</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Replace <code>waitForTimeout(2000)</code> before list assert with <code>toContainText</code> only; suite faster and more stable.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>assert</code> from node on playwright locators without await/expect</h3>
+<p>Use Playwright <code>expect</code>.</p>
+<h3>Error: Catching failures by sleeping longer forever</h3>
+<p>Hides real slowness/bugs.</p>
+<h3>Error: Assuming flake = bad learner</h3>
+<p>Usually timing/state/design.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is a flaky test?</li>
+<li>Why is fixed sleep a poor default?</li>
+<li>How does expect help waiting?</li>
+<li>Name two flake causes besides “sleep too short.”</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — audit tests for waitForTimeout; remove if possible</h3>
+<h3>P2 — force a race (assert without waiting path) and watch fail; fix with expect</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full trace viewer mastery</li>
+<li>Network idle dogma for every test</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U70 — Fixtures, beforeEach, isolation</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U69 Assignment — <code>U69-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define flaky, auto-wait, race, timeout.</li>
+<li>Find/remove or justify any fixed sleeps in your e2e tests.</li>
+<li>Describe one flake (real or staged) and the fix.</li>
+<li>Rules you will follow for waiting (numbered ≥5).</li>
+<li>Ensure suite still green; note command used.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U69 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Sleep audit / fix</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Flake story + fix</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Personal waiting rules</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Green suite note</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U68-actions-forms/index.html">U68 Actions: click, fill, submit</a>
+    <a class="next" href="../U70-isolation-fixtures/index.html">U70 Fixtures, beforeEach, test isolation</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

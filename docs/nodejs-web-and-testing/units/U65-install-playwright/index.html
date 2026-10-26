@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U65 — Installing Playwright (with understanding) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U65</div>
+    <h1>Installing Playwright (with understanding)</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U65 — Installing Playwright (with understanding)</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>You know what Playwright is. Now install it <strong>deliberately</strong>: package + browser binaries + where files land.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Add <code>@playwright/test</code> as a <strong>devDependency</strong> (why dev: U26).</li>
+<li>Install browser binaries Playwright needs.</li>
+<li>Explain generated config at a beginner level.</li>
+<li>Run the tool’s version/help and a dry command without panic.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U22–U26</strong>, <strong>U64</strong></li>
+<li>Node/npm working; network for download</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>45–90 minutes</strong> (downloads can be large).</p>
+<h2>Why this exists</h2>
+<p>Playwright install is heavier than <code>ms</code>. Blind <code>npx</code> without knowing <em>what</em> downloaded creates fear when disk fills or CI fails.</p>
+<h2>Plain-language teaching</h2>
+<h3>What you are installing</h3>
+<ol>
+<li><strong>npm package</strong> <code>@playwright/test</code> — JS API + test runner  </li>
+<li><strong>Browser binaries</strong> — Chromium (and optionally Firefox/WebKit) engines Playwright drives  </li>
+</ol>
+<p>Binaries are not “your users’ Chrome settings.” They are browsers for tests.</p>
+<h3>Prefer project-local install</h3>
+<p>In your app project (or a small <code>ui-tests</code> folder your trainer accepts):</p>
+<pre><code class="language-bash">cd notes-app
+npm install -D @playwright/test
+npx playwright install chromium
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Command piece</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm install -D</code></td>
+<td>Save as <strong>devDependency</strong> — tests are not production runtime</td>
+</tr>
+<tr>
+<td><code>@playwright/test</code></td>
+<td>Package name</td>
+</tr>
+<tr>
+<td><code>npx playwright install chromium</code></td>
+<td>Download Chromium for Playwright</td>
+</tr>
+<tr>
+<td>Start with <strong>chromium only</strong></td>
+<td>Smaller; enough for learning</td>
+</tr>
+</tbody>
+</table>
+<p>Later: <code>npx playwright install</code> for all browsers if needed.</p>
+<h3>Init config (optional but common)</h3>
+<pre><code class="language-bash">npx playwright init
+</code></pre>
+<p>or create <code>playwright.config.js</code> yourself (U66–U71 will use fields gradually).</p>
+<p>A minimal config idea:</p>
+<pre><code class="language-javascript">// playwright.config.js
+const { defineConfig } = require(&quot;@playwright/test&quot;);
+
+module.exports = defineConfig({
+  testDir: &quot;./e2e&quot;,
+  use: {
+    baseURL: &quot;http://127.0.0.1:3000&quot;,
+    headless: true
+  }
+});
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>testDir</code></td>
+<td>Folder of <code>*.spec.js</code> tests</td>
+</tr>
+<tr>
+<td><code>baseURL</code></td>
+<td>Prefix so tests can <code>goto('/')</code></td>
+</tr>
+<tr>
+<td><code>headless</code></td>
+<td>Hide browser window by default</td>
+</tr>
+</tbody>
+</table>
+<p>You may not need every wizard option. Prefer understanding over accepting 20 plugins.</p>
+<h3>Verify</h3>
+<pre><code class="language-bash">npx playwright --version
+</code></pre>
+<p>Should print a version. If “command not found,” check local install and <code>npx</code> from project root.</p>
+<h3>Disk and time honesty</h3>
+<p>Browser downloads are <strong>big</strong>. On slow networks, wait. Corporate proxies may block — ask trainer.</p>
+<h3>Security/trust reminder (U21/U54)</h3>
+<p>Official package name matters. Prefer docs from playwright.dev and npm package <code>@playwright/test</code>.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>devDependency</td>
+<td>Needed to develop/test, not run prod app</td>
+<td></td>
+</tr>
+<tr>
+<td>Browser binary</td>
+<td>Engine Playwright launches</td>
+<td>Not npm registry “package” only</td>
+</tr>
+<tr>
+<td><code>npx</code></td>
+<td>Run local/project binary</td>
+<td></td>
+</tr>
+<tr>
+<td>baseURL</td>
+<td>Default origin for tests</td>
+<td></td>
+</tr>
+<tr>
+<td>testDir</td>
+<td>Where specs live</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>After install, <code>package.json</code> shows <code>@playwright/test</code> under <code>devDependencies</code>. <code>npx playwright --version</code> works.</p>
+<h2>Common errors</h2>
+<h3>Error: Installed only the npm package, never browsers</h3>
+<p>Tests fail looking for browsers. Run <code>npx playwright install chromium</code>.</p>
+<h3>Error: Global install chaos</h3>
+<p>Stick to project <code>-D</code> install for this course.</p>
+<h3>Error: Wrong directory</h3>
+<p>Install in the project you will test, not a random folder.</p>
+<h3>Error: “Playwright” vs <code>@playwright/test</code></h3>
+<p>Use <strong><code>@playwright/test</code></strong> for the test runner API taught here.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why <code>-D</code> / devDependency?</li>
+<li>What does <code>playwright install chromium</code> add?</li>
+<li>What is baseURL for?</li>
+<li>How do you verify install?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — install package + chromium</h3>
+<h3>P2 — record versions in notes (node, playwright)</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Writing full E2E journeys (soon)</li>
+<li>CI browser cache tuning</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U66 — First Playwright test</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U65 Assignment — <code>U65-YourName</code></h1>
+<h2>Deliver</h2>
+<ul>
+<li>Project with <code>@playwright/test</code> in devDependencies</li>
+<li>Evidence browsers installed (command output)</li>
+<li><code>playwright.config.js</code> (minimal) <strong>or</strong> notes why init defaults kept</li>
+<li><code>answers.md</code>:</li>
+</ul>
+<ol>
+<li>What two layers got installed (package vs browsers)?</li>
+<li>Why devDependency?</li>
+<li>Paste <code>npx playwright --version</code> and relevant install transcript (redact paths if needed).</li>
+<li>Explain each field you put in config (or defaults you rely on).</li>
+<li>One install problem you hit or a hypothetical “browser missing” fix.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U65 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>devDependency present</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Browser install evidence</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Config understanding</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Version/transcript</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Troubleshooting sense</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U64-what-playwright-is/index.html">U64 Browser automation; what Playwright is (and is not)</a>
+    <a class="next" href="../U66-first-playwright-test/index.html">U66 First Playwright test: goto and assert text</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

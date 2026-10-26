@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U38 — Why automate; tests as executable specifications | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U38</div>
+    <h1>Why automate; tests as executable specifications</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U38 — Why automate; tests as executable specifications</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>You felt manual testing’s cost. Automation is the next tool — still explained before used heavily.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Argue for automated tests with concrete reasons.</li>
+<li>Explain “executable specification.”</li>
+<li>Describe the feedback loop: change → run tests → green/red.</li>
+<li>Name fears automation reduces and fears it does not.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U37</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>People automate to impress, or refuse tests from trauma. We pick a professional middle: tests as <strong>safety and clarity</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>Automation idea</h3>
+<p>Write a program that:</p>
+<ol>
+<li>Puts the system in a known state (or uses pure functions)</li>
+<li>Performs an action</li>
+<li><strong>Asserts</strong> expected outcomes</li>
+<li>Reports pass/fail</li>
+</ol>
+<p>Run it hundreds of times cheaply.</p>
+<h3>Executable specification</h3>
+<p>A good test names behavior:</p>
+<p><code>createNote with empty title returns 400</code></p>
+<p>That is documentation that <strong>cannot rot silently</strong> as easily as a wiki — if it fails, you know.</p>
+<h3>Feedback loop</h3>
+<pre><code class="language-text">edit code → run tests → red/green → fix or continue
+</code></pre>
+<p>Green is not moral purity; it means “checks we wrote still pass.”</p>
+<h3>What tests reduce</h3>
+<ul>
+<li>Fear of changing code</li>
+<li>Repeat manual labor</li>
+<li>“Works on my machine” ambiguity (somewhat)</li>
+</ul>
+<h3>What tests do not do</h3>
+<ul>
+<li>Guarantee no bugs</li>
+<li>Replace thinking</li>
+<li>Fix unclear requirements magically</li>
+<li>Measure your worth</li>
+</ul>
+<h3>Cost of tests</h3>
+<p>Writing time, maintenance when requirements change, bad tests that lock bad design. Still usually worth it for logic and APIs you will touch again.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automated test</td>
+<td>Programmed check</td>
+<td>Not CI only</td>
+</tr>
+<tr>
+<td>Assertion</td>
+<td>Claim that must be true</td>
+<td></td>
+</tr>
+<tr>
+<td>Red/green</td>
+<td>Fail/pass</td>
+<td></td>
+</tr>
+<tr>
+<td>Spec</td>
+<td>Specification of behavior</td>
+<td></td>
+</tr>
+<tr>
+<td>False confidence</td>
+<td>Green but weak tests</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Manual case “missing title → 400” becomes an automated test that sends POST and asserts status 400 — next units implement.</p>
+<h2>Common errors</h2>
+<h3>Error: Testing implementation details only</h3>
+<p>Brittle tests. Prefer observable behavior.</p>
+<h3>Error: Zero tests then 1000 at once</h3>
+<p>Grow with features.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does an automated test do?</li>
+<li>Executable specification meaning?</li>
+<li>Two benefits, two non-benefits?</li>
+<li>What is red/green loop?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — rewrite 3 manual cases as test titles</h3>
+<h3>P2 — essay: fear you want tests to reduce</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Writing runner code yet (U39–U40)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U39 — Assertions</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U38 Assignment — <code>U38-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define automated test, assertion, executable specification, red/green.</li>
+<li>Convert 5 of your U37 cases into precise automated test titles.</li>
+<li>Benefits essay (8–12 sentences) grounded in your manual testing experience.</li>
+<li>Two ways tests can give false confidence.</li>
+<li>Personal agreement: how you will treat a failing test emotionally (protocol).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U38 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Five test titles quality</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Benefits grounded in experience</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>False confidence</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Emotional protocol</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U37-manual-testing/index.html">U37 What “testing” means; manual checks</a>
+    <a class="next" href="../U39-assertions/index.html">U39 Assertions: claiming what should be true</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

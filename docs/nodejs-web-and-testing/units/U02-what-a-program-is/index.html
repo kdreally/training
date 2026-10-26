@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U02 — What a computer program is | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U02</div>
+    <h1>What a computer program is</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U02 — What a computer program is</h1>
+<p><strong>Phase 1 — First principles of programming</strong></p>
+<h2>Where you are</h2>
+<p>Map is set. Now: the most basic idea — <strong>what a program is</strong> — without Node, packages, or web noise.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define <em>program</em>, <em>instruction</em>, <em>language</em>, and <em>algorithm</em> in plain words.</li>
+<li>Distinguish program vs document vs data vs application.</li>
+<li>Trace a tiny instruction list by hand.</li>
+<li>Explain why precise language matters to computers.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00</strong>, <strong>U01</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>People “write code” for months without a stable definition of <em>program</em>. Then every new tool feels like magic. We start with a definition you can stand on.</p>
+<h2>Plain-language teaching</h2>
+<h3>A computer is obedient and literal</h3>
+<p>A computer does not “know what you meant.” It follows <strong>instructions</strong> written in a form it can execute. If the instructions are wrong, it does the wrong thing <strong>perfectly</strong>.</p>
+<p>That is not hostility. That is literalness.</p>
+<h3>What a program is</h3>
+<p>A <strong>program</strong> is a collection of instructions that a computer can carry out to perform a task.</p>
+<p>More carefully:</p>
+<ol>
+<li>Someone writes instructions in a <strong>programming language</strong>.</li>
+<li>Those instructions are stored as <strong>text in files</strong> (usually).</li>
+<li>A <strong>runtime</strong> or related tools turn that text into actions the machine can perform.</li>
+<li>When the program <strong>runs</strong>, the computer performs those actions in a defined order (with branches and loops you will learn soon).</li>
+</ol>
+<p>You do not need the hardware details yet. You need this shape.</p>
+<h3>Program vs related words</h3>
+<table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>What it is</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Program</strong></td>
+<td>Instructions a computer can run</td>
+<td>A file that adds two numbers and prints the sum</td>
+</tr>
+<tr>
+<td><strong>Algorithm</strong></td>
+<td>A clear process to solve a problem (can be on paper)</td>
+<td>“To find the largest number, look at each, remember the biggest so far”</td>
+</tr>
+<tr>
+<td><strong>Code</strong></td>
+<td>Instructions written in a programming language</td>
+<td>The text of the program</td>
+</tr>
+<tr>
+<td><strong>Document</strong></td>
+<td>Text for humans (maybe formatted)</td>
+<td>A recipe in a Word file — the computer does not <em>cook</em></td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td>Information programs use</td>
+<td>The numbers <code>3</code> and <code>5</code>, a list of names</td>
+</tr>
+<tr>
+<td><strong>Application / app</strong></td>
+<td>A program (or set of programs) meant for users to accomplish something</td>
+<td>A notes app</td>
+</tr>
+</tbody>
+</table>
+<p>A recipe is like an algorithm for humans. A program is an algorithm expressed so a machine can execute it without common sense.</p>
+<h3>Languages</h3>
+<p>Humans use English, Swahili, Spanish… Computers need <strong>programming languages</strong> with strict rules.</p>
+<p>Examples of languages: JavaScript, Python, Java, C.</p>
+<p><strong>JavaScript</strong> is the language we will use.<br />
+<strong>Node.js</strong> (later) is one <em>place</em> JavaScript can run — not a different language.</p>
+<h3>Source code is text</h3>
+<p>When we say “write a program,” we almost always mean: type text into a file, save it, then run it with a tool.</p>
+<p>That text must follow the language’s rules (<strong>syntax</strong>). Break the rules → the tool complains (an <strong>error</strong>). Complaints are feedback, not insults.</p>
+<h3>A tiny program in plain language (not real JS yet)</h3>
+<p>Task: greet a person.</p>
+<p>Algorithm on paper:</p>
+<ol>
+<li>Remember the name “Amina”.</li>
+<li>Build the message “Hello, Amina”.</li>
+<li>Show that message to the user.</li>
+</ol>
+<p>As fake structured instructions:</p>
+<pre><code class="language-text">SET name TO &quot;Amina&quot;
+SET message TO &quot;Hello, &quot; + name
+SHOW message
+</code></pre>
+<p>You can <strong>trace</strong> this: after line 1, name is Amina; after line 2, message is Hello, Amina; line 3 displays it.</p>
+<p>Tracing by hand is a core skill. It means: pretend you are the computer, one step at a time.</p>
+<h3>What makes a good instruction list</h3>
+<ul>
+<li><strong>Clear order</strong> — what happens first, next, next.</li>
+<li><strong>Defined words</strong> — names mean something specific.</li>
+<li><strong>No hand-waving</strong> — “handle the user stuff” is not an instruction.</li>
+<li><strong>Finite</strong> — it should finish (or intentionally wait — servers do that later, with a reason).</li>
+</ul>
+<h3>Programs transform inputs to outputs (often)</h3>
+<p>Many programs:</p>
+<p><strong>inputs</strong> → <strong>processing</strong> → <strong>outputs</strong></p>
+<p>Example: inputs <code>3</code> and <code>5</code> → processing “add” → output <code>8</code>.</p>
+<p>Web backends later: input = an HTTP request; output = an HTTP response. Same shape, bigger costume.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Program</td>
+<td>Runnable instructions for a task</td>
+<td>Not the same as “project” always</td>
+</tr>
+<tr>
+<td>Instruction</td>
+<td>One step the machine should perform</td>
+<td>Not a tutorial step for you</td>
+</tr>
+<tr>
+<td>Algorithm</td>
+<td>Process to solve a problem</td>
+<td>Can exist without a computer</td>
+</tr>
+<tr>
+<td>Programming language</td>
+<td>Rule-based language for programs</td>
+<td>Not the same as the runtime</td>
+</tr>
+<tr>
+<td>Syntax</td>
+<td>Rules for valid code text</td>
+<td>Not the same as “good design”</td>
+</tr>
+<tr>
+<td>Run / execute</td>
+<td>Make the computer carry out the program</td>
+<td>Not “open the file in Word”</td>
+</tr>
+<tr>
+<td>Trace</td>
+<td>Step through by hand, tracking state</td>
+<td>Not “search online”</td>
+</tr>
+<tr>
+<td>Runtime</td>
+<td>Tool/environment that executes code</td>
+<td>Node is a runtime for JS (later)</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — trace on paper</h2>
+<pre><code class="language-text">SET a TO 10
+SET b TO 3
+SET c TO a - b
+SHOW c
+</code></pre>
+<p>Trace table:</p>
+<table>
+<thead>
+<tr>
+<th>After step</th>
+<th>a</th>
+<th>b</th>
+<th>c</th>
+<th>Shown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td></td>
+</tr>
+<tr>
+<td>SET a</td>
+<td>10</td>
+<td>?</td>
+<td>?</td>
+<td></td>
+</tr>
+<tr>
+<td>SET b</td>
+<td>10</td>
+<td>3</td>
+<td>?</td>
+<td></td>
+</tr>
+<tr>
+<td>SET c</td>
+<td>10</td>
+<td>3</td>
+<td>7</td>
+<td></td>
+</tr>
+<tr>
+<td>SHOW c</td>
+<td>10</td>
+<td>3</td>
+<td>7</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>If you can fill tables like this, you are programming — even before real syntax.</p>
+<h2>Common errors</h2>
+<h3>Error: Treating a saved file as “already a running program”</h3>
+<p><strong>Reality:</strong> Saving creates storage. <strong>Running</strong> makes the computer obey.</p>
+<h3>Error: Assuming the computer will fill gaps</h3>
+<p><strong>Reality:</strong> “Print the total” without saying total of <em>what</em> is incomplete. Humans guess. Computers do not.</p>
+<h3>Error: Confusing HTML with a general program</h3>
+<p><strong>Reality:</strong> HTML mainly <strong>describes structure</strong> of a page. It is not the same as general-purpose programming you will do in JavaScript. Prior HTML help is fine; it is not the whole skill.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Define <em>program</em> in one sentence.</li>
+<li>How does an algorithm differ from a program?</li>
+<li>What does it mean to <em>trace</em> code?</li>
+<li>Why are programming languages strict?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Sort the pile</h3>
+<p>Label each as program-ish, document, data, or algorithm-on-paper:</p>
+<ul>
+<li>A PDF of a novel  </li>
+<li>“To swap two cups: pour A into spare, pour B into A, pour spare into B”  </li>
+<li>The number <code>42</code>  </li>
+<li>A JavaScript file that calculates tax when run  </li>
+</ul>
+<h3>P2 — Write an algorithm</h3>
+<p>On paper, write numbered steps to decide whether a number is even. Do not write real JS. Be precise.</p>
+<h3>P3 — Trace</h3>
+<pre><code class="language-text">SET x TO 2
+SET x TO x + 1
+SET y TO x * 4
+SHOW y
+</code></pre>
+<p>Make a trace table. What is shown?</p>
+<h3>P4 — Broken instructions</h3>
+<p>Why is this a bad program-like list for a machine?</p>
+<pre><code class="language-text">Do the login thing.
+Make it nice.
+Finish.
+</code></pre>
+<p>Rewrite it as clearer human steps for “check password length is at least 8” (still on paper).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Real JavaScript syntax rules (next units)</li>
+<li>Installing Node</li>
+<li>Files on disk details beyond “code is text”</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U03 — Values, expressions, and statements</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U02 Assignment</h1>
+<p>Submit: <code>U02-YourName</code></p>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Define <strong>program</strong>, <strong>algorithm</strong>, <strong>syntax</strong>, <strong>run</strong>, and <strong>trace</strong> in your own words (1–2 sentences each).</li>
+<li>Give one example each of: program, document, data, algorithm-on-paper. Explain each choice in one line.</li>
+<li>Why does literalness of computers make precise instructions necessary? (short paragraph)</li>
+<li>Trace this and show a table; state final shown value:</li>
+</ol>
+<pre><code class="language-text">SET n TO 4
+SET n TO n + n
+SET m TO n - 1
+SHOW m
+</code></pre>
+<ol start="5">
+<li>Write an algorithm (numbered steps, paper-style) for: <strong>given three numbers, show the largest</strong>. Handle ties however you like, but state the rule.</li>
+</ol>
+<h2><code>checklist.md</code></h2>
+<pre><code class="language-markdown">- [ ] I traced by hand, not by guessing the answer only.
+- [ ] I read the rubric.
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U02 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions correct enough in plain language</td>
+<td>6</td>
+<td>Y</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Examples correctly categorized with reasons</td>
+<td>5</td>
+<td>Y</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Literalness explanation is coherent</td>
+<td>4</td>
+<td>Y</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Trace table correct; final value 7</td>
+<td>5</td>
+<td>Y</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Largest-of-three algorithm is finite, ordered, handles the task</td>
+<td>5</td>
+<td>Y</td>
+<td>Q5</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U01-what-we-are-building-toward/index.html">U01 What we are building toward</a>
+    <a class="next" href="../U03-values-expressions-statements/index.html">U03 Values, expressions, and statements</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

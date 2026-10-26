@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U10 — Algorithms: clear steps → code | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U10</div>
+    <h1>Algorithms: clear steps → code</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U10 — Algorithms: clear steps → code</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>You have the raw materials of programming. This unit trains the <strong>bridge</strong>: problem → clear steps → JavaScript.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write pseudocode that is precise enough to implement.</li>
+<li>Translate pseudocode into JS functions.</li>
+<li>Check work with examples (manual tests).</li>
+<li>Decompose a problem into smaller functions.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U02–U09</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–110 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Typing syntax without a plan produces thrashing. Planning without precision produces fog. Pseudocode is the middle path.</p>
+<h2>Plain-language teaching</h2>
+<h3>Algorithm again</h3>
+<p>An <strong>algorithm</strong> is a finite, ordered, clear process that solves a problem.</p>
+<p>Properties:</p>
+<ol>
+<li><strong>Clear steps</strong> — no “handle it.”</li>
+<li><strong>Ordered</strong> — sequence matters.</li>
+<li><strong>Finite</strong> — finishes (for now).</li>
+<li><strong>Works for a class of inputs</strong> — not only one lucky example.</li>
+</ol>
+<h3>Pseudocode</h3>
+<p><strong>Pseudocode</strong> is structured plain language (sometimes mixed with code-like words) for humans — not yet forced to full syntax.</p>
+<p>Good pseudocode for “largest of three numbers a,b,c”:</p>
+<pre><code class="language-text">function largest(a, b, c):
+  set best to a
+  if b &gt; best:
+    set best to b
+  if c &gt; best:
+    set best to c
+  return best
+</code></pre>
+<p>Bad pseudocode:</p>
+<pre><code class="language-text">figure out the biggest somehow and return it
+</code></pre>
+<h3>Process: problem → code</h3>
+<ol>
+<li><strong>Restate the problem</strong> in one sentence.</li>
+<li><strong>Examples:</strong> 2–3 inputs with expected outputs (including an edge).</li>
+<li><strong>Pseudocode</strong> steps.</li>
+<li><strong>Implement</strong> in JS.</li>
+<li><strong>Trace</strong> one example by hand.</li>
+<li><strong>Check</strong> all examples (manual test).</li>
+</ol>
+<p>This is already a testing culture. Phase 5 automates step 6.</p>
+<h3>Decomposition</h3>
+<p>Hard problem → several functions.</p>
+<p>Example: average score of passing students only.</p>
+<ul>
+<li><code>isPassing(score)</code> </li>
+<li><code>average(nums)</code></li>
+<li><code>passingAverage(scores)</code> uses both</li>
+</ul>
+<h3>Manual test table</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Expected</th>
+<th>Actual</th>
+<th>Pass?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[10,20]</td>
+<td>15</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>[0]</td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Fill Actual when you run (later) or when you trace.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pseudocode</td>
+<td>Human-oriented algorithm draft</td>
+<td>Not runnable JS</td>
+</tr>
+<tr>
+<td>Edge case</td>
+<td>Unusual but valid input</td>
+<td>Empty list, zero, ties</td>
+</tr>
+<tr>
+<td>Decomposition</td>
+<td>Split into smaller pieces</td>
+<td>Not “delete features”</td>
+</tr>
+<tr>
+<td>Manual test</td>
+<td>Human checks expected vs actual</td>
+<td>Not automated yet</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Problem:</strong> Count words in a sentence string separated by single spaces. No leading/trailing space. Empty string → 0.</p>
+<p><strong>Examples:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Expected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>""</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>"hi"</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>"hi there you"</code></td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pseudocode:</strong></p>
+<pre><code class="language-text">function countWords(text):
+  if text is empty:
+    return 0
+  set count to 1
+  for each character in text:
+    if character is space:
+      count = count + 1
+  return count
+</code></pre>
+<p><strong>JS:</strong></p>
+<pre><code class="language-javascript">function countWords(text) {
+  if (text === &quot;&quot;) {
+    return 0;
+  }
+  let count = 1;
+  for (let i = 0; i &lt; text.length; i = i + 1) {
+    if (text[i] === &quot; &quot;) {
+      count = count + 1;
+    }
+  }
+  return count;
+}
+</code></pre>
+<p>(Assumes single spaces only — stated in problem. Real word-counting is harder; honesty about assumptions is skill.)</p>
+<h2>Common errors</h2>
+<h3>Error: Coding before examples</h3>
+<p>You don’t know what “correct” means.</p>
+<h3>Error: Pseudocode that hides decisions</h3>
+<p>“Validate input” without saying <em>how</em> is incomplete.</p>
+<h3>Error: One giant function</h3>
+<p>If you cannot name steps, split them.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Four properties of an algorithm?</li>
+<li>Why write examples before code?</li>
+<li>What is an edge case?</li>
+<li>How does manual testing relate to later automated tests?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Pseudocode only</h3>
+<p>Fizz-style light: for n, if divisible by 15 return "both"; by 3 "three"; by 5 "five"; else the number as… (return string or number — pick and state).</p>
+<h3>P2 — Implement</h3>
+<p><code>function clamp(n, min, max)</code> via pseudocode first.</p>
+<h3>P3 — Table</h3>
+<p>Manual test table for <code>max2(a,b)</code> with three rows including a tie.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Big-O complexity theory</li>
+<li>Formal proofs</li>
+<li>Running code in Node (next phase)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U11 — What Node.js is</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U10 Assignment — <code>U10-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Restate in your own words the problem→code process (numbered).</li>
+<li><strong>Problem A:</strong> <code>function secondsToClock(totalSeconds)</code><br />
+   Non-negative integer seconds → string <code>M:SS</code> where SS is two digits.<br />
+   Examples: <code>0</code> → <code>"0:00"</code>, <code>65</code> → <code>"1:05"</code>, <code>600</code> → <code>"10:00"</code>.<br />
+   Provide: examples table, pseudocode, JS function, hand-trace for 65.</li>
+<li><strong>Problem B:</strong> <code>function allPositive(nums)</code><br />
+   Array of numbers → <code>true</code> if every element &gt; 0, else <code>false</code>. Empty array → <code>true</code> (state this assumption).<br />
+   Pseudocode + JS + test table with 3 rows.</li>
+<li>Explain one edge case you considered and why.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U10 Rubric — 30 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Process restated clearly</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Problem A: examples + pseudo + JS + trace</td>
+<td>12</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Problem B: pseudo + JS + table</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Edge case reflection</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
+<p>Assessor: SS padding is required; accept reasonable pad technique (if/string).</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U09-errors-reading-messages/index.html">U09 Errors: mistakes, exceptions, reading messages</a>
+    <a class="next" href="../U11-what-nodejs-is/index.html">U11 What Node.js is</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

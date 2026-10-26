@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U19 — Why reuse exists (before packages) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U19</div>
+    <h1>Why reuse exists (before packages)</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U19 — Why reuse exists (before packages)</h1>
+<p><strong>Phase 3 — Packages and package managers</strong></p>
+<h2>Where you are</h2>
+<p>You can write Node programs with local and built-in modules. Next temptation: download the internet. <strong>Stop.</strong> First: <em>why</em> shared code exists at all.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Argue for and against code reuse.</li>
+<li>Explain cost of writing everything yourself.</li>
+<li>Explain risk of depending on strangers.</li>
+<li>State what problem “packages” will solve <em>before</em> meeting npm.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U16</strong>, <strong>U17</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p><code>npm install</code> without motivation is ritual. Ritual creates cargo cult engineers. We build motive first.</p>
+<h2>Plain-language teaching</h2>
+<h3>You already reuse</h3>
+<ul>
+<li>Language features (<code>if</code>, functions)</li>
+<li>Built-in modules (<code>fs</code>, <code>path</code>)</li>
+<li>Your own modules across files</li>
+</ul>
+<p>Reuse is normal. The question is <strong>whose code</strong> and <strong>how it arrives</strong>.</p>
+<h3>The fantasy of pure originality</h3>
+<p>Writing every HTTP parser, date formatter, and password hash yourself:</p>
+<table>
+<thead>
+<tr>
+<th>Cost</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time</td>
+<td>Weeks or years</td>
+</tr>
+<tr>
+<td>Bugs</td>
+<td>Security mistakes are expensive</td>
+</tr>
+<tr>
+<td>Maintenance</td>
+<td>You alone fix everything</td>
+</tr>
+<tr>
+<td>Opportunity</td>
+<td>You never build <em>your</em> product</td>
+</tr>
+</tbody>
+</table>
+<p>Professionals reuse <strong>carefully</strong>.</p>
+<h3>The fantasy of infinite install</h3>
+<p>Blindly installing hundreds of packages:</p>
+<table>
+<thead>
+<tr>
+<th>Cost</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supply chain risk</td>
+<td>Malicious or abandoned code</td>
+</tr>
+<tr>
+<td>Complexity</td>
+<td>Upgrade hell</td>
+</tr>
+<tr>
+<td>Opacity</td>
+<td>You cannot explain your own app</td>
+</tr>
+<tr>
+<td>Weight</td>
+<td>Disk, install time, confusion</td>
+</tr>
+</tbody>
+</table>
+<p>Professionals reuse <strong>minimally and deliberately</strong>.</p>
+<h3>A middle path</h3>
+<ol>
+<li>Prefer <strong>standard library</strong> when enough.</li>
+<li>Write small modules yourself when the logic is your domain.</li>
+<li>Use a <strong>package</strong> when the problem is common, well-solved, and the dependency is justified.</li>
+<li>Know <strong>what</strong> you installed and <strong>why</strong>.</li>
+</ol>
+<h3>What is coming (preview only)</h3>
+<ul>
+<li><strong>Package</strong> — a reusable unit of code published for others (U20)</li>
+<li><strong>Package manager</strong> — tool to fetch/install/version packages (U22)</li>
+<li><strong>Manifest</strong> — project file listing dependencies (U23)</li>
+</ul>
+<p>Do <strong>not</strong> install anything for this unit.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reuse</td>
+<td>Use existing code instead of rewriting</td>
+<td>Not plagiarism when licensed/attributed properly</td>
+</tr>
+<tr>
+<td>Dependency</td>
+<td>Code you rely on</td>
+<td>Emotional meaning too — you depend</td>
+</tr>
+<tr>
+<td>Supply chain</td>
+<td>Path code takes to reach you</td>
+<td>Not only physical shipping</td>
+</tr>
+<tr>
+<td>Standard library</td>
+<td>Built-ins</td>
+<td>Free of npm install</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — decision sketch</h2>
+<p>Need to parse dates in weird formats?</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Write yourself</td>
+<td>Formats are trivial</td>
+</tr>
+<tr>
+<td>Use a package</td>
+<td>Formats are gnarly and well-known libraries exist</td>
+</tr>
+<tr>
+<td>Avoid</td>
+<td>Maybe store timestamps as numbers and skip parsing</td>
+</tr>
+</tbody>
+</table>
+<p>There is no single always-right answer. There is always a <strong>reason</strong>.</p>
+<h2>Common errors</h2>
+<h3>Error: “Real devs install first, think later”</h3>
+<p>No. Real devs can explain dependencies.</p>
+<h3>Error: “Using packages is cheating”</h3>
+<p>No. Unexamined packages are the problem — not packages themselves.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Two costs of writing everything yourself?</li>
+<li>Two costs of installing everything?</li>
+<li>Where do built-ins fit?</li>
+<li>What question should you answer before adding a dependency?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Pros/cons table</h3>
+<p>Make a 2-column table: reuse vs rewrite for “sort an array of numbers” (hint: language already sorts).</p>
+<h3>P2 — Justification drill</h3>
+<p>Pick one: UUID generation, advanced date time zones, or a full web framework. Write 4 sentences: when a package is justified.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>npm commands</li>
+<li>Installing anything</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U20 — What a package is</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U19 Assignment — <code>U19-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Explain reuse using only built-ins/local modules examples first.</li>
+<li>Table: 3 costs of total rewrite culture; 3 costs of install-everything culture.</li>
+<li>Decision essay (8–12 sentences): You need password hashing for a future API. Do you write it yourself? Why/why not? (Security honesty expected: prefer established solutions later — reason about it.)</li>
+<li>List 4 questions you will ask before adding any dependency in this course.</li>
+<li>Personal reflection: past time you copied code without understanding — what risk did that create?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U19 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reuse framing with built-ins/local</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Costs tables substantive</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Password hashing judgment shows caution + reasoning</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Four pre-dependency questions</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Reflection concrete</td>
+<td>3</td>
+<td>N</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U18-async-light/index.html">U18 Asynchronous ideas (only as forced by I/O)</a>
+    <a class="next" href="../U20-what-a-package-is/index.html">U20 What a package is</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

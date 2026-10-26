@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U61 — Serving static frontend + API together | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U61</div>
+    <h1>Serving static frontend + API together</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U61 — Serving static frontend + API together</h1>
+<p><strong>Phase 7</strong></p>
+<h2>Where you are</h2>
+<p><code>fetch</code> works best when the <strong>page and API share an origin</strong>. Express can serve <strong>static files</strong> (HTML/CSS/JS) and <strong>JSON routes</strong> from one process.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create a <code>public/</code> (or <code>frontend/</code>) folder for static assets.</li>
+<li>Use <code>express.static</code> with understanding.</li>
+<li>Call API with relative paths from the page.</li>
+<li>Run one <code>npm start</code> that serves UI + API.</li>
+<li>Explain static middleware vs API routes order.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U33–U36</strong>, <strong>U60</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Two terminals, two ports, and CORS is a common beginner trap. One server is calmer for learning and for Playwright later.</p>
+<h2>Plain-language teaching</h2>
+<h3>Static files</h3>
+<p><strong>Static</strong> means: for a request path, send a file as-is (HTML, CSS, image, JS) without your route logic inventing the body.</p>
+<h3>Folder layout</h3>
+<pre><code class="language-text">notes-app/
+  package.json
+  src/
+    app.js
+    server.js
+    routes/
+    services/
+  public/
+    index.html
+    styles.css
+    app.js      # browser JS (name carefully vs server files)
+</code></pre>
+<p>Browser JS in <code>public/app.js</code> is <strong>not</strong> Node server code. Different file, different runtime.</p>
+<h3><code>express.static</code></h3>
+<pre><code class="language-javascript">const path = require(&quot;path&quot;);
+const express = require(&quot;express&quot;);
+const app = express();
+
+app.use(express.json());
+
+// API first (clear paths)
+app.get(&quot;/api/health&quot;, function (req, res) {
+  res.json({ ok: true });
+});
+app.use(&quot;/api/notes&quot;, notesRouter);
+
+// Then static files
+app.use(express.static(path.join(__dirname, &quot;..&quot;, &quot;public&quot;)));
+
+module.exports = app;
+</code></pre>
+<p><code>express.static(folder)</code> maps URL paths to files in that folder:</p>
+<ul>
+<li><code>/</code> → <code>public/index.html</code> (typically)</li>
+<li><code>/styles.css</code> → <code>public/styles.css</code></li>
+</ul>
+<h3>Relative fetch</h3>
+<p>From the page at <code>http://localhost:3000/</code>:</p>
+<pre><code class="language-javascript">await fetch(&quot;/api/notes&quot;);
+</code></pre>
+<p>Same host and port → same origin → no CORS drama for simple GETs/POSTs.</p>
+<h3>Order matters</h3>
+<p>If a static file catches a path before your API, you get the wrong response. Prefer <strong>distinct API prefixes</strong> (<code>/api/...</code>) and register API routes <strong>before</strong> or carefully alongside static.</p>
+<h3>What the learner runs</h3>
+<pre><code class="language-bash">npm install
+npm start
+</code></pre>
+<p>Open <code>http://localhost:3000/</code> — UI loads. Network tab shows <code>/api/...</code> calls.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static middleware</td>
+<td>Serves files from a folder</td>
+<td>Not “no JavaScript”</td>
+</tr>
+<tr>
+<td><code>public/</code></td>
+<td>Common name for browser assets</td>
+<td>Convention, not magic</td>
+</tr>
+<tr>
+<td>Asset</td>
+<td>File the browser loads</td>
+<td></td>
+</tr>
+<tr>
+<td>Mount path</td>
+<td>URL prefix for middleware</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Move U60 frontend into <code>public/</code>, point fetch to <code>/api/notes</code>, confirm one port serves all.</p>
+<h2>Common errors</h2>
+<h3>Error: Static path wrong (<code>__dirname</code> off by one folder)</h3>
+<p>404 for <code>index.html</code>. Log <code>path.join</code> result; check layout.</p>
+<h3>Error: Naming collision</h3>
+<p>Server <code>app.js</code> vs <code>public/app.js</code> — be explicit in requires and script <code>src</code>.</p>
+<h3>Error: API route <code>/notes</code> and static file confusion</h3>
+<p>Use <code>/api/notes</code> prefix.</p>
+<h3>Error: Opening <code>public/index.html</code> via file explorer still</h3>
+<p>Use the server URL.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does <code>express.static</code> do?</li>
+<li>Why <code>/api</code> prefix?</li>
+<li>Why relative fetch works now?</li>
+<li>What does one <code>npm start</code> buy you?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — wire static + health + notes</h3>
+<h3>P2 — cold run: install, start, click through UI</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>CDN deploy</li>
+<li>Webpack/Vite bundlers (optional later)</li>
+<li>SSR frameworks</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U62 — UI structure, a11y basics, stable test hooks</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U61 Assignment — <code>U61-YourName</code></h1>
+<h2>Project</h2>
+<p>Single Express app:</p>
+<ul>
+<li>Static UI in <code>public/</code> (or equivalent)</li>
+<li>API under <code>/api/...</code></li>
+<li>Form create + list load via relative <code>fetch</code></li>
+<li><code>npm start</code> documented</li>
+</ul>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Explain express.static and folder layout.</li>
+<li>Why API prefix + route order.</li>
+<li>Proof: one origin for HTML and XHR/fetch (describe Network).</li>
+<li>How this setup helps Playwright later (preview).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U61 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static UI served by Express</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>API under clear prefix</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>UI talks via relative fetch</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>npm start / layout explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Playwright foresight</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U60-fetch-and-cors/index.html">U60 `fetch` to your API; the CORS idea</a>
+    <a class="next" href="../U62-a11y-test-hooks/index.html">U62 Small UI structure, a11y basics, stable test hooks</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

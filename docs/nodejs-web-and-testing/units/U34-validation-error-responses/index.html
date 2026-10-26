@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U34 — Validation and error responses | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U34</div>
+    <h1>Validation and error responses</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U34 — Validation and error responses</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>Routes work for happy paths. Real APIs must reject bad input <strong>clearly</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Validate simple POST JSON bodies.</li>
+<li>Return <code>400</code> with a structured error message.</li>
+<li>Use <code>express.json()</code> middleware.</li>
+<li>Separate “client mistake” from “server bug.”</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U33</strong>, <strong>U30</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Silent acceptance of garbage data creates corrupt systems. Good APIs fail loudly and helpfully for clients.</p>
+<h2>Plain-language teaching</h2>
+<h3>Validation</h3>
+<p><strong>Validation</strong> means checking that input meets rules before using it.</p>
+<p>Example rules for creating a note:</p>
+<ul>
+<li>Body must be JSON object</li>
+<li><code>title</code> must be a non-empty string</li>
+<li>optional <code>body</code> string</li>
+</ul>
+<h3>Parse JSON bodies in Express</h3>
+<pre><code class="language-javascript">const express = require(&quot;express&quot;);
+const app = express();
+app.use(express.json());
+</code></pre>
+<p>Then <code>req.body</code> holds the parsed object for JSON POSTs.</p>
+<p>If body is invalid JSON, Express may respond with an error — still handle your field rules.</p>
+<h3>POST example with validation</h3>
+<pre><code class="language-javascript">app.post(&quot;/notes&quot;, function (req, res) {
+  const title = req.body &amp;&amp; req.body.title;
+  if (typeof title !== &quot;string&quot; || title.trim() === &quot;&quot;) {
+    return res.status(400).json({
+      error: &quot;title is required and must be a non-empty string&quot;
+    });
+  }
+  // ... create note ...
+  return res.status(201).json({ id: 1, title: title.trim() });
+});
+</code></pre>
+<h3>Status choices</h3>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bad input</td>
+<td><code>400</code></td>
+</tr>
+<tr>
+<td>Not found</td>
+<td><code>404</code></td>
+</tr>
+<tr>
+<td>Created</td>
+<td><code>201</code></td>
+</tr>
+<tr>
+<td>Success read</td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td>Unexpected throw</td>
+<td><code>500</code> (and log server-side)</td>
+</tr>
+</tbody>
+</table>
+<h3>Error body shape</h3>
+<p>Pick a consistent shape, e.g. <code>{ "error": "message" }</code>. Consistency helps clients and tests.</p>
+<h3>Never trust the client</h3>
+<p>Clients lie by mistake or malice. Validate every external input.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Validation</td>
+<td>Checking input rules</td>
+<td>Not the same as auth</td>
+</tr>
+<tr>
+<td><code>400 Bad Request</code></td>
+<td>Client sent unusable data</td>
+<td></td>
+</tr>
+<tr>
+<td><code>201 Created</code></td>
+<td>New resource made</td>
+<td></td>
+</tr>
+<tr>
+<td>Middleware <code>express.json</code></td>
+<td>Parse JSON bodies</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>POST <code>{}</code> → 400.<br />
+POST <code>{"title":"Hi"}</code> → 201 with note.</p>
+<h2>Common errors</h2>
+<h3>Error: Forgetting <code>express.json()</code></h3>
+<p><code>req.body</code> is undefined; validation always fails strangely.</p>
+<h3>Error: Returning 200 on validation failure</h3>
+<p>Clients and tests should see 400.</p>
+<h3>Error: Crashing on missing fields</h3>
+<p>Check before reading nested properties deeply.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is validation?</li>
+<li>Why 400 vs 500?</li>
+<li>Role of express.json?</li>
+<li>Why consistent error shape?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — POST /notes with title validation</h3>
+<h3>P2 — curl examples for good and bad bodies</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full schema libraries (Joi/Zod) — optional later</li>
+<li>Auth</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U35 — Simple persistence (in-memory)</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U34 Assignment — <code>U34-YourName</code></h1>
+<h2>Express app</h2>
+<ul>
+<li><code>POST /notes</code>  </li>
+<li>requires non-empty string <code>title</code>  </li>
+<li>optional string <code>body</code>  </li>
+<li>success <code>201</code> JSON note <code>{ id, title, body }</code> (id can be fixed or incrementing)  </li>
+<li>failure <code>400</code> JSON <code>{ error: "..." }</code></li>
+<li>Keep a simple <code>GET /health</code></li>
+</ul>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Validation rules you enforced.</li>
+<li>Why 400 not 500 for missing title.</li>
+<li>How express.json fits.</li>
+<li>curl/HTTP examples for 201 and 400 (text).</li>
+<li>What you would validate next if building a real app.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U34 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST validation correct</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>201 success shape</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>400 error shape</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Request examples</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U33-express-deliberately/index.html">U33 Why frameworks exist; Express deliberately</a>
+    <a class="next" href="../U35-in-memory-persistence/index.html">U35 Simple persistence (in-memory first)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

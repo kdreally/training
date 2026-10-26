@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U39 — Assertions: claiming what should be true | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U39</div>
+    <h1>Assertions: claiming what should be true</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U39 — Assertions: claiming what should be true</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>Automation needs a way to <strong>fail loudly</strong> when reality ≠ expectation. That is an <strong>assertion</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define assertion.</li>
+<li>Use Node’s <code>assert</code> module for equality checks.</li>
+<li>Write a tiny script that exits non-zero on failure.</li>
+<li>Read assertion error output.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U14</strong>, <strong>U38</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>50–80 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Without assertions, “tests” are just scripts that always look successful if they do not crash.</p>
+<h2>Plain-language teaching</h2>
+<h3>Assertion</h3>
+<p>An <strong>assertion</strong> is a statement that something must be true. If not, the program signals failure.</p>
+<h3>Node <code>assert</code></h3>
+<pre><code class="language-javascript">const assert = require(&quot;assert&quot;);
+
+const sum = 2 + 2;
+assert.strictEqual(sum, 4);
+</code></pre>
+<p>If equal, nothing dramatic happens.<br />
+If not, throws <code>AssertionError</code> with details.</p>
+<h3>A mini test script (no runner yet)</h3>
+<p><code>check.js</code>:</p>
+<pre><code class="language-javascript">const assert = require(&quot;assert&quot;);
+
+function add(a, b) {
+  return a + b;
+}
+
+assert.strictEqual(add(2, 3), 5);
+assert.strictEqual(add(-1, 1), 0);
+
+console.log(&quot;all assertions passed&quot;);
+</code></pre>
+<pre><code class="language-bash">node check.js
+</code></pre>
+<p>Break <code>add</code> on purpose → crash with assertion error → restore.</p>
+<h3>Useful assert methods (start small)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>assert.strictEqual(a, b)</code></td>
+<td>Primitive equality</td>
+</tr>
+<tr>
+<td><code>assert.deepStrictEqual(a, b)</code></td>
+<td>Objects/arrays structure</td>
+</tr>
+<tr>
+<td><code>assert.ok(value)</code></td>
+<td>Value truthy</td>
+</tr>
+</tbody>
+</table>
+<h3>Why strict</h3>
+<p><code>assert.equal</code> is looser; this course prefers <strong>strict</strong> variants.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Assertion</td>
+<td>Must-be-true check</td>
+<td>Not only log message</td>
+</tr>
+<tr>
+<td>AssertionError</td>
+<td>Failure type</td>
+<td></td>
+</tr>
+<tr>
+<td>strictEqual</td>
+<td>Strict equality check</td>
+<td></td>
+</tr>
+<tr>
+<td>deepStrictEqual</td>
+<td>Nested structure check</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><code>deepStrictEqual({a:1}, {a:1})</code> passes.<br />
+<code>strictEqual({a:1}, {a:1})</code> fails (different object references) — why deep exists.</p>
+<h2>Common errors</h2>
+<h3>Error: Asserting the wrong thing</h3>
+<p><code>assert.ok(true)</code> always passes — useless. Assert <strong>outcomes of your code</strong>.</p>
+<h3>Error: No message context</h3>
+<p>Optional message arg helps: <code>assert.strictEqual(x, 1, "x should be 1 after init")</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is an assertion?</li>
+<li>What happens on failure?</li>
+<li>strictEqual vs deepStrictEqual?</li>
+<li>Why not only console.log in tests?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — assert pure functions from Phase 1</h3>
+<h3>P2 — intentional fail and read error</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full test runner (next)</li>
+<li>HTTP asserts yet</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U40 — Test runners</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U39 Assignment — <code>U39-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>lib.js</code></h3>
+<p>Export <code>clamp(n, min, max)</code> and <code>sum(arr)</code> (non-empty number array average? — implement <strong>sum</strong> of numbers).</p>
+<h3><code>check.js</code></h3>
+<p>Require lib; at least 4 assertions covering clamp and sum including an edge.</p>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Define assertion; why tests need them.</li>
+<li>Paste output of passing run.</li>
+<li>Temporarily break code, paste failure output, then fix (describe).</li>
+<li>When deepStrictEqual?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U39 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lib functions correct</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>≥4 meaningful asserts</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Failure experiment documented</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U38-why-automate-tests/index.html">U38 Why automate; tests as executable specifications</a>
+    <a class="next" href="../U40-test-runners/index.html">U40 Test runners: discover, run, report</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

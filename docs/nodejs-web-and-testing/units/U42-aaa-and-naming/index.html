@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U42 — Arrange–Act–Assert; naming tests | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U42</div>
+    <h1>Arrange–Act–Assert; naming tests</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U42 — Arrange–Act–Assert; naming tests</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>You write unit tests. Structure and names make them readable as specs.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Structure tests as Arrange–Act–Assert (AAA).</li>
+<li>Name tests as behavior sentences.</li>
+<li>Avoid over-sharing setup that hides intent.</li>
+<li>Refactor messy tests into AAA.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U41</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Tests are read more than written. Future you is a stranger.</p>
+<h2>Plain-language teaching</h2>
+<h3>AAA</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Arrange</strong></td>
+<td>Set up data/state</td>
+</tr>
+<tr>
+<td><strong>Act</strong></td>
+<td>Perform the one behavior under test</td>
+</tr>
+<tr>
+<td><strong>Assert</strong></td>
+<td>Check outcomes</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-javascript">test(&quot;createNote trims title&quot;, function () {
+  // Arrange
+  store.reset();
+  // Act
+  const note = store.createNote(&quot;  Hi  &quot;, &quot;&quot;);
+  // Assert
+  assert.equal(note.title, &quot;Hi&quot;);
+});
+</code></pre>
+<p>Comments optional once habit forms; blank lines can mark phases.</p>
+<h3>Naming patterns</h3>
+<p>Good:</p>
+<ul>
+<li><code>returns null when note id is missing</code></li>
+<li><code>rejects empty title with error message</code></li>
+</ul>
+<p>Bad:</p>
+<ul>
+<li><code>test1</code></li>
+<li><code>works</code></li>
+<li><code>createNote</code> (no expected behavior)</li>
+</ul>
+<p>Prefer: <strong>unit + condition + result</strong>.</p>
+<h3>One behavior per test (guideline)</h3>
+<p>Multiple asserts ok if same behavior. Avoid testing create+delete+list in one case without reason.</p>
+<h3>Helper setup</h3>
+<p><code>function emptyStore() { store.reset(); }</code> is fine. Do not hide the Act in a helper with a cryptic name.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arrange–Act–Assert</td>
+<td>Test structure</td>
+<td></td>
+</tr>
+<tr>
+<td>Behavior name</td>
+<td>Spec-like title</td>
+<td></td>
+</tr>
+<tr>
+<td>Over-assertion</td>
+<td>Checking unrelated extras</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Rename and restructure one messy test from U41 into AAA.</p>
+<h2>Common errors</h2>
+<h3>Error: Assert then Act</h3>
+<p>Confusing order. Always act before assert.</p>
+<h3>Error: Giant arrange</h3>
+<p>If setup is huge, maybe the unit is too coupled.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Three AAA phases?</li>
+<li>What makes a good test name?</li>
+<li>When multiple asserts OK?</li>
+<li>Risk of cryptic helpers?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — rewrite 3 tests with AAA + better names</h3>
+<h3>P2 — peer-read your names: can a stranger predict the assert?</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>BDD frameworks (Given/When/Then tools)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U43 — Edge cases and deliberate failures</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U42 Assignment — <code>U42-YourName</code></h1>
+<ol>
+<li>Take your U41 tests (copy into this submission) and refactor to clear AAA + behavior names.</li>
+<li><code>answers.md</code>: before/after for 2 test names; explain AAA; checklist you will use for future tests (≥5 bullets).</li>
+<li>Ensure <code>npm test</code> still passes.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U42 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tests use AAA visibly</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Names are behavioral</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Still pass</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Written reflection/checklist</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U41-unit-tests/index.html">U41 Unit tests: one unit of behavior</a>
+    <a class="next" href="../U43-edge-cases/index.html">U43 Edge cases and deliberate failure cases</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

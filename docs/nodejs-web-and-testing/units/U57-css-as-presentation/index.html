@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U57 — CSS as presentation | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U57</div>
+    <h1>CSS as presentation</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U57 — CSS as presentation</h1>
+<p><strong>Phase 7</strong></p>
+<h2>Where you are</h2>
+<p>HTML structure exists. <strong>CSS</strong> controls <strong>presentation</strong>: colors, spacing, layout — not the meaning of the content.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Link a stylesheet to HTML.</li>
+<li>Use element, class, and id selectors lightly.</li>
+<li>Apply margin, padding, font, colors.</li>
+<li>Explain box model at a beginner level.</li>
+<li>Avoid using CSS classes as the only test hooks (preview U62/U67).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U56</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Usable UI needs readable spacing and hierarchy. You do not need to be a designer. You need <strong>clear enough</strong> pages for humans and automation.</p>
+<h2>Plain-language teaching</h2>
+<h3>CSS</h3>
+<p><strong>CSS</strong> (Cascading Style Sheets) is a language for describing how HTML elements should look.</p>
+<h3>Link a file</h3>
+<p>In <code>head</code>:</p>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;styles.css&quot; /&gt;
+</code></pre>
+<p><code>styles.css</code>:</p>
+<pre><code class="language-css">body {
+  font-family: system-ui, sans-serif;
+  margin: 2rem;
+  line-height: 1.5;
+}
+
+h1 {
+  color: #123;
+}
+
+.button-primary {
+  background: #246;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+}
+</code></pre>
+<h3>Selectors (start small)</h3>
+<table>
+<thead>
+<tr>
+<th>Selector</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>h1</code></td>
+<td>All <code>h1</code> elements</td>
+</tr>
+<tr>
+<td><code>.button-primary</code></td>
+<td>Elements with <code>class="button-primary"</code></td>
+</tr>
+<tr>
+<td><code>#note-list</code></td>
+<td>Element with <code>id="note-list"</code></td>
+</tr>
+</tbody>
+</table>
+<p>Classes are for <strong>styling groups</strong>. Prefer <strong>not</strong> to make brittle Playwright tests depend on decorative class names alone (U62/U67).</p>
+<h3>Box model (light)</h3>
+<p>Roughly every box has:</p>
+<ul>
+<li><strong>content</strong></li>
+<li><strong>padding</strong> (inside space)</li>
+<li><strong>border</strong></li>
+<li><strong>margin</strong> (outside space)</li>
+</ul>
+<pre><code class="language-css">.card {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+}
+</code></pre>
+<h3>Layout light</h3>
+<p>For this course, stack content vertically with margin. Flexbox optional:</p>
+<pre><code class="language-css">form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+</code></pre>
+<p>You need not master every layout system.</p>
+<h3>Cascade (why “cascading”)</h3>
+<p>Multiple rules can apply; more specific / later rules can win. When confused, use browser <strong>DevTools</strong> (Inspect) to see applied styles — optional skill, highly useful.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stylesheet</td>
+<td>CSS file or block</td>
+<td></td>
+</tr>
+<tr>
+<td>Selector</td>
+<td>Pattern choosing elements</td>
+<td></td>
+</tr>
+<tr>
+<td>Class</td>
+<td>Reusable style label</td>
+<td>Not JS class keyword required</td>
+</tr>
+<tr>
+<td>Box model</td>
+<td>content+padding+border+margin</td>
+<td></td>
+</tr>
+<tr>
+<td>Cascade</td>
+<td>How conflicting rules resolve</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Style the notes page: readable body text, spaced form, distinct submit button.</p>
+<h2>Common errors</h2>
+<h3>Error: Inline styles everywhere</h3>
+<p>Hard to maintain. Prefer stylesheet for learning projects.</p>
+<h3>Error: Styling only by tag when many buttons differ</h3>
+<p>Use classes.</p>
+<h3>Error: Tiny gray text on gray background</h3>
+<p>Contrast matters for humans and screenshots.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>How do you attach CSS to HTML?</li>
+<li><code>.x</code> vs <code>#x</code>?</li>
+<li>Padding vs margin?</li>
+<li>Why not rely only on CSS classes for tests?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — styles.css for index.html</h3>
+<h3>P2 — improve focus visibility on inputs (outline)</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Sass, Tailwind, CSS modules</li>
+<li>Animations</li>
+<li>Responsive expert breakpoints (optional mention)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U58 — JavaScript in the browser and the DOM</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U57 Assignment — <code>U57-YourName</code></h1>
+<h2>Files</h2>
+<ul>
+<li><code>index.html</code> (linked stylesheet)</li>
+<li><code>styles.css</code> — body font/margin, h1, form spacing, button style, list spacing</li>
+<li><code>answers.md</code> — define CSS, selector, class, box model; padding vs margin; why separate file</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U57 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linked stylesheet works</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Readable layout styles</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U56-html-as-structure/index.html">U56 HTML as structure</a>
+    <a class="next" href="../U58-dom-browser-js/index.html">U58 JavaScript in the browser; the DOM</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

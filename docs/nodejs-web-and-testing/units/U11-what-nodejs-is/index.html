@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U11 — What Node.js is | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U11</div>
+    <h1>What Node.js is</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U11 — What Node.js is</h1>
+<p><strong>Phase 2 — Programs in Node.js</strong></p>
+<h2>Where you are</h2>
+<p>You can think in JavaScript on paper. Now: <strong>where</strong> JS runs outside the browser — <strong>Node.js</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain Node.js vs JavaScript vs browser.</li>
+<li>Explain what a runtime is.</li>
+<li>Name what Node is good for (backends, tools, scripts).</li>
+<li>Know what we will <em>not</em> do with Node yet.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>Phase 1 (<strong>U02–U10</strong>), especially U02–U03.</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>People say “learn Node” as if Node were a language. It is not. Confusing language and runtime creates permanent muddle.</p>
+<h2>Plain-language teaching</h2>
+<h3>JavaScript is the language</h3>
+<p><strong>JavaScript (JS)</strong> is a programming language: syntax and meaning of values, functions, etc.</p>
+<h3>A runtime runs the language</h3>
+<p>A <strong>runtime</strong> (or runtime environment) is the program that <strong>executes</strong> your JS and gives it <strong>capabilities</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Place JS runs</th>
+<th>Runtime-ish home</th>
+<th>Extra powers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Web browser</td>
+<td>Browser JS engine + Web APIs</td>
+<td>Change web pages, respond to clicks</td>
+</tr>
+<tr>
+<td>Node.js</td>
+<td>Node (built on a JS engine + system APIs)</td>
+<td>Read files, listen on network ports, run tools</td>
+</tr>
+</tbody>
+</table>
+<p>Same language family; <strong>different libraries and purposes</strong>.</p>
+<h3>What Node.js is</h3>
+<p><strong>Node.js</strong> is a <strong>runtime</strong> that lets you run JavaScript on your computer as a general-purpose tool — especially for <strong>servers</strong> and <strong>developer tooling</strong>.</p>
+<p>Born to build fast network programs; used widely for <strong>backend APIs</strong>, CLIs, build tools.</p>
+<h3>What Node is not</h3>
+<table>
+<thead>
+<tr>
+<th>Not this</th>
+<th>Reality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A language</td>
+<td>JS is the language</td>
+</tr>
+<tr>
+<td>A database</td>
+<td>You might <em>connect</em> to DBs later</td>
+</tr>
+<tr>
+<td>A browser</td>
+<td>No DOM (<code>document</code>) by default</td>
+</tr>
+<tr>
+<td>“The backend” itself</td>
+<td>You <em>write</em> backends that <em>run on</em> Node</td>
+</tr>
+</tbody>
+</table>
+<h3>Why backends like Node</h3>
+<ul>
+<li>One language for server logic (JS).</li>
+<li>Strong fit for request/response network apps.</li>
+<li>Huge ecosystem of packages (Phase 3 — earned later).</li>
+</ul>
+<h3>Our path with Node</h3>
+<ol>
+<li>Install and verify (U12).</li>
+<li>Use the terminal (U13).</li>
+<li>Run <code>.js</code> files (U14).</li>
+<li>Grow into modules, packages, HTTP servers, tests.</li>
+</ol>
+<p>You will not need a browser to run your first Node programs.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JavaScript</td>
+<td>The language</td>
+<td>Not identical to “Node”</td>
+</tr>
+<tr>
+<td>Node.js</td>
+<td>JS runtime outside the browser</td>
+<td>Not a language</td>
+</tr>
+<tr>
+<td>Runtime</td>
+<td>Executes code + provides APIs</td>
+<td></td>
+</tr>
+<tr>
+<td>Engine</td>
+<td>Core that evaluates JS (e.g. V8)</td>
+<td>Inside Node; you need not master it</td>
+</tr>
+<tr>
+<td>DOM</td>
+<td>Browser page model</td>
+<td>Not available in plain Node</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Server-side program</td>
+<td>Often hosted with Node</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — same language, different world</h2>
+<p>Browser-oriented idea (do not run in Node):</p>
+<pre><code class="language-javascript">// Browser world (conceptual): document.querySelector(...)
+</code></pre>
+<p>Node-oriented idea (later):</p>
+<pre><code class="language-javascript">// Node world: read a file, listen on a port
+</code></pre>
+<p>If you see <code>document</code> in a Node beginner script, something is misplaced.</p>
+<h2>Common errors</h2>
+<h3>Error: “I already know JavaScript so I know Node”</h3>
+<p>You know the language core. Node’s <strong>system capabilities</strong> and project culture are additional learning.</p>
+<h3>Error: Installing random stacks before understanding Node</h3>
+<p>Frameworks sit <em>on top</em>. We install Node first, run files, then earn packages.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Is Node a language? What is it?</li>
+<li>Name one power browsers have that plain Node does not.</li>
+<li>Name one power Node has that plain browser JS does not.</li>
+<li>Why is this course using Node?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Teach-back</h3>
+<p>Explain Node vs JS to a friend in 5 sentences.</p>
+<h3>P2 — Sort</h3>
+<p>Label browser / Node / both: <code>let x = 1</code>, change CSS of a button, listen on port 3000, <code>function add(a,b)</code>.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Installing yet (next)</li>
+<li>npm</li>
+<li>Express</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U12 — Installing Node and verifying</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U11 Assignment — <code>U11-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define JavaScript, Node.js, runtime, backend.</li>
+<li>Table: 4 capabilities — mark Browser / Node / Both and why.</li>
+<li>Why do people confuse “learning Node” with “learning a new language”? Correct the confusion.</li>
+<li>What will we use Node for in this course (bullet list from this unit + U01)?</li>
+<li>Name two things that are <em>not</em> Node and why learners mix them up.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U11 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions accurate</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Capability table mostly right</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Language vs runtime clarity</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Course use of Node sensible</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Not-Node confusions</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U10-algorithms-pseudocode-to-code/index.html">U10 Algorithms: clear steps → code</a>
+    <a class="next" href="../U12-installing-node/index.html">U12 Installing Node.js safely and verifying</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

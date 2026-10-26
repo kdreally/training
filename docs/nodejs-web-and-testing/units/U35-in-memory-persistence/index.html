@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U35 — Simple persistence (in-memory first) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U35</div>
+    <h1>Simple persistence (in-memory first)</h1>
+    <span class="phase-badge ph4">Phase 4 — Backend web applications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U35 — Simple persistence (in-memory first)</h1>
+<p><strong>Phase 4</strong></p>
+<h2>Where you are</h2>
+<p>You can validate creates. Now data should <strong>survive across requests</strong> while the process runs — start with <strong>memory</strong>, not a database.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Store resources in an array/object in memory.</li>
+<li>Implement list + get + create for notes (or similar).</li>
+<li>Explain what is lost on process restart.</li>
+<li>Know when a DB becomes necessary (preview).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U34</strong>, <strong>U08</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Databases add ops complexity. In-memory teaches <strong>resource lifecycle</strong> first.</p>
+<h2>Plain-language teaching</h2>
+<h3>Persistence levels</h3>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Survives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local variable in one request</td>
+<td>Only that request</td>
+</tr>
+<tr>
+<td>Module-level array in server process</td>
+<td>Until process exits</td>
+</tr>
+<tr>
+<td>File on disk</td>
+<td>Until deleted</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>Designed long-term storage</td>
+</tr>
+</tbody>
+</table>
+<p>We use <strong>module-level memory</strong>.</p>
+<h3>Example store</h3>
+<pre><code class="language-javascript">let nextId = 1;
+const notes = [];
+
+function createNote(title, body) {
+  const note = { id: nextId, title: title, body: body || &quot;&quot; };
+  nextId = nextId + 1;
+  notes.push(note);
+  return note;
+}
+
+function listNotes() {
+  return notes.slice();
+}
+
+function getNote(id) {
+  for (let i = 0; i &lt; notes.length; i = i + 1) {
+    if (notes[i].id === id) return notes[i];
+  }
+  return null;
+}
+</code></pre>
+<p>Wire to routes:</p>
+<ul>
+<li><code>GET /notes</code> → list</li>
+<li><code>GET /notes/:id</code> → one or 404<br />
+  Express: <code>app.get("/notes/:id", ...)</code> and <code>req.params.id</code> (string! convert with <code>Number</code>)</li>
+<li><code>POST /notes</code> → create</li>
+</ul>
+<h3>Restart clears memory</h3>
+<p>Stop server → data gone. That is expected for this unit. Mention it in your README mindset.</p>
+<h3>Why not DB yet</h3>
+<p>You need clean HTTP + validation + modules first. DB is another dependency and failure mode.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In-memory</td>
+<td>Stored in RAM of process</td>
+<td>Not “remember forever”</td>
+</tr>
+<tr>
+<td>Resource</td>
+<td>Entity like a note</td>
+<td></td>
+</tr>
+<tr>
+<td><code>req.params</code></td>
+<td>Path parameters</td>
+<td>Strings</td>
+</tr>
+<tr>
+<td>CRUD</td>
+<td>Create/Read/Update/Delete</td>
+<td>We may skip update/delete</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>POST three notes, GET list length 3, GET id 2 returns that note, GET id 99 → 404.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>req.params.id</code> compared as string to number id</h3>
+<p><code>"1" === 1</code> is false. Use <code>Number(req.params.id)</code> and check <code>Number.isNaN</code>.</p>
+<h3>Error: Mutating and returning internal array carelessly</h3>
+<p>Returning <code>notes</code> directly lets callers mutate store. Prefer copy for list if you want safety (<code>slice</code>).</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What survives process restart with in-memory store?</li>
+<li>Why convert path ids?</li>
+<li>Difference between GET list and GET one?</li>
+<li>When consider a database?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — full notes API in memory</h3>
+<h3>P2 — prove restart clears data</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>SQL/NoSQL setup</li>
+<li>Auth multi-user isolation</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U36 — Project structure for a small API</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U35 Assignment — <code>U35-YourName</code></h1>
+<h2>Notes API (Express or raw http — Express preferred)</h2>
+<ul>
+<li><code>POST /notes</code> validated create → 201</li>
+<li><code>GET /notes</code> → 200 array</li>
+<li><code>GET /notes/:id</code> → 200 note or 404</li>
+<li>In-memory store with incrementing ids</li>
+</ul>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>How store is structured.</li>
+<li>What happens on restart + how you verified.</li>
+<li>How you handle id param types.</li>
+<li>Manual test script (ordered steps + expected statuses).</li>
+<li>When you would move to a database (honest criteria).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U35 Rubric — 30 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST create + validation</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>GET list</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>GET by id + 404</td>
+<td>7</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>In-memory + restart understanding</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Manual test script</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U34-validation-error-responses/index.html">U34 Validation and error responses</a>
+    <a class="next" href="../U36-project-structure/index.html">U36 Project structure for a small API</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

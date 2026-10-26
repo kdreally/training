@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U53 — Basic CI idea: a machine runs your tests | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U53</div>
+    <h1>Basic CI idea: a machine runs your tests</h1>
+    <span class="phase-badge ph6">Phase 6 — Craft and capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U53 — Basic CI idea: a machine runs your tests</h1>
+<p><strong>Phase 6</strong></p>
+<h2>Where you are</h2>
+<p>You run tests locally. <strong>CI</strong> means a remote machine also runs them on each change — concept first, light practice optional.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define Continuous Integration at a beginner level.</li>
+<li>Explain why CI helps teams.</li>
+<li>Describe what a minimal CI config would run (<code>npm test</code>).</li>
+<li>Optional: add a simple GitHub Actions workflow if trainer uses GitHub.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U40</strong>, green test suite</li>
+<li>Local tests trusted first</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–80 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>CI is not magic. It is automation of <code>npm test</code> on a clean machine — catching “forgot to run tests” and environment surprises.</p>
+<h2>Plain-language teaching</h2>
+<h3>CI</h3>
+<p><strong>Continuous Integration</strong> practices: frequently combine work and <strong>automatically verify</strong> with builds/tests.</p>
+<p>For you: on push/PR, a server runs:</p>
+<pre><code class="language-bash">npm install
+npm test
+</code></pre>
+<p>and reports red/green.</p>
+<h3>Why it matters</h3>
+<ul>
+<li>Shared truth beyond one laptop  </li>
+<li>Pressure to keep tests green  </li>
+<li>Documents how to run the project in a clean environment  </li>
+</ul>
+<h3>What CI is not</h3>
+<ul>
+<li>Not a substitute for local testing  </li>
+<li>Not automatic deployment (that’s CD-adjacent)  </li>
+<li>Not proof of product quality alone  </li>
+</ul>
+<h3>Minimal mental config</h3>
+<ol>
+<li>Start clean container/VM  </li>
+<li>Checkout code  </li>
+<li>Setup Node  </li>
+<li><code>npm install</code>  </li>
+<li><code>npm test</code>  </li>
+<li>Fail the pipeline if tests fail  </li>
+</ol>
+<h3>Optional GitHub Actions sketch</h3>
+<p><code>.github/workflows/test.yml</code> (only if you use GitHub):</p>
+<pre><code class="language-yaml">name: test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: &quot;20&quot;
+      - run: npm install
+      - run: npm test
+</code></pre>
+<p>If you do not use GitHub, write the steps as a checklist for any CI brand.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CI</td>
+<td>Automated verify on integrate</td>
+</tr>
+<tr>
+<td>Pipeline</td>
+<td>Sequence of CI steps</td>
+</tr>
+<tr>
+<td>Clean environment</td>
+<td>Fresh machine without your local junk</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Explain how CI would have caught a failing test you almost committed.</p>
+<h2>Common errors</h2>
+<h3>Error: CI only, never local</h3>
+<p>Slow loop. Run local first.</p>
+<h3>Error: CI without lockfile</h3>
+<p>Flaky version resolution — keep lockfile.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>CI definition?</li>
+<li>Minimal steps?</li>
+<li>Why clean machine?</li>
+<li>CI vs local?</li>
+</ol>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>Next unit</h2>
+<p><strong>U54 — Ethics: deps, secrets, shipping keys</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U53 Assignment — <code>U53-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define CI; benefits; non-goals.</li>
+<li>Write a universal 6-step pipeline for your capstone.</li>
+<li>Optional: add GitHub Actions (or other) file and link/paste; if not, explain why and still complete step 2.</li>
+<li>What local habit still remains required?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U53 Rubric — 15 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CI concept</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Pipeline steps</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Optional config or honest skip</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Local habit</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U52-readme-for-humans/index.html">U52 README and run instructions for another human</a>
+    <a class="next" href="../U54-ethics-secrets-deps/index.html">U54 Ethics: dependencies, secrets, not shipping keys</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

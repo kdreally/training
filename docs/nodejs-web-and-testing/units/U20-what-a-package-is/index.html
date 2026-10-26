@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U20 — What a package is | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U20</div>
+    <h1>What a package is</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U20 — What a package is</h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>You know <em>why</em> reuse exists. Now: the unit of reuse in the Node world — a <strong>package</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define package in plain language.</li>
+<li>Distinguish package vs module vs library vs dependency.</li>
+<li>Explain version identity at a high level.</li>
+<li>Describe what a package contains conceptually.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U19</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>45–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>People say “install the package” while meaning “folder,” “library,” “GitHub repo,” or “one function.” Precision reduces fear.</p>
+<h2>Plain-language teaching</h2>
+<h3>Definition</h3>
+<p>A <strong>package</strong> is a <strong>bundle of code</strong> (and metadata) intended to be <strong>installed and reused</strong> in other projects, usually with a <strong>name</strong> and <strong>version</strong>.</p>
+<p>In Node’s ecosystem, packages are commonly published to a <strong>registry</strong> (npm registry is the default public one). You are not installing yet — only defining.</p>
+<h3>Package vs nearby words</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Module</strong></td>
+<td>A single file (or unit) that exports code — local or inside a package</td>
+</tr>
+<tr>
+<td><strong>Package</strong></td>
+<td>Distributable bundle with name/version/metadata; may contain many modules</td>
+</tr>
+<tr>
+<td><strong>Library</strong></td>
+<td>Informal: code meant to be used by other code (often a package)</td>
+</tr>
+<tr>
+<td><strong>Dependency</strong></td>
+<td>A package <em>your project relies on</em></td>
+</tr>
+<tr>
+<td><strong>Application</strong></td>
+<td>A program you run for users; may <em>use</em> packages</td>
+</tr>
+</tbody>
+</table>
+<h3>What is inside (conceptually)</h3>
+<ul>
+<li>JavaScript files (the actual code)</li>
+<li>A manifest (<code>package.json</code>) describing name, version, entry points, deps</li>
+<li>License, readme sometimes</li>
+<li>Possibly native bits (advanced — ignore for now)</li>
+</ul>
+<h3>Name + version identity</h3>
+<p><code>lodash@4.17.21</code> means: package name <code>lodash</code>, version <code>4.17.21</code>.</p>
+<p>Versions exist so updates do not silently break everyone at once (U21 deepens this).</p>
+<h3>Where packages live when installed (preview)</h3>
+<p>On disk, installed packages often appear under a folder called <code>node_modules</code>. That folder is a consequence of installing — not something you hand-write. Details in U24.</p>
+<h3>Packages you already met without installing</h3>
+<p>Node <strong>built-ins</strong> are not npm packages you download, but they play a similar role: reusable modules provided by the environment. Third-party packages extend beyond built-ins.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Package</td>
+<td>Named versioned reusable bundle</td>
+<td>Not the same as package manager</td>
+</tr>
+<tr>
+<td>Registry</td>
+<td>Server that hosts packages</td>
+<td>Like an app store for code</td>
+</tr>
+<tr>
+<td>Metadata</td>
+<td>Data about the package</td>
+<td>name, version, license…</td>
+</tr>
+<tr>
+<td><code>node_modules</code></td>
+<td>Folder of installed packages</td>
+<td>Generated, not hand-crafted</td>
+</tr>
+<tr>
+<td>Publish</td>
+<td>Upload a package for others</td>
+<td>You will not publish yet</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — sentence drills</h2>
+<p>Rewrite precisely:</p>
+<ul>
+<li>Vague: “I installed Express.”  </li>
+<li>
+<p>Clearer: “I added the Express package as a dependency so my app can use its modules to handle HTTP more easily.” (Still future tense for you.)</p>
+</li>
+<li>
+<p>Vague: “My module is on npm.”  </p>
+</li>
+<li>Clearer: “I published a package containing my modules to the npm registry.”</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: Calling every file a package</h3>
+<p>Local <code>./math.js</code> is a module. It becomes a package only when packaged/published/consumed as one.</p>
+<h3>Error: Thinking the registry is npm-the-tool</h3>
+<p><strong>npm</strong> the CLI talks to a <strong>registry</strong>. Separate ideas (U22).</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>One-sentence definition of package?</li>
+<li>Package vs module?</li>
+<li>Why versions?</li>
+<li>What is a registry?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Label</h3>
+<p>For each: module / package / dependency / app — “my <code>server.js</code>”, “express in a real project”, “a notes API you build”, “lodash listed in dependencies”.</p>
+<h3>P2 — Inventory imagination</h3>
+<p>List 3 problems that commonly become packages (e.g. validation, routing helpers, testing tools). No installs.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>npm install</li>
+<li>Semantic versioning details (next)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U21 — Trust, versions, and dependencies</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U20 Assignment — <code>U20-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define package, module, library, dependency, registry.</li>
+<li>Draw or describe (ASCII ok) the relationship: app → depends on packages → packages contain modules.</li>
+<li>Why do packages have versions? Give a human scenario of breakage without versions.</li>
+<li>Is <code>fs</code> an npm package you install? Explain.</li>
+<li>Rewrite three vague sentences into precise ones (invent the vague sentences if needed; mark Vague/Clear).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U20 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Relationship description</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Version motivation</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>fs clarification</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Vague→clear rewrites</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U19-why-reuse-packages/index.html">U19 Why reuse exists (before packages)</a>
+    <a class="next" href="../U21-trust-versions-dependencies/index.html">U21 Trust, versions, and dependency relationships</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U68 — Actions: click, fill, submit | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U68</div>
+    <h1>Actions: click, fill, submit</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U68 — Actions: click, fill, submit</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>You can find elements. Now <strong>drive</strong> them like a user: type, click, submit — and assert outcomes.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li><code>fill</code> inputs and <code>click</code> buttons.</li>
+<li>Submit forms via button or Enter where appropriate.</li>
+<li>Assert list text and error messages after actions.</li>
+<li>Keep AAA structure in E2E tests.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U59</strong>, <strong>U66–U67</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Your manual plan’s “type title, click Add” becomes code. This is the core of UI automation.</p>
+<h2>Plain-language teaching</h2>
+<h3>Common actions</h3>
+<pre><code class="language-javascript">await page.getByTestId(&quot;note-title&quot;).fill(&quot;Buy milk&quot;);
+await page.getByRole(&quot;button&quot;, { name: &quot;Add note&quot; }).click();
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fill</code></td>
+<td>Clear and type text (good for inputs)</td>
+</tr>
+<tr>
+<td><code>click</code></td>
+<td>Click</td>
+</tr>
+<tr>
+<td><code>press("Enter")</code></td>
+<td>Keyboard key</td>
+</tr>
+<tr>
+<td><code>check</code> / <code>selectOption</code></td>
+<td>Later if needed</td>
+</tr>
+</tbody>
+</table>
+<h3>Example journey test</h3>
+<pre><code class="language-javascript">test(&quot;user can add a note and see it listed&quot;, async function ({ page }) {
+  // Arrange
+  await page.goto(&quot;/&quot;);
+
+  // Act
+  await page.getByTestId(&quot;note-title&quot;).fill(&quot;Buy milk&quot;);
+  await page.getByTestId(&quot;note-submit&quot;).click();
+
+  // Assert
+  await expect(page.getByTestId(&quot;note-list&quot;)).toContainText(&quot;Buy milk&quot;);
+});
+</code></pre>
+<h3>Validation journey</h3>
+<pre><code class="language-javascript">test(&quot;empty title shows error&quot;, async function ({ page }) {
+  await page.goto(&quot;/&quot;);
+  await page.getByTestId(&quot;note-submit&quot;).click();
+  await expect(page.getByTestId(&quot;error&quot;)).toBeVisible();
+  await expect(page.getByTestId(&quot;error&quot;)).not.toHaveText(&quot;&quot;);
+});
+</code></pre>
+<p>(Adjust to your exact error behavior.)</p>
+<h3>clear vs fill</h3>
+<p><code>fill</code> replaces content. For append-like behavior, use <code>type</code> carefully — prefer <code>fill</code> for determinism.</p>
+<h3>Don’t fight the app</h3>
+<p>If the app requires waiting on network, prefer Playwright expects (auto-wait) over random <code>sleep</code> (U69).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Action</td>
+<td>User-like interaction</td>
+<td></td>
+</tr>
+<tr>
+<td><code>fill</code></td>
+<td>Set input value</td>
+<td></td>
+</tr>
+<tr>
+<td>Journey test</td>
+<td>Multi-step flow</td>
+<td></td>
+</tr>
+<tr>
+<td><code>toContainText</code></td>
+<td>Assert text inside locator</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Green “add note” test against your running app with clean state (U70 isolation deepens).</p>
+<h2>Common errors</h2>
+<h3>Error: Clicking before field filled</h3>
+<p>Await each action in order; usually fine if sequential awaits.</p>
+<h3>Error: Asserting too early without expect</h3>
+<p>Use Playwright <code>expect</code> which retries; raw checks may flake (U69).</p>
+<h3>Error: Hardcoded data colliding across tests</h3>
+<p>Shared server memory: tests pollute each other → U70.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>fill vs click roles?</li>
+<li>AAA in an e2e test?</li>
+<li>How assert a new list item?</li>
+<li>Why avoid sleep for now?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — add-note journey green</h3>
+<h3>P2 — empty-title journey green</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>File upload</li>
+<li>Drag and drop</li>
+<li>Multi-tab complex flows</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U69 — Waiting, auto-wait, flakiness</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U68 Assignment — <code>U68-YourName</code></h1>
+<h2>Tests (≥3)</h2>
+<ol>
+<li>Add note → appears in list  </li>
+<li>Empty/whitespace title → error shown  </li>
+<li>One more (e.g. input clears after success, or two notes both listed)</li>
+</ol>
+<h2><code>answers.md</code></h2>
+<p>Explain fill/click; paste test names; note any flake you saw; how locators chosen.</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U68 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add-note journey</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Validation journey</td>
+<td>7</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Third case</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U67-locators/index.html">U67 Locators: role, text, test id</a>
+    <a class="next" href="../U69-waiting-flakiness/index.html">U69 Waiting, auto-wait, and flakiness</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

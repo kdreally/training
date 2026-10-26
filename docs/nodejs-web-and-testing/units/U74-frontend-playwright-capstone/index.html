@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U74 — Capstone: frontend + Playwright | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U74</div>
+    <h1>Capstone: frontend + Playwright</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U74 — Capstone: frontend + Playwright</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>Ship an assessor-runnable <strong>full-stack notes (or tasks) app</strong> with UI, API, unit/API tests, and a <strong>small Playwright suite</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Deliver one project: static UI + <code>/api</code> + in-memory data.</li>
+<li>Keep <code>npm test</code> (or documented unit/API) and <code>npm run test:e2e</code> green.</li>
+<li>Document cold start for a stranger.</li>
+<li>Show isolation + a few high-value journeys.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U55–U73</strong> skills as applicable; backend from Phase 4–5</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>6–12 hours</strong> across days. Pace yourself.</p>
+<h2>Why this exists</h2>
+<p>Track B ends with evidence, not vibes.</p>
+<h2>Plain-language teaching</h2>
+<h3>Minimum product</h3>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI</td>
+<td>List + create form + visible errors</td>
+</tr>
+<tr>
+<td>API</td>
+<td>health, list, create, get-or-404 as you already built</td>
+</tr>
+<tr>
+<td>Serve</td>
+<td>Express static + API same origin</td>
+</tr>
+<tr>
+<td>Unit tests</td>
+<td>Store/validation still present</td>
+</tr>
+<tr>
+<td>API tests</td>
+<td>HTTP contract still present</td>
+</tr>
+<tr>
+<td>E2E</td>
+<td>≥3 Playwright journeys incl. happy + validation</td>
+</tr>
+<tr>
+<td>Isolation</td>
+<td>Reset or equivalent</td>
+</tr>
+<tr>
+<td>Config</td>
+<td>baseURL + webServer (preferred)</td>
+</tr>
+<tr>
+<td>README</td>
+<td>install, start, test, test:e2e, env notes</td>
+</tr>
+</tbody>
+</table>
+<h3>Optional polish</h3>
+<ul>
+<li>Stubbed error UI test (U72)  </li>
+<li><code>data-testid</code> consistency  </li>
+<li>Keyboard-usable form  </li>
+</ul>
+<h3>Assessor cold path</h3>
+<pre><code class="language-bash">npm install
+npx playwright install chromium
+npm test
+npm run test:e2e
+npm start   # if they want to click manually
+</code></pre>
+<p>If <code>playwright install</code> is required, README must say so.</p>
+<h3>What “done” feels like</h3>
+<p>A trainer clones, installs, runs tests, sees green, clicks the UI once, understands structure from README — without calling you.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capstone</td>
+<td>Culminating integrated project</td>
+</tr>
+<tr>
+<td>Cold start</td>
+<td>Run from clean install</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Your U61+ app cleaned up with e2e folder and scripts is enough if it meets the table.</p>
+<h2>Common errors</h2>
+<h3>Error: E2E only, unit/API deleted</h3>
+<p>Out of strategy — restore pyramid.</p>
+<h3>Error: README assumes app already running forever</h3>
+<p>Document webServer or two-terminal flow clearly.</p>
+<h3>Error: Reset route open without note</h3>
+<p>Document <code>NODE_ENV=test</code> safety.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Minimum e2e count and kinds?</li>
+<li>Same-origin serving?</li>
+<li>Cold install steps?</li>
+<li>What must stay from Phase 5?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — gap checklist</h3>
+<h3>P2 — delete node_modules simulation: reinstall + all tests</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>React rewrite</li>
+<li>Cloud deploy</li>
+<li>Auth provider integration</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>Track B complete.</strong> Optional next paths: TypeScript, real DB, React, visual regression — outside core.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U74 Capstone Assignment — <code>U74-YourName</code></h1>
+<p>Submit zip/folder of the full project (no <code>node_modules</code>; keep lockfile).</p>
+<h2><code>CHECKLIST.md</code></h2>
+<pre><code class="language-markdown">- [ ] UI list + create + errors
+- [ ] API + static same origin
+- [ ] Unit tests green
+- [ ] API/HTTP tests green
+- [ ] ≥3 Playwright journeys (happy + validation + one more)
+- [ ] Isolation strategy
+- [ ] webServer or documented start
+- [ ] npm scripts: start, test, test:e2e
+- [ ] README cold-start including playwright install chromium
+- [ ] answers.md reflection
+</code></pre>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>Architecture tour (UI + API + tests folders).</li>
+<li>Journey list and why each is e2e-worthy.</li>
+<li>Pyramid: what stays unit/API vs Playwright.</li>
+<li>Hardest flake or setup issue and fix.</li>
+<li>What you’d add with more time (honest, small).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U74 Capstone Rubric — 50 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI usable + wired to API</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Same-origin static+API structure</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Unit + API tests still present/green</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Playwright ≥3 journeys + isolation</td>
+<td>12</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Reliable run config (webServer/docs/scripts)</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>README cold start</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Reflection</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table>
+<p>Assessor: <code>npm install</code>, <code>npx playwright install chromium</code>, <code>npm test</code>, <code>npm run test:e2e</code>.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U73-ui-test-strategy/index.html">U73 UI test strategy vs unit/API pyramid</a>
+    
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

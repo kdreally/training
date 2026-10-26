@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U47 — Kinds of tests map (pyramid thinking) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U47</div>
+    <h1>Kinds of tests map (pyramid thinking)</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U47 — Kinds of tests map (pyramid thinking)</h1>
+<p><strong>Phase 5</strong></p>
+<h2>Where you are</h2>
+<p>You have unit, integration, API tests, and doubles. Now: <strong>choose</strong> the cheapest honest test for a risk.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Map test kinds to questions they answer.</li>
+<li>Apply a simple pyramid: many fast unit, fewer integration, fewer HTTP.</li>
+<li>Decide a test type for given scenarios.</li>
+<li>Spot redundant tests.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U41–U46</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>“Write more tests” without strategy wastes time. Strategy is part of craft.</p>
+<h2>Plain-language teaching</h2>
+<h3>Questions → kinds</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Kind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does this pure rule work?</td>
+<td>Unit</td>
+</tr>
+<tr>
+<td>Do my modules wire correctly?</td>
+<td>Integration</td>
+</tr>
+<tr>
+<td>Does the HTTP contract hold?</td>
+<td>API/HTTP</td>
+</tr>
+<tr>
+<td>Did an old bug return?</td>
+<td>Regression (any layer; U48)</td>
+</tr>
+<tr>
+<td>Does the whole UI flow work?</td>
+<td>E2E (out of main path)</td>
+</tr>
+</tbody>
+</table>
+<h3>Pyramid (heuristic, not religion)</h3>
+<pre><code class="language-text">      /\
+     /E2E\        few, slow, brittle risk
+    /------\
+   /  API   \     fewer
+  /----------\
+ / integration\
+/--------------\
+/     unit      \ many, fast
+----------------
+</code></pre>
+<p>Prefer pinning logic at unit level; use HTTP tests for contract; do not re-test the same rule five ways without reason.</p>
+<h3>Cost of the wrong layer</h3>
+<ul>
+<li>Only E2E/API: slow, vague failures  </li>
+<li>Only unit: miss wiring bugs  </li>
+<li>Balance.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test pyramid</td>
+<td>Distribution heuristic</td>
+<td>Not a law</td>
+</tr>
+<tr>
+<td>Brittle test</td>
+<td>Breaks on irrelevant changes</td>
+<td></td>
+</tr>
+<tr>
+<td>Feedback time</td>
+<td>How long until result</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Scenario: title validation rule → unit test on validator + one API test that 400s. Not twenty API tests for every string.</p>
+<h2>Common errors</h2>
+<h3>Error: Pyramid as dogma</h3>
+<p>If your app is a thin HTTP shell, more API tests may be fine. Think.</p>
+<h3>Error: Zero HTTP tests</h3>
+<p>Clients care about HTTP.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Pyramid idea?</li>
+<li>Best layer for pure rule?</li>
+<li>Best layer for status codes contract?</li>
+<li>Why not only unit?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — classify 8 scenarios into layers</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Corporate testing policy docs</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U48 — Regression: bug becomes a test</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U47 Assignment — <code>U47-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Explain pyramid in own words + ASCII.</li>
+<li>Table of 8 scenarios → chosen test kind + one-line why.</li>
+<li>Audit your existing tests: count unit/integration/API; is balance sensible? Adjust plan.</li>
+<li>Name one redundant pair you could drop and why (or argue none).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U47 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pyramid explanation</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>8 scenario classifications</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Audit of own suite</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Redundancy judgment</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U46-test-doubles-light/index.html">U46 Test doubles (gentle): stub/fake/mock</a>
+    <a class="next" href="../U48-regression-tests/index.html">U48 Regression: a bug becomes a test</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

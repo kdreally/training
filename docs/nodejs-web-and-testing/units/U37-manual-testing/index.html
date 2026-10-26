@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U37 — What “testing” means; manual checks | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U37</div>
+    <h1>What “testing” means; manual checks</h1>
+    <span class="phase-badge ph5">Phase 5 — Automated testing</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U37 — What “testing” means; manual checks</h1>
+<p><strong>Phase 5 — Automated testing</strong></p>
+<h2>Where you are</h2>
+<p>You can build a small API. Now the craft of <strong>checking</strong> it — starting <strong>manually</strong>, without runners.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define testing without school-exam baggage.</li>
+<li>Write a manual test plan with expected results.</li>
+<li>Execute the plan against your API.</li>
+<li>List limits of manual testing.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li>A small API from Phase 4 (U35/U36 ideal)</li>
+<li><strong>U09</strong> debug habits</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Automation without knowing what you are checking produces false confidence. Manual plans teach <strong>expected vs actual</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>Reframe “test”</h3>
+<p>A <strong>test</strong> is a check that software behaves as specified.<br />
+An <strong>automated test</strong> is a program that performs such a check.<br />
+A <strong>manual test</strong> is a human performing the check.</p>
+<p>Failing a test means <strong>behavior mismatch</strong> — not “you are a failure.”</p>
+<h3>Manual test plan</h3>
+<p>For each case:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td>Short label</td>
+</tr>
+<tr>
+<td>Setup</td>
+<td>Any starting state</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>What you do (curl/browser)</td>
+</tr>
+<tr>
+<td>Expected</td>
+<td>Status + body ideas</td>
+</tr>
+<tr>
+<td>Actual</td>
+<td>What happened</td>
+</tr>
+<tr>
+<td>Pass?</td>
+<td>Y/N</td>
+</tr>
+</tbody>
+</table>
+<h3>Example cases for notes API</h3>
+<ol>
+<li>Health returns 200 <code>{ok:true}</code></li>
+<li>Empty list returns <code>[]</code></li>
+<li>Create valid note → 201 + id</li>
+<li>Create missing title → 400</li>
+<li>Get existing id → 200</li>
+<li>Get missing id → 404</li>
+</ol>
+<h3>Why manual still matters forever</h3>
+<p>Exploratory testing, UX, “does this feel wrong?” — humans.<br />
+Automation handles <strong>regression</strong> and speed.</p>
+<h3>Limits of only-manual</h3>
+<ul>
+<li>Slow</li>
+<li>Inconsistent (humans skip steps)</li>
+<li>Does not run on every change easily</li>
+<li>Hard to prove to others</li>
+</ul>
+<p>That motivates automation (U38+).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Test case</td>
+<td>One scenario check</td>
+<td></td>
+</tr>
+<tr>
+<td>Expected vs actual</td>
+<td>Predicted vs observed</td>
+<td></td>
+</tr>
+<tr>
+<td>Regression</td>
+<td>Old bug returns</td>
+<td></td>
+</tr>
+<tr>
+<td>Exploratory testing</td>
+<td>Freeform human hunting</td>
+<td></td>
+</tr>
+<tr>
+<td>Test plan</td>
+<td>Written set of cases</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Fill a table for create-valid-note while running curl; mark pass/fail honestly.</p>
+<h2>Common errors</h2>
+<h3>Error: Only testing happy path</h3>
+<p>Bugs live in edges. Include 400/404.</p>
+<h3>Error: No expected column</h3>
+<p>Without expected, everything “looks fine.”</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Test vs automated test?</li>
+<li>Parts of a manual case?</li>
+<li>Two limits of manual-only?</li>
+<li>Emotional reframe of fail?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — write ≥8 cases for your API</h3>
+<h3>P2 — execute and fill Actual/Pass</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Jest/node:test yet</li>
+<li>Coverage tools</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U38 — Why automate; tests as specs</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U37 Assignment — <code>U37-YourName</code></h1>
+<h2><code>manual-test-plan.md</code></h2>
+<p>At least <strong>8</strong> cases for your notes (or similar) API. Each with Name, Setup, Action, Expected, Actual, Pass.</p>
+<p>Include happy paths and at least 3 failure/edge cases.</p>
+<h2><code>answers.md</code></h2>
+<ol>
+<li>What testing means (reframe).</li>
+<li>Which case failed first (or “none — what I still distrust”).</li>
+<li>Limits of manual testing you felt while executing.</li>
+<li>What you want automation to take over first.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U37 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥8 cases complete</td>
+<td>10</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Includes failure/edge cases</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Actual/Pass filled (honest)</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Conceptual answers</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U36-project-structure/index.html">U36 Project structure for a small API</a>
+    <a class="next" href="../U38-why-automate-tests/index.html">U38 Why automate; tests as executable specifications</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

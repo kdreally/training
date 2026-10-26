@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U58 — JavaScript in the browser; the DOM | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U58</div>
+    <h1>JavaScript in the browser; the DOM</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U58 — JavaScript in the browser; the DOM</h1>
+<p><strong>Phase 7</strong></p>
+<h2>Where you are</h2>
+<p>Structure and style exist. <strong>Browser JS</strong> changes the page after it loads by talking to the <strong>DOM</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain the DOM as the browser’s live tree of the page.</li>
+<li>Load a JS file with <code>&lt;script&gt;</code>.</li>
+<li>Use <code>document.querySelector</code> / <code>getElementById</code>.</li>
+<li>Change text content and create list items.</li>
+<li>Know <code>console</code> in browser DevTools.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U56–U57</strong>, Phase 1 JS, <strong>U07</strong> functions</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>80–110 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Without DOM skills, frontend is static posters. With DOM skills, pages respond — and Playwright asserts what the DOM shows users.</p>
+<h2>Plain-language teaching</h2>
+<h3>The DOM</h3>
+<p>When the browser reads HTML, it builds an in-memory tree: the <strong>Document Object Model (DOM)</strong>.<br />
+JavaScript can <strong>query</strong> and <strong>change</strong> that tree; the user sees updates.</p>
+<p>HTML file on disk is the recipe. DOM is the cooked dish you can rearrange.</p>
+<h3>Load script</h3>
+<p>Put before <code>&lt;/body&gt;</code> (so HTML exists first):</p>
+<pre><code class="language-html">&lt;script src=&quot;app.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>Or <code>type="module"</code> later; classic script is fine now.</p>
+<h3>Select elements</h3>
+<pre><code class="language-javascript">const heading = document.querySelector(&quot;h1&quot;);
+const list = document.getElementById(&quot;note-list&quot;);
+const input = document.querySelector(&quot;#title&quot;);
+</code></pre>
+<ul>
+<li><code>querySelector</code> — first match for a <strong>CSS selector</strong></li>
+<li><code>getElementById</code> — by id</li>
+</ul>
+<p>If nothing matches, you get <code>null</code>. Calling methods on <code>null</code> → error (U09 skills).</p>
+<h3>Change content</h3>
+<pre><code class="language-javascript">heading.textContent = &quot;My Notes&quot;;
+</code></pre>
+<p><code>textContent</code> sets plain text (safe default). <code>innerHTML</code> interprets HTML — avoid with untrusted strings.</p>
+<h3>Create elements</h3>
+<pre><code class="language-javascript">function addNoteToList(title) {
+  const li = document.createElement(&quot;li&quot;);
+  li.textContent = title;
+  list.appendChild(li);
+}
+
+addNoteToList(&quot;First note&quot;);
+</code></pre>
+<h3>Browser console</h3>
+<p>Right-click → Inspect → <strong>Console</strong>. <code>console.log</code> appears there (not the Node terminal). Different runtime, same idea.</p>
+<h3>No <code>require</code> in plain browser scripts</h3>
+<p>Browser scripts do not use Node <code>require</code> unless you add a bundler. For this track: plain functions in <code>app.js</code>, or ES modules later if needed. Keep it simple.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DOM</td>
+<td>Live page tree</td>
+<td>Not the HTML file itself</td>
+</tr>
+<tr>
+<td><code>querySelector</code></td>
+<td>Find element by CSS selector</td>
+<td></td>
+</tr>
+<tr>
+<td><code>textContent</code></td>
+<td>Plain text content</td>
+<td></td>
+</tr>
+<tr>
+<td><code>createElement</code></td>
+<td>Make a new element node</td>
+<td></td>
+</tr>
+<tr>
+<td>DevTools</td>
+<td>Browser debugging UI</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>On load, set heading text and append two hard-coded list items from JS.</p>
+<h2>Common errors</h2>
+<h3>Error: Script in <code>head</code> without defer</h3>
+<p>Runs before body exists → null elements. Put script at end of body or use <code>defer</code>.</p>
+<h3>Error: Looking at Node terminal for <code>console.log</code></h3>
+<p>Browser page logs go to DevTools.</p>
+<h3>Error: Typos in selectors</h3>
+<p><code>#note-list</code> vs <code>#notelist</code> → null.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>DOM vs HTML file?</li>
+<li>Why script at end of body?</li>
+<li>What if querySelector finds nothing?</li>
+<li>textContent vs innerHTML risk?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — change h1 via JS</h3>
+<h3>P2 — render an array of strings into <code>ul</code></h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Frameworks</li>
+<li>Events deep (next)</li>
+<li>fetch (U60)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U59 — Events and forms</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U58 Assignment — <code>U58-YourName</code></h1>
+<h2>Files</h2>
+<ul>
+<li><code>index.html</code> + <code>styles.css</code> (can reuse)</li>
+<li><code>app.js</code> — on load: set a welcome line; render at least 3 hard-coded notes into <code>#note-list</code></li>
+<li><code>answers.md</code> — DOM definition; querySelector; null risk; where console.log appears; script placement why</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U58 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Script loads and changes DOM</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>List rendered from JS</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U57-css-as-presentation/index.html">U57 CSS as presentation</a>
+    <a class="next" href="../U59-events-and-forms/index.html">U59 Events and forms</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

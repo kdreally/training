@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U21 — Trust, versions, and dependency relationships | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U21</div>
+    <h1>Trust, versions, and dependency relationships</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U21 — Trust, versions, and dependency relationships</h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>Packages have names and versions. Now: what versions mean, what a dependency <em>relationship</em> is, and how trust works without naivety.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain semantic versioning at a beginner level (major.minor.patch).</li>
+<li>Explain direct vs transitive dependencies.</li>
+<li>Describe trust checks a careful beginner can do.</li>
+<li>Read a version range idea without memorizing all npm range grammar.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U20</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>50–75 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Broken upgrades and malicious packages are real. Fear is not the goal; <strong>informed caution</strong> is.</p>
+<h2>Plain-language teaching</h2>
+<h3>Dependency is a relationship</h3>
+<p>If project A needs package B to work, A <strong>depends on</strong> B. B is a <strong>dependency</strong> of A.</p>
+<p>Dependencies can nest: B depends on C. C is a <strong>transitive</strong> dependency of A (you did not name C directly, but you get it).</p>
+<h3>Semantic versioning (SemVer) — practical reading</h3>
+<p>Many packages use versions like <code>3.4.1</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Name</th>
+<th>Rough meaning of bump</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td><strong>major</strong></td>
+<td>Breaking changes — old code may fail</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>minor</strong></td>
+<td>New features, hopefully compatible</td>
+</tr>
+<tr>
+<td>1</td>
+<td><strong>patch</strong></td>
+<td>Bug fixes, hopefully compatible</td>
+</tr>
+</tbody>
+</table>
+<p><code>0.x.y</code> often means “still immature; expect breaks.”</p>
+<p>This is a <strong>convention</strong>, not a law of physics — authors can mis-version. Still useful.</p>
+<h3>Why ranges exist (preview)</h3>
+<p>A project might accept “any 3.x” to get fixes without jumping to 4.x. Package managers resolve ranges. Details when we meet <code>package.json</code> (U23–U24).</p>
+<h3>Trust is not binary</h3>
+<p>You never get perfect safety. You reduce risk:</p>
+<ol>
+<li>Prefer well-known packages for security-sensitive jobs (e.g. password hashing).</li>
+<li>Check last publish date / maintenance signals (abandoned?).</li>
+<li>Prefer packages with clear readmes and licenses.</li>
+<li>Minimize count of dependencies.</li>
+<li>Lock versions when collaborating (lockfiles — U24).</li>
+<li>Never paste unknown install commands from chat strangers.</li>
+</ol>
+<h3>License (awareness)</h3>
+<p>Packages include licenses (MIT, Apache-2.0, etc.). Using code means respecting license terms. For learning projects, still notice “this has a license.”</p>
+<h3>Malware reality (calm)</h3>
+<p>Occasionally malicious packages appear. Stick to official docs, known names, and trainer guidance. If a package name is one typo away from a famous package (<strong>typosquatting</strong>), be suspicious.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SemVer</td>
+<td>major.minor.patch convention</td>
+<td>Not guaranteed perfection</td>
+</tr>
+<tr>
+<td>Direct dependency</td>
+<td>You named it</td>
+<td></td>
+</tr>
+<tr>
+<td>Transitive dependency</td>
+<td>Dependency of a dependency</td>
+<td></td>
+</tr>
+<tr>
+<td>Breaking change</td>
+<td>Requires you to change your code</td>
+<td></td>
+</tr>
+<tr>
+<td>Lockfile</td>
+<td>Pins exact resolved versions</td>
+<td>U24</td>
+</tr>
+<tr>
+<td>Typosquatting</td>
+<td>Evil similar name</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>You depend on <code>router@2.1.0</code>. Author releases:</p>
+<ul>
+<li><code>2.1.1</code> patch — likely safe to take</li>
+<li><code>2.2.0</code> minor — new helpers, likely safe</li>
+<li><code>3.0.0</code> major — read changelog; your code might break</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Error: Always using latest blindly in production</h3>
+<p>Surprise breaks. Prefer deliberate upgrades.</p>
+<h3>Error: Assuming many downloads = perfect safety</h3>
+<p>Helpful signal, not proof.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does major bump signal?</li>
+<li>Direct vs transitive?</li>
+<li>Name three trust practices.</li>
+<li>What is typosquatting?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Label versions</h3>
+<p>For bumps 1.2.3 → 1.2.4, → 1.3.0, → 2.0.0, say expected kind.</p>
+<h3>P2 — Graph</h3>
+<p>A→B, B→C, A→D. List direct and transitive for A.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full npm semver range syntax exam</li>
+<li>Installing</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U22 — What a package manager is</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U21 Assignment — <code>U21-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define direct dependency, transitive dependency, breaking change, SemVer.</li>
+<li>Explain major/minor/patch with your own examples (not only this README’s).</li>
+<li>Draw/list a dependency graph with at least one transitive node; label direct vs transitive.</li>
+<li>Write a “beginner trust checklist” with ≥6 bullets you will actually use.</li>
+<li>Scenario: a blog says <code>npm install secure-loginn</code> (note extra n) for auth. What red flags?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U21 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>SemVer explanation</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Graph labeling</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Trust checklist quality</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Typosquat scenario</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U20-what-a-package-is/index.html">U20 What a package is</a>
+    <a class="next" href="../U22-what-a-package-manager-is/index.html">U22 What a package manager is</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

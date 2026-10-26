@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U60 — `fetch` to your API; the CORS idea | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U60</div>
+    <h1>`fetch` to your API; the CORS idea</h1>
+    <span class="phase-badge ph7">Phase 7 — Frontend in the browser</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U60 — <code>fetch</code> to your API; the CORS idea</h1>
+<p><strong>Phase 7 — Frontend</strong></p>
+<h2>Where you are</h2>
+<p>Your form works <strong>locally in the page</strong>. Real apps load and save data through your <strong>HTTP API</strong>. The browser tool for that is <strong><code>fetch</code></strong>. Cross-origin rules (<strong>CORS</strong>) will appear; we explain them before they scare you.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Call <code>GET</code> and <code>POST</code> with <code>fetch</code> and JSON.</li>
+<li>Update the DOM from API responses.</li>
+<li>Explain why <code>file://</code> pages struggle to talk to <code>http://localhost</code>.</li>
+<li>Define CORS in plain language and what a beginner must configure on the server.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U59</strong>, <strong>U30</strong>, <strong>U34–U36</strong> (running API)</li>
+<li>Browser DevTools Network tab awareness (light)</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>90–120 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>A UI that cannot talk to your backend is a demo. Connecting them is the point of full-stack learning — and the setup for Playwright journeys later.</p>
+<h2>Plain-language teaching</h2>
+<h3><code>fetch</code> is browser HTTP</h3>
+<pre><code class="language-javascript">const res = await fetch(&quot;http://localhost:3000/notes&quot;);
+const data = await res.json();
+</code></pre>
+<ul>
+<li>Sends an HTTP request from the <strong>page’s JavaScript</strong></li>
+<li>Returns a <strong>Response</strong> object</li>
+<li>You check <code>res.ok</code> / <code>res.status</code>, then parse JSON</li>
+</ul>
+<p>Prefer <strong>async/await</strong> here (you met async ideas in U18). Classic <code>.then</code> also works.</p>
+<h3>GET list and render</h3>
+<pre><code class="language-javascript">async function loadNotes() {
+  const res = await fetch(&quot;/api/notes&quot;); // path depends on how you serve
+  if (!res.ok) {
+    showError(&quot;Could not load notes&quot;);
+    return;
+  }
+  const notes = await res.json();
+  list.innerHTML = &quot;&quot;;
+  for (const note of notes) {
+    const li = document.createElement(&quot;li&quot;);
+    li.textContent = note.title;
+    list.appendChild(li);
+  }
+}
+</code></pre>
+<p>Using relative URLs like <code>/api/notes</code> works when the <strong>page and API share the same origin</strong> (U61). Absolute <code>http://localhost:3000/...</code> works only if CORS allows it.</p>
+<h3>POST create</h3>
+<pre><code class="language-javascript">async function createNote(title) {
+  const res = await fetch(&quot;/api/notes&quot;, {
+    method: &quot;POST&quot;,
+    headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+    body: JSON.stringify({ title: title })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(function () { return {}; });
+    showError(err.error || &quot;Create failed&quot;);
+    return null;
+  }
+  return res.json();
+}
+</code></pre>
+<p>Same contract you tested with curl and API tests — now the browser is the client.</p>
+<h3>Same origin vs cross origin</h3>
+<p>An <strong>origin</strong> is roughly: scheme + host + port.</p>
+<table>
+<thead>
+<tr>
+<th>Page URL</th>
+<th>API URL</th>
+<th>Same origin?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http://localhost:3000/</code></td>
+<td><code>http://localhost:3000/api/notes</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>file:///C:/notes/index.html</code></td>
+<td><code>http://localhost:3000/notes</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>http://localhost:5500/</code></td>
+<td><code>http://localhost:3000/notes</code></td>
+<td>No (different ports)</td>
+</tr>
+</tbody>
+</table>
+<p>Browsers enforce the <strong>same-origin policy</strong> for safety: a random site should not freely read your bank’s API with your cookies.</p>
+<h3>CORS (plain)</h3>
+<p><strong>CORS</strong> (Cross-Origin Resource Sharing) is a browser + server agreement: the <strong>server</strong> can opt in to allow certain cross-origin browser requests by sending headers like:</p>
+<pre><code class="language-http">Access-Control-Allow-Origin: http://localhost:5500
+</code></pre>
+<p>If you open HTML as <code>file://</code> or from another port without CORS, <code>fetch</code> fails in the console with a CORS error. That is not you being bad at JS — it is the browser protecting users.</p>
+<p><strong>Beginner strategy for this course (U61):</strong> serve the HTML <strong>from the same Express app</strong> as the API so most calls are same-origin. Enable CORS only when you truly need two origins.</p>
+<h3>Error handling in UI</h3>
+<ul>
+<li>Network down → show a clear message</li>
+<li><code>400</code> from validation → show server’s <code>error</code> field</li>
+<li>Never fail silently</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fetch</code></td>
+<td>Browser function to make HTTP requests</td>
+<td>Not Node <code>http</code> module</td>
+</tr>
+<tr>
+<td>Origin</td>
+<td>scheme + host + port</td>
+<td>Not full path</td>
+</tr>
+<tr>
+<td>Same-origin policy</td>
+<td>Browser safety rule</td>
+<td></td>
+</tr>
+<tr>
+<td>CORS</td>
+<td>Server opt-in for cross-origin browser calls</td>
+<td>Not a substitute for auth</td>
+</tr>
+<tr>
+<td>Relative URL</td>
+<td>Path on current origin (<code>/api/notes</code>)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<ol>
+<li>Start API on 3000.</li>
+<li>Temporarily use full URL + CORS <strong>or</strong> jump to U61 same-origin setup.</li>
+<li>On page load, <code>loadNotes()</code>.</li>
+<li>On submit, <code>createNote</code> then <code>loadNotes()</code> again.</li>
+</ol>
+<h2>Common errors</h2>
+<h3>Error: CORS message in console</h3>
+<p><strong>Meaning:</strong> browser blocked cross-origin response.<br />
+<strong>Fix for course:</strong> serve static + API together (U61), or add explicit CORS middleware with understanding.</p>
+<h3>Error: <code>res.json()</code> on empty/error HTML body</h3>
+<p>Check status first; use try/catch around parse.</p>
+<h3>Error: Forgetting <code>Content-Type: application/json</code> on POST</h3>
+<p>Server may not fill <code>req.body</code>.</p>
+<h3>Error: Testing only with <code>file://</code></h3>
+<p>Move to an HTTP origin early.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does <code>fetch</code> return?</li>
+<li>Why set JSON Content-Type on POST?</li>
+<li>What is an origin?</li>
+<li>Why same-origin serving is the beginner-friendly path?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — GET list into the DOM (API running)</h3>
+<h3>P2 — POST from form; reload list</h3>
+<h3>P3 — Force a 400; show error text from JSON</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full CORS header matrix</li>
+<li>Cookies/auth CORS</li>
+<li>GraphQL</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U61 — Serving static frontend + API together</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U60 Assignment — <code>U60-YourName</code></h1>
+<h2>Deliver</h2>
+<ul>
+<li>Frontend that <strong>loads notes via GET</strong> and <strong>creates via POST</strong> against your API (document base URL).</li>
+<li>UI shows load/create errors from status/body.</li>
+<li><code>answers.md</code>:</li>
+</ul>
+<ol>
+<li>Define fetch, origin, same-origin policy, CORS.</li>
+<li>Paste or describe a successful Network-tab request (method, URL, status).</li>
+<li>One CORS or <code>file://</code> failure you hit (or a forced experiment) and what it meant.</li>
+<li>Why relative <code>/api/...</code> helps once same-origin hosting exists.</li>
+<li>How this reuses contracts from your API tests.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U60 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET list into UI</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>POST create from form</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Error display for failures</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Concepts (origin/CORS/fetch)</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Failure experiment / Network notes</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U59-events-and-forms/index.html">U59 Events and forms</a>
+    <a class="next" href="../U61-static-plus-api/index.html">U61 Serving static frontend + API together</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U22 — What a package manager is | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U22</div>
+    <h1>What a package manager is</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U22 — What a package manager is</h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>You know packages, versions, trust. Now the <strong>tool</strong> that fetches and organizes them: a <strong>package manager</strong>. Still no random installing of app frameworks — concept first, then careful use.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define package manager responsibilities.</li>
+<li>Distinguish npm CLI vs registry vs package.</li>
+<li>Name alternate managers exist (yarn, pnpm) without multi-learning them.</li>
+<li>Explain the job <code>npm install</code> will do <em>before</em> relying on it.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U20</strong>, <strong>U21</strong></li>
+<li>Node installed (<strong>U12</strong>) so <code>npm</code> exists</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>45–70 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Typing <code>npm</code> without a mental model is superstition. Superstition collapses under errors.</p>
+<h2>Plain-language teaching</h2>
+<h3>Definition</h3>
+<p>A <strong>package manager</strong> is a tool that:</p>
+<ol>
+<li><strong>Downloads</strong> packages from a registry</li>
+<li><strong>Places</strong> them in your project (typically <code>node_modules</code>)</li>
+<li><strong>Tracks</strong> what you depend on (with <code>package.json</code> and often a lockfile)</li>
+<li><strong>Resolves</strong> versions (picks concrete versions for ranges)</li>
+<li>Often runs <strong>scripts</strong> defined by the project</li>
+</ol>
+<p><strong>npm</strong> is the package manager that ships with Node. The word “npm” originally related to “Node Package Manager,” but treat it as the <strong>tool name</strong>.</p>
+<h3>Three different things people mix up</h3>
+<table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>npm CLI</strong></td>
+<td>Program you run: <code>npm ...</code></td>
+</tr>
+<tr>
+<td><strong>npm registry</strong></td>
+<td>Default online warehouse of packages</td>
+</tr>
+<tr>
+<td><strong>A package</strong></td>
+<td>The code bundle you install</td>
+</tr>
+</tbody>
+</table>
+<h3>Other managers</h3>
+<p><strong>Yarn</strong> and <strong>pnpm</strong> are other package managers in the same ecosystem. This course standardizes on <strong>npm</strong> so you master one. Knowing others exist prevents confusion when blogs differ.</p>
+<h3>What <code>npm install</code> means (concept)</h3>
+<p>When a project already has a <code>package.json</code> listing dependencies, <code>npm install</code> means roughly:</p>
+<blockquote>
+<p>Read the manifest → download needed packages → put them in <code>node_modules</code> → record exact versions in a lockfile.</p>
+</blockquote>
+<p>When you <code>npm install express</code> (later), it means:</p>
+<blockquote>
+<p>Add express as a dependency → download it (and its deps) → update manifest/lockfile.</p>
+</blockquote>
+<p>You will do this carefully in U24 after <code>package.json</code> (U23).</p>
+<h3>What a package manager is <em>not</em></h3>
+<ul>
+<li>Not your code editor</li>
+<li>Not Node itself (though it ships with Node)</li>
+<li>Not a substitute for understanding code</li>
+<li>Not automatically “secure forever”</li>
+</ul>
+<h3>Offline mental model</h3>
+<p>Without a package manager you might manually download zip files, drop folders around, and lose version tracking. Package managers automate that mess — <strong>that</strong> is why they exist.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Package manager</td>
+<td>Tool to install/track packages</td>
+<td>Not the package</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>Command-line program</td>
+<td></td>
+</tr>
+<tr>
+<td>Registry</td>
+<td>Package warehouse</td>
+<td></td>
+</tr>
+<tr>
+<td>Resolve</td>
+<td>Pick concrete versions</td>
+<td></td>
+</tr>
+<tr>
+<td>Lockfile</td>
+<td>Exact version pin record</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — decode a sentence</h2>
+<p>Blog: “npm install the package from npm.”</p>
+<p>Clearer: “Use the <strong>npm CLI</strong> to download a <strong>package</strong> from the <strong>npm registry</strong> into your project.”</p>
+<h2>Common errors</h2>
+<h3>Error: “npm is Node”</h3>
+<p>Node runs JS. npm manages packages. Related, not identical. <code>node -v</code> vs <code>npm -v</code>.</p>
+<h3>Error: Learning yarn and npm and pnpm simultaneously</h3>
+<p>Pick one while learning. Here: npm.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Five jobs of a package manager?</li>
+<li>CLI vs registry vs package?</li>
+<li>Why does this course pick one manager?</li>
+<li>What problem do managers solve vs manual zips?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Analogy</h3>
+<p>Write a non-tech analogy (library, warehouse, app store — pick one) and also state where the analogy fails.</p>
+<h3>P2 — Command meaning</h3>
+<p>In your own words, what <em>should</em> <code>npm install</code> do when dependencies are listed?</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full npm subcommand reference</li>
+<li>Creating packages for publish</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U23 — package.json as a project manifest</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U22 Assignment — <code>U22-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define package manager; list its responsibilities.</li>
+<li>Table distinguishing npm CLI, registry, package — with an example sentence each.</li>
+<li>Why not learn three package managers at once in this course?</li>
+<li>Run <code>npm -v</code> and paste output. What does this prove and <em>not</em> prove?</li>
+<li>Explain how a package manager improves on “download zip from random site.”</li>
+<li>Predict: what could go wrong if <code>npm install</code> runs with no network? What should a careful user check?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U22 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definition + responsibilities</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>CLI/registry/package table</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Single-manager rationale</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>npm -v interpretation</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Zip comparison</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Offline/network prediction</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U21-trust-versions-dependencies/index.html">U21 Trust, versions, and dependency relationships</a>
+    <a class="next" href="../U23-package-json/index.html">U23 `package.json` as a project manifest</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

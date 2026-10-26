@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U09 — Errors: mistakes, exceptions, reading messages | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U09</div>
+    <h1>Errors: mistakes, exceptions, reading messages</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U09 — Errors: mistakes, exceptions, reading messages</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>You write real structures now. Errors will appear. This unit teaches you to treat them as <strong>information</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Separate human mistakes, syntax errors, and runtime errors.</li>
+<li>Read a typical error message for useful parts.</li>
+<li>Use a simple debug process.</li>
+<li>Explain try/catch at a beginner level (light).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U02–U08</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Many learners quit at the first red text. Professionals read red text for breakfast. You will join them — calmly.</p>
+<h2>Plain-language teaching</h2>
+<h3>Three buckets</h3>
+<table>
+<thead>
+<tr>
+<th>Bucket</th>
+<th>What it is</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Human mistake</strong></td>
+<td>Logic wrong but code runs</td>
+<td>Used <code>+</code> instead of <code>-</code> for discount</td>
+</tr>
+<tr>
+<td><strong>Syntax error</strong></td>
+<td>Text breaks language rules</td>
+<td>Missing <code>)</code> or <code>}</code></td>
+</tr>
+<tr>
+<td><strong>Runtime error</strong></td>
+<td>Rules ok, fails while running</td>
+<td>Reading property of <code>undefined</code></td>
+</tr>
+</tbody>
+</table>
+<p>All are normal. Only silence is useless.</p>
+<h3>Anatomy of an error message (typical JS)</h3>
+<p>When you run code later, messages often include:</p>
+<ol>
+<li><strong>Error type</strong> — e.g. <code>SyntaxError</code>, <code>TypeError</code>, <code>ReferenceError</code></li>
+<li><strong>Message</strong> — short description</li>
+<li><strong>Location</strong> — file and line number</li>
+<li><strong>Stack</strong> — chain of calls (useful later)</li>
+</ol>
+<p>Example shape:</p>
+<pre><code class="language-text">TypeError: Cannot read properties of undefined (reading 'name')
+    at greet (file.js:3:15)
+    at main (file.js:8:3)
+</code></pre>
+<p>Decode:</p>
+<ul>
+<li>Something was <code>undefined</code>.</li>
+<li>Code tried to read <code>.name</code> on it.</li>
+<li>Look near line 3 in <code>greet</code>.</li>
+</ul>
+<h3>Common error types (recognize, don’t memorize law)</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Often means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SyntaxError</code></td>
+<td>Typos/structure; fix before it can run</td>
+</tr>
+<tr>
+<td><code>ReferenceError</code></td>
+<td>Name used that does not exist in scope</td>
+</tr>
+<tr>
+<td><code>TypeError</code></td>
+<td>Value is wrong kind for the operation</td>
+</tr>
+</tbody>
+</table>
+<h3>Debug process (use with stuck protocol from U00)</h3>
+<ol>
+<li><strong>Read the whole message once</strong> without fixing yet.</li>
+<li><strong>Copy the error type + message</strong> into notes.</li>
+<li><strong>Go to the line</strong> cited (or nearest).</li>
+<li><strong>Trace values</strong> leading there — what is <code>undefined</code>? what is the actual number?</li>
+<li><strong>Change one thing</strong>; re-run.</li>
+<li>If logic error (no crash): write expected vs actual; add temporary displays later with <code>console.log</code>.</li>
+</ol>
+<h3>Logic errors need expected vs actual</h3>
+<p>Crash-free wrong answer:</p>
+<ul>
+<li>Expected: <code>15</code></li>
+<li>Actual: <code>25</code></li>
+<li>Hypothesis: added tax twice</li>
+</ul>
+<p>Tests (Phase 5) automate expected vs actual. For now, do it by hand.</p>
+<h3>try/catch (preview, light)</h3>
+<pre><code class="language-javascript">try {
+  // risky work
+} catch (err) {
+  // runs if an error was thrown inside try
+  // err.message is often useful
+}
+</code></pre>
+<p>Use sparingly while learning. Do not wrap everything and ignore errors. Prefer fixing the cause.</p>
+<h3>Throwing (concept)</h3>
+<p>Code can <strong>throw</strong> an error on purpose when something is invalid. APIs later return error responses instead of crashing the whole server — different layer, same idea: signal failure clearly.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Syntax error</td>
+<td>Invalid code text</td>
+<td>Not a wrong formula only</td>
+</tr>
+<tr>
+<td>Runtime error</td>
+<td>Failure during execution</td>
+<td></td>
+</tr>
+<tr>
+<td>Stack trace</td>
+<td>List of calls leading to error</td>
+<td>Not “stack overflow” always</td>
+</tr>
+<tr>
+<td>Debug</td>
+<td>Systematic fault-finding</td>
+<td>Not random rewriting</td>
+</tr>
+<tr>
+<td>Throw</td>
+<td>Signal an error on purpose</td>
+<td></td>
+</tr>
+<tr>
+<td>Catch</td>
+<td>Handle a thrown error</td>
+<td>Not “catch a ball” only</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example — decode</h2>
+<p>Message:</p>
+<pre><code class="language-text">ReferenceError: total is not defined
+    at file.js:12:5
+</code></pre>
+<p>Meaning: line 12 uses <code>total</code> but no binding exists. Maybe typo <code>totla</code> above, or forgot <code>let total = 0</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: Changing five things at once</h3>
+<p>You won’t know which change helped. One change at a time.</p>
+<h3>Error: Ignoring the line number</h3>
+<p>The line is a gift. Start there (sometimes the real bug is just above).</p>
+<h3>Error: Taking errors personally</h3>
+<p>The runtime does not know you. It only knows rules.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Syntax vs runtime vs logic error — one example each.</li>
+<li>Name four useful parts of an error report.</li>
+<li>First three steps when an error appears?</li>
+<li>Why is “expected vs actual” useful for logic bugs?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Classify</h3>
+<ul>
+<li>Missing <code>}</code>  </li>
+<li><code>let x = 2 + 2</code> but you wanted multiply  </li>
+<li>Calling <code>null.toString()</code>  </li>
+</ul>
+<h3>P2 — Decode (imaginary)</h3>
+<p><code>TypeError: books is not iterable</code> at line of <code>for (... of books)</code> — what might <code>books</code> be?</p>
+<h3>P3 — Process</h3>
+<p>Write your personal 6-step debug checklist (can adapt this unit).</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Every Error subclass</li>
+<li>Async error patterns</li>
+<li>Production logging stacks</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U10 — Algorithms: pseudocode to code</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U09 Assignment — <code>U09-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define syntax error, runtime error, logic error, stack trace, debug — own words + one example each for the three error kinds.</li>
+<li>Decode this message in bullets (type, meaning, where to look, two possible causes):</li>
+</ol>
+<pre><code class="language-text">TypeError: Cannot read properties of undefined (reading 'price')
+    at lineTotal (shop.js:14:20)
+    at checkout (shop.js:40:5)
+</code></pre>
+<ol start="3">
+<li>Write expected vs actual notes for a logic bug: function <code>area(w,h)</code> returns <code>w+h</code> instead of <code>w*h</code> for inputs 3,4.</li>
+<li>Describe try/catch in 4–6 sentences: what it does, and one misuse to avoid.</li>
+<li>Paste or rewrite your stuck+debug protocol combining U00 and this unit (numbered).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U09 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions + three examples</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Decode quality (undefined, .price, lineTotal)</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Expected/actual clear (12 vs 7)</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>try/catch sense + misuse</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Personal protocol complete/usable</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U08-arrays-and-objects/index.html">U08 Data shapes: arrays and objects</a>
+    <a class="next" href="../U10-algorithms-pseudocode-to-code/index.html">U10 Algorithms: clear steps → code</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

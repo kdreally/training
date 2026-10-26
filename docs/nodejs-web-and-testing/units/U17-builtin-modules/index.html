@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U17 — Built-in modules (Node standard library) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U17</div>
+    <h1>Built-in modules (Node standard library)</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U17 — Built-in modules (Node standard library)</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>You can split local files. Node also ships <strong>built-in modules</strong> — tools included with Node, no download.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain built-in vs local vs (later) third-party packages.</li>
+<li>Use <code>path</code> to join paths safely.</li>
+<li>Use <code>fs</code> to read/write as review.</li>
+<li>Glance at <code>os</code> for one fact about the machine.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U15</strong>, <strong>U16</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>50–80 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Before you install strangers’ code, learn what Node already gives you. That also prepares the “why packages” conversation: packages fill gaps the standard library does not cover.</p>
+<h2>Plain-language teaching</h2>
+<h3>Three sources of modules</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>How you get it</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local</td>
+<td>You wrote it</td>
+<td><code>./tax.js</code></td>
+</tr>
+<tr>
+<td>Built-in</td>
+<td>Comes with Node</td>
+<td><code>fs</code>, <code>path</code>, <code>http</code></td>
+</tr>
+<tr>
+<td>Third-party package</td>
+<td>Downloaded later via package manager</td>
+<td>Express (Phase 3–4)</td>
+</tr>
+</tbody>
+</table>
+<p>Built-ins are required <strong>without</strong> <code>./</code>:</p>
+<pre><code class="language-javascript">const fs = require(&quot;fs&quot;);
+const path = require(&quot;path&quot;);
+const os = require(&quot;os&quot;);
+</code></pre>
+<h3>Why <code>path</code> exists</h3>
+<p>Different operating systems write paths differently (<code>\</code> vs <code>/</code>). The <code>path</code> module builds paths portably.</p>
+<pre><code class="language-javascript">const path = require(&quot;path&quot;);
+const full = path.join(__dirname, &quot;data&quot;, &quot;note.txt&quot;);
+</code></pre>
+<ul>
+<li><code>__dirname</code> — directory of the <strong>current module file</strong></li>
+<li><code>path.join</code> — joins segments with correct separators</li>
+</ul>
+<p>Using <code>path.join</code> beats hand-stringing <code>"folder" + "/" + "file"</code> across OSes.</p>
+<h3><code>fs</code> review</h3>
+<pre><code class="language-javascript">const fs = require(&quot;fs&quot;);
+const path = require(&quot;path&quot;);
+
+const filePath = path.join(__dirname, &quot;note.txt&quot;);
+fs.writeFileSync(filePath, &quot;saved by Node\n&quot;, &quot;utf8&quot;);
+const text = fs.readFileSync(filePath, &quot;utf8&quot;);
+console.log(text);
+</code></pre>
+<h3><code>os</code> peek</h3>
+<pre><code class="language-javascript">const os = require(&quot;os&quot;);
+console.log(os.platform());
+</code></pre>
+<p>Prints something like <code>win32</code>, <code>darwin</code>, <code>linux</code>.</p>
+<h3><code>http</code> is coming</h3>
+<p>The <code>http</code> module can create servers. We wait until Phase 4 so networking concepts arrive first. Knowing it is built-in is enough now.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard library</td>
+<td>Built-in modules</td>
+<td>Not npm</td>
+</tr>
+<tr>
+<td><code>__dirname</code></td>
+<td>Folder of current file</td>
+<td>Not cwd always</td>
+</tr>
+<tr>
+<td>Portable path</td>
+<td>Works across OSes</td>
+<td></td>
+</tr>
+<tr>
+<td>Third-party</td>
+<td>Outside Node core</td>
+<td>Phase 3</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>See <code>fs</code> + <code>path</code> snippet above. Run from any cwd; file is created <strong>next to the script</strong> because of <code>__dirname</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: Assuming cwd === script folder</h3>
+<p><code>fs.readFileSync("note.txt")</code> looks in <strong>cwd</strong>, not always script folder. Prefer <code>path.join(__dirname, "note.txt")</code>.</p>
+<h3>Error: <code>require("fs.txt")</code> or wrong names</h3>
+<p>Built-in names are fixed: <code>fs</code>, <code>path</code>, <code>os</code>, <code>http</code>, …</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Three module sources?</li>
+<li>Why <code>path.join</code>?</li>
+<li>What is <code>__dirname</code>?</li>
+<li>Name one built-in you will use for servers later.</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — write/read beside script</h3>
+<p>Using <code>__dirname</code>.</p>
+<h3>P2 — log platform</h3>
+<p>Use <code>os.platform()</code>.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full fs async API</li>
+<li>http server (Phase 4)</li>
+<li>Installing packages</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U18 — Asynchronous ideas when I/O forces them</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U17 Assignment — <code>U17-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>fileTool.js</code></h3>
+<ul>
+<li>Writes <code>hello-u17.txt</code> beside the script using <code>path.join(__dirname, ...)</code></li>
+<li>Reads it back and <code>console.log</code>s contents</li>
+<li>Also logs <code>os.platform()</code></li>
+</ul>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Local vs built-in vs third-party modules.</li>
+<li>Why <code>__dirname</code> instead of relying on cwd?</li>
+<li>Transcript of <code>node fileTool.js</code>.</li>
+<li>Name two other built-ins you have heard of (can be from this unit) and one-line each.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U17 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fileTool uses path+fs correctly</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>os.platform logged</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Three-source explanation</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>__dirname reasoning</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U16-modules-local/index.html">U16 Modules: splitting code across files</a>
+    <a class="next" href="../U18-async-light/index.html">U18 Asynchronous ideas (only as forced by I/O)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

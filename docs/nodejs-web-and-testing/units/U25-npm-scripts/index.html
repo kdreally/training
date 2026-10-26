@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U25 — Scripts in `package.json` | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U25</div>
+    <h1>Scripts in `package.json`</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U25 — Scripts in <code>package.json</code></h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>Dependencies install. Teams also need <strong>shared commands</strong>: start the app, run tests. npm <strong>scripts</strong> name those commands.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Add <code>scripts</code> entries.</li>
+<li>Run them with <code>npm run &lt;name&gt;</code> and shortcuts like <code>npm start</code> / <code>npm test</code>.</li>
+<li>Explain why scripts beat memorizing long commands.</li>
+<li>Wire <code>start</code> to <code>node index.js</code>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U23</strong>, <strong>U24</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>40–60 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>“How do I run this project?” should have an answer in <code>package.json</code>. Scripts are that answer.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a script is</h3>
+<p>Under <code>"scripts"</code> in <code>package.json</code>, keys are <strong>names</strong>, values are <strong>shell commands</strong>:</p>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;start&quot;: &quot;node index.js&quot;,
+  &quot;hello&quot;: &quot;node hello.js&quot;
+}
+</code></pre>
+<p>Run:</p>
+<pre><code class="language-bash">npm start
+npm run hello
+</code></pre>
+<h3>Special shortcuts</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Looks for script named</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm start</code></td>
+<td><code>start</code></td>
+</tr>
+<tr>
+<td><code>npm test</code></td>
+<td><code>test</code></td>
+</tr>
+</tbody>
+</table>
+<p>Other names: <code>npm run &lt;name&gt;</code>.</p>
+<h3>Why use scripts</h3>
+<ul>
+<li>Documented entry points</li>
+<li>Same command on every OS machine in the team</li>
+<li>Later: <code>test</code> runs the test runner (Phase 5)</li>
+</ul>
+<h3>PATH bonus inside scripts</h3>
+<p>npm scripts can run locally installed package binaries from <code>node_modules/.bin</code> without global installs. You will appreciate this when test tools arrive.</p>
+<h3>Example project</h3>
+<p><code>index.js</code>:</p>
+<pre><code class="language-javascript">console.log(&quot;started via npm&quot;);
+</code></pre>
+<p><code>package.json</code> scripts:</p>
+<pre><code class="language-json">&quot;start&quot;: &quot;node index.js&quot;
+</code></pre>
+<pre><code class="language-bash">npm start
+</code></pre>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>npm script</td>
+<td>Named command in package.json</td>
+<td>Not a JS function</td>
+</tr>
+<tr>
+<td><code>npm run</code></td>
+<td>Execute a script by name</td>
+<td></td>
+</tr>
+<tr>
+<td>Lifecycle script</td>
+<td>Special names like start/test</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Add <code>"greet": "node greet.js"</code> and run <code>npm run greet</code>.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>Missing script: "start"</code></h3>
+<p>No <code>start</code> key. Add it or use the correct name.</p>
+<h3>Error: Script uses wrong path</h3>
+<p>Commands run with project root as cwd (usually). Keep paths relative to project root.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Where are scripts defined?</li>
+<li><code>npm start</code> vs <code>npm run start</code>?</li>
+<li>Why scripts help teams?</li>
+<li>What will <code>npm test</code> mean later?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — start script</h3>
+<p>Wire and run.</p>
+<h3>P2 — custom script</h3>
+<p><code>npm run</code> something of your own.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Complex cross-env tooling</li>
+<li>CI pipelines</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U26 — Dev vs runtime dependencies</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U25 Assignment — <code>U25-YourName</code></h1>
+<h2>Project <code>u25-project/</code></h2>
+<ul>
+<li><code>index.js</code> logs <code>app start</code></li>
+<li><code>hello.js</code> logs <code>hello script</code></li>
+<li><code>package.json</code> with scripts: <code>start</code> → index, <code>hello</code> → hello</li>
+<li><code>answers.md</code>: explain scripts; paste <code>npm start</code> and <code>npm run hello</code> transcript; when would you add a <code>test</code> script?</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U25 Rubric — 15 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scripts correct</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>test script foresight</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U24-installing-packages/index.html">U24 Installing packages, `node_modules`, lockfiles</a>
+    <a class="next" href="../U26-dev-vs-runtime-deps/index.html">U26 Dev vs runtime dependencies</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

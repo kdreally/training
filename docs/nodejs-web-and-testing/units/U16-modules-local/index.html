@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U16 — Modules: splitting code across files | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U16</div>
+    <h1>Modules: splitting code across files</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U16 — Modules: splitting code across files</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>One file works until it hurts. <strong>Modules</strong> split programs into files with clear borders.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why modules exist.</li>
+<li>Export functions from one file; import/require them in another.</li>
+<li>Build a tiny two-file program and run the entry file.</li>
+<li>Prefer one idea per module at beginner scale.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U14</strong>, <strong>U15</strong></li>
+<li><strong>U07</strong> functions</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Real apps are not one 2,000-line file. Modules are how teams (and future you) stay sane. Tests later import your modules.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a module is</h3>
+<p>A <strong>module</strong> is a file that intentionally <strong>exports</strong> some values (usually functions/objects) for other files to <strong>import</strong>.</p>
+<h3>Why bother</h3>
+<ul>
+<li>Smaller files</li>
+<li>Reuse</li>
+<li>Clear ownership (“math stuff lives here”)</li>
+<li>Testing pieces in isolation later</li>
+</ul>
+<h3>Two systems (awareness)</h3>
+<p>Node historically used <strong>CommonJS</strong>: <code>require</code> / <code>module.exports</code>.<br />
+Modern Node also supports <strong>ES modules</strong>: <code>import</code> / <code>export</code>.</p>
+<p><strong>This course uses CommonJS first</strong> (<code>require</code> / <code>module.exports</code>) because it works with zero config in classic Node setups. ES modules appear later if needed.</p>
+<h3>Exporting</h3>
+<p><code>math.js</code>:</p>
+<pre><code class="language-javascript">function add(a, b) {
+  return a + b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+module.exports = {
+  add: add,
+  multiply: multiply
+};
+</code></pre>
+<p>You are publishing an object with two functions.</p>
+<h3>Importing (requiring)</h3>
+<p><code>app.js</code>:</p>
+<pre><code class="language-javascript">const math = require(&quot;./math.js&quot;);
+
+console.log(math.add(2, 3));
+console.log(math.multiply(4, 5));
+</code></pre>
+<ul>
+<li><code>./</code> means “relative to this file’s folder”</li>
+<li>Run the <strong>entry</strong> file: <code>node app.js</code></li>
+<li>You do <strong>not</strong> run <code>math.js</code> directly unless it is meant to be entry</li>
+</ul>
+<h3>What <code>require</code> does (simple model)</h3>
+<ol>
+<li>Loads the target file</li>
+<li>Runs it</li>
+<li>Returns <code>module.exports</code></li>
+</ol>
+<h3>One export function style</h3>
+<pre><code class="language-javascript">// greeter.js
+function greet(name) {
+  return &quot;Hi, &quot; + name;
+}
+module.exports = greet;
+</code></pre>
+<pre><code class="language-javascript">const greet = require(&quot;./greeter.js&quot;);
+console.log(greet(&quot;Ada&quot;));
+</code></pre>
+<h3>Boundaries</h3>
+<p>Not everything needs exporting. Helper details can stay private in the file (not put on <code>module.exports</code>).</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Module</td>
+<td>File with exports</td>
+<td>Not npm package yet</td>
+</tr>
+<tr>
+<td>Export</td>
+<td>Make available to others</td>
+<td></td>
+</tr>
+<tr>
+<td>Require / import</td>
+<td>Load another module</td>
+<td></td>
+</tr>
+<tr>
+<td>Entry file</td>
+<td>File you run with <code>node</code></td>
+<td></td>
+</tr>
+<tr>
+<td>CommonJS</td>
+<td>require/exports system</td>
+<td></td>
+</tr>
+<tr>
+<td>Relative path</td>
+<td><code>./file.js</code> path</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><code>tax.js</code>:</p>
+<pre><code class="language-javascript">function withTax(amount, rate) {
+  return amount + amount * rate;
+}
+module.exports = { withTax };
+</code></pre>
+<p><code>receipt.js</code>:</p>
+<pre><code class="language-javascript">const tax = require(&quot;./tax.js&quot;);
+const total = tax.withTax(100, 0.1);
+console.log(total);
+</code></pre>
+<pre><code class="language-bash">node receipt.js
+</code></pre>
+<pre><code class="language-text">110
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: <code>Cannot find module './math'</code></h3>
+<p>Wrong path/name. Check spelling and <code>./</code>.</p>
+<h3>Error: <code>... is not a function</code></h3>
+<p>Exported shape does not match how you import. Log the required value.</p>
+<h3>Error: Running the library file instead of the entry</h3>
+<p><code>node math.js</code> may print nothing — it only defines exports.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why split modules?</li>
+<li>What does <code>module.exports</code> represent?</li>
+<li>Why <code>./</code> in <code>require("./math.js")</code>?</li>
+<li>Which file do you pass to <code>node</code>?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — math module</h3>
+<p><code>add</code> and <code>sub</code> exported; entry logs both.</p>
+<h3>P2 — private helper</h3>
+<p>File with internal helper not exported; only export one public function.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>npm packages (soon)</li>
+<li>Circular dependencies</li>
+<li>TypeScript paths</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U17 — Built-in modules (Node standard library)</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U16 Assignment — <code>U16-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>stringUtils.js</code></h3>
+<p>Export <code>shout(text)</code> → uppercase + <code>!</code><br />
+Export <code>countChars(text)</code> → length</p>
+<h3><code>main.js</code></h3>
+<p>Requires <code>./stringUtils.js</code>, logs <code>shout("hello")</code> and <code>countChars("hello")</code>.</p>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Why modules?</li>
+<li>Explain <code>module.exports</code> and <code>require</code> in your own words.</li>
+<li>Transcript: <code>node main.js</code> output.</li>
+<li>What happens if you <code>require</code> a wrong path? What did you see or what would you expect?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U16 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stringUtils exports correct</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>main.js requires and logs</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Conceptual explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript / path failure awareness</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U15-input-output-basics/index.html">U15 Input and output basics</a>
+    <a class="next" href="../U17-builtin-modules/index.html">U17 Built-in modules (Node standard library)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

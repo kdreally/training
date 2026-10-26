@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U18 — Asynchronous ideas (only as forced by I/O) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U18</div>
+    <h1>Asynchronous ideas (only as forced by I/O)</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U18 — Asynchronous ideas (only as forced by I/O)</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>Sync file reads block everything until done. Real network programs need a gentler model: <strong>start work, continue later</strong>. This unit is a <strong>light</strong> intro — enough not to panic later.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain sync vs async in plain language.</li>
+<li>Read a file with <code>fs.readFile</code> (callback style) once.</li>
+<li>State what a callback is.</li>
+<li>Know that <code>async/await</code> exists as clearer syntax for the same idea (preview).</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U17</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>50–80 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Servers handle many requests. If one slow file read froze the whole process always, apps would feel dead. Async I/O is why Node became popular for network apps. You need the <em>idea</em> before HTTP servers.</p>
+<h2>Plain-language teaching</h2>
+<h3>Sync: wait here</h3>
+<pre><code class="language-javascript">const text = fs.readFileSync(&quot;big.txt&quot;, &quot;utf8&quot;);
+console.log(&quot;after read&quot;);
+</code></pre>
+<p>Nothing else in this program continues until read finishes.</p>
+<h3>Async: start now, finish later</h3>
+<pre><code class="language-javascript">const fs = require(&quot;fs&quot;);
+
+console.log(&quot;before&quot;);
+fs.readFile(&quot;note.txt&quot;, &quot;utf8&quot;, function (err, text) {
+  if (err) {
+    console.log(&quot;error:&quot;, err.message);
+    return;
+  }
+  console.log(&quot;file says:&quot;, text);
+});
+console.log(&quot;after starting read&quot;);
+</code></pre>
+<p>Possible order:</p>
+<pre><code class="language-text">before
+after starting read
+file says: ...
+</code></pre>
+<p>The function you pass in is a <strong>callback</strong> — “call me back when done.”</p>
+<h3>Error-first callbacks</h3>
+<p>Node’s old style: callback <code>(err, result)</code>.<br />
+If <code>err</code> is not null/undefined, something failed; do not trust <code>result</code>.</p>
+<h3>Promises / async-await (preview only)</h3>
+<p>Modern code often looks like:</p>
+<pre><code class="language-javascript">// conceptual preview — not required mastery yet
+// const text = await fs.promises.readFile(&quot;note.txt&quot;, &quot;utf8&quot;);
+</code></pre>
+<p>Same idea: wait for I/O without freezing the mental model of “one big freeze.” We will use simple styles until a unit needs more.</p>
+<h3>What you must not do yet</h3>
+<p>Do not rewrite your whole brain in Promises. Do not invent race-condition theory. Hold this:</p>
+<blockquote>
+<p>Some operations finish later; you provide a function (or await) for the result.</p>
+</blockquote>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Synchronous</td>
+<td>Finish now before next line</td>
+<td></td>
+</tr>
+<tr>
+<td>Asynchronous</td>
+<td>Complete later</td>
+<td>Not “random”</td>
+</tr>
+<tr>
+<td>Callback</td>
+<td>Function called when work finishes</td>
+<td></td>
+</tr>
+<tr>
+<td>Non-blocking I/O</td>
+<td>Start I/O without freezing all progress</td>
+<td></td>
+</tr>
+<tr>
+<td>Event loop</td>
+<td>Node’s scheduler for later work</td>
+<td>Deep details later</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Use the <code>readFile</code> snippet with a real <code>note.txt</code>. Observe line order.</p>
+<h2>Common errors</h2>
+<h3>Error: Using <code>text</code> outside the callback</h3>
+<pre><code class="language-javascript">let text;
+fs.readFile(&quot;note.txt&quot;, &quot;utf8&quot;, (err, data) =&gt; { text = data; });
+console.log(text); // still empty/undefined — too early
+</code></pre>
+<p>Use the value <strong>inside</strong> the callback (or learn await later).</p>
+<h3>Error: Ignoring <code>err</code></h3>
+<p>Always check <code>err</code> in error-first callbacks.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Sync vs async in one sentence each?</li>
+<li>What is a callback?</li>
+<li>Why might “after starting read” print before file contents?</li>
+<li>What is error-first?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — async read</h3>
+<p>Log before, start read, log after start, log contents in callback.</p>
+<h3>P2 — force error</h3>
+<p>Read a missing file; log <code>err.message</code>.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full Promise combinators</li>
+<li>Streams deep dive</li>
+<li>Concurrency bugs catalog</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U19 — Why reuse exists (packages motivation)</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U18 Assignment — <code>U18-YourName</code></h1>
+<h2>Files</h2>
+<h3><code>asyncRead.js</code></h3>
+<ul>
+<li>Logs <code>1-start</code></li>
+<li>Calls <code>fs.readFile</code> on <code>data.txt</code> (you create with a short string)</li>
+<li>In callback: if err, log it; else log <code>3-contents:</code> + text</li>
+<li>After starting read (outside callback), log <code>2-after-start</code></li>
+</ul>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Explain the order you observed and why.</li>
+<li>Define callback and error-first.</li>
+<li>What goes wrong if you use the file text on the next line after <code>readFile</code> without waiting?</li>
+<li>In 3–5 sentences, why async I/O matters for servers (plain language).</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U18 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>asyncRead.js structure correct</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Order explanation</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>callback / error-first defs</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>too-early access explanation</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>server relevance</td>
+<td>2</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U17-builtin-modules/index.html">U17 Built-in modules (Node standard library)</a>
+    <a class="next" href="../U19-why-reuse-packages/index.html">U19 Why reuse exists (before packages)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

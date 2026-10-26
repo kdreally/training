@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U70 — Fixtures, beforeEach, test isolation | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U70</div>
+    <h1>Fixtures, beforeEach, test isolation</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U70 — Fixtures, beforeEach, test isolation</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>E2E tests share a <strong>real app</strong> with <strong>in-memory data</strong>. Without isolation, test order breaks results. <strong>beforeEach</strong> and clean state fix that.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain test isolation for UI tests.</li>
+<li>Use <code>test.beforeEach</code> to open a known page state.</li>
+<li>Reset backend data between tests (test-only endpoint or restart strategy).</li>
+<li>Avoid depending on test run order.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U41</strong> isolation idea, <strong>U68–U69</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>“Works alone, fails together” is almost always shared state. Professionals reset.</p>
+<h2>Plain-language teaching</h2>
+<h3>Isolation</h3>
+<p>Each test should behave as if the world were created for it alone — as far as practical.</p>
+<h3>beforeEach</h3>
+<pre><code class="language-javascript">const { test, expect } = require(&quot;@playwright/test&quot;);
+
+test.beforeEach(async function ({ page }) {
+  await page.goto(&quot;/&quot;);
+});
+</code></pre>
+<p>Runs before every test in the file: common arrange.</p>
+<h3>Resetting API data</h3>
+<p>In-memory store keeps notes across tests. Options:</p>
+<ol>
+<li><strong>Test-only reset route</strong> (learning projects): <code>POST /api/test/reset</code> clears store — <strong>never enable in real production</strong> without protection.  </li>
+<li><strong>Unique titles per test</strong> — weaker; leftover data still piles up.  </li>
+<li><strong>Restart server per test</strong> — slow; usually overkill.</li>
+</ol>
+<p>Course recommendation for toys: guarded reset endpoint or module reset used only when <code>NODE_ENV=test</code>.</p>
+<pre><code class="language-javascript">// server-side sketch
+if (process.env.NODE_ENV === &quot;test&quot;) {
+  app.post(&quot;/api/test/reset&quot;, function (req, res) {
+    store.reset();
+    res.status(204).end();
+  });
+}
+</code></pre>
+<pre><code class="language-javascript">test.beforeEach(async function ({ page, request }) {
+  await request.post(&quot;/api/test/reset&quot;);
+  await page.goto(&quot;/&quot;);
+});
+</code></pre>
+<p><code>request</code> is Playwright’s APIRequestContext — HTTP without UI. Great for setup.</p>
+<h3>Fixtures (idea)</h3>
+<p>Playwright <strong>fixtures</strong> inject <code>page</code>, <code>request</code>, etc. You can build custom fixtures later; <code>beforeEach</code> is enough now.</p>
+<h3>Independence check</h3>
+<p>Run tests in different order if your runner supports shuffle; or run each file alone. Failures that appear only in full suite scream shared state.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Isolation</td>
+<td>Tests don’t depend on each other</td>
+<td></td>
+</tr>
+<tr>
+<td><code>beforeEach</code></td>
+<td>Hook before every test</td>
+<td></td>
+</tr>
+<tr>
+<td>Fixture</td>
+<td>Injected test dependency</td>
+<td></td>
+</tr>
+<tr>
+<td><code>request</code></td>
+<td>Playwright HTTP helper</td>
+<td>Not browser fetch only</td>
+</tr>
+<tr>
+<td>Order dependence</td>
+<td>Pass only in certain order</td>
+<td>Bug in suite design</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Reset + goto in beforeEach; two tests both create “A” without conflict.</p>
+<h2>Common errors</h2>
+<h3>Error: Reset route left open in production deploy</h3>
+<p>Gate with env; document risk (U54).</p>
+<h3>Error: Only clearing the DOM, not the API</h3>
+<p>Refresh reloads old notes from server.</p>
+<h3>Error: One giant test that does everything</h3>
+<p>Split journeys; reset between.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why isolation for e2e?</li>
+<li>What beforeEach is for?</li>
+<li>Why reset API not only UI?</li>
+<li>Risk of test reset endpoints?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — add reset + beforeEach</h3>
+<h3>P2 — two tests that would conflict without reset</h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Full custom fixture factories</li>
+<li>Parallelism tuning deep dive</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U71 — Full stack E2E: UI + API</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U70 Assignment — <code>U70-YourName</code></h1>
+<h2>Deliver</h2>
+<ul>
+<li>Isolation strategy implemented (reset endpoint or documented alternative that works)</li>
+<li><code>beforeEach</code> used</li>
+<li>≥2 tests that would collide without isolation, both green in one run</li>
+<li><code>answers.md</code>: isolation definition; how reset works; production safety note; order-dependence experiment</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U70 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working isolation strategy</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>beforeEach usage</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Colliding pair both green</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Safety + explanations</td>
+<td>7</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U69-waiting-flakiness/index.html">U69 Waiting, auto-wait, and flakiness</a>
+    <a class="next" href="../U71-fullstack-e2e/index.html">U71 Full stack E2E: UI + their API</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

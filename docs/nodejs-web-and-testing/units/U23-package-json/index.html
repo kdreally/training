@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U23 — `package.json` as a project manifest | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U23</div>
+    <h1>`package.json` as a project manifest</h1>
+    <span class="phase-badge ph3">Phase 3 — Packages and package managers</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U23 — <code>package.json</code> as a project manifest</h1>
+<p><strong>Phase 3</strong></p>
+<h2>Where you are</h2>
+<p>Package managers need a <strong>project declaration</strong>. In Node, that file is <strong><code>package.json</code></strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain what a manifest is.</li>
+<li>Create a <code>package.json</code> with understanding (<code>npm init</code>).</li>
+<li>Read fields: <code>name</code>, <code>version</code>, <code>description</code>, <code>main</code>, <code>scripts</code>, <code>dependencies</code>.</li>
+<li>Open and edit <code>package.json</code> as ordinary text.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U22</strong></li>
+<li>Terminal + Node/npm</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p><code>package.json</code> is not mystical config — it is a <strong>JSON file describing the project</strong>. If you can read it, npm stops feeling like magic.</p>
+<h2>Plain-language teaching</h2>
+<h3>Manifest</h3>
+<p>A <strong>manifest</strong> is a document that declares what something <em>is</em> and what it <em>needs</em>.</p>
+<p><code>package.json</code> declares:</p>
+<ul>
+<li>Project identity (name, version)</li>
+<li>How to run common tasks (<code>scripts</code>)</li>
+<li>What packages it depends on (<code>dependencies</code>, <code>devDependencies</code>)</li>
+</ul>
+<h3>JSON reminder</h3>
+<p>JSON is a data format: braces, quotes, commas. No comments. Trailing commas can break it. You met the <em>idea</em> with objects; JSON is stricter text.</p>
+<h3>Create one carefully</h3>
+<pre><code class="language-bash">mkdir u23-project
+cd u23-project
+npm init -y
+</code></pre>
+<ul>
+<li><code>npm init</code> walks you through creating <code>package.json</code></li>
+<li><code>-y</code> means “yes to defaults” — fine for learning; you will open the file and understand fields</li>
+</ul>
+<p>Open <code>package.json</code> in your editor. Typical fields:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;u23-project&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;&quot;,
+  &quot;main&quot;: &quot;index.js&quot;,
+  &quot;scripts&quot;: {
+    &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;
+  },
+  &quot;keywords&quot;: [],
+  &quot;author&quot;: &quot;&quot;,
+  &quot;license&quot;: &quot;ISC&quot;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Project/package name</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>Project version</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>Human blurb</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td>Default entry file hint</td>
+</tr>
+<tr>
+<td><code>scripts</code></td>
+<td>Named commands npm can run</td>
+</tr>
+<tr>
+<td><code>license</code></td>
+<td>License id</td>
+</tr>
+</tbody>
+</table>
+<p><code>dependencies</code> appears when you install packages (U24).</p>
+<h3>Scripts (preview, used in U25)</h3>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;start&quot;: &quot;node index.js&quot;
+}
+</code></pre>
+<p>Then <code>npm start</code> runs that command. Deeper in U25.</p>
+<h3>You can edit by hand</h3>
+<p>Change <code>description</code> to <code>"learning package.json"</code>. Save. Valid JSON required.</p>
+<h3>This file is shared with humans and tools</h3>
+<p>Commit it to version control later. It is the project’s declaration — not a secret cache.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manifest</td>
+<td>Declaration document</td>
+<td></td>
+</tr>
+<tr>
+<td><code>package.json</code></td>
+<td>Node project manifest</td>
+<td>Not lockfile</td>
+</tr>
+<tr>
+<td><code>npm init</code></td>
+<td>Create package.json</td>
+<td></td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>Data text format</td>
+<td>Almost-but-not JS object literal</td>
+</tr>
+<tr>
+<td><code>scripts</code></td>
+<td>Named command shortcuts</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>After <code>npm init -y</code>, set:</p>
+<pre><code class="language-json">&quot;description&quot;: &quot;U23 learning project&quot;,
+&quot;main&quot;: &quot;index.js&quot;
+</code></pre>
+<p>Create <code>index.js</code>:</p>
+<pre><code class="language-javascript">console.log(&quot;project alive&quot;);
+</code></pre>
+<p>Run with <code>node index.js</code> (scripts next unit).</p>
+<h2>Common errors</h2>
+<h3>Error: Invalid JSON after hand-edit</h3>
+<p>Missing comma or extra comma. Use an editor that highlights JSON errors.</p>
+<h3>Error: Wrong folder</h3>
+<p>Multiple projects nested accidentally. Always <code>pwd</code> before <code>npm init</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is a manifest?</li>
+<li>What does <code>npm init -y</code> do?</li>
+<li>Meaning of <code>name</code>, <code>version</code>, <code>scripts</code>?</li>
+<li>Is <code>package.json</code> generated binary or editable text?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — init project</h3>
+<p>Create folder, <code>npm init -y</code>, edit description.</p>
+<h3>P2 — read aloud</h3>
+<p>Explain each default field in one phrase.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Installing dependencies (U24)</li>
+<li>Publishing to npm</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U24 — Installing packages, node_modules, lockfiles</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U23 Assignment — <code>U23-YourName</code></h1>
+<h2>Submit project folder <code>u23-project/</code> containing:</h2>
+<ul>
+<li><code>package.json</code> (from npm init; description set to something personal)</li>
+<li><code>index.js</code> that logs a short message</li>
+<li><code>answers.md</code>:</li>
+</ul>
+<ol>
+<li>Define manifest; role of package.json.</li>
+<li>Field-by-field explanation of <em>your</em> package.json keys present.</li>
+<li>Transcript: mkdir, npm init -y, node index.js.</li>
+<li>What would break if you deleted a comma inside package.json?</li>
+<li>Difference between package.json and (upcoming) lockfile — best guess from U21–U22, refined if you peeked ahead honestly.</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U23 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid package.json + description</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>index.js runs</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Field explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>JSON breakage + lockfile awareness</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U22-what-a-package-manager-is/index.html">U22 What a package manager is</a>
+    <a class="next" href="../U24-installing-packages/index.html">U24 Installing packages, `node_modules`, lockfiles</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

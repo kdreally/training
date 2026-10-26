@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U66 — First Playwright test: goto and assert text | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U66</div>
+    <h1>First Playwright test: goto and assert text</h1>
+    <span class="phase-badge ph8">Phase 8 — Browser tests with Playwright</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U66 — First Playwright test: goto and assert text</h1>
+<p><strong>Phase 8</strong></p>
+<h2>Where you are</h2>
+<p>Playwright is installed. First green test: <strong>open a page, assert something visible</strong>. Small on purpose.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write a <code>*.spec.js</code> using <code>@playwright/test</code>.</li>
+<li>Use <code>page.goto</code> and <code>expect(...).toBeVisible</code> / <code>toHaveText</code>.</li>
+<li>Run tests with <code>npx playwright test</code>.</li>
+<li>Run headed mode once to <em>see</em> the browser.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U65</strong></li>
+<li>App serving a page (U61) <strong>or</strong> a tiny static <code>public/index.html</code> with known heading</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Confidence comes from one green path before forms, waits, and full stacks pile on.</p>
+<h2>Plain-language teaching</h2>
+<h3>Test file shape</h3>
+<p><code>e2e/home.spec.js</code>:</p>
+<pre><code class="language-javascript">const { test, expect } = require(&quot;@playwright/test&quot;);
+
+test(&quot;home page shows Notes heading&quot;, async function ({ page }) {
+  await page.goto(&quot;/&quot;);
+  await expect(page.getByRole(&quot;heading&quot;, { name: &quot;Notes&quot; })).toBeVisible();
+});
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test("…", async …)</code></td>
+<td>One test case with a readable name</td>
+</tr>
+<tr>
+<td><code>{ page }</code></td>
+<td>Playwright gives you a fresh page (browser tab-like)</td>
+</tr>
+<tr>
+<td><code>await</code></td>
+<td>Browser work is asynchronous — wait for it</td>
+</tr>
+<tr>
+<td><code>page.goto("/")</code></td>
+<td>Navigate (uses <code>baseURL</code> from config if set)</td>
+</tr>
+<tr>
+<td><code>getByRole("heading", { name: "Notes" })</code></td>
+<td>Find by role + accessible name (U62/U67)</td>
+</tr>
+<tr>
+<td><code>expect(…).toBeVisible()</code></td>
+<td>Assert it shows</td>
+</tr>
+</tbody>
+</table>
+<h3>Run</h3>
+<p>App must be running <strong>or</strong> configured to start (U71 <code>webServer</code>). For this unit, <strong>manual start</strong> is OK:</p>
+<p>Terminal 1:</p>
+<pre><code class="language-bash">npm start
+</code></pre>
+<p>Terminal 2:</p>
+<pre><code class="language-bash">npx playwright test
+</code></pre>
+<h3>See the browser</h3>
+<pre><code class="language-bash">npx playwright test --headed
+</code></pre>
+<h3>npm script (recommended)</h3>
+<pre><code class="language-json">&quot;scripts&quot;: {
+  &quot;test:e2e&quot;: &quot;playwright test&quot;,
+  &quot;test:e2e:headed&quot;: &quot;playwright test --headed&quot;
+}
+</code></pre>
+<p>E2E script separate from <code>npm test</code> (unit/API) keeps layers clear — or document a combined strategy later.</p>
+<h3>If goto fails</h3>
+<ul>
+<li>Is server up?</li>
+<li>Is <code>baseURL</code> correct (<code>http://127.0.0.1:3000</code>)?</li>
+<li>Does <code>/</code> really return your HTML?</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>page</code></td>
+<td>Tab-like automation context</td>
+<td></td>
+</tr>
+<tr>
+<td><code>goto</code></td>
+<td>Navigate to URL</td>
+<td></td>
+</tr>
+<tr>
+<td>Assertion (Playwright)</td>
+<td><code>expect</code> from Playwright</td>
+<td>Slightly different API than node:assert</td>
+</tr>
+<tr>
+<td>Spec file</td>
+<td>File of tests</td>
+<td></td>
+</tr>
+<tr>
+<td>Headed run</td>
+<td>Visible browser</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Heading test above green against your notes home.</p>
+<h2>Common errors</h2>
+<h3>Error: <code>connect ECONNREFUSED</code></h3>
+<p>Nothing listening on baseURL. Start the app.</p>
+<h3>Error: Strict mode / wrong role name</h3>
+<p>Heading text must match accessible name (visible text of <code>h1</code>).</p>
+<h3>Error: Forgetting <code>await</code></h3>
+<p>Assertions and actions return Promises — always await.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does <code>page.goto</code> do?</li>
+<li>Why <code>await</code>?</li>
+<li>How do you run headed?</li>
+<li>What must be true for baseURL to work?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — heading visible test</h3>
+<h3>P2 — assert page title (<code>toHaveTitle</code>) if you set <code>&lt;title&gt;</code></h3>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Filling forms (U68)</li>
+<li>Deep locator strategy (U67 next)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U67 — Locators</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U66 Assignment — <code>U66-YourName</code></h1>
+<h2>Deliver</h2>
+<ul>
+<li>≥2 Playwright tests: heading visible; one more stable assertion (title, welcome text, or test id visible)</li>
+<li>How you start the app documented</li>
+<li>Transcript or description of <code>npx playwright test</code> green</li>
+<li><code>answers.md</code>: explain page, goto, expect, await; what failed first and fix</li>
+</ul></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U66 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≥2 green e2e tests</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Uses goto + expect correctly</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Run evidence</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Explanations</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U65-install-playwright/index.html">U65 Installing Playwright (with understanding)</a>
+    <a class="next" href="../U67-locators/index.html">U67 Locators: role, text, test id</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

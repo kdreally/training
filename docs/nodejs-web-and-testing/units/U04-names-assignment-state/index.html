@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U04 — Names, assignment, and state | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U04</div>
+    <h1>Names, assignment, and state</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U04 — Names, assignment, and state</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>Values exist. Now programs <strong>remember</strong> values using <strong>names</strong>. That memory over time is <strong>state</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain variable as a named place for a value.</li>
+<li>Trace assignments that change state.</li>
+<li>Use <code>let</code> and <code>const</code> at a beginner level (on paper / reading).</li>
+<li>Avoid confusing <code>=</code> with <code>===</code>.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U03</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>60–90 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Without names, every value must be rewritten. With names, programs build step by step. Bugs often come from <strong>state you forgot changed</strong>.</p>
+<h2>Plain-language teaching</h2>
+<h3>Names hold values</h3>
+<p>A <strong>variable</strong> is a <strong>name</strong> bound to a <strong>value</strong>.</p>
+<p>Think of a labeled box:</p>
+<ul>
+<li>Label: <code>age</code></li>
+<li>Contents: <code>30</code></li>
+</ul>
+<p>In JavaScript:</p>
+<pre><code class="language-javascript">let age = 30;
+</code></pre>
+<ul>
+<li><code>let</code> declares a name you may reassign later.</li>
+<li><code>age</code> is the name.</li>
+<li><code>=</code> <strong>assigns</strong> (stores) the value.</li>
+<li><code>30</code> is the value expression.</li>
+</ul>
+<h3>Assignment is not equality</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>age = 30</code></td>
+<td>Store <code>30</code> in <code>age</code></td>
+</tr>
+<tr>
+<td><code>age === 30</code></td>
+<td>Ask: is the value in <code>age</code> strictly equal to <code>30</code>?</td>
+</tr>
+</tbody>
+</table>
+<p>Reading <code>=</code> as “equals” (math) causes lasting pain. Read it as <strong>“gets”</strong> or <strong>“becomes”</strong>: <code>age</code> gets <code>30</code>.</p>
+<h3>State over time</h3>
+<p><strong>State</strong> is the set of values the program currently remembers.</p>
+<pre><code class="language-javascript">let score = 0;
+score = score + 10;
+score = score + 5;
+</code></pre>
+<p>Trace:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>after first line</td>
+<td>0</td>
+</tr>
+<tr>
+<td>after second</td>
+<td>10</td>
+</tr>
+<tr>
+<td>after third</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>same name</strong> can refer to <strong>different values</strong> at different times (when using <code>let</code>).</p>
+<h3>Reading a name is an expression</h3>
+<pre><code class="language-javascript">let x = 3;
+let y = x + 2;
+</code></pre>
+<p><code>x</code> evaluates to the current value of <code>x</code> (<code>3</code>). Then <code>x + 2</code> is <code>5</code>, stored in <code>y</code>.</p>
+<h3><code>const</code> — name that must not be reassigned</h3>
+<pre><code class="language-javascript">const PI = 3.14;
+</code></pre>
+<ul>
+<li>You must assign when you create it (for normal <code>const</code> bindings).</li>
+<li>You may not do <code>PI = 3</code> later.</li>
+</ul>
+<p>Use <code>const</code> when the binding should not change. Use <code>let</code> when reassignment is intentional.<br />
+(This course avoids <code>var</code> — older, easier to misuse.)</p>
+<h3>Declaration vs assignment</h3>
+<pre><code class="language-javascript">let n;        // declared; value is undefined until assigned
+n = 4;        // assigned
+let m = 5;    // declared and assigned together
+</code></pre>
+<h3>Multiple names, one idea</h3>
+<pre><code class="language-javascript">let price = 50;
+let tax = 5;
+let total = price + tax;
+</code></pre>
+<p>Each name holds one value; expressions combine them.</p>
+<h3>Names have rules</h3>
+<p>Valid-ish examples: <code>total</code>, <code>userName</code>, <code>count2</code>.<br />
+Invalid: starting with a digit (<code>2count</code>), spaces, most punctuation.</p>
+<p>This course uses <strong>camelCase</strong> for multi-word names: <code>itemCount</code>.</p>
+<p>Names should mean something: <code>t</code> is worse than <code>total</code> for humans.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variable</td>
+<td>Named binding to a value</td>
+<td>Not “math variable” only</td>
+</tr>
+<tr>
+<td>Declare</td>
+<td>Introduce a name</td>
+<td>Not the same as assign</td>
+</tr>
+<tr>
+<td>Assign</td>
+<td>Store a value in a name</td>
+<td>Not equality test</td>
+</tr>
+<tr>
+<td>State</td>
+<td>Current remembered values</td>
+<td>Not “USA”</td>
+</tr>
+<tr>
+<td>Reassign</td>
+<td>Store a new value in an existing <code>let</code> name</td>
+<td>Impossible with normal <code>const</code> rebinding</td>
+</tr>
+<tr>
+<td>camelCase</td>
+<td><code>likeThis</code> naming style</td>
+<td>Not required by JS, required by this course’s style</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<pre><code class="language-javascript">let cups = 2;
+cups = cups + 1;
+const label = &quot;tea&quot;;
+let message = label + &quot; x&quot; + cups;
+// message is &quot;tea x3&quot;
+</code></pre>
+<p>Trace:</p>
+<table>
+<thead>
+<tr>
+<th>After</th>
+<th>cups</th>
+<th>label</th>
+<th>message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>2</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>3</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>3</td>
+<td>tea</td>
+<td>—</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>3</td>
+<td>tea</td>
+<td>tea x3</td>
+</tr>
+</tbody>
+</table>
+<p>Note: <code>+</code> between string and number concatenates after converting the number to text. Result is a string.</p>
+<h2>Common errors</h2>
+<h3>Error: Using a name before it exists</h3>
+<p>Mentally: <code>console.log(score); let score = 1;</code> — invalid order for <code>let</code> in normal scripts (temporal dead zone — details later). <strong>Declare first.</strong></p>
+<h3>Error: <code>const</code> then reassign</h3>
+<pre><code class="language-javascript">const n = 1;
+n = 2; // error when run
+</code></pre>
+<h3>Error: Thinking <code>let a = b</code> copies forever</h3>
+<p>If <code>b</code> later changes, <code>a</code> does not auto-update. Assignment copies the <strong>value at that moment</strong> (for numbers/strings/bools).</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In <code>let x = 4</code>, what are declare, name, assign, value?</li>
+<li>Why is <code>=</code> not equality?</li>
+<li>What is state in one sentence?</li>
+<li>When prefer <code>const</code> over <code>let</code>?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Trace</h3>
+<pre><code class="language-javascript">let a = 1;
+let b = 2;
+a = a + b;
+b = a + b;
+</code></pre>
+<p>Final <code>a</code> and <code>b</code>?</p>
+<h3>P2 — Read as “gets”</h3>
+<p>Rewrite in English: <code>let lives = 3; lives = lives - 1;</code></p>
+<h3>P3 — Spot the mistake</h3>
+<pre><code class="language-javascript">const max = 100;
+max = 200;
+</code></pre>
+<p>What goes wrong?</p>
+<h3>P4 — Choose names</h3>
+<p>For “number of students,” pick a good variable name and write a <code>let</code> line with value <code>24</code>.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Loops changing state repeatedly (U06)</li>
+<li>Functions (U07)</li>
+<li>Running in Node (Phase 2)</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U05 — Decisions (branching)</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U04 Assignment — <code>U04-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define variable, declare, assign, state, reassign.</li>
+<li>Explain <code>=</code> vs <code>===</code> with one example each.</li>
+<li>When <code>const</code> vs <code>let</code>? Give one example line each.</li>
+<li>Full trace table for:</li>
+</ol>
+<pre><code class="language-javascript">let x = 10;
+let y = 4;
+x = x - y;
+y = x + y;
+let z = x * 2;
+</code></pre>
+<p>Final values of x, y, z?</p>
+<ol start="5">
+<li>The following is wrong when run. Why? Rewrite correctly so <code>greeting</code> ends as <code>"Hi, Lee"</code> using a name for the person:</li>
+</ol>
+<pre><code class="language-javascript">const name = &quot;Lee&quot;;
+name = &quot;Lee&quot;;
+let greeting = &quot;Hi, &quot; + name;
+</code></pre>
+<p>(If you keep <code>const name</code>, do not reassign it.)</p></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U04 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions solid</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td><code>=</code> vs <code>===</code> clear</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td><code>const</code>/<code>let</code> usage sense</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Trace correct (x=6,y=10,z=12)</td>
+<td>8</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Fix explanation + rewrite sensible</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U03-values-expressions-statements/index.html">U03 Values, expressions, and statements</a>
+    <a class="next" href="../U05-decisions-branching/index.html">U05 Decisions (branching)</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

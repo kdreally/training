@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U14 — Running a `.js` file with Node | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U14</div>
+    <h1>Running a `.js` file with Node</h1>
+    <span class="phase-badge ph2">Phase 2 — Programs in Node.js</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U14 — Running a <code>.js</code> file with Node</h1>
+<p><strong>Phase 2</strong></p>
+<h2>Where you are</h2>
+<p>Terminal navigation works. Now: turn a text file into a <strong>running program</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Create a <code>.js</code> file in an editor.</li>
+<li>Run it with <code>node filename.js</code> from the correct folder.</li>
+<li>Use <code>console.log</code> to display values.</li>
+<li>Explain entry file / running vs editing.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12</strong>, <strong>U13</strong></li>
+<li>Phase 1 JS reading skill</li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>50–80 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Paper JS is practice. Execution is reality. This is the bridge.</p>
+<h2>Plain-language teaching</h2>
+<h3>Edit vs run</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Tool</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edit</td>
+<td>Text editor</td>
+<td>File on disk changes</td>
+</tr>
+<tr>
+<td>Run</td>
+<td><code>node file.js</code></td>
+<td>Node executes instructions</td>
+</tr>
+</tbody>
+</table>
+<p>Saving is not running. Running is not saving.</p>
+<h3>Create a file</h3>
+<ol>
+<li>Open your editor.</li>
+<li>Create folder <code>atlrn-work/u14</code> (terminal or editor).</li>
+<li>New file <code>hello.js</code> with:</li>
+</ol>
+<pre><code class="language-javascript">console.log(&quot;Hello from Node&quot;);
+</code></pre>
+<ol start="4">
+<li>Save.</li>
+</ol>
+<h3><code>console.log</code></h3>
+<p><code>console.log(...)</code> tells Node to <strong>print</strong> a value to the terminal (standard output).<br />
+It is how beginners <strong>see</strong> results. Later you still use it for debugging.</p>
+<h3>Run it</h3>
+<p>In the terminal:</p>
+<pre><code class="language-bash">cd path/to/atlrn-work/u14
+node hello.js
+</code></pre>
+<p>Expected output:</p>
+<pre><code class="language-text">Hello from Node
+</code></pre>
+<h3>What Node did</h3>
+<ol>
+<li>Read the text of <code>hello.js</code>.</li>
+<li>Parsed JS.</li>
+<li>Executed statements top to bottom.</li>
+<li>Printed to your terminal.</li>
+<li>Exited (program finished).</li>
+</ol>
+<h3>Multiple lines</h3>
+<pre><code class="language-javascript">let name = &quot;Ada&quot;;
+let message = &quot;Hello, &quot; + name;
+console.log(message);
+console.log(2 + 2);
+</code></pre>
+<h3>Errors when running</h3>
+<p>If you see a stack trace, use <strong>U09</strong>. Fix file, save, run again.</p>
+<h3>Naming</h3>
+<p>Use <code>.js</code> extension. Avoid spaces in filenames: <code>hello.js</code> not <code>hello world.js</code>.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source file</td>
+<td>Your <code>.js</code> text file</td>
+<td></td>
+</tr>
+<tr>
+<td>Execute / run</td>
+<td>Node carries out the file</td>
+<td></td>
+</tr>
+<tr>
+<td>Standard output</td>
+<td>Normal print stream to terminal</td>
+<td></td>
+</tr>
+<tr>
+<td>Entry file</td>
+<td>File you pass to <code>node</code> to start</td>
+<td>Later projects may have one main entry</td>
+</tr>
+<tr>
+<td><code>console.log</code></td>
+<td>Print helper</td>
+<td>Not the same as <code>return</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><code>greet.js</code>:</p>
+<pre><code class="language-javascript">function greet(name) {
+  return &quot;Hi, &quot; + name;
+}
+console.log(greet(&quot;Lee&quot;));
+</code></pre>
+<pre><code class="language-bash">node greet.js
+</code></pre>
+<pre><code class="language-text">Hi, Lee
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: <code>Cannot find module</code> / cannot open file</h3>
+<p>Wrong directory or filename typo. <code>ls</code>/<code>dir</code>, <code>cd</code>, retry.</p>
+<h3>Error: Running in the editor’s “output” without Node</h3>
+<p>Some editors run differently. This course standardizes on terminal: <code>node file.js</code>.</p>
+<h3>Error: Forgetting to save</h3>
+<p>You run old content. Save first.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Difference between saving and running?</li>
+<li>Full command to run <code>app.js</code> in the current folder?</li>
+<li>What does <code>console.log</code> do?</li>
+<li>Why does cwd matter?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — hello</h3>
+<p>Create and run <code>hello.js</code>.</p>
+<h3>P2 — math</h3>
+<p>File that logs <code>sum</code> of 17 and 25 using a function.</p>
+<h3>P3 — intentional error</h3>
+<p>Remove a <code>)</code> temporarily, run, read error, fix.</p>
+<h2>Assignment</h2>
+<p>See <a href="#assignment">Assignment</a> and <code>fixtures</code> instructions inside it.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>npm projects</li>
+<li>modules across files (U16)</li>
+<li>servers</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U15 — Input and output basics</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U14 Assignment — <code>U14-YourName</code></h1>
+<h2>Submit these files</h2>
+<h3><code>hello.js</code></h3>
+<p>Logs exactly: <code>Hello from Node</code> (one line).</p>
+<h3><code>calc.js</code></h3>
+<p>Defines <code>function add(a, b)</code> returning sum; logs <code>add(17, 25)</code> result.</p>
+<h3><code>answers.md</code></h3>
+<ol>
+<li>Explain edit vs run.</li>
+<li>Paste terminal transcript: <code>cd</code> to folder, <code>node hello.js</code>, <code>node calc.js</code> with outputs.</li>
+<li>Describe one error you saw this unit (or a forced syntax error) and how you decoded it.</li>
+<li>Why must you <code>cd</code> to the right folder before <code>node</code>?</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U14 Rubric — 20 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hello.js correct</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>calc.js function + log 42</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>edit vs run clarity</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Transcript credible</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Error decoding</td>
+<td>3</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U13-the-terminal/index.html">U13 The terminal as a tool</a>
+    <a class="next" href="../U15-input-output-basics/index.html">U15 Input and output basics</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

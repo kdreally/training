@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U06 — Repetition (loops) | Node.js Web & Testing</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">Node.js Web & Testing — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U06</div>
+    <h1>Repetition (loops)</h1>
+    <span class="phase-badge ph1">Phase 1 — First principles of programming</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U06 — Repetition (loops)</h1>
+<p><strong>Phase 1</strong></p>
+<h2>Where you are</h2>
+<p>You can decide. Now: do something <strong>repeatedly</strong> without copy-pasting lines.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Trace <code>while</code> and <code>for</code> loops by hand.</li>
+<li>Write simple counting loops.</li>
+<li>Avoid infinite loops conceptually.</li>
+<li>Accumulate a total in a loop.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U04</strong>, <strong>U05</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p><strong>70–100 minutes.</strong></p>
+<h2>Why this exists</h2>
+<p>Lists, retries, “for each item,” summing — all need controlled repetition. Computers excel at boring repetition; loops are how you ask for it.</p>
+<h2>Plain-language teaching</h2>
+<h3>The idea</h3>
+<p>A <strong>loop</strong> repeats a block while a condition holds, or for a known range of counts.</p>
+<h3><code>while</code> — repeat while true</h3>
+<pre><code class="language-javascript">let n = 1;
+let text = &quot;&quot;;
+while (n &lt;= 3) {
+  text = text + n;
+  n = n + 1;
+}
+// text is &quot;123&quot;, n is 4
+</code></pre>
+<p>Trace:</p>
+<table>
+<thead>
+<tr>
+<th>Check n&lt;=3</th>
+<th>body runs?</th>
+<th>text after</th>
+<th>n after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n=1 yes</td>
+<td>yes</td>
+<td>"1"</td>
+<td>2</td>
+</tr>
+<tr>
+<td>n=2 yes</td>
+<td>yes</td>
+<td>"12"</td>
+<td>3</td>
+</tr>
+<tr>
+<td>n=3 yes</td>
+<td>yes</td>
+<td>"123"</td>
+<td>4</td>
+</tr>
+<tr>
+<td>n=4 no</td>
+<td>stop</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Infinite loops</h3>
+<p>If the condition never becomes false, the loop never ends:</p>
+<pre><code class="language-javascript">let n = 1;
+while (n &lt;= 3) {
+  text = text + n;
+  // forgot n = n + 1  → infinite
+}
+</code></pre>
+<p>When you run programs later, infinite loops look like “nothing finishes.” Always ask: <strong>what makes the condition false eventually?</strong></p>
+<h3><code>for</code> — compact counting</h3>
+<pre><code class="language-javascript">let text = &quot;&quot;;
+for (let i = 1; i &lt;= 3; i = i + 1) {
+  text = text + i;
+}
+// text &quot;123&quot;
+</code></pre>
+<p>Parts of <code>for (init; condition; step)</code>:</p>
+<ol>
+<li><strong>init</strong> — run once before looping (<code>let i = 1</code>)</li>
+<li><strong>condition</strong> — check before each lap (<code>i &lt;= 3</code>)</li>
+<li><strong>body</strong> — the block</li>
+<li><strong>step</strong> — run after each body (<code>i = i + 1</code>)</li>
+</ol>
+<p>Same power as many <code>while</code> loops; different shape.</p>
+<h3>Accumulation pattern</h3>
+<pre><code class="language-javascript">let total = 0;
+for (let i = 1; i &lt;= 5; i = i + 1) {
+  total = total + i;
+}
+// total is 15 (1+2+3+4+5)
+</code></pre>
+<p>Pattern: start container → loop → update container.</p>
+<h3>Counting down</h3>
+<pre><code class="language-javascript">for (let i = 3; i &gt;= 1; i = i - 1) {
+  // i is 3, then 2, then 1
+}
+</code></pre>
+<h3>Loops + decisions</h3>
+<pre><code class="language-javascript">let evens = 0;
+for (let i = 1; i &lt;= 10; i = i + 1) {
+  if (i % 2 === 0) {
+    evens = evens + 1;
+  }
+}
+// evens is 5
+</code></pre>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Loop</td>
+<td>Controlled repetition</td>
+<td>Not a road loop only</td>
+</tr>
+<tr>
+<td>Iteration / lap</td>
+<td>One pass through the body</td>
+<td></td>
+</tr>
+<tr>
+<td>Infinite loop</td>
+<td>Never stops</td>
+<td>Often a missing update</td>
+</tr>
+<tr>
+<td>Accumulator</td>
+<td>Variable that gathers a result across laps</td>
+<td>e.g. <code>total</code></td>
+</tr>
+<tr>
+<td>Index variable</td>
+<td>Counter name like <code>i</code></td>
+<td>Just a name; can be <code>count</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Sum even numbers from 2 through 10:</p>
+<pre><code class="language-javascript">let sum = 0;
+for (let n = 2; n &lt;= 10; n = n + 2) {
+  sum = sum + n;
+}
+// sum = 30
+</code></pre>
+<h2>Common errors</h2>
+<h3>Error: Off-by-one</h3>
+<p><code>i &lt; 3</code> with start 0 runs for 0,1,2 (three times).<br />
+<code>i &lt;= 3</code> with start 1 runs 1,2,3. Draw a table when unsure.</p>
+<h3>Error: Updating the wrong variable</h3>
+<p>Condition watches <code>n</code> but you update <code>m</code> → infinite or never.</p>
+<h3>Error: Putting semicolon that empties the loop (preview)</h3>
+<p><code>while (n &lt;= 3);</code> — the semicolon can make an empty body. Avoid accidental <code>;</code> after <code>while (...)</code> / <code>for (...)</code>.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What three parts does a <code>for</code> header have?</li>
+<li>What question prevents infinite loops?</li>
+<li>What is an accumulator?</li>
+<li>Trace <code>for (let i = 0; i &lt; 3; i = i + 1)</code> — which <code>i</code> values enter the body?</li>
+</ol>
+<h2>Practice</h2>
+<h3>P1 — Trace while</h3>
+<pre><code class="language-javascript">let x = 0;
+while (x &lt; 5) {
+  x = x + 2;
+}
+// final x?
+</code></pre>
+<h3>P2 — Write for</h3>
+<p>Build string of stars length 5: <code>"*****"</code> using a loop.</p>
+<h3>P3 — Sum</h3>
+<p>Sum numbers 10 through 15 inclusive.</p>
+<h3>P4 — Count</h3>
+<p>How many numbers from 1 to 20 are divisible by 3? (use loop + if)</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li><code>break</code>/<code>continue</code> (later if needed)</li>
+<li>Looping arrays (U08)</li>
+<li>Recursion</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U07 — Functions</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U06 Assignment — <code>U06-YourName</code> / <code>answers.md</code></h1>
+<ol>
+<li>Define loop, iteration, infinite loop, accumulator.</li>
+<li>Trace table for:</li>
+</ol>
+<pre><code class="language-javascript">let p = 1;
+let i = 0;
+while (i &lt; 4) {
+  p = p * 2;
+  i = i + 1;
+}
+</code></pre>
+<p>Final <code>p</code> and <code>i</code>? What powers of two appear?</p>
+<ol start="3">
+<li>
+<p>Write a <code>for</code> loop that sets <code>total</code> to the sum of 1..10. Show final total (should be 55).</p>
+</li>
+<li>
+<p>Write a loop that counts how many values from 1 to 30 are divisible by 4. Show the count.</p>
+</li>
+<li>
+<p>Here is a broken loop idea: <code>let n = 10; while (n &gt; 0) { /* print n */ }</code> with no change to <code>n</code>. What happens conceptually? Fix it so it counts down to 1 then stops.</p>
+</li>
+</ol></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U06 Rubric — 25 points</h1>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Pts</th>
+<th>Must</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definitions</td>
+<td>4</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Trace p=16 i=4</td>
+<td>6</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Sum 1..10 correct</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Div-by-4 count (7)</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Infinite loop diagnosis + fix</td>
+<td>5</td>
+<td>Y</td>
+</tr>
+</tbody>
+</table></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U05-decisions-branching/index.html">U05 Decisions (branching)</a>
+    <a class="next" href="../U07-functions/index.html">U07 Functions: name a process</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>
