@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U13 — A spec shape agents can execute | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U13</div>
+    <h1>A spec shape agents can execute</h1>
+    <span class="phase-badge ph3">Phase 3 — Specifications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U13 — A spec shape agents can execute</h1>
+<p><strong>Phase 3 — Specifications</strong></p>
+<h2>Where you are</h2>
+<p>You know what a spec is for. This unit gives it a shape that is short and still hard to misread. The shape is the practice that makes later prompts fast: the thinking happens once, in the spec, and the prompt stays small.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Draft a spec with goal, non-goals, behavior, files, tests, and done.</li>
+<li>Keep each section to decisions, not implementation diaries.</li>
+<li>Recognise a section that has collapsed back into a wish.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U12 — What a spec is for.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–80 minutes</strong>, including writing one spec by hand.</p>
+<h2>Why this exists</h2>
+<p>An unstructured paragraph can contain every decision and still hide them. Agents attend to the start and the end, and so do tired humans. Headings put the dangerous decisions (what not to do, which files) where a scan can find them. The same headings become the evaluation checklist in U28. You are building that checklist's parent document.</p>
+<h2>Plain-language teaching</h2>
+<h3>The shape</h3>
+<p>Use these headings, in this order. Skip none. If a heading has nothing to say, write "None" and be suspicious: a change with no non-goals is usually a wish.</p>
+<pre><code class="language-markdown"># Spec: short name
+
+## Goal
+One or two sentences. What the caller can do when this is done.
+
+## Non-goals
+Bullets the agent must not &quot;helpfully&quot; add.
+
+## Behavior
+Rules, then examples with inputs and outputs.
+
+## Files
+Allowed files. Forbidden files if the temptation is obvious.
+
+## Tests
+Names and assertions you expect. The runner is npm test.
+
+## Done
+How a human will decide. Usually: these tests pass, these files only, standing rules hold.
+</code></pre>
+<h3>What each heading prevents</h3>
+<table>
+<thead>
+<tr>
+<th>Heading</th>
+<th>Prevents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Goal</td>
+<td>A diff that solves a different problem cleanly</td>
+</tr>
+<tr>
+<td>Non-goals</td>
+<td>Extra routes, extra libraries, refactors</td>
+</tr>
+<tr>
+<td>Behavior</td>
+<td>Invented error strings and fuzzy matching</td>
+</tr>
+<tr>
+<td>Files</td>
+<td>New folders and drive-by edits</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>"It works on my example" with no regression check</td>
+</tr>
+<tr>
+<td>Done</td>
+<td>Accepting a report instead of evidence</td>
+</tr>
+</tbody>
+</table>
+<h3>A complete tiny spec</h3>
+<pre><code class="language-markdown"># Spec: count-for-borrower
+
+## Goal
+Callers can ask how many active loans a borrower has.
+
+## Non-goals
+- No HTTP route.
+- No new dependency.
+- No change to borrow or returnLoan behavior.
+- No new source file.
+
+## Behavior
+- Add `countForBorrower(borrower)` in `src/loans.js`.
+- Count loans where `returned === false` and `borrower` is strictly equal to the argument.
+- Names are already trimmed inside `borrow`. This function does not trim again and does not call `borrow`.
+- `countForBorrower(&quot;Asha&quot;)` is `0` when Asha has no active loan.
+- After a successful `borrow(&quot;b1&quot;, &quot;Asha&quot;)`, `countForBorrower(&quot;Asha&quot;)` is `1`.
+- After `returnLoan(&quot;b1&quot;, &quot;Asha&quot;)`, the count is `0` again.
+- A second active loan of `b1` (the book has two copies) makes the count `2`.
+
+## Files
+- May edit: `src/loans.js`, `test/loans.test.js`, `CHANGELOG.md`
+- Must not edit: `src/server.js`, `src/books.js`, `package.json`
+
+## Tests
+- Add tests in `test/loans.test.js` using `node:test`.
+- Cover the `0`, `1`, and returned-loan cases above.
+- Existing tests stay as they are and still pass.
+
+## Done
+- `npm test` passes, including the new cases.
+- Diff touches only the files listed.
+- `package.json` has no dependencies.
+- One changelog line under `## Unreleased` describes the behavior, not the process.
+</code></pre>
+<p>That is enough to implement without guessing. It is not a design novel. You are not expected to invent this shape under pressure; you are expected to reuse it.</p>
+<h3>Wishes wearing headings</h3>
+<pre><code class="language-markdown">## Behavior
+Make counting nice and intuitive for users.
+</code></pre>
+<p>The heading is present. The decision is not. Replace it with a number: given this history, the return value is this.</p>
+<h3>Implementation leaking in</h3>
+<pre><code class="language-markdown">## Behavior
+Loop with a for-loop, not filter, for speed. Extract a helper class LoanBook.
+</code></pre>
+<p>Those are implementation orders. They belong in a prompt only if you truly require them. For shelf, <code>.filter</code> already exists in the file, and a class fights the style rule. A spec that demands a class will force a style violation and then fail review. Specify <strong>observable</strong> behavior. Leave the line-by-line approach to the implementer unless the approach is itself a constraint ("no new dependencies" is a constraint; "use a for-loop for speed" on a three-item array is a preference).</p>
+<p>Non-goals can mention implementation when the temptation is a known agent habit: "do not add lodash." That is a constraint on the diff, which is observable.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Goal</td>
+<td>What becomes possible</td>
+<td>Not a slogan</td>
+</tr>
+<tr>
+<td>Non-goal</td>
+<td>An explicit refusal of a likely extra</td>
+<td>Not a negative attitude</td>
+</tr>
+<tr>
+<td>Behavior</td>
+<td>Rules plus input/output examples</td>
+<td>Not the algorithm</td>
+</tr>
+<tr>
+<td>Done</td>
+<td>The evidence that ends the turn</td>
+<td>Not the agent's adjective "done"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Bad section:</strong></p>
+<pre><code class="language-markdown">## Files
+Update the code as needed.
+</code></pre>
+<p><strong>Why it fails:</strong> "As needed" is permission to create <code>src/services/LoanService.js</code>.</p>
+<p><strong>Replacement:</strong> the file list from the spec above.</p>
+<p><strong>Bad done section:</strong></p>
+<pre><code class="language-markdown">## Done
+The assistant says it succeeded.
+</code></pre>
+<p><strong>Replacement:</strong> <code>npm test</code> output shows 0 failures, and <code>git diff --stat</code> lists only the allowed files.</p>
+<p>You already know <code>git diff</code>. <code>--stat</code> is the short file list. The full diff still gets read before you accept (U05, U21).</p>
+<h2>Common errors</h2>
+<h3>Non-goals left empty</h3>
+<p><strong>What you see:</strong> "None." Then the diff adds <code>GET /count</code> because the goal said "callers," and the agent assumed HTTP callers.</p>
+<p><strong>What it means:</strong> The likely extra was not refused.</p>
+<p><strong>What to do:</strong> If the change is a plain function, say "no HTTP change." If you have seen the agent add helpers, say "no new files."</p>
+<h3>Examples that skip the failure path</h3>
+<p><strong>What you see:</strong> Only the happy count <code>1</code>. The agent returns <code>-1</code> for an unknown borrower, or throws.</p>
+<p><strong>What it means:</strong> Unspecified cases are invention space.</p>
+<p><strong>What to do:</strong> State the zero case and one existing-error interaction (the return-loan case). You do not need every permutation. You need the ones a guess would get wrong.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name the six headings.</li>
+<li>Why is "make it intuitive" not a behavior section?</li>
+<li>What does a non-goal do that <code>AGENTS.md</code> might already say, and why say it again?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Fill a blank</h3>
+<p>Copy the shape with the headings only. Fill it for this goal: "<code>returnLoan</code> of an unknown loan already returns <code>no-active-loan</code>; add a test that documents that. Do not change production code unless the test proves it is wrong." The non-goals matter.</p>
+<h3>P2 — Spot the leak</h3>
+<p>Underline the implementation orders in:</p>
+<pre><code class="language-text">Use a Map for speed, add Express route /api/v2/count, and make the UI pop.
+</code></pre>
+<p>Rewrite as observable behavior or as non-goals. Drop the UI. Shelf has no UI.</p>
+<h3>P3 — Done line</h3>
+<p>Write the Done section, three bullets, for the count spec. Include the test command and the file list.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not write the prompt yet (U16).</li>
+<li>You do not implement the function.</li>
+<li>Rough stakeholder notes are U15. This unit uses a clear goal on purpose.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U14 — Examples and non-goals.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U13 Assignment — Write a spec in the shape</h1>
+<p>Submit <code>U13-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>specs/already-borrowed.md</code></h3>
+<p>Write a spec, using the six headings, for this feature:</p>
+<blockquote>
+<p>A borrower cannot have two active loans of the same book. A second <code>borrow</code> of the same <code>bookId</code> and same borrower returns <code>{ ok: false, error: "already-borrowed" }</code>. Copies still matter for <em>different</em> borrowers. <code>b1</code> has two copies, so Asha and Ben may both hold <code>b1</code>. Asha may not hold <code>b1</code> twice. Do not change HTTP. Do not add dependencies. Existing error codes stay.</p>
+</blockquote>
+<p>Make the behavior section include at least three concrete calls and return values. Choose files that match shelf.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Which non-goals did you include, and which agent habit is each one blocking?</li>
+<li>Show a worse Behavior section you almost wrote (one or two sentences of wish or implementation), and the replacement you kept.</li>
+<li>Why is "Done: the model says it is finished" not a Done section?</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U13 README.
+- [ ] My spec has all six headings.
+- [ ] I did not include a function body.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A developer who has not heard you explain the feature could implement it from the spec alone, or could reject a diff that added Express.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U13-YourName/
+  specs/already-borrowed.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U13 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All six headings present and in a usable order</td>
+<td>3</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Behavior includes <code>already-borrowed</code>, the two-borrower success on <code>b1</code>, and at least one existing rule that still holds (<code>no-copies</code> on <code>b2</code> or blank borrower)</td>
+<td>6</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Non-goals forbid HTTP and new dependencies; files list matches shelf and does not say "as needed"</td>
+<td>5</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Done cites tests and the file list, not the agent's report</td>
+<td>3</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Answers show a rejected wish and a reason for the non-goals</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Behavior: 4/6 if <code>already-borrowed</code> is defined but two borrowers on <code>b1</code> are left implicit.</li>
+<li>Files that include <code>src/server.js</code> as editable: cap the files/non-goals row at 2/5, because the assignment said not to change HTTP.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>The answers file is nice-to-have for points but must be present for the folder to be reviewable. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U12-what-a-spec-is-for/index.html">U12 What a spec is for</a>
+    <a class="next" href="../U14-examples-and-non-goals/index.html">U14 Examples and non-goals</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

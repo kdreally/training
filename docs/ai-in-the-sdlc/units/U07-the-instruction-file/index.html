@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U07 — The instruction file | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U07</div>
+    <h1>The instruction file</h1>
+    <span class="phase-badge ph2">Phase 2 — Standing instructions</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U07 — The instruction file</h1>
+<p><strong>Phase 2 — Standing instructions</strong></p>
+<h2>Where you are</h2>
+<p>You know why standing rules must live in the project. This unit names the file this course uses, and it separates that file from a product's configuration. People invent filenames (<code>AGENTS.md</code>, a hidden JSON file, a dot-directory). The invention is understandable. Two different jobs are being stuffed into one name.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Say what <code>AGENTS.md</code> is for in a project, and what it is not.</li>
+<li>Tell <strong>instruction prose</strong> apart from <strong>tool wiring</strong>.</li>
+<li>Decide where a given sentence or setting belongs.</li>
+<li>Explain what to do when a tool looks for a different filename.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U06 — Why standing instructions exist.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>If the rules have no agreed place, every developer picks a favorite: a note in the README, a JSON file they hoped the tool would read, a 200-line comment at the top of <code>server.js</code>. The agent reads some of these and skips others. You will think the rule is in force because you wrote it down. It was in a file the tool never loads.</p>
+<p>This course picks one place for prose rules: <strong><code>AGENTS.md</code> at the project root.</strong> The name is plain. Several local agents look for it. It is Markdown, so a human can review it in the same pull request as the code. Your course-author doctrine file happens to use the same filename in a different folder. That is a name collision to be aware of, not a mystery: <strong>the <code>AGENTS.md</code> next to shelf's <code>package.json</code> is for the agent that edits shelf.</strong> The one in the course repository root is for people writing the course.</p>
+<h2>Plain-language teaching</h2>
+<h3>The instruction file</h3>
+<p>An <strong>instruction file</strong> is Markdown the agent loads as text. It contains sentences a human can argue about: do not add dependencies, do not touch a database, append a changelog line when behavior changes.</p>
+<p>For every project in this course, that file is:</p>
+<pre><code class="language-text">AGENTS.md
+</code></pre>
+<p>sitting in the project root, beside <code>package.json</code>. Not inside <code>src/</code>. Not named <code>notes.md</code>, because the tool will not look for <code>notes.md</code> unless you always remember to point at it.</p>
+<p>A minimal shape:</p>
+<pre><code class="language-markdown"># Project name — standing instructions
+
+One short paragraph: what this project is, where the code lives, how tests run.
+
+## Constraints
+
+- Checkable rule.
+- Checkable rule.
+</code></pre>
+<p>U10 fills this in for shelf. Today, learn the shape and the job.</p>
+<h3>Tool wiring is a different job</h3>
+<p><strong>Tool wiring</strong> is configuration for one product: which model to call, whether the shell is allowed to run, whether network access is off, which folders are hidden. It is often JSON or a settings screen. The agent may not treat it as "advice." It treats it as permissions.</p>
+<p>Examples of wiring, stated without requiring any product:</p>
+<ul>
+<li>"Allow <code>npm test</code>. Deny <code>npm install</code>."</li>
+<li>"Do not send files that match <code>.env</code>."</li>
+<li>"Start in this workspace."</li>
+</ul>
+<p>Examples of instructions, which wiring should not be asked to express in a comment field if you can help it:</p>
+<ul>
+<li>"Match the <code>{ ok, error }</code> result style."</li>
+<li>"A behavior change needs a test."</li>
+</ul>
+<p>If you only set permissions, the agent can still write a lodash import and wait for the install to fail. If you only write prose, a sloppy mode might still run <code>npm install</code> before anyone reads the prose. Real safety uses both. This course <strong>writes the prose</strong> and <strong>describes the permissions in words</strong>. It does not standardize a JSON filename. Products disagree, and a fake required <code>config.json</code> would become folklore by next year.</p>
+<p>When you use a real agent, open its documentation once and find two facts:</p>
+<ol>
+<li>Does it load <code>AGENTS.md</code> from the project root?</li>
+<li>Where do command permissions live?</li>
+</ol>
+<p>Write those two facts in your own notes. If the tool loads a different Markdown file instead, put the <strong>same</strong> rules there, or make that file a three-line pointer: "Follow <code>AGENTS.md</code> in this directory." Do not keep two copies that can drift. Drift means one file forbids new dependencies and the other allows them "for prototypes." The agent will satisfy the looser one.</p>
+<h3>What the file is not</h3>
+<ul>
+<li>Not a README for humans discovering the project. Shelf's <code>README.md</code> explains how to run tests. <code>AGENTS.md</code> tells the agent how to behave. A little overlap is harmless. A full user guide inside <code>AGENTS.md</code> hides the rules.</li>
+<li>Not the spec of the week.</li>
+<li>Not a prompt you paste.</li>
+<li>Not proof the tool obeyed.</li>
+</ul>
+<h3>How loading fits the turn</h3>
+<p>From U05, insert one beat:</p>
+<pre><code class="language-text">1. You are in the project root. The tree is clean.
+2. The tool loads AGENTS.md (and any wiring).
+3. You send one prompt.
+4. Actions happen under those rules.
+5. You compare the diff to both the prompt and AGENTS.md.
+</code></pre>
+<p>If your tool does not load the file automatically, step 2 is your job: the prompt begins with "Follow AGENTS.md in this folder." That sentence is a backup, not the design. Automatic load is the point of a stable filename.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AGENTS.md</code></td>
+<td>The Markdown file of standing rules at the project root</td>
+<td>Not the course-author doctrine, unless you are in that folder</td>
+</tr>
+<tr>
+<td>Instruction prose</td>
+<td>Sentences about how to work in this repo</td>
+<td>Not permissions enforced by the tool</td>
+</tr>
+<tr>
+<td>Tool wiring</td>
+<td>Product settings: commands, network, ignored files</td>
+<td>Not a home for coding style</td>
+</tr>
+<tr>
+<td>Project root</td>
+<td>Next to <code>package.json</code></td>
+<td>Not <code>src/AGENTS.md</code></td>
+</tr>
+<tr>
+<td>Drift</td>
+<td>Two copies of the rules that no longer match</td>
+<td>Happens when each tool has its own edited file</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A teammate proposes this JSON as "the constraints file":</p>
+<pre><code class="language-json">{
+  &quot;model&quot;: &quot;fast&quot;,
+  &quot;allowCommands&quot;: [&quot;npm test&quot;, &quot;node&quot;],
+  &quot;denyCommands&quot;: [&quot;npm install&quot;, &quot;git push&quot;],
+  &quot;notes&quot;: &quot;be careful and write clean code&quot;
+}
+</code></pre>
+<p>Sort it.</p>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Home</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model</code></td>
+<td>Tool wiring</td>
+<td>A product setting. Shelf's policy does not change if the model name changes</td>
+</tr>
+<tr>
+<td><code>allowCommands</code> / <code>denyCommands</code></td>
+<td>Tool wiring</td>
+<td>Permissions, if the product supports them</td>
+</tr>
+<tr>
+<td><code>notes</code></td>
+<td>Nowhere yet</td>
+<td>"Be careful" is not checkable. The real rules belong as sentences in <code>AGENTS.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>AGENTS.md</code> for the same intent:</p>
+<pre><code class="language-markdown"># Shelf — standing instructions
+
+Shelf is an in-memory loan tracker. Tests: `npm test` (node:test). No npm dependencies.
+
+## Constraints
+
+- Do not add dependencies or frameworks.
+- Do not connect to a database or any network service.
+- Do not read or print secrets.
+- Change only files named in the current task.
+- Match existing ESM style and `{ ok: false, error }` results.
+- Keep a test with every behavior change. Do not delete tests to get a pass.
+- After an accepted behavior change, add one line under `CHANGELOG.md` `## Unreleased`.
+</code></pre>
+<p>The JSON did not say most of that. The Markdown can. The deny list for <code>npm install</code> is still worth setting in wiring if the product allows it, because prose can be ignored and a denied command cannot run.</p>
+<p>You are not expected to drop this file into shelf until U10's assignment. This is the shape.</p>
+<h2>Common errors</h2>
+<h3>Rules hidden in README section 14</h3>
+<p><strong>What you see:</strong> A heading "AI stuff" in the middle of the human README. The agent never receives it. The next agent session installs lodash.</p>
+<p><strong>What it means:</strong> The prose was written for a human scrolling, in a file the tool is not guaranteed to load in full. Some tools do read READMEs. Do not depend on that for policy.</p>
+<p><strong>What to do:</strong> Put policy in <code>AGENTS.md</code>. Let the README tell humans how to run the tests.</p>
+<h3>Two sources of truth</h3>
+<p><strong>What you see:</strong> <code>AGENTS.md</code> says "no new dependencies." A product-specific file says "you may add small helpers from npm."</p>
+<p><strong>What it means:</strong> Drift. The session will pick one.</p>
+<p><strong>What to do:</strong> One prose source. The other file points at it.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Where does <code>AGENTS.md</code> sit in shelf, and who is it for?</li>
+<li>Is "deny <code>npm install</code>" prose or wiring?</li>
+<li>What do you do if your tool loads <code>CONTRIBUTING_AGENT.md</code> instead?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Sort the lines</h3>
+<p>For each, write <code>prose</code>, <code>wiring</code>, or <code>neither</code>:</p>
+<ol>
+<li>"Allow the shell to run <code>npm test</code> only."</li>
+<li>"Error strings stay kebab-case, like <code>no-copies</code>."</li>
+<li>"Use the fast model."</li>
+<li>"Add overdue loans today."</li>
+<li>"Hide files named <code>.env</code> from the agent."</li>
+</ol>
+<h3>P2 — Pointer file</h3>
+<p>Your tool only auto-loads a file called <code>AGENT_NOTES.md</code>. Write the full three-line contents of that file so the rules themselves stay in <code>AGENTS.md</code>.</p>
+<h3>P3 — Name collision</h3>
+<p>In two sentences, explain how the <code>AGENTS.md</code> beside shelf's <code>package.json</code> differs in audience from a teaching-doctrine <code>AGENTS.md</code> at a course root.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>The long catalog of which constraints are good (U09).</li>
+<li>A graded full shelf policy (U10).</li>
+<li>Any requirement to install a tool or produce JSON in a vendor schema.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U08 — Standing rules vs today's task.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U07 Assignment — Prose in one place, wiring in the other</h1>
+<p>Submit <code>U07-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Define.</strong> In your own words, define instruction prose and tool wiring. 4–6 sentences total. Say where prose lives in this course.</li>
+<li><strong>Sort.</strong> Label <code>prose</code>, <code>wiring</code>, or <code>task</code>:<br />
+   - Deny shell commands other than <code>npm test</code> and <code>node</code>.<br />
+   - Do not invent HTTP routes. The only route today is <code>GET /loans</code>.<br />
+   - Switch the assistant to a cheaper model for this repo.<br />
+   - Implement <code>countForBorrower</code> with tests.<br />
+   - If a behavior change is accepted, append one changelog line.<br />
+   - Do not open a network connection to a database.</li>
+<li><strong>Other filename.</strong> Your agent loads only <code>CLAUDE.md</code> or some other name you may invent for the answer. Show the entire contents of that other file, short, so it cannot drift from <code>AGENTS.md</code>. Then say where the real rules live.</li>
+<li><strong>Wrong home.</strong> A teammate puts "do not add dependencies" only as a sentence inside <code>package.json</code>'s <code>"description"</code> field. Explain why that is a weak home. 3–5 sentences.</li>
+</ol>
+<h3>2. <code>tool-notes.md</code></h3>
+<p>Write two bullets a future you can use. You do <strong>not</strong> need a real product:</p>
+<ul>
+<li>Which file will hold prose on your team (<code>AGENTS.md</code>).</li>
+<li>Where you will look, when you choose a tool, for command permissions (say "the product's settings," and name the two facts from the README: does it load <code>AGENTS.md</code>, and where do permissions live).</li>
+</ul>
+<p>If you already use a local agent, you may name it here and answer those two facts for real. That is welcome. It is not required.</p>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U07 README.
+- [ ] I did not invent a JSON schema and call it required.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Q2 has six labels. Q3 shows a short pointer file, not a second copy of a long policy.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U07-YourName/
+  answers.md
+  tool-notes.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U07 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prose vs wiring defined; prose located at root <code>AGENTS.md</code></td>
+<td>5</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Six items sorted correctly</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Pointer file is short and names <code>AGENTS.md</code> as the source</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td><code>package.json</code> description rejected as a policy home with a real reason</td>
+<td>3</td>
+<td>Yes</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td><code>tool-notes.md</code> states both facts to look up</td>
+<td>2</td>
+<td>No</td>
+<td>tool-notes</td>
+</tr>
+</tbody>
+</table>
+<h3>Sort key</h3>
+<p>1 wiring, 2 prose, 3 wiring, 4 task, 5 prose, 6 prose.</p>
+<p>"Do not open a network connection" may be labeled wiring if they describe a permission, or prose if they describe a sentence. Award the point for either, as long as the sentence explains the choice. If they say both, award the point.</p>
+<h3>Partial credit</h3>
+<ul>
+<li>Q3: 2/4 if they paste a full duplicate policy into the second file. The lesson is drift.</li>
+<li>Q4: 2/3 if they only say "the agent might not read package.json." Give 3/3 if they also say the description is for humans and package managers, not a rule list.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p><code>tool-notes.md</code> depth is nice-to-have, but the file must exist (covered by filenames in spirit). Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U06-why-standing-instructions/index.html">U06 Why standing instructions exist</a>
+    <a class="next" href="../U08-standing-rules-vs-todays-task/index.html">U08 Standing rules vs today's task</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

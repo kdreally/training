@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U03 — What the agent can see and do | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U03</div>
+    <h1>What the agent can see and do</h1>
+    <span class="phase-badge ph1">Phase 1 — The agent in the project</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U03 — What the agent can see and do</h1>
+<p><strong>Phase 1 — The agent in the project</strong></p>
+<h2>Where you are</h2>
+<p>You can tell a chat window from a project agent. This unit lists the agent's actual powers. They are fewer than marketing implies, and larger than "autocomplete." People get surprised in both directions: the agent cannot see a file you never gave it access to, and it can run a command you did not read.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Classify an agent action as <strong>read</strong>, <strong>edit</strong>, <strong>command</strong>, or <strong>refuse</strong>.</li>
+<li>Explain what the agent sees by default: files in the project, not your intentions.</li>
+<li>Name two actions that should be refused on shelf even if the agent is capable of them.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U02 — Chat window vs project agent.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–75 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>If you do not know the action types, a transcript is a blur. You cannot review it. You also cannot write standing rules later, because a rule is a decision about an action type: "do not run network installs," "do not edit files outside <code>src/</code>." This unit gives you the four words those rules will use.</p>
+<h2>Plain-language teaching</h2>
+<h3>The four action types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>What happens</th>
+<th>What you should see in a transcript</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read</td>
+<td>The agent opens a file or lists a directory and does not change it</td>
+<td>A path, and then text from that file</td>
+</tr>
+<tr>
+<td>Edit</td>
+<td>The agent writes, creates, deletes, or renames a file</td>
+<td>A diff, or a "created file" note</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>The agent runs a program in the shell: tests, git, npm</td>
+<td>The command line and its output</td>
+</tr>
+<tr>
+<td>Refuse</td>
+<td>The agent was asked for something it should not do, and it stops</td>
+<td>A short reason, and no diff</td>
+</tr>
+</tbody>
+</table>
+<p>Refuse is an action you <strong>want</strong> available. An agent that always complies is an agent that will eventually comply with a bad guess.</p>
+<h3>What it can see</h3>
+<p>It can see files in the folder you started it in, subject to the tool's own ignore rules (often the same idea as Git's ignore list: dependencies and build output are hidden). It can see the text of those files. It cannot see:</p>
+<ul>
+<li>your unstated goal,</li>
+<li>the ticket in another system, unless that text is in the folder or in your prompt,</li>
+<li>production data,</li>
+<li>the contents of a file you excluded.</li>
+</ul>
+<p>Shelf is small, so "seeing the project" means seeing a handful of JavaScript files, a changelog, and <code>package.json</code>. On a large repo, the agent still does not see all of it equally. It searches. If your prompt does not name a file, it may search, find a near match, and edit that. Naming the file is a kindness you will practice in U16. The point here is: <strong>sight is files plus your message, not mind-reading.</strong></p>
+<h3>What an edit looks like</h3>
+<p>An edit is a proposal until you accept it. In Git terms, it shows up as a working-tree change. <code>git diff</code> is how you read it. You already know that command. Use it. The agent's own "here is what I did" paragraph is a summary of the edit, and summaries drop lines.</p>
+<p>A tiny honest diff for shelf would look like this. Read it as a picture of an edit, not as a task to apply.</p>
+<pre><code class="language-diff">--- a/src/loans.js
++++ b/src/loans.js
+@@
+ export function activeLoans() {
+   return loans.filter((loan) =&gt; loan.returned === false);
+ }
++
++export function countForBorrower(borrower) {
++  return activeLoans().filter((loan) =&gt; loan.borrower === borrower).length;
++}
+</code></pre>
+<p>One function, existing style, no new import. That is an edit you can hold in your head. U17 shows edits you should not hold onto.</p>
+<h3>What a command can do</h3>
+<p>A command is not an edit, but it can cause worse damage than one. Examples, from harmless to unacceptable on shelf:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Why it exists</th>
+<th>Verdict on shelf</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm test</code></td>
+<td>Runs the suite you trust</td>
+<td>Allowed once tests exist</td>
+</tr>
+<tr>
+<td><code>node --version</code></td>
+<td>Checks the runtime</td>
+<td>Harmless</td>
+</tr>
+<tr>
+<td><code>npm install lodash</code></td>
+<td>Fetches a package into the project</td>
+<td>Refuse. Shelf has no dependencies, and this adds one</td>
+</tr>
+<tr>
+<td><code>git push --force</code></td>
+<td>Rewrites history on a shared branch</td>
+<td>Refuse. Always, in this course</td>
+</tr>
+<tr>
+<td>A command that connects to a database using a real URL</td>
+<td>Reads or writes shared data</td>
+<td>Refuse. Shelf has no database, and real projects need an explicit rule</td>
+</tr>
+</tbody>
+</table>
+<p>You will write these verdicts into <code>AGENTS.md</code> in U09 and U10. Today you only practice the classification.</p>
+<h3>Capabilities are not intentions</h3>
+<p>The agent can edit <code>package.json</code> because the file is in the folder. "Can" is not "should." Standing instructions exist to turn "should not" into text the agent loads every turn. Until that file exists, <strong>you</strong> are the only refusal mechanism: you reject the diff.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read</td>
+<td>Look at a file without changing it</td>
+<td>Not the same as understanding it</td>
+</tr>
+<tr>
+<td>Edit</td>
+<td>A change to a file</td>
+<td>Not accepted until you say so</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>A shell program the agent runs</td>
+<td>Not automatically safe because it is "just a test"</td>
+</tr>
+<tr>
+<td>Refuse</td>
+<td>Stop without doing the risky part</td>
+<td>Not a crash, and not rudeness</td>
+</tr>
+<tr>
+<td>Working tree</td>
+<td>Your files as they are now, including uncommitted edits</td>
+<td>Not the last commit</td>
+</tr>
+<tr>
+<td>Diff</td>
+<td>The line-by-line difference</td>
+<td>Not the agent's summary paragraph</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Transcript fragment (invented, on purpose):</p>
+<pre><code class="language-text">Read    src/loans.js
+Read    package.json
+Edit    src/loans.js          (adds countForBorrower)
+Command npm install date-fns
+Edit    package.json          (adds the dependency)
+Command npm test
+</code></pre>
+<p>Classify, then judge.</p>
+<ul>
+<li>The two reads are appropriate. It looked at the code and the dependency list.</li>
+<li>The first edit may be appropriate if the task was the count function. You would still read the diff.</li>
+<li><code>npm install date-fns</code> is a <strong>command that should have been a refusal</strong>. The count function does not need dates. The package was a guess.</li>
+<li>The <code>package.json</code> edit is the footprint of that guess.</li>
+<li><code>npm test</code> is a fine command <strong>after</strong> the extra package is removed. Run in this order, it tests the wrong project: a project that now depends on <code>date-fns</code>.</li>
+</ul>
+<p>The repair is not "ask it to continue." The repair is: refuse the install, restore <code>package.json</code>, keep or redo the function. U22 teaches the repair loop. Here, notice the classification.</p>
+<h2>Common errors</h2>
+<h3>Calling every step "it did some AI"</h3>
+<p><strong>What you see:</strong> A review comment that says "the AI changed stuff."</p>
+<p><strong>What it means:</strong> Reads, edits, and commands are blurred, so the dangerous command hides inside the sentence.</p>
+<p><strong>What to do:</strong> Force the four labels onto the transcript before you discuss quality.</p>
+<h3>Assuming a read is harmless when the file is a secret</h3>
+<p><strong>What you see:</strong> The transcript prints a <code>.env</code> file or a key.</p>
+<p><strong>What it means:</strong> A read is harmless only if the file was safe to show to the tool and to the transcript's storage.</p>
+<p><strong>What to do:</strong> On any real project, secrets are excluded. Shelf's example has none. Do not add one to practice this. The classification "read of a secret" is already a problem, even with no edit.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name the four action types.</li>
+<li>Why is <code>npm install</code> a bigger event than a one-line edit to <code>loans.js</code>?</li>
+<li>Does the agent know your goal if you do not write it down?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Label</h3>
+<p>Label each line <code>read</code>, <code>edit</code>, <code>command</code>, or <code>refuse</code>:</p>
+<ol>
+<li>Open <code>test/loans.test.js</code>.</li>
+<li>Insert a test into that file.</li>
+<li>Run <code>npm test</code>.</li>
+<li>Decline to run <code>git reset --hard</code>.</li>
+<li>Create <code>src/utils/dates.js</code>.</li>
+</ol>
+<h3>P2 — Verdict</h3>
+<p>For items 4 and 5, write "allow" or "refuse" <strong>for a task whose spec only adds <code>countForBorrower</code> to <code>src/loans.js</code></strong>. One sentence each.</p>
+<h3>P3 — See or not</h3>
+<p>List three things in a typical company repo the agent should not be given (examples: production database passwords, a customer data dump, a second repo that is not this project). Then list three things in shelf it should be allowed to read.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not write the full rules file yet.</li>
+<li>You do not need a live agent transcript. The samples here are the materials.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U04 — Start in the project folder.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U03 Assignment — Classify actions</h1>
+<p>Submit <code>U03-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Four types.</strong> Define read, edit, command, and refuse in your own words. Two sentences each. Include what evidence you would look for in a transcript.</li>
+<li><strong>Label this transcript.</strong> Use those four words.</li>
+</ol>
+<pre><code class="language-text">1. List the directory src
+2. Open src/server.js
+3. Create src/routes/overdue.js
+4. Run npm install express
+5. Rewrite src/server.js to import express
+6. Stop and ask before reading .env, because the file was requested and the project rules forbid secrets
+</code></pre>
+<p>For each numbered line: the type, and <code>keep</code> or <code>problem</code> if the only approved task was "add a function in <code>src/loans.js</code>." One sentence why for each problem.</p>
+<ol start="3">
+<li><strong>Sight.</strong> A teammate says "the agent understands the product roadmap because it is smart." Reply in 4–6 sentences. Use shelf: the roadmap is not in the repo. What can the agent actually see?</li>
+<li><strong>Two refusals.</strong> Name two commands you would want refused on shelf even though a shell is capable of running them. Say what harm each would do.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U03 README.
+- [ ] I used only the four action words in question 2.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Q2 covers all six lines. Q4 names two commands and a harm for each.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U03-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U03 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Four definitions match the lesson and mention evidence</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Six transcript lines typed correctly</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q2 types</td>
+</tr>
+<tr>
+<td>Problems identified: express route file, npm install, server rewrite. The list/open of src may be marked keep or problem if reasoned. The secret refusal is keep</td>
+<td>5</td>
+<td>Yes</td>
+<td>Q2 judgments</td>
+</tr>
+<tr>
+<td>"Understands the roadmap" answered with what sight actually is</td>
+<td>3</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Two refused commands with harms</td>
+<td>2</td>
+<td>No</td>
+<td>Q4</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Types: 1 point each. <code>Create</code> and <code>Rewrite</code> are edits. <code>List</code> and <code>Open</code> are reads. <code>npm install</code> is a command. Line 6 is refuse.</li>
+<li>Judgments: full credit if the three harmful lines are problems with reasons. Do not require a specific verdict on the two reads.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q4 is nice-to-have. Any missed must-have caps the unit at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U02-chat-window-vs-project-agent/index.html">U02 Chat window vs project agent</a>
+    <a class="next" href="../U04-start-in-the-project-folder/index.html">U04 Start in the project folder</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

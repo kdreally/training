@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U01 — What we are building toward | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U01</div>
+    <h1>What we are building toward</h1>
+    <span class="phase-badge ph0">Phase 0 — Orientation</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U01 — What we are building toward</h1>
+<p><strong>Phase 0 — Orientation</strong></p>
+<h2>Where you are</h2>
+<p>You know how a unit works. This unit shows the destination in honest terms: what you will be able to do by U29, what the little <strong>shelf</strong> project is, and which tempting topics this course leaves alone.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>State the five artifacts the course revolves around: standing instructions, spec, prompt, tests, evaluation.</li>
+<li>Describe the shelf project well enough to recognise its files later.</li>
+<li>Name three topics this course will not cover, and why that limit exists.</li>
+<li>Check that Node.js 20 or newer is available on your machine.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00 — How this course works.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>, including one version check in a terminal. If Node is missing, budget extra time for the install notes below. You do not need an agent installed.</p>
+<h2>Why this exists</h2>
+<p>Without a destination, every file looks equally urgent. People then collect prompt tips, config screenshots, and product comparisons, and still cannot ship a small change safely. This unit is the map. You are not expected to perform the workflow yet.</p>
+<h2>Plain-language teaching</h2>
+<h3>The job, in one paragraph</h3>
+<p>You will learn to keep a <strong>local coding agent</strong> inside a repository and to judge its work. A local coding agent is a program installed on your computer. You start it from a terminal in a project folder. It can read files, edit files, and run commands you allow. The course uses that idea without requiring a particular brand. U02 defines it slowly. For now, hold the picture: the agent works <em>in the project</em>, and you decide what is allowed to stay.</p>
+<h3>Five artifacts</h3>
+<p>Everything later is one of these, or a review of one of these.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>What it is</th>
+<th>When it is written</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standing instructions</td>
+<td>Rules loaded on <strong>every</strong> turn. This course uses a file named <code>AGENTS.md</code>.</td>
+<td>Once per project, then edited when policy changes</td>
+</tr>
+<tr>
+<td>Spec</td>
+<td>What "done" means for <strong>this</strong> change: behavior, examples, non-goals</td>
+<td>Before implementation</td>
+</tr>
+<tr>
+<td>Prompt</td>
+<td>The message for <strong>this</strong> turn. It points at the spec and the limits</td>
+<td>When you ask the agent to act</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>A check a machine can run. For shelf, <code>npm test</code></td>
+<td>With the change, before you accept it</td>
+</tr>
+<tr>
+<td>Evaluation</td>
+<td>A written pass/fail against the spec, with evidence from tests and the diff</td>
+<td>After the agent stops</td>
+</tr>
+</tbody>
+</table>
+<p>Chat memory is not on this list. A clever sentence with no file behind it disappears on the next session.</p>
+<h3>The shelf project</h3>
+<p>Shelf is a tiny library-loan tracker. It is the same example in every unit so you are learning the workflow, not a new application each week.</p>
+<ul>
+<li><code>src/books.js</code> — two books. <code>b1</code> has two copies. <code>b2</code> has one.</li>
+<li><code>src/loans.js</code> — <code>borrow</code>, <code>returnLoan</code>, <code>activeLoans</code>. Data is an array in memory.</li>
+<li><code>src/server.js</code> — one route, <code>GET /loans</code>.</li>
+<li><code>test/loans.test.js</code> — tests for the loan functions, using Node's built-in test runner.</li>
+<li><code>package.json</code> — <code>"type": "module"</code> and a test script. <strong>No dependencies.</strong></li>
+<li><code>CHANGELOG.md</code> — a heading <code>## Unreleased</code> where accepted behavior changes get one line.</li>
+</ul>
+<p>A loan result looks like <code>{ ok: true, loan }</code> or <code>{ ok: false, error: "no-copies" }</code>. Error names you will see: <code>unknown-book</code>, <code>borrower-required</code>, <code>no-copies</code>, <code>no-active-loan</code>.</p>
+<p>The full tree is in <code>course/examples/shelf/</code>. Units also quote the lines they need, so you are not forced to hunt.</p>
+<h3>What "correct code" will mean here</h3>
+<p>Correct means: the spec's examples hold, the existing tests still pass, the new tests pass, and the diff stays inside the files and dependency rules you set. A confident summary from the agent is not correctness. That standard arrives in full in Phase 5. You are only meeting it now so the destination is visible.</p>
+<h3>What this course will not make you do</h3>
+<ul>
+<li>Pick a model vendor, compare benchmarks, or install a specific CLI as a graded requirement.</li>
+<li>Build a chatbot, fine-tune a model, or design prompts for end users of a product.</li>
+<li>Replace code review, Git, or tests with an agent.</li>
+<li>Connect shelf to a real database. Shelf stays in memory on purpose, so "do not touch production data" can be practiced without a production system.</li>
+</ul>
+<p>Those are real skills. They are other courses.</p>
+<h3>Check Node before later units need it</h3>
+<p>You will run shelf's tests from U20 onward. Check now.</p>
+<p><strong>What the command does:</strong> prints the Node.js version installed on your machine.</p>
+<pre><code class="language-text">node --version
+</code></pre>
+<p><strong>Success</strong> looks like <code>v20.11.0</code> or any <code>v20</code>, <code>v22</code>, or newer. The exact patch number does not matter.</p>
+<p><strong>A typical failure</strong> looks like:</p>
+<pre><code class="language-text">node: command not found
+</code></pre>
+<p>or, on Windows PowerShell:</p>
+<pre><code class="language-text">node: The term 'node' is not recognized as the name of a cmdlet, function, script file, or operable program.
+</code></pre>
+<p><strong>What it means:</strong> the shell cannot find the Node program. It does not mean the rest of this course is blocked today. Install the current LTS build from the Node.js website (nodejs.org), then open a <strong>new</strong> terminal and run <code>node --version</code> again. If the old terminal still fails and the new one works, the old one was started before install and never reloaded its program list.</p>
+<p>You are not expected to learn Node in this course. You are expected to be able to run one test command later.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local coding agent</td>
+<td>A program on your computer that reads and edits a project from the folder you started it in</td>
+<td>Not a web chat about code</td>
+</tr>
+<tr>
+<td>Standing instructions</td>
+<td>Rules present on every turn</td>
+<td>Not the task you typed today</td>
+</tr>
+<tr>
+<td>Spec</td>
+<td>A description of done for one change</td>
+<td>Not the source code, and not a prompt</td>
+</tr>
+<tr>
+<td>Prompt</td>
+<td>The message that asks the agent to act on a spec</td>
+<td>Not a substitute for the spec</td>
+</tr>
+<tr>
+<td>Evaluation</td>
+<td>Your written judgment of a change against the spec</td>
+<td>Not a model-quality benchmark</td>
+</tr>
+<tr>
+<td>Shelf</td>
+<td>The small loan tracker used in every unit</td>
+<td>Not a library framework</td>
+</tr>
+<tr>
+<td>Dependency</td>
+<td>Another package the project would install</td>
+<td>Shelf has none; adding one is a decision, not a default</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Here is a complete, tiny picture of the workflow you are heading toward. You are <strong>not</strong> expected to write this yet. Read it as a map.</p>
+<p><strong>Task someone might say:</strong> "Count how many books a borrower has out."</p>
+<p><strong>Standing rule already in the repo (preview):</strong> do not add npm packages.</p>
+<p><strong>Spec fragment:</strong></p>
+<pre><code class="language-text">Add countForBorrower(borrower) to src/loans.js.
+It returns how many active loans that borrower has.
+countForBorrower(&quot;Asha&quot;) is 0 when Asha has nothing out.
+After borrow(&quot;b1&quot;, &quot;Asha&quot;) it is 1.
+Do not add files. Do not add dependencies.
+</code></pre>
+<p><strong>Prompt fragment:</strong></p>
+<pre><code class="language-text">Implement specs/count-for-borrower.md.
+Touch only src/loans.js, test/loans.test.js, and CHANGELOG.md.
+Run npm test. Stop if a test fails and report the output.
+</code></pre>
+<p><strong>Evaluation fragment:</strong></p>
+<pre><code class="language-text">Pass: test &quot;Asha with one loan&quot; passed. Diff adds one function and one test.
+Pass: package.json is unchanged.
+</code></pre>
+<p>That packet — rules, spec, prompt, test, evaluation — is the whole course in miniature.</p>
+<h2>Common errors</h2>
+<h3>Treating the map as homework to perform today</h3>
+<p><strong>What you see:</strong> You try to write a perfect <code>AGENTS.md</code> before U06 explains why the file exists.</p>
+<p><strong>What it means:</strong> The preview felt like an order.</p>
+<p><strong>What to do:</strong> Leave the packet until those units. Your assignment today is to show you understand the destination.</p>
+<h3>Installing three coding agents "to be ready"</h3>
+<p><strong>What you see:</strong> An evening gone to accounts and API keys. No workflow practiced.</p>
+<p><strong>What it means:</strong> Tooling was mistaken for the skill.</p>
+<p><strong>What to do:</strong> If you already have one local agent, keep it. If you do not, wait. Every graded task can be done on paper.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name the five artifacts, in the order you would create them for a change.</li>
+<li>How many HTTP routes does shelf have today, and what is the path?</li>
+<li>Why does a live model reply not count as the definition of done?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — File roles</h3>
+<p>Without opening the example folder, write what you expect to find in <code>src/loans.js</code>, <code>src/server.js</code>, and <code>test/loans.test.js</code>. Then open <code>course/examples/shelf/</code> and correct your list in a sentence.</p>
+<h3>P2 — Version</h3>
+<p>Run <code>node --version</code>. Paste the output into a scratch note. If it failed, paste the error and one sentence of decoding, using the failure box above.</p>
+<h3>P3 — Out of scope</h3>
+<p>A colleague says the course should include "which model is smartest this month." Write two sentences explaining why that request sits outside this course.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not write <code>AGENTS.md</code>, a spec, or a prompt for submission yet.</li>
+<li>You do not launch an agent.</li>
+<li>You do not change shelf's behavior.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U02 — Chat window vs project agent.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U01 Assignment — Destination and shelf</h1>
+<p>Submit one folder or zip named:</p>
+<p><code>U01-YourName</code></p>
+<h2>Files to submit</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Five artifacts.</strong> For each of standing instructions, spec, prompt, tests, and evaluation, write two sentences: what it is, and at what moment in a change you create or use it.</li>
+<li><strong>Shelf.</strong> Describe shelf to a developer who has not seen it. Include where logic lives, where tests live, the shape of a failed <code>borrow</code> result, and the fact that there are no npm dependencies. Mention <code>GET /loans</code>.</li>
+<li><strong>Out of scope.</strong> Name three things this course deliberately does not train, and give one sentence each on why leaving them out protects the course.</li>
+<li><strong>Predict, then check.</strong> Before you run anything, write the command you will use to print the Node version, and write what a successful line starts with. Then run it. Paste the real output under the heading <code>What actually happened</code>. If Node is missing, paste the error and decode it.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U01 README fully.
+- [ ] I can name the five artifacts without looking.
+- [ ] I opened course/examples/shelf or used the quotes in the README.
+- [ ] Question 4 has a prediction written before the real output.
+- [ ] I read the U01 rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<ul>
+<li>Both files are present.</li>
+<li>Question 4 shows a prediction and either real output or a decoded "command not found."</li>
+<li>Answers are in your own words.</li>
+</ul>
+<h2>Submission format</h2>
+<pre><code class="language-text">U01-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U01 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All five artifacts defined, each with a moment in the workflow</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Shelf description matches the example: loans module, tests, error object, no dependencies, <code>GET /loans</code></td>
+<td>5</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Three out-of-scope topics, each with a reason</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Prediction written before the version check; real output or a decoded missing-command error</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q4</td>
+</tr>
+<tr>
+<td>Filenames and checklist present</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Q1: 4/6 if one artifact is missing or if "when" is absent throughout.</li>
+<li>Q2: 3/5 if they describe a loan app but invent a database or an Express server.</li>
+<li>Q4: 2/4 if they show output with no prediction.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Every row is must-have. A miss caps the unit at 15/20 and is revise-and-resubmit for that row.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U00-how-this-course-works/index.html">U00 How this course works</a>
+    <a class="next" href="../U02-chat-window-vs-project-agent/index.html">U02 Chat window vs project agent</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

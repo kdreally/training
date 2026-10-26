@@ -1,0 +1,26 @@
+{
+  "slug": "ai-in-the-sdlc",
+  "title": "AI in the Software Development Life Cycle",
+  "tagline": "Run a local coding agent inside the repo — standing rules, specs, prompts, and checks that keep generated code honest.",
+  "hero": "For working developers. Learn the project-folder workflow: instruction files the agent loads every turn, specifications, prompts that fence the change, and the review habits that catch invented packages, extra files, and guessed APIs.",
+  "phases": {
+    "0": "Orientation",
+    "1": "The agent in the project",
+    "2": "Standing instructions",
+    "3": "Specifications",
+    "4": "Prompts",
+    "5": "Making the code correct",
+    "6": "Life-cycle workflows",
+    "7": "Capstone"
+  },
+  "unitPhase": {
+    "U00": 0, "U01": 0,
+    "U02": 1, "U03": 1, "U04": 1, "U05": 1,
+    "U06": 2, "U07": 2, "U08": 2, "U09": 2, "U10": 2, "U11": 2,
+    "U12": 3, "U13": 3, "U14": 3, "U15": 3,
+    "U16": 4, "U17": 4, "U18": 4, "U19": 4,
+    "U20": 5, "U21": 5, "U22": 5, "U23": 5,
+    "U24": 6, "U25": 6, "U26": 6, "U27": 6, "U28": 6,
+    "U29": 7
+  }
+}

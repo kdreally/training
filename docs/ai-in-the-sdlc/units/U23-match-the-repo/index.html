@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U23 — Match the repo | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U23</div>
+    <h1>Match the repo</h1>
+    <span class="phase-badge ph5">Phase 5 — Making the code correct</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U23 — Match the repo</h1>
+<p><strong>Phase 5 — Making the code correct</strong></p>
+<h2>Where you are</h2>
+<p>Fences stop new packages and new files. Generations still drift in a subtler way: the code runs, the files are allowed, and the <strong>style of the solution</strong> is alien to the repo. A class hierarchy inside <code>loans.js</code>, a new error shape, a renamed function "for clarity." This unit trains you to treat the existing file as the pattern the change must join.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Compare a generation to its neighbor functions and list the mismatches.</li>
+<li>Write a style fence that cites file-local patterns: result objects, <code>===</code>, ESM, no classes.</li>
+<li>Reject a drive-by "cleanup" that changes behavior under the name of consistency.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U21</strong>, <strong>U22</strong>.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Reviewers are generous toward code that looks like the file around it, and rightly so: matching code is easier to maintain and easier to see as a small change. Agents often "upgrade" a file to a pattern from a tutorial. The upgrade is a second project hiding in your ticket. Matching the repo is a correctness practice, not a matter of taste. A new error shape breaks callers. A class split breaks imports. Those are behavior changes wearing a style hat.</p>
+<h2>Plain-language teaching</h2>
+<h3>What "match" means on shelf</h3>
+<p>Open <code>src/loans.js</code> and list the patterns that are already decisions:</p>
+<ul>
+<li>ESM <code>import</code> / <code>export</code>.</li>
+<li>Plain functions, not classes.</li>
+<li>Module-level <code>loans</code> array.</li>
+<li>Failure: <code>{ ok: false, error: "kebab-case" }</code>.</li>
+<li>Success: <code>{ ok: true, loan }</code>.</li>
+<li>Comparisons with <code>===</code>.</li>
+<li>No logging.</li>
+<li>Tests in <code>test/loans.test.js</code> call the functions directly and use <code>node:assert/strict</code>.</li>
+</ul>
+<p>A generation matches when a new function could sit beside <code>returnLoan</code> without a comment explaining why it looks different.</p>
+<h3>A mismatched generation</h3>
+<p>Task: <code>countForBorrower</code>. Files allowed: <code>src/loans.js</code> and the test file. No new package. This one obeys the file fence and still fails the match:</p>
+<pre><code class="language-javascript">export class LoanCounter {
+  constructor(store) {
+    this.store = store;
+  }
+
+  count(name) {
+    if (!name) throw new Error(&quot;Borrower required&quot;);
+    return this.store.filter((loan) =&gt; loan.borrower === name &amp;&amp; !loan.returned)
+      .length;
+  }
+}
+</code></pre>
+<p>And the test constructs <code>new LoanCounter(loans)</code>, except <code>loans</code> is not exported. So the generation also exports the array "to make it testable."</p>
+<p>Mismatches:</p>
+<table>
+<thead>
+<tr>
+<th>Spot</th>
+<th>File's pattern</th>
+<th>Generation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shape</td>
+<td>Plain function</td>
+<td>Class</td>
+</tr>
+<tr>
+<td>Failure</td>
+<td><code>{ ok: false, error }</code></td>
+<td><code>throw</code></td>
+</tr>
+<tr>
+<td>Error text</td>
+<td><code>borrower-required</code></td>
+<td><code>"Borrower required"</code></td>
+</tr>
+<tr>
+<td>Privacy of state</td>
+<td><code>loans</code> is not exported</td>
+<td>Export added so the class can be fed</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Call <code>countForBorrower("Asha")</code></td>
+<td>Call <code>new LoanCounter(...).count</code></td>
+</tr>
+</tbody>
+</table>
+<p>Tests might pass. The repo got a second style and a wider export. Reject, restore, tighten with: "Plain function like <code>returnLoan</code>. Do not throw. Do not export <code>loans</code>. Do not add a class."</p>
+<h3>Drive-by consistency</h3>
+<p>Sometimes the agent changes the <strong>old</strong> code to match the new pattern instead of the reverse:</p>
+<pre><code class="language-diff">-  if (!borrower || borrower.trim() === &quot;&quot;) {
+-    return { ok: false, error: &quot;borrower-required&quot; };
+-  }
++  if (!borrower || borrower.trim() === &quot;&quot;) {
++    throw new Error(&quot;Borrower required&quot;);
++  }
+</code></pre>
+<p>The changelog says "made error handling consistent." It made the file consistent with the tutorial, not with the tests. Every existing assertion on <code>borrower-required</code> fails, unless the tests were weakened in the same turn. This is why you read test diffs and neighbor diffs, not only the new function.</p>
+<h3>How to write the match into a prompt</h3>
+<pre><code class="language-text">Match src/loans.js:
+- export a plain function countForBorrower
+- do not add a class
+- do not throw
+- do not export the loans array
+- do not change borrow or returnLoan
+</code></pre>
+<p>That is Pattern 2 from U19, made specific after you have seen the file. "Match the repo" without a list is a proverb. The list is the practice.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neighbor pattern</td>
+<td>How the surrounding file already behaves</td>
+<td>Not a suggestion</td>
+</tr>
+<tr>
+<td>Alien style</td>
+<td>A working solution in a pattern the file does not use</td>
+<td>Not "more modern," automatically</td>
+</tr>
+<tr>
+<td>Drive-by consistency</td>
+<td>Rewriting old code so the new pattern looks normal</td>
+<td>Often labeled cleanup</td>
+</tr>
+<tr>
+<td>Export widening</td>
+<td>Making private module state public for a new design</td>
+<td>Breaks the boundary</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Use the class above. Decision: restore. Tightening lines are the four "do not" bullets. Retry once. If the second diff throws again, the spec's Done section should say "no throw" explicitly, and you stop retrying until it does (U22 ceiling).</p>
+<p>A matching version:</p>
+<pre><code class="language-javascript">export function countForBorrower(borrower) {
+  return activeLoans().filter((loan) =&gt; loan.borrower === borrower).length;
+}
+</code></pre>
+<p>It uses <code>activeLoans</code>, <code>filter</code>, <code>===</code>, a plain export, and no new failure mode. Blank names count zero, which you should have decided in the spec. If you wanted a thrown error, you would be choosing the alien style. Do not let the generation choose it for you.</p>
+<h2>Common errors</h2>
+<h3>Keeping the class because it is "cleaner"</h3>
+<p><strong>What you see:</strong> The review praises encapsulation.</p>
+<p><strong>What it means:</strong> A style preference overruled the file and the tests' calling convention.</p>
+<p><strong>What to do:</strong> Encapsulation can be a spec. It is not a side effect of a count function. Reject.</p>
+<h3>Matching a bug</h3>
+<p><strong>What you see:</strong> The file has a known bug. The prompt says "match the file," so the agent copies the bug into the new function.</p>
+<p><strong>What it means:</strong> Match was applied to the defect, not to the house style.</p>
+<p><strong>What to do:</strong> The spec says the new behavior. The neighbor citation names the patterns (result objects, ESM), not "copy the buggy condition." Bug fixes are U26. They do not ride inside "match."</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name three patterns a new shelf function must match.</li>
+<li>Why is <code>throw new Error("Borrower required")</code> a contract change?</li>
+<li>What is drive-by consistency?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Table</h3>
+<p>Make a mismatch table for the class example. At least four rows.</p>
+<h3>P2 — Fence</h3>
+<p>Write the match fence you would add before a retry.</p>
+<h3>P3 — Neighbor good</h3>
+<p>Write the matching <code>countForBorrower</code> in five lines or fewer, using <code>activeLoans</code>. No class, no throw.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No requirement to hate classes in every codebase. On shelf, the file is the authority.</li>
+<li>Life-cycle workflows start at U24. You now have the tools those workflows use.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U24 — Workflow: new feature.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U23 Assignment — Join the file, do not replace it</h1>
+<p>Submit <code>U23-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>mismatch.md</code></h3>
+<p>Review this generation. The allow list was <code>src/loans.js</code> and <code>test/loans.test.js</code>. No new packages appeared.</p>
+<pre><code class="language-javascript">export class LoanCounter {
+  count(name) {
+    if (!name) throw new Error(&quot;Borrower required&quot;);
+    return activeLoans().filter((loan) =&gt; loan.borrower === String(name)).length;
+  }
+}
+</code></pre>
+<p>The diff also exports <code>loans</code> and changes <code>borrow</code>'s blank-name branch to <code>throw new Error("Borrower required")</code>. Tests were updated to <code>expect</code> throws. (There is no <code>expect</code> in shelf's runner; they imported a different assertion style in the test file.)</p>
+<p>Write a mismatch table of at least five rows. End with accept or restore.</p>
+<h3>2. <code>prompts/retry.txt</code></h3>
+<p>The tighten prompt for one retry: match fences, behavior fences, verify, stop. One behavior: <code>countForBorrower</code>.</p>
+<h3>3. <code>answers.md</code></h3>
+<ol>
+<li>Why can this generation be green and still wrong?</li>
+<li>When would a class be legitimate in this repo? One short paragraph.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U23 README.
+- [ ] My decision is restore.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>The retry prompt would reject a throw, a class, an exported <code>loans</code> array, and a test-runner change.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U23-YourName/
+  mismatch.md
+  prompts/retry.txt
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U23 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>At least five mismatches including throw, class, export widening, drive-by on <code>borrow</code>, and test style</td>
+<td>8</td>
+<td>Yes</td>
+<td><code>mismatch.md</code></td>
+</tr>
+<tr>
+<td>Decision is restore</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>mismatch.md</code></td>
+</tr>
+<tr>
+<td>Retry prompt demands a plain function, forbids throw, forbids exporting <code>loans</code>, keeps node:test</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>prompts/retry.txt</code></td>
+</tr>
+<tr>
+<td>Green-but-wrong explained via weakened or replaced assertions</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Table: 1 point per distinct row, cap 8, minimum themes as in the criterion. Duplicate wording does not score twice.</li>
+<li>Retry: 4/6 if throw is forbidden but the test runner change is ignored.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Answers are nice-to-have. An accept decision caps the unit at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U22-stop-revert-tighten-retry/index.html">U22 Stop, revert, tighten, retry</a>
+    <a class="next" href="../U24-workflow-new-feature/index.html">U24 Workflow: new feature</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U05 — One turn: prompt, action, diff | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U05</div>
+    <h1>One turn: prompt, action, diff</h1>
+    <span class="phase-badge ph1">Phase 1 — The agent in the project</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U05 — One turn: prompt, action, diff</h1>
+<p><strong>Phase 1 — The agent in the project</strong></p>
+<h2>Where you are</h2>
+<p>You can put the agent in the right folder and name what it is allowed to do. This unit slows down a single <strong>turn</strong> until you can narrate it. A turn is one request, the actions that follow, and your decision at the end. Sessions go bad when turns blur together and nobody can say which prompt caused which edit.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define a turn and point to its prompt, its actions, and its diff.</li>
+<li>Explain why you decide at the end of every turn, instead of stacking prompts on an unreviewed diff.</li>
+<li>Read a short transcript and say whether the turn should be accepted.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U03</strong> (action types) and <strong>U04</strong> (folder).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Agents invite a style of work that feels like chat: type, skim, type again. File edits do not behave like chat messages. They accumulate in the working tree. A second prompt then "fixes" a mix of the first prompt's mistakes and the new request, and the diff becomes unreadable. One turn, one review, then either keep or discard. That rhythm is the whole of Phase 5 in miniature. You are learning the rhythm before the paperwork.</p>
+<h2>Plain-language teaching</h2>
+<h3>The shape of a turn</h3>
+<pre><code class="language-text">1. You are in the project root. The working tree is clean, or you can name every dirty file.
+2. You send one prompt.
+3. The agent reads, edits, and maybe runs a command.
+4. It stops and reports.
+5. You read git diff and the command output.
+6. You accept (and later commit) or you restore the files.
+</code></pre>
+<p>Step 1 is U04. Step 6 is yours. The agent does not do step 6, even if its report says "Done."</p>
+<h3>Accept means you can explain the diff</h3>
+<p>You do not need a perfect diff. You need to be able to point at each file and say why it changed. If a file changed and you cannot say why, the turn is not accepted. Restore it. Curiosity can happen in a new turn with a narrower prompt.</p>
+<h3>A clean tree is a courtesy to your future self</h3>
+<p><strong>Working tree clean</strong> means <code>git status</code> shows nothing to commit. You already use this. Before an agent turn it matters more than usual, because the agent's edits and your half-finished hand edits look identical in <code>git diff</code>. If you start from a dirty tree, you will not know which lines the agent wrote.</p>
+<p>If you have unfinished hand work, commit it or stash it with the Git habits you already have. This course will not teach stash. It will insist you can tell agent lines from your lines.</p>
+<h3>One prompt, one behavior</h3>
+<p>A turn that asks for a count function <strong>and</strong> a new HTTP route <strong>and</strong> a changelog cleanup is three turns wearing one coat. When the route is wrong you cannot revert it without also reverting the count function. U19 will push this harder. Here, notice the pain in the example below.</p>
+<h3>The report is not the diff</h3>
+<p>A report sounds like this:</p>
+<pre><code class="language-text">I added borrower counts and tests. All tests pass.
+</code></pre>
+<p>The diff might also contain a rewritten comment, a new dependency, and a changed error string. Believe the diff and the test output. Use the report as a table of contents, then check that every chapter is really there.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Turn</td>
+<td>One prompt plus the actions it caused plus your accept-or-restore decision</td>
+<td>Not a whole afternoon session</td>
+</tr>
+<tr>
+<td>Accept</td>
+<td>You can explain every touched file and you keep the edits</td>
+<td>Not "the agent said done"</td>
+</tr>
+<tr>
+<td>Restore</td>
+<td>Put the touched files back to the last commit</td>
+<td>Not a moral failure</td>
+</tr>
+<tr>
+<td>Clean tree</td>
+<td>No uncommitted changes at the start of the turn</td>
+<td>Not "the code is high quality"</td>
+</tr>
+<tr>
+<td>Report</td>
+<td>The agent's closing summary</td>
+<td>Not evidence</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Start:</strong> <code>git status</code> in shelf is clean. Prompt:</p>
+<pre><code class="language-text">Add countForBorrower(borrower) to src/loans.js.
+It returns the number of active loans for that borrower.
+Add one test. Do not change any other behavior.
+</code></pre>
+<p><strong>Actions:</strong></p>
+<pre><code class="language-text">Read src/loans.js
+Read test/loans.test.js
+Edit src/loans.js
+Edit test/loans.test.js
+Command npm test
+</code></pre>
+<p><strong>Test output (success):</strong></p>
+<pre><code class="language-text"># tests 7
+# pass 7
+# fail 0
+</code></pre>
+<p>The suite had 6 tests. A seventh appeared. That matches "add one test."</p>
+<p><strong>Diff, file list:</strong></p>
+<pre><code class="language-text">src/loans.js
+test/loans.test.js
+</code></pre>
+<p>You open the diff, see the function from U03's picture, see a test that borrows <code>b1</code> for Asha and expects <code>1</code>. No other lines move. <strong>Accept.</strong></p>
+<p><strong>A second version of the same turn,</strong> same prompt, different agent mood. File list:</p>
+<pre><code class="language-text">src/loans.js
+src/server.js
+package.json
+test/loans.test.js
+</code></pre>
+<p>Report: "I added borrower counts and exposed them via Express so the UI can use them. Tests pass."</p>
+<p><strong>Do not accept.</strong> The prompt did not ask for Express or for <code>server.js</code>. Restore all four files, including the test, because you cannot yet trust that the test imports Express. Then stop. A tighter prompt is a new turn, which you will learn to write later. Restoring feels slow the first time and cheap the tenth time.</p>
+<h2>Common errors</h2>
+<h3>The follow-up that buries the mistake</h3>
+<p><strong>What you see:</strong> Unwanted <code>package.json</code> change, then a second prompt: "also add the changelog line," without a restore.</p>
+<p><strong>What it means:</strong> Two tasks share one dirty tree. The changelog edit sits on top of the bad dependency.</p>
+<p><strong>What to do:</strong> Restore first. Confirm <code>git status</code> is clean. Then do the changelog turn.</p>
+<h3>Grading the report</h3>
+<p><strong>What you see:</strong> You accept because the last line says "All tests pass," and you never open the diff. The tests pass because the agent deleted one.</p>
+<p><strong>What it means:</strong> The report replaced the evidence.</p>
+<p><strong>What to do:</strong> Open <code>git diff</code> and the test command's own output. Count tests. U20 makes this a habit.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>List the six steps of a turn, in order.</li>
+<li>Why does a clean <code>git status</code> matter before the prompt?</li>
+<li>The report says done and the diff touches a file you did not name. What is the decision?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Mark the boundaries</h3>
+<p>Take the worked example's "do not accept" file list. Write the turn as six numbered steps, ending in restore. Use the actual filenames.</p>
+<h3>P2 — Two behaviors</h3>
+<p>A prompt says "add <code>countForBorrower</code> and change <code>GET /loans</code> to include the count." Explain in four sentences why this should be two turns even if both changes are desired.</p>
+<h3>P3 — Predict acceptance</h3>
+<pre><code class="language-text">Files changed: test/loans.test.js
+Test output: pass 6, fail 0
+Prompt was: add a test that borrow(&quot;b2&quot;, &quot;Asha&quot;) then borrow(&quot;b2&quot;, &quot;Ben&quot;) expects no-copies.
+The diff only adds that test. Existing tests are untouched.
+</code></pre>
+<p>Accept or restore? One paragraph. The suite still shows 6 tests because one was added and the prompt did not ask for a new function. That can be legitimate. Say what you would open in the diff to be sure.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No full prompt template yet (U16).</li>
+<li>No standing rules file yet (U06–U10).</li>
+<li>You are not required to run an agent.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U06 — Why standing instructions exist.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U05 Assignment — Narrate a turn</h1>
+<p>Submit <code>U05-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Define a turn.</strong> 4–6 sentences. Include prompt, actions, diff, and the human decision. Say what a session is in contrast to a turn, briefly.</li>
+<li><strong>Narrate.</strong> Using this record, write the six steps. For step 6, choose accept or restore and justify with the file list, not with the report.</li>
+</ol>
+<pre><code class="language-text">git status at start: clean
+prompt: &quot;In src/loans.js, reject borrow when the borrower already has that bookId out. Add a test. Error string: already-borrowed.&quot;
+actions: Read src/loans.js; Edit src/loans.js; Edit test/loans.test.js; Edit src/server.js; Command npm test
+npm test: pass 7, fail 0
+report: &quot;Added the already-borrowed rule and returned it from GET /loans for convenience. Tests pass.&quot;
+</code></pre>
+<ol start="3">
+<li><strong>Dirty tree.</strong> You had an uncommitted hand edit in <code>src/server.js</code> before the prompt above. Explain, in 4–6 sentences, why the <code>server.js</code> line in the file list is now hard to judge, and what you will do differently next time.</li>
+<li><strong>Predict.</strong> You restore every file from this turn and run the original six shelf tests. Predict pass count and fail count. Then, if Node is available, run <code>npm test</code> in <code>course/examples/shelf</code> (the untouched example). Paste the summary line under <code>What actually happened</code>. If you cannot run it, say so, and still give the prediction with a reason.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U05 README.
+- [ ] My decision in question 2 cites a file, not only the report.
+- [ ] Question 4 has a prediction before any pasted output.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Q2 ends in a decision. Q3 talks about mixed authorship of a diff. Q4 has a number.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U05-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U05 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Turn defined with prompt, actions, diff, and human decision</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Six steps present; decision is restore (or accept only the two named files <strong>after</strong> dropping server.js, with a method)</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Reason cites <code>src/server.js</code> or the report's "GET /loans" extra</td>
+<td>3</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Dirty-tree answer explains mixed authorship</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Prediction of 6 pass / 0 fail on the untouched example; real output or a stated blocker</td>
+<td>3</td>
+<td>No</td>
+<td>Q4</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Q2: full marks if they restore everything. Also full marks if they keep <code>loans.js</code> and the test <strong>and</strong> explicitly restore <code>server.js</code>, and say they re-read those two diffs first. 3/6 if they accept all files because tests passed.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q4 is nice-to-have. A missed must-have caps the grade at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U04-start-in-the-project-folder/index.html">U04 Start in the project folder</a>
+    <a class="next" href="../U06-why-standing-instructions/index.html">U06 Why standing instructions exist</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

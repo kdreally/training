@@ -8,6 +8,7 @@ Static training courses published to GitHub Pages. Each course is a self-contain
 
 | Course | Who it is for |
 |--------|---------------|
+| [courses/ai-in-the-sdlc](./courses/ai-in-the-sdlc) | Working developers learning a vendor-neutral, project-local coding-agent workflow |
 | [courses/docker-developers-devops](./courses/docker-developers-devops) | Developers and DevOps practitioners learning containers |
 | [courses/react-frontend-designers](./courses/react-frontend-designers) | Designers who want to build real React interfaces |
 
@@ -46,7 +47,8 @@ style.css            # shared styles
 ## Status
 
 - [x] Shared doctrine (`AGENTS.md`)
-- [x] Course scaffolds + curriculum maps (both courses)
+- [x] Course scaffolds + curriculum maps
+- [x] AI-in-the-SDLC course units **U00–U29** (30 units)
 - [x] Docker course units **U00–U35** (36 units)
 - [x] React course units **U00–U34** (35 units)
 - [x] Published via GitHub Pages (`docs/`)

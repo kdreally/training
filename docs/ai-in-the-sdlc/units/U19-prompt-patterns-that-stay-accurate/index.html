@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U19 — Prompt patterns that stay accurate | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U19</div>
+    <h1>Prompt patterns that stay accurate</h1>
+    <span class="phase-badge ph4">Phase 4 — Prompts</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U19 — Prompt patterns that stay accurate</h1>
+<p><strong>Phase 4 — Prompts</strong></p>
+<h2>Where you are</h2>
+<p>You can fence a change. This unit names the small set of patterns that keep generations faithful without making every prompt a novel. Speed, in this course, means fewer bad turns, not a faster typing speed. A short prompt on top of a real spec is the fast path. A one-line wish is the slow path, because you pay in review and revert.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Apply four patterns: one behavior, cite the neighbor code, give one input/output, fence the magnets.</li>
+<li>Explain why each pattern prevents a specific invention from U17.</li>
+<li>Shorten a bloated prompt without opening a decision.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U18 — Fence the change.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>People collect prompt proverbs. "You are a senior engineer." "Think step by step." "Be thorough." Those sentences change tone, not file lists. The patterns that move the diff are boring and specific. This unit canonizes four of them so you can write the next prompt from a checklist instead of from anxiety.</p>
+<h2>Plain-language teaching</h2>
+<h3>Pattern 1 — One behavior</h3>
+<p>One new observable behavior per turn. <code>countForBorrower</code> is one. <code>countForBorrower</code> plus <code>GET /loans</code> includes the count is two. Do them as two turns even if both will ship the same day. You already felt this in U05. Here it is a prompt rule.</p>
+<p>If the behaviors share a file, they still split. Two hunks in <code>loans.js</code> from two turns are easier to read than one hunk that does both and also reformats the file.</p>
+<h3>Pattern 2 — Cite the neighbor</h3>
+<p>Point at the existing function the new code should resemble.</p>
+<pre><code class="language-text">Follow the style of activeLoans and borrow in src/loans.js.
+Use .filter. Return a number. Do not introduce a class.
+</code></pre>
+<p>The U17 fixture invented a class in a new folder because nothing said "the neighbor is <code>activeLoans</code>." Citing a neighbor is faster than describing an entire style guide in the prompt. The style guide still lives in <code>AGENTS.md</code>. The citation makes this turn look at it.</p>
+<h3>Pattern 3 — One input and one output in the prompt</h3>
+<p>The spec holds the full example set. The prompt repeats <strong>one</strong> of them, the one most likely to be "helpfully" changed:</p>
+<pre><code class="language-text">After borrow(&quot;b1&quot;, &quot;Asha&quot;), countForBorrower(&quot;Asha&quot;) === 1.
+Comparison is ===. &quot;asha&quot; is not Asha.
+</code></pre>
+<p>That single line blocks case-folding, which a paragraph of "be precise" does not.</p>
+<h3>Pattern 4 — Fence the magnets</h3>
+<p>From U18. If the task word attracts a package, name the refusal. Do not add a proverb.</p>
+<h3>The checklist</h3>
+<p>Before you send a prompt, confirm:</p>
+<ol>
+<li>There is a spec, or the prompt itself contains the only behavior and you accept that it will be the contract.</li>
+<li>One behavior.</li>
+<li>Allowed files, closed.</li>
+<li>Neighbor cited.</li>
+<li>One input → output.</li>
+<li>Magnets fenced.</li>
+<li><code>npm test</code> and a stop rule.</li>
+</ol>
+<p>A prompt that passes the checklist is allowed to be twenty lines. A prompt that fails item 2 is not repaired by adding "be thorough."</p>
+<h3>What does not earn a place</h3>
+<table>
+<thead>
+<tr>
+<th>Sentence</th>
+<th>Why it stays out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"You are a staff engineer"</td>
+<td>Does not name a file or an output</td>
+</tr>
+<tr>
+<td>"Think step by step"</td>
+<td>May change the transcript length. Does not close a decision</td>
+</tr>
+<tr>
+<td>"Make it production-ready"</td>
+<td>Opens every decision</td>
+</tr>
+<tr>
+<td>"Surprise me"</td>
+<td>Asks for inventions</td>
+</tr>
+<tr>
+<td>Long apologies and urgency</td>
+<td>The model does not schedule your demo</td>
+</tr>
+</tbody>
+</table>
+<p>If a team standard requires a persona sentence, leave it in <code>AGENTS.md</code> once, not in every prompt. Do not expect it to replace a fence.</p>
+<h3>Fast means reversible</h3>
+<p>The fastest accurate loop on shelf is:</p>
+<pre><code class="language-text">spec with examples
+→ checklist prompt
+→ npm test
+→ git diff
+→ accept or restore
+</code></pre>
+<p>Restoring a twenty-line bad turn is fast. Untangling the U17 fixture is slow. Patterns exist so the first turn is small enough to judge.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One behavior</td>
+<td>One new observable outcome</td>
+<td>Not "one sentence," which can hide three outcomes</td>
+</tr>
+<tr>
+<td>Neighbor</td>
+<td>Existing code the change should resemble</td>
+<td>Not a suggestion to copy bugs</td>
+</tr>
+<tr>
+<td>Magnet fence</td>
+<td>A ban aimed at packages this wording attracts</td>
+<td>Not a general insult to libraries</td>
+</tr>
+<tr>
+<td>Proverb</td>
+<td>Tone advice with no checkable effect</td>
+<td>Feels like prompt craft</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Bloated prompt:</strong></p>
+<pre><code class="language-text">You are an expert Node.js architect. Think step by step and make shelf
+production-ready. Add overdue loans, a REST API, emails, and clean up
+the code. Use best-in-class libraries. Be thorough. Sam is waiting.
+</code></pre>
+<p>Checklist:</p>
+<ol>
+<li>No spec. Several behaviors.</li>
+<li>Overdue, REST, email, and cleanup are four behaviors.</li>
+<li>No files named.</li>
+<li>No neighbor.</li>
+<li>No input/output.</li>
+<li>"Best-in-class libraries" opens the magnet instead of fencing it.</li>
+<li>No test command. No stop.</li>
+</ol>
+<p><strong>Rewritten as the first turn only</strong> (list function, not the API, not email):</p>
+<pre><code class="language-text">Implement specs/overdue-loans.md. This turn is only overdueLoans(today).
+
+Allowed files: src/loans.js, test/loans.test.js, CHANGELOG.md.
+No other files.
+
+Neighbor: activeLoans in src/loans.js. Plain function, .filter, no class.
+
+Example: a loan due &quot;2026-01-15&quot; is returned by overdueLoans(&quot;2026-01-16&quot;)
+and is not returned by overdueLoans(&quot;2026-01-15&quot;). Loans with no due are absent.
+
+No date library (no date-fns, dayjs, moment, luxon). Do not read the clock.
+Do not edit src/server.js. Do not add email.
+
+Verify: npm test
+Stop: on failure, do not change existing expected error strings.
+</code></pre>
+<p>The API and the email are not "forgotten." They are other specs, and email conflicts with standing rules unless a human designs it. Leaving them out of this prompt is accuracy, not laziness.</p>
+<h2>Common errors</h2>
+<h3>Citing a neighbor that you want replaced</h3>
+<p><strong>What you see:</strong> "Follow <code>LoanService</code>" when <code>LoanService</code> was the bad generation you have not restored.</p>
+<p><strong>What it means:</strong> The neighbor is now the invention. The next turn will imitate it.</p>
+<p><strong>What to do:</strong> Restore first. Cite <code>activeLoans</code> and <code>borrow</code>, which are in the committed tree.</p>
+<h3>One behavior described so loosely it is three</h3>
+<p><strong>What you see:</strong> "Handle returns properly" as "one behavior."</p>
+<p><strong>What it means:</strong> Properly includes all-return, error paths, and maybe HTTP.</p>
+<p><strong>What to do:</strong> If you cannot write one input → one output, it is not yet one behavior. Return to the spec.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name the four patterns.</li>
+<li>Which pattern blocks the class in <code>src/services/</code>?</li>
+<li>Why is "think step by step" not on the checklist?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Checklist</h3>
+<p>Run the seven-item checklist against the bloated prompt in the worked example. Write pass or fail per item. You should fail most of them.</p>
+<h3>P2 — Shrink</h3>
+<p>Take your U18 overdue prompt if you have it, or the fenced prompt in U18's README. Add a neighbor citation and one input/output if they are missing. Do not add a persona.</p>
+<h3>P3 — Split</h3>
+<p>"Add <code>countForBorrower</code> and include the count in <code>GET /loans</code>." Write the first prompt only. One sentence on what the second prompt will target after the first turn is accepted.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No live model.</li>
+<li>Tests as the acceptance gate are the next phase, starting at U20. You already refer to <code>npm test</code>; you do not design the suite in depth here.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U20 — Tests before you accept.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U19 Assignment — Use the four patterns</h1>
+<p>Submit <code>U19-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>prompts/count.txt</code></h3>
+<p>Write the prompt for <strong>only</strong> <code>countForBorrower</code>. Apply all four patterns. Include the checklist's verify and stop lines. The one input/output must block case-folding.</p>
+<h3>2. <code>prompts/not-this.txt</code></h3>
+<p>Paste this prompt unchanged:</p>
+<pre><code class="language-text">You are a 10x engineer. Think hard. Make borrowing perfect, modern, and complete.
+</code></pre>
+<p>Under it, write the seven checklist items with pass/fail and one line each.</p>
+<h3>3. <code>answers.md</code></h3>
+<ol>
+<li>Which pattern would have prevented the <code>LoanService</code> class, and how?</li>
+<li>Which pattern would have prevented case-folding?</li>
+<li>Rewrite "Handle returns properly" as one behavior with one input and one output. State the second behavior you are postponing.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U19 README.
+- [ ] count.txt has one behavior, not two.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p><code>count.txt</code> is something you would actually send. <code>not-this.txt</code> shows you can reject a proverb prompt with the checklist.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U19-YourName/
+  prompts/count.txt
+  prompts/not-this.txt
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U19 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>count.txt</code> is one behavior, cites a neighbor in <code>loans.js</code>, has one numeric example, fences a magnet or new-file risk, verifies and stops</td>
+<td>8</td>
+<td>Yes</td>
+<td><code>prompts/count.txt</code></td>
+</tr>
+<tr>
+<td>The example blocks case-folding (<code>===</code> or an explicit <code>"asha"</code> case)</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>prompts/count.txt</code></td>
+</tr>
+<tr>
+<td>Checklist on the proverb prompt fails the items that are actually open</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>prompts/not-this.txt</code></td>
+</tr>
+<tr>
+<td>Answers map class-invention and case-folding to patterns, and split "returns properly"</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>answers.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li><code>count.txt</code>: 5/8 if two patterns are missing but files are fenced and there is one behavior.</li>
+<li>Checklist: 2/4 if they mark "think hard" as a pass for verify.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows must-have. A miss caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U18-fence-the-change/index.html">U18 Fence the change</a>
+    <a class="next" href="../U20-tests-before-you-accept/index.html">U20 Tests before you accept</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

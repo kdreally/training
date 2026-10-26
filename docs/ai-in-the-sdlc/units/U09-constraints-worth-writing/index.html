@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U09 — Constraints worth writing | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U09</div>
+    <h1>Constraints worth writing</h1>
+    <span class="phase-badge ph2">Phase 2 — Standing instructions</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U09 — Constraints worth writing</h1>
+<p><strong>Phase 2 — Standing instructions</strong></p>
+<h2>Where you are</h2>
+<p>You can sort lasting rules from tasks. This unit is the catalog: which constraints earn a line in <code>AGENTS.md</code>, how to phrase them so a diff can prove them, and which popular ideas ("log everything," "be careful") fail in practice.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write a constraint so that a reviewer can point at a diff and say pass or fail.</li>
+<li>Cover the shelf categories: dependencies, data and network, secrets, file scope, style match, tests, changelog, commands, honesty when the spec conflicts with the code.</li>
+<li>Reject or rewrite an uncheckable constraint.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U08 — Standing rules vs today's task.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. This is dense on purpose. The catalog is the part people skip, and then they are surprised when the agent imports a package.</p>
+<h2>Why this exists</h2>
+<p>A standing file full of mood ("write beautiful code") does not stop <code>npm install date-fns</code>. A standing file full of checkable limits does not <em>guarantee</em> a stop either, but it gives you a yes/no question during review: did <code>package.json</code> change? If yes, the constraint failed, restore. The phrases below are the ones that have earned their place on small codebases like shelf and on ordinary application repos. You will adapt the nouns (<code>src/loans.js</code>, <code>npm test</code>) to your own project later. The categories stay.</p>
+<h2>Plain-language teaching</h2>
+<h3>Checkable means yes or no</h3>
+<p>A constraint is <strong>checkable</strong> when two reviewers, looking at the same diff and the same test output, would usually agree whether it held.</p>
+<table>
+<thead>
+<tr>
+<th>Phrase</th>
+<th>Checkable?</th>
+<th>Better phrase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Be careful with data</td>
+<td>No</td>
+<td>Do not connect to a database or any host that is not this repo</td>
+</tr>
+<tr>
+<td>Write clean code</td>
+<td>No</td>
+<td>Match the style of <code>src/loans.js</code>: ESM, no classes, result objects <code>{ ok, error }</code></td>
+</tr>
+<tr>
+<td>Log all actions to <code>CHANGELOG.md</code></td>
+<td>Almost, and noisy</td>
+<td>After an <strong>accepted</strong> behavior change, append one line under <code>## Unreleased</code></td>
+</tr>
+<tr>
+<td>No new packages</td>
+<td>Yes</td>
+<td>Do not add dependencies. <code>package.json</code> stays free of <code>dependencies</code> and <code>devDependencies</code> unless a human edits it</td>
+</tr>
+<tr>
+<td>Don't break things</td>
+<td>No</td>
+<td>Do not delete or weaken a test to obtain a passing run</td>
+</tr>
+</tbody>
+</table>
+<p>"Log all actions" is the interesting failure. A turn may read ten files and run tests twice. A changelog line for each read hides the one line a human needed: what behavior changed. Logs of tool actions belong in the agent transcript, which already exists. The changelog is for <strong>behavior the project accepted</strong>. Write that. You were right to want a record. The record stays useful if it is one line per accepted change, not a diary of reads.</p>
+<h3>The catalog</h3>
+<p>Use these categories. A project may add a category. It should not skip data, dependencies, or secrets because those are how real damage happens.</p>
+<p><strong>1. Identity.</strong> Two or three lines. What the project is, where code lives, how to test. This is not a rule so much as a map, and it prevents the agent from inventing a second architecture.</p>
+<blockquote>
+<p>Shelf is an in-memory library-loan tracker. Logic: <code>src/loans.js</code>. Books: <code>src/books.js</code>. HTTP: <code>src/server.js</code> with <code>GET /loans</code> only. Tests: <code>npm test</code> (<code>node:test</code>). No npm dependencies.</p>
+</blockquote>
+<p><strong>2. File scope.</strong></p>
+<blockquote>
+<p>Edit only files named in the current task. Do not create new top-level files or folders unless the task names them. Do not reformat or rename code the task did not mention.</p>
+</blockquote>
+<p><strong>3. Dependencies and frameworks.</strong></p>
+<blockquote>
+<p>Do not add npm packages. Do not introduce a web framework, an ORM, or a date library. Use the JavaScript and Node built-ins already in the repo. If a package seems necessary, stop and ask. Do not install it.</p>
+</blockquote>
+<p>This is the constraint that blocks the "random import" failure. Agents reach for popular packages when a task mentions dates, lists, or HTTP. Naming the ban, and naming the libraries you refuse, reduces the reach.</p>
+<p><strong>4. Data and network.</strong></p>
+<blockquote>
+<p>Do not connect to a database server. Do not call a network API. Do not read environment files for connection strings. Persistence in this repo is the in-memory array in <code>src/loans.js</code> only.</p>
+</blockquote>
+<p>On a real service you might write: "You may use the local test database described in <code>docs/test-db.md</code>. You may not use the production host, even if a credential is present." Shelf does not have that document. The ban is total.</p>
+<p><strong>5. Secrets.</strong></p>
+<blockquote>
+<p>Do not read, print, summarize, or commit secrets: <code>.env</code>, private keys, tokens, passwords. If a task is impossible without a secret, stop and ask.</p>
+</blockquote>
+<p><strong>6. Style match.</strong></p>
+<blockquote>
+<p>Match <code>src/loans.js</code>. ESM <code>import</code>. Plain functions. Failures return <code>{ ok: false, error: "kebab-name" }</code>. Success returns <code>{ ok: true, loan }</code>. Do not convert the file to classes, TypeScript, or a different module system.</p>
+</blockquote>
+<p>Style rules that cite a file are checkable. Style rules that cite an aesthetic are not.</p>
+<p><strong>7. Tests.</strong></p>
+<blockquote>
+<p>A behavior change adds or updates a test in <code>test/</code> using <code>node:test</code> and <code>node:assert/strict</code>. Run <code>npm test</code>. Do not delete, skip, or weaken a test to force a pass. If a test fails, stop and report the output.</p>
+</blockquote>
+<p><strong>8. Changelog.</strong></p>
+<blockquote>
+<p>When a behavior change is accepted, append one line to <code>CHANGELOG.md</code> under <code>## Unreleased</code>. Do not log file reads, failed attempts, or test runs there.</p>
+</blockquote>
+<p><strong>9. Commands.</strong></p>
+<blockquote>
+<p>You may run <code>npm test</code> and <code>node</code> on files inside this repo. Do not run package installs, destructive git (<code>push --force</code>, <code>reset --hard</code>), or any command that talks to a network service.</p>
+</blockquote>
+<p>Prose plus wiring is ideal. If the tool cannot deny commands, the prose still tells the reviewer what to look for in the transcript.</p>
+<p><strong>10. Honesty.</strong></p>
+<blockquote>
+<p>If the task contradicts this file or contradicts the current code, stop and describe the conflict. Do not invent HTTP routes, fields, or error codes to paper over a gap.</p>
+</blockquote>
+<h3>How many is enough</h3>
+<p>Ten short bullets fit on a screen. A file that needs scrolling for the rules (not for a long example) will be skimmed by humans and partly ignored by models. If a rule is only for one subsystem, put it in a second file next to that subsystem <strong>when the tool is documented to load it</strong>, and keep a pointer in the root file. Until you have that documentation, one root file is the whole policy.</p>
+<h3>Wrong on purpose</h3>
+<pre><code class="language-markdown">- Make the code production-ready.
+- Log every action you take to CHANGELOG.md.
+- You may add small npm packages if they save time.
+- Feel free to improve anything you notice.
+</code></pre>
+<p>Decoded:</p>
+<ul>
+<li>"Production-ready" has no test.</li>
+<li>Logging every action makes <code>CHANGELOG.md</code> a transcript. The behavior line is lost.</li>
+<li>"Small npm packages" is an open door. <code>date-fns</code> will walk through it during the overdue feature. The agent decides "small."</li>
+<li>"Improve anything" cancels the file-scope rule. Drive-by refactors hide real changes. U23 is about that mess.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Checkable constraint</td>
+<td>A rule two reviewers could agree held or failed</td>
+<td>Not a feeling</td>
+</tr>
+<tr>
+<td>File scope</td>
+<td>The list of files a task may touch</td>
+<td>Not "the whole repo is in scope because it is open"</td>
+</tr>
+<tr>
+<td>Drive-by</td>
+<td>An edit to code the task did not mention</td>
+<td>Often described as a cleanup</td>
+</tr>
+<tr>
+<td>Honesty rule</td>
+<td>Stop when the task and the repo disagree</td>
+<td>Not "apologize in the report and invent a route anyway"</td>
+</tr>
+<tr>
+<td>Accepted change</td>
+<td>A change the human decided to keep</td>
+<td>Not "the agent finished a turn"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Task: "Add overdue listing." A diff adds <code>import { addDays } from "date-fns"</code> and a changelog with twelve lines ("read loans.js", "ran tests", "thought about time zones"…).</p>
+<p>Review against the catalog:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dependencies</td>
+<td>Fail. <code>date-fns</code> is a new package</td>
+</tr>
+<tr>
+<td>Changelog</td>
+<td>Fail. Twelve process lines, no single behavior line</td>
+</tr>
+<tr>
+<td>Honesty</td>
+<td>Fail if the spec never defined overdue. The agent guessed</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>Unknown until you look. A green run that required the new package is not a pass of the dependency rule</td>
+</tr>
+</tbody>
+</table>
+<p>The decision is restore, then write a spec that defines overdue as date strings and forbids a date library (U14, U18). The catalog told you <strong>what</strong> failed. It did not require you to debate whether <code>date-fns</code> is a nice library. It is. Shelf still does not get it by surprise.</p>
+<h2>Common errors</h2>
+<h3>A private exception</h3>
+<p><strong>What you see:</strong> "Do not add packages, except lodash, dayjs, zod, and express, those are fine."</p>
+<p><strong>What it means:</strong> The exception list is the real policy, and it grows every time an agent asks.</p>
+<p><strong>What to do:</strong> Zero packages unless a <strong>human</strong> edits <code>package.json</code> in a commit you review. The agent stops and asks. The human adds the dependency in their own change if they agree. That keeps the grant visible.</p>
+<h3>Contradictions</h3>
+<p><strong>What you see:</strong> Bullet 3: "Never edit <code>server.js</code>." Bullet 9: "Keep HTTP routes up to date with new functions."</p>
+<p><strong>What it means:</strong> The agent can cite either bullet. It will cite the one that justifies the larger edit.</p>
+<p><strong>What to do:</strong> Read your own file once as a list of pairs. If two bullets can bless opposite diffs, delete one. U11 practices this repair.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why is "log every action to the changelog" a weaker rule than "one line per accepted behavior change"?</li>
+<li>Which catalog item blocks an unsolicited <code>import _ from "lodash"</code>?</li>
+<li>What should the agent do when a task needs a database and the file forbids one?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Rewrite</h3>
+<p>Rewrite each as a checkable shelf constraint, or mark it <code>drop</code>:</p>
+<ol>
+<li>Be careful.</li>
+<li>Handle dates properly.</li>
+<li>Don't mess up git.</li>
+<li>Tests should be good.</li>
+</ol>
+<h3>P2 — Apply</h3>
+<p>A diff adds <code>src/db.js</code> that calls <code>connect("postgres://prod.internal/shelf")</code>. Name every catalog category it fails. There are at least two.</p>
+<h3>P3 — Changelog</h3>
+<p>Write the single <code>CHANGELOG.md</code> line you would want for an accepted <code>countForBorrower</code> feature. Then write two lines that would be inappropriate process noise.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You are not writing the polished full file for submission yet (U10). You are writing constraints.</li>
+<li>No live agent.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U10 — A worked AGENTS.md.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U09 Assignment — Write rules a diff can answer</h1>
+<p>Submit <code>U09-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>constraints.md</code></h3>
+<p>Write shelf constraints, in your own sentences, covering all ten categories from the README (identity, file scope, dependencies, data and network, secrets, style, tests, changelog, commands, honesty). One short bullet or short paragraph each. Each must be checkable. You may combine two categories in one bullet only if both are still clearly present.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Take this bad rule list and rewrite each line or mark it <code>drop</code>. Justify each decision in one sentence.</li>
+</ol>
+<pre><code class="language-text">Make it production-ready.
+Log every tool call to CHANGELOG.md.
+You may add small libraries if they help.
+Improve nearby code while you are there.
+Do not connect to the database unless the feature needs persistence.
+</code></pre>
+<ol start="2">
+<li><strong>Predict the review.</strong> A teammate's agent produces this diff for "add a count function," with no other spec:</li>
+</ol>
+<pre><code class="language-javascript">import { groupBy } from &quot;lodash-es&quot;;
+</code></pre>
+<p>plus a new <code>dependencies</code> entry, and this changelog line: <code>- read three files and ran tests twice</code>.</p>
+<p>Predict your pass/fail for <strong>dependencies</strong> and for <strong>changelog</strong>. Then state the restore-or-keep decision. You do not run an agent.</p>
+<ol start="3">
+<li>Explain why a human, not the agent, should be the one to edit <code>package.json</code> when a dependency is truly wanted. 3–5 sentences.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U09 README, including the catalog.
+- [ ] Every bullet in constraints.md can be judged on a diff or a test run.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>All ten categories appear. Q1 does not preserve "small libraries if they help" as written.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U09-YourName/
+  constraints.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U09 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All ten categories present and checkable</td>
+<td>8</td>
+<td>Yes</td>
+<td><code>constraints.md</code></td>
+</tr>
+<tr>
+<td>Bad rules rewritten or dropped with reasons; the small-library grant is gone</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Lodash diff fails dependencies; changelog noise fails changelog; decision is restore</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Human owns any real dependency edit</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+<tr>
+<td>Files named correctly</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Categories: 1 point each up to 8, so two weak categories still leave points. A category written as "be careful with X" scores 0 for that category.</li>
+<li>Q1: 3/5 if "log every tool call" is kept unchanged.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows must-have. A miss caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U08-standing-rules-vs-todays-task/index.html">U08 Standing rules vs today's task</a>
+    <a class="next" href="../U10-a-worked-agents-file/index.html">U10 A worked AGENTS.md</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

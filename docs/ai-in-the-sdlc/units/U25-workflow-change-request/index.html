@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U25 — Workflow: change request | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U25</div>
+    <h1>Workflow: change request</h1>
+    <span class="phase-badge ph6">Phase 6 — Life-cycle workflows</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U25 — Workflow: change request</h1>
+<p><strong>Phase 6 — Life-cycle workflows</strong></p>
+<h2>Where you are</h2>
+<p>A feature adds behavior. A <strong>change request</strong> alters behavior that already exists, while other behavior must stay. Agents are dangerous here because "update borrow" sounds like permission to rewrite <code>borrow</code>. This unit is the same packet as U24, plus an explicit <strong>keep</strong> list.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>State what stays, what changes, and which existing tests must still pass.</li>
+<li>Write a spec whose examples include both the new result and a surviving old result.</li>
+<li>Refuse a rewrite that "simplifies" the function by dropping an old error.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U24 — Workflow: new feature.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Change requests arrive as "can you just tweak borrow so the same person can't take two." The tweak is <code>already-borrowed</code>. The part people forget to say is that <code>no-copies</code> still happens for two different people and one copy. An agent that replaces the copies check with a duplicate check will look done and break the library. The keep list is the change-request's extra artifact.</p>
+<h2>Plain-language teaching</h2>
+<h3>What changes vs what stays</h3>
+<p>Write two lists before the prompt.</p>
+<p><strong>Changes</strong></p>
+<ul>
+<li>A second active loan of the same book by the same borrower returns <code>{ ok: false, error: "already-borrowed" }</code>.</li>
+</ul>
+<p><strong>Stays</strong></p>
+<ul>
+<li><code>unknown-book</code>, <code>borrower-required</code>, and <code>no-copies</code> keep those strings.</li>
+<li>Two different borrowers may hold <code>b1</code> (two copies).</li>
+<li><code>b2</code> still has one copy: Asha then Ben is <code>no-copies</code>, not <code>already-borrowed</code>.</li>
+<li><code>returnLoan</code> is untouched.</li>
+<li>HTTP is untouched.</li>
+</ul>
+<p>If you cannot write the stays list, you are not ready to prompt. You would be asking the agent to decide which old behavior is expendable.</p>
+<h3>Order of checks is now part of the spec</h3>
+<p>When Asha already holds <code>b2</code> and borrows it again, both "no copies left" and "already borrowed" could apply. Pick one and example it.</p>
+<pre><code class="language-text">borrow(&quot;b2&quot;, &quot;Asha&quot;) then borrow(&quot;b2&quot;, &quot;Asha&quot;)
+→ { ok: false, error: &quot;already-borrowed&quot; }
+</code></pre>
+<p>A thoughtful spec says why: the same borrower should hear that they already have it, even when they also happen to hold the last copy. If you do not say so, the agent picks, and your test canonizes the pick (U12).</p>
+<h3>The packet</h3>
+<p>Same seven steps as a feature. The spec's Behavior section leads with stays, then changes. The prompt repeats one stay as a behavior fence:</p>
+<pre><code class="language-text">Do not change the assertion for no-copies on b2 between Asha and Ben.
+Asha's second borrow of b2 is already-borrowed, not a rewrite of no-copies.
+</code></pre>
+<h3>What a bad change looks like</h3>
+<p>The agent deletes the copies check and says duplicates are the only rule. Ben can no longer be rejected when Asha holds the only copy of <code>b2</code>, unless Ben is Asha. The old test fails. A weakened suite updates the old test to <code>ok: true</code>. Review step 3 (tests) catches it. The keep list in the spec gives you the words for the reject.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Change request</td>
+<td>Alter an existing behavior</td>
+<td>Not a green-field function</td>
+</tr>
+<tr>
+<td>Keep list</td>
+<td>Old results that must survive</td>
+<td>Not "don't break anything"</td>
+</tr>
+<tr>
+<td>Conflict case</td>
+<td>An input that matches two rules</td>
+<td>The spec must pick a winner</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Keep list and change list above are the example. Oracle sketch:</p>
+<pre><code class="language-javascript">test(&quot;same borrower cannot hold two active loans of b1&quot;, () =&gt; {
+  resetLoans();
+  borrow(&quot;b1&quot;, &quot;Asha&quot;);
+  assert.deepEqual(borrow(&quot;b1&quot;, &quot;Asha&quot;), { ok: false, error: &quot;already-borrowed&quot; });
+});
+
+test(&quot;other borrower can take the second copy of b1&quot;, () =&gt; {
+  resetLoans();
+  borrow(&quot;b1&quot;, &quot;Asha&quot;);
+  assert.equal(borrow(&quot;b1&quot;, &quot;Ben&quot;).ok, true);
+});
+
+test(&quot;single copy still yields no-copies for a different borrower&quot;, () =&gt; {
+  resetLoans();
+  borrow(&quot;b2&quot;, &quot;Asha&quot;);
+  assert.deepEqual(borrow(&quot;b2&quot;, &quot;Ben&quot;), { ok: false, error: &quot;no-copies&quot; });
+});
+</code></pre>
+<p>All three ship in the change turn. The third is the keep. The prompt says not to delete it.</p>
+<h2>Common errors</h2>
+<h3>"Simplify" as a goal</h3>
+<p><strong>What you see:</strong> The prompt says "simplify borrow while adding the new rule."</p>
+<p><strong>What it means:</strong> Drive-by consistency (U23) was invited. Throws and renamed errors will follow.</p>
+<p><strong>What to do:</strong> Remove "simplify." Add the keep list.</p>
+<h3>Forgetting the conflict case</h3>
+<p><strong>What you see:</strong> Tests cover Asha twice on <code>b1</code> only. <code>b2</code> is never mentioned. The copies check is gone and no test fails, if the old <code>no-copies</code> test was edited.</p>
+<p><strong>What it means:</strong> The stay was not an example.</p>
+<p><strong>What to do:</strong> Put the stay in the spec as an example, not as the word "stays."</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does a keep list contain?</li>
+<li>Why must Asha's second borrow of <code>b2</code> be specified separately from Ben's borrow of <code>b2</code>?</li>
+<li>Which review step catches a weakened <code>no-copies</code> test?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Lists</h3>
+<p>Write the changes list and the stays list for: "trim is not enough; reject borrower names that are shorter than 2 characters with <code>borrower-too-short</code>." Decide whether <code>"A"</code> is the new error and <code>" A "</code> is still <code>borrower-required</code> because trim happens first. That decision is the conflict case.</p>
+<h3>P2 — Fence line</h3>
+<p>Write one prompt line that protects <code>no-copies</code>.</p>
+<h3>P3 — Bad generation</h3>
+<p>The agent returns <code>already-borrowed</code> for Ben borrowing <code>b2</code> while Asha holds it. Which example did it fail? Is the fix a new rule or a restore-and-retry?</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not migrate a database. Shelf has none.</li>
+<li>Bug-sized fixes are U26. Use this unit when the product owner wants a new result from an old function.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U26 — Workflow: bug fix.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U25 Assignment — Change borrow, keep the old rules</h1>
+<p>Submit <code>U25-YourName</code>.</p>
+<h2>The request</h2>
+<pre><code class="language-text">Same person shouldn't be able to take two of the same book.
+Different people still share when there are copies.
+Don't break the one-copy books.
+</code></pre>
+<h2>Files</h2>
+<h3>1. <code>specs/already-borrowed.md</code></h3>
+<p>A change-request spec: stays, changes, and a conflict example for Asha borrowing <code>b2</code> twice. Six headings. Non-goals: no HTTP, no rewrite of <code>returnLoan</code>, no new error except <code>already-borrowed</code>.</p>
+<h3>2. <code>keep.md</code></h3>
+<p>Bullet list of results that must remain true, each as a concrete call and error string or <code>ok: true</code>.</p>
+<h3>3. <code>prompts/already-borrowed.txt</code></h3>
+<p>Prompt with a behavior fence quoting at least one keep, a file fence, verify, and stop ("do not edit existing expected error strings").</p>
+<h3>4. <code>answers.md</code></h3>
+<ol>
+<li>How this packet differs from a new-feature packet. 4–6 sentences.</li>
+<li>The agent replaces the copies check with the duplicate check and updates the old test so Ben's borrow of <code>b2</code> expects <code>ok: true</code>. Walk stop → restore → tighten in a short paragraph.</li>
+</ol>
+<h3>5. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U25 README.
+- [ ] The conflict case is an example, not a vibe.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A diff that drops <code>no-copies</code> fails your spec by a quoted example.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U25-YourName/
+  specs/already-borrowed.md
+  keep.md
+  prompts/already-borrowed.txt
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U25 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spec examples include already-borrowed, Ben sharing <code>b1</code>, and <code>no-copies</code> for Ben on <code>b2</code></td>
+<td>6</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Conflict case Asha twice on <code>b2</code> chooses <code>already-borrowed</code> explicitly</td>
+<td>4</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Prompt fences files and forbids editing old error expectations</td>
+<td>4</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>Keep list is concrete calls, not "nothing breaks"</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>keep.md</code></td>
+</tr>
+<tr>
+<td>Weakened <code>no-copies</code> test leads to restore, not a sculpt</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Missing Ben-on-<code>b1</code>: score the examples row 4/6 if <code>no-copies</code> and <code>already-borrowed</code> are both exact.</li>
+<li>Conflict case left as "either error is fine": score that row 0. The unit's point is to choose.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>The answers row is nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U24-workflow-new-feature/index.html">U24 Workflow: new feature</a>
+    <a class="next" href="../U26-workflow-bug-fix/index.html">U26 Workflow: bug fix</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

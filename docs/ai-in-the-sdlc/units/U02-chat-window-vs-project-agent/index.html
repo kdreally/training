@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U02 — Chat window vs project agent | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U02</div>
+    <h1>Chat window vs project agent</h1>
+    <span class="phase-badge ph1">Phase 1 — The agent in the project</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U02 — Chat window vs project agent</h1>
+<p><strong>Phase 1 — The agent in the project</strong></p>
+<h2>Where you are</h2>
+<p>You know the destination. This unit separates two tools people call by the same name. A <strong>chat window</strong> talks about code. A <strong>local coding agent</strong> works inside a project folder on your machine. The rest of the course is about the second one. The feeling of "I already use AI at work, why is this a whole course?" is normal, and it usually means the two tools have been treated as one.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define a local coding agent in one plain sentence, and name three things it is not.</li>
+<li>Decide, for a given task, whether a chat window or a project agent is the fitting tool.</li>
+<li>Explain what goes wrong when repo edits are requested from a chat that cannot see the repo.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U00</strong>, <strong>U01</strong>.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>. Reading and judgment. No install.</p>
+<h2>Why this exists</h2>
+<p>A chat window is excellent at explaining an error you paste in, or at drafting a paragraph. It is a poor place to change <code>src/loans.js</code>, because it does not have your files unless you paste them, and it cannot run <code>npm test</code> unless you paste the output back. People still ask it to "update my project." They then copy a snippet into the wrong file, or they miss that the snippet imported a package the project does not use.</p>
+<p>A local coding agent exists so the help and the files are in the same place. You start it on your computer, in the project, and it proposes edits there. You still decide what to keep. The agent is not a colleague with good judgment. It is a fast editor with incomplete context unless you provide the context.</p>
+<h2>Plain-language teaching</h2>
+<h3>Smallest definition</h3>
+<p>A <strong>local coding agent</strong> is a program installed on your computer that you run against a project folder. It reads files in that folder, can edit them, and can run commands you permit. You talk to it in a terminal session (a <strong>CLI</strong>, which only means "you type, it prints," as opposed to a website).</p>
+<p>CLI is the short name for command-line interface. If you have used <code>git</code> or <code>npm</code> in a terminal, you have used a CLI. The agent is another program in that same place. Some products also draw a panel inside an editor. If that panel is clearly operating on the open project — reading those files, writing those files — it is the same idea. A website where you paste code into a box is the chat window, even if the website says "code."</p>
+<h3>What it is not</h3>
+<ul>
+<li>It is <strong>not</strong> a general chat about your day, your career, or a library you do not have checked out. That is the chat window's job.</li>
+<li>It is <strong>not</strong> the author of record. Your name goes on the change. You accept the diff.</li>
+<li>It is <strong>not</strong> a live view of production. Unless you foolishly give it credentials, it sees the files in the folder. Shelf has no production database. Your real projects might. Access is a decision you make, and U09 will make it a written rule.</li>
+<li>It is <strong>not</strong> one brand. Several programs do this job. This course teaches the job.</li>
+</ul>
+<h3>What a chat window is good for</h3>
+<p>Use a chat window when the work product is <strong>an answer in the conversation</strong>: explain this stack trace, suggest three names, review a paragraph of a spec you pasted. You bring the context in by pasting. You carry the answer out by copying. Nothing in the repo changes until you change it.</p>
+<h3>What the project agent is good for</h3>
+<p>Use the project agent when the work product is <strong>a change to files</strong>: implement this spec, add this test, fix this function. The agent can see <code>src/loans.js</code> without you pasting it, which is the whole point, and also the whole risk. It may edit the wrong file because it can.</p>
+<h3>A picture of responsibility</h3>
+<pre><code class="language-text">You decide the task and the limits.
+The agent reads the folder and proposes edits and commands.
+You read the diff and the test output.
+You keep the change or you throw it away.
+</code></pre>
+<p>If any sentence in that picture is skipped, the workflow has a hole. Later units fill the holes. This unit only makes the picture familiar.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chat window</td>
+<td>A conversation. You paste context in and copy answers out</td>
+<td>Called "AI" as if it could see your repo</td>
+</tr>
+<tr>
+<td>Local coding agent</td>
+<td>A program on your machine, aimed at a project folder, able to read and edit files</td>
+<td>Not automatically wise</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td>A program you run by typing in a terminal</td>
+<td>Not a particular vendor's product name</td>
+</tr>
+<tr>
+<td>Session</td>
+<td>One run of the agent, from start until you quit</td>
+<td>Not the same as a Git commit</td>
+</tr>
+<tr>
+<td>Work product</td>
+<td>The thing that should exist when you are done: either an answer, or a file change</td>
+<td>People ask a chat to produce a file change</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Situation A.</strong> You do not remember what <code>??</code> means in this line from <code>src/books.js</code>:</p>
+<pre><code class="language-javascript">return books.find((book) =&gt; book.id === id) ?? null;
+</code></pre>
+<p><strong>Fitting tool:</strong> chat window, or your own memory. Paste the line. The work product is an explanation. Shelf does not need to change.</p>
+<p><strong>Situation B.</strong> Borrowers want a count of books they have out. The change belongs in <code>src/loans.js</code> and in the test file.</p>
+<p><strong>Fitting tool:</strong> project agent, after a spec exists (you will write specs in Phase 3). The work product is a diff. A chat window would hand you a snippet that might not match shelf's <code>{ ok, error }</code> style, and you would be the one to notice.</p>
+<p><strong>Situation C.</strong> You want a pep talk before a review meeting.</p>
+<p><strong>Fitting tool:</strong> neither of the tools this course cares about. It is not a software change.</p>
+<h2>Common errors</h2>
+<h3>Pasting the repo into chat "so it has context"</h3>
+<p><strong>What you see:</strong> A huge paste, then a reply that edits a function you deleted last month, because the paste was stale. Or a reply that includes a secret that was in a file you pasted without looking.</p>
+<p><strong>What it means:</strong> The chat's context is whatever you dropped in, frozen at paste time.</p>
+<p><strong>What to do:</strong> For file changes, work in the project folder with an agent that reads the current files, and keep secrets out of both tools. U04 and U09 go further.</p>
+<h3>Letting the agent run because "it is the same AI I chat with"</h3>
+<p><strong>What you see:</strong> Files change that you did not have a spec for.</p>
+<p><strong>What it means:</strong> The capable tool was used without the decisions in the responsibility picture.</p>
+<p><strong>What to do:</strong> Until Phase 4, you are learning to <strong>recognise</strong> the tool. You are not required to point it at shelf yet.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>In one sentence, what is a local coding agent?</li>
+<li>Name a task in shelf that belongs in a chat window, and one that belongs in the agent.</li>
+<li>Who accepts the diff?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Sort the tasks</h3>
+<p>Label each as <code>chat</code>, <code>agent</code>, or <code>neither</code>:</p>
+<ol>
+<li>"Explain why <code>borrow</code> returns <code>no-copies</code> for book <code>b2</code>."</li>
+<li>"Add <code>countForBorrower</code> to <code>src/loans.js</code> and a test."</li>
+<li>"What should we eat after the retro?"</li>
+<li>"Rename <code>returnLoan</code> to <code>giveBack</code> across the repo."</li>
+</ol>
+<p>Write one sentence of justification for item 4. It is an agent task with a wide blast radius. Width matters, and U18 will fence it. For now, notice the width.</p>
+<h3>P2 — Work product</h3>
+<p>For item 1 and item 2 above, write what exists when the work is done if it was done well. Be concrete: "a paragraph in the chat" or "a diff in these files."</p>
+<h3>P3 — A mismatch</h3>
+<p>Write four sentences about a time you (or a teammate) asked a chat window for a project change. What did you have to do by hand afterward? If you have no such story, invent a realistic one using shelf and say you invented it.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No install instructions for a specific agent.</li>
+<li>No <code>AGENTS.md</code>.</li>
+<li>No prompt templates yet.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U03 — What the agent can see and do.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U02 Assignment — Pick the tool on purpose</h1>
+<p>Submit:</p>
+<p><code>U02-YourName</code></p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Definition.</strong> In 4–6 sentences, define a local coding agent for a developer who has only used a website chat. Include the words <em>folder</em>, <em>edit</em>, and <em>CLI</em>. Name three things the agent is not.</li>
+<li><strong>Sort.</strong> For each task, choose <code>chat</code>, <code>agent</code>, or <code>neither</code>, and give one sentence why.<br />
+   - Write a status update about shelf for a non-programmer stakeholder.<br />
+   - Change <code>borrow</code> so a borrower cannot hold two active loans of the same book.<br />
+   - Decide whether the team likes the name "shelf."<br />
+   - Find which test asserts <code>no-copies</code>.</li>
+<li><strong>Failure story.</strong> Describe, in your own words, what goes wrong if task 2 is done by pasting <code>loans.js</code> into a chat window. Mention staleness or style mismatch. 4–6 sentences.</li>
+<li><strong>Responsibility.</strong> Quote the four-line responsibility picture from the README in your own words. Who is allowed to treat the agent's summary as "done"? The answer should be visible in the paragraph.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U02 README.
+- [ ] I can define CLI without naming a vendor.
+- [ ] answers.md is my own wording.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Both files exist. Q2 has four labels. Q1 includes three "is not" statements.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U02-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U02 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definition includes folder, edit, and CLI, plus three accurate "is not" statements</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Four tasks labeled with a reason that matches the work product</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Chat-paste failure mentions a concrete risk (stale file, invented style, or missed tests)</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Responsibility picture keeps acceptance with the human</td>
+<td>3</td>
+<td>Yes</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Filenames correct</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Q1: 4/6 if the definition is right and only one "is not" is real.</li>
+<li>Q2: the "find which test" task may be <code>chat</code> <strong>or</strong> <code>agent</code> if the reason is coherent (paste the test file, or search the folder). Award full credit for either. <code>neither</code> is wrong.</li>
+<li>Q4: 1/3 if they say the agent may accept its own work when tests pass. Tests inform the human; they do not replace the human in this course.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows are must-have. A miss caps the grade at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U01-what-we-are-building-toward/index.html">U01 What we are building toward</a>
+    <a class="next" href="../U03-what-the-agent-can-see-and-do/index.html">U03 What the agent can see and do</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

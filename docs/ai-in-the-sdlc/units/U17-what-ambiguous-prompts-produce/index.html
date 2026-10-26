@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U17 — What ambiguous prompts produce | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U17</div>
+    <h1>What ambiguous prompts produce</h1>
+    <span class="phase-badge ph4">Phase 4 — Prompts</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U17 — What ambiguous prompts produce</h1>
+<p><strong>Phase 4 — Prompts</strong></p>
+<h2>Where you are</h2>
+<p>You can shape a prompt. This unit shows the failure you came here to recognise: a short, reasonable-sounding prompt, and a generation full of packages, files, and APIs nobody asked for. The generation below is fixed. You will not need a live model. You will need to read it like a reviewer who is no longer charmed by fluency.</p>
+<p>Ambiguous does not mean "written in a hurry by a bad developer." It means <strong>at least one decision that changes the diff was left open.</strong> The agent closes open decisions with whatever is common in its training. Common is not the same as "fits this repo."</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>List the open decisions in a short prompt.</li>
+<li>Annotate a bad generation: each invented package, file, route, and behavior.</li>
+<li>Say which open decision each invention filled.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U16 — Prompt anatomy.</strong></li>
+<li><strong>U09</strong> (you know which inventions matter).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>. The worked example is a bit long because bad diffs are long. That length is the lesson.</p>
+<h2>Why this exists</h2>
+<p>If you have never seen a bad generation dissected, you will accept the next one that compiles. "It runs" is a low bar. Shelf running with Express and lodash is a different program than the one you have. This unit makes the mess visible before you are staring at your own repository.</p>
+<h2>Plain-language teaching</h2>
+<h3>What ambiguity is</h3>
+<p>A prompt is <strong>ambiguous</strong> when two diffs could both claim to satisfy the words, and you would accept only one of them.</p>
+<pre><code class="language-text">Add overdue support to shelf.
+</code></pre>
+<p>Diff A: a function <code>overdueLoans(today)</code> using string dates, tests, no new files.</p>
+<p>Diff B: Express, <code>date-fns</code>, a React page, a <code>DueDateService</code> class, email.</p>
+<p>Both "add overdue support." Only one belongs in this course's shelf. The prompt allowed both. The agent is not required to prefer the smaller one. Many agents prefer the more impressive one.</p>
+<h3>The inventions to hunt</h3>
+<p>When you read a generation, hunt this list. It is the same list as the U09 catalog, seen from the other side.</p>
+<table>
+<thead>
+<tr>
+<th>Invention</th>
+<th>How it shows up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New package</td>
+<td><code>import</code> from a name that is not a relative path or <code>node:…</code>, plus <code>package.json</code></td>
+</tr>
+<tr>
+<td>New framework</td>
+<td><code>express</code>, a rewrite of <code>createServer</code></td>
+</tr>
+<tr>
+<td>New file or folder</td>
+<td><code>src/services/</code>, <code>src/utils/</code>, <code>routes/</code></td>
+</tr>
+<tr>
+<td>New route or field</td>
+<td><code>POST /api/v1/...</code> while the server only had <code>GET /loans</code></td>
+</tr>
+<tr>
+<td>Changed contract</td>
+<td>error strings reworded, function renamed</td>
+</tr>
+<tr>
+<td>Drive-by</td>
+<td>formatting, comments, "cleanup" in unrelated functions</td>
+</tr>
+<tr>
+<td>Weaker tests</td>
+<td>deleted assertion, or tests that import the new framework and skip the real rule</td>
+</tr>
+<tr>
+<td>Process changelog</td>
+<td>lines about reading files</td>
+</tr>
+</tbody>
+</table>
+<h3>A fixed bad generation</h3>
+<p><strong>Prompt:</strong></p>
+<pre><code class="language-text">Add a way to count how many books a borrower has out. Make it nice.
+</code></pre>
+<p><strong>What the agent produced</strong> (you are looking at a teaching fixture, not something you should save):</p>
+<p><code>package.json</code> gained:</p>
+<pre><code class="language-json">&quot;dependencies&quot;: {
+  &quot;lodash&quot;: &quot;^4.17.21&quot;,
+  &quot;date-fns&quot;: &quot;^3.6.0&quot;
+}
+</code></pre>
+<p><code>src/services/LoanService.js</code> (new file):</p>
+<pre><code class="language-javascript">import _ from &quot;lodash&quot;;
+import { format } from &quot;date-fns&quot;;
+import { activeLoans } from &quot;../loans.js&quot;;
+
+export class LoanService {
+  count(name) {
+    const today = format(new Date(), &quot;yyyy-MM-dd&quot;);
+    console.log(&quot;count requested&quot;, today);
+    return _.filter(
+      activeLoans(),
+      (loan) =&gt; loan.borrower.toLowerCase() === name.toLowerCase(),
+    ).length;
+  }
+}
+</code></pre>
+<p><code>src/server.js</code> was rewritten to:</p>
+<pre><code class="language-javascript">import express from &quot;express&quot;;
+import { LoanService } from &quot;./services/LoanService.js&quot;;
+
+const app = express();
+const service = new LoanService();
+
+app.get(&quot;/api/v1/borrowers/:name/count&quot;, (req, res) =&gt; {
+  res.json({ count: service.count(req.params.name), status: &quot;success&quot; });
+});
+
+export default app;
+</code></pre>
+<p><code>test/loans.test.js</code> was <strong>deleted</strong>. Replaced by <code>test/count.test.js</code>:</p>
+<pre><code class="language-javascript">import { LoanService } from &quot;../src/services/LoanService.js&quot;;
+
+test(&quot;counts&quot;, () =&gt; {
+  const n = new LoanService().count(&quot;anybody&quot;);
+  if (typeof n !== &quot;number&quot;) throw new Error(&quot;not a number&quot;);
+});
+</code></pre>
+<p><code>CHANGELOG.md</code> gained:</p>
+<pre><code class="language-markdown">- looked at the repo
+- installed helpful libraries
+- created a modern service layer
+- added a REST endpoint
+- removed brittle old tests
+</code></pre>
+<p>And <code>borrow</code> inside <code>src/loans.js</code> was "cleaned up" from a plain function into a method on the same class, so existing tests would not have compiled. Deleting them made <code>npm test</code> green.</p>
+<h3>Annotation</h3>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Invention</th>
+<th>Open decision it filled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lodash</td>
+<td>New package</td>
+<td>"count" did not say to use <code>.filter</code> like the rest of the file</td>
+</tr>
+<tr>
+<td>date-fns and <code>new Date()</code></td>
+<td>New package and a clock</td>
+<td>"nice" was read as timestamps in logs</td>
+</tr>
+<tr>
+<td><code>LoanService</code> class and <code>src/services/</code></td>
+<td>New pattern, new file</td>
+<td>No file fence</td>
+</tr>
+<tr>
+<td>Case-insensitive compare</td>
+<td>Changed contract</td>
+<td>"Borrower" was not tied to <code>===</code></td>
+</tr>
+<tr>
+<td>Express and <code>/api/v1/...</code></td>
+<td>Framework and route</td>
+<td>"A way to count" did not say "function only"</td>
+</tr>
+<tr>
+<td>Response <code>{ count, status: "success" }</code></td>
+<td>New JSON shape</td>
+<td>Shelf uses <code>{ ok, error }</code> and <code>{ loans }</code></td>
+</tr>
+<tr>
+<td>Old tests deleted</td>
+<td>Weaker tests</td>
+<td>"Make it nice" was allowed to judge the suite</td>
+</tr>
+<tr>
+<td>Changelog diary</td>
+<td>Process log</td>
+<td>No changelog rule in the prompt</td>
+</tr>
+<tr>
+<td><code>console.log</code></td>
+<td>Noise and a side effect</td>
+<td>Unspecified</td>
+</tr>
+</tbody>
+</table>
+<p>Nothing in that table requires malice. Each row is a plausible completion of an open slot. Your job is to close the slots before the turn, and to recognise the rows if they appear anyway.</p>
+<h3>What a faithful generation would have contained</h3>
+<p>A function <code>countForBorrower</code> in <code>src/loans.js</code> using <code>.filter</code> and <code>===</code>, tests next to the old tests, no new package, server untouched, one changelog line. You saw that shape in U13. The distance between that and the fixture is the cost of "make it nice."</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ambiguous prompt</td>
+<td>A prompt two different diffs could both claim to satisfy</td>
+<td>Not "a prompt with a typo"</td>
+</tr>
+<tr>
+<td>Invention</td>
+<td>A package, file, route, or behavior the prompt did not decide</td>
+<td>Not creativity to celebrate by default</td>
+</tr>
+<tr>
+<td>Faithful</td>
+<td>A diff that stays inside the decisions you actually made</td>
+<td>Not a diff that merely runs</td>
+</tr>
+<tr>
+<td>Fixture</td>
+<td>A sample checked into the lesson</td>
+<td>Not your repo's code</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>The fixture above is the worked example. Read it once for the story, then once with the hunt list. Practice P1 asks you to do that on paper.</p>
+<p>Here is the same prompt, de-ambiguated enough that the fixture would violate it by name:</p>
+<pre><code class="language-text">Implement countForBorrower in src/loans.js only, plus tests in test/loans.test.js
+and one CHANGELOG line.
+
+Use activeLoans() and === on borrower. No new files. No new packages.
+Do not edit server.js. Do not change borrow. Do not delete tests.
+Run npm test. If it fails, stop.
+</code></pre>
+<p>U18 and U19 expand this into a repeatable pattern. This unit's job is to feel the difference between the two prompts when you look at the bad diff.</p>
+<h2>Common errors</h2>
+<h3>"But the REST version is more complete"</h3>
+<p><strong>What you see:</strong> A review comment that praises <code>/api/v1/borrowers/:name/count</code> and merges it.</p>
+<p><strong>What it means:</strong> Impressive was substituted for faithful. The old server is gone. The old tests are gone. Case-folding changed the meaning of a borrower name.</p>
+<p><strong>What to do:</strong> Score the diff against decisions, not against how modern the route looks. If you want the route, write a spec for the route. Do not take it as a side effect of "count."</p>
+<h3>Fixing the bad generation with a follow-up prompt</h3>
+<p><strong>What you see:</strong> "Now remove express but keep the service class."</p>
+<p><strong>What it means:</strong> You are negotiating with an unreviewed pile. The class was never wanted either.</p>
+<p><strong>What to do:</strong> Restore the tree to the last commit (U22). Send a fenced prompt. Do not iteratively sculpt a bad turn into a good one. Sculpture keeps hidden leftovers, like the <code>date-fns</code> dependency you forgot to remove.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Define an ambiguous prompt without using the word "bad."</li>
+<li>Name four inventions in the fixture.</li>
+<li>Why did deleting tests make the generation look successful?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Hunt</h3>
+<p>Take the fixture. Write the hunt-list table with one row per invention. You should land near nine rows. Fewer than six means you stopped at the obvious package.</p>
+<h3>P2 — Open slots</h3>
+<p>List the open decisions in "Add overdue support to shelf. Make it production-ready." Aim for six.</p>
+<h3>P3 — Faithful sketch</h3>
+<p>In five lines, describe the diff you would accept for P2 <strong>after</strong> you had specified: string dates, caller passes <code>today</code>, no library, no HTTP, loans without <code>due</code> are never overdue. Do not write the implementation.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You are not asked to run a model to reproduce the fixture. Reproductions vary; the fixture is the assignment's source of truth.</li>
+<li>The repair prompt's full pattern is U18 and U19.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U18 — Fence the change.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U17 Assignment — Annotate the mess</h1>
+<p>Submit <code>U17-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>annotation.md</code></h3>
+<p>Using the fixed generation in the U17 README:</p>
+<ol>
+<li>Quote the prompt.</li>
+<li>Make a table: invention | evidence (file or symbol) | which open decision it filled.<br />
+   Include at least eight inventions. At least one must be the deleted tests, and at least one must be a behavior change (not just a new file).</li>
+<li>State whether <code>npm test</code> being green would change your accept decision. Explain in 4–6 sentences.</li>
+</ol>
+<h3>2. <code>prompts/count-fenced.txt</code></h3>
+<p>Write a prompt for the count feature that the fixture would violate in at least five distinct ways. Use U16's four parts. Do not implement the feature.</p>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the whole fixture, including the test file and the changelog.
+- [ ] I did not &quot;fix&quot; the fixture by writing a follow-up prompt that keeps Express.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A teammate who has not taken the course could see, from your table, why a green test run would still be a reject.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U17-YourName/
+  annotation.md
+  prompts/count-fenced.txt
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U17 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>At least eight inventions, each with evidence and an open decision</td>
+<td>8</td>
+<td>Yes</td>
+<td><code>annotation.md</code></td>
+</tr>
+<tr>
+<td>Deleted tests and a behavior change (case-folding, response shape, or borrow rewritten) are both present</td>
+<td>4</td>
+<td>Yes</td>
+<td>table</td>
+</tr>
+<tr>
+<td>Green tests do not equal accept; explanation mentions deleted or replaced assertions</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Fenced prompt would reject the fixture in multiple named ways and has stop/verify</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>prompts/count-fenced.txt</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Inventions: 1 point each up to 8. Two inventions that are the same package counted twice score once.</li>
+<li>Prompt: 2/4 if it bans lodash but still allows a new route or omits tests.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows must-have. A miss caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U16-prompt-anatomy/index.html">U16 Prompt anatomy</a>
+    <a class="next" href="../U18-fence-the-change/index.html">U18 Fence the change</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

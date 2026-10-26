@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U28 — Workflow: evaluation | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U28</div>
+    <h1>Workflow: evaluation</h1>
+    <span class="phase-badge ph6">Phase 6 — Life-cycle workflows</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U28 — Workflow: evaluation</h1>
+<p><strong>Phase 6 — Life-cycle workflows</strong></p>
+<h2>Where you are</h2>
+<p>Evaluation, in this course, is not a leaderboard of models. It is the written moment after a turn when you decide whether the change <strong>met the spec</strong>. Tests and the diff are the evidence. The agent's self-assessment is a claim to verify, not a score.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Fill an evaluation sheet: each acceptance criterion, pass or fail, evidence.</li>
+<li>Separate "tests passed" from "spec met."</li>
+<li>Record a fail without softening it into a follow-up feature.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U21</strong> (review) and <strong>U24</strong> (a spec's Done section).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–75 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Teams say "the AI did pretty well" and merge. "Pretty well" is not a result you can defend in a week, when a borrower name matches case-insensitively and nobody remembers that the spec forbade it. An evaluation sheet is a spec turned into yes/no rows. It is also how you grade an agent over time without mythology: count how often a fence failed, then tighten the fence. You are not grading the model's soul.</p>
+<h2>Plain-language teaching</h2>
+<h3>The sheet</h3>
+<p>One row per criterion from the spec's examples, non-goals, files, and tests.</p>
+<pre><code class="language-text">Criterion | Result | Evidence
+----------|--------|----------
+countForBorrower(&quot;Asha&quot;) is 1 after borrow b1 | Pass | test name, npm test fail 0
+countForBorrower(&quot;asha&quot;) is 0 | Fail | no assertion; implementation lowercases
+No new dependency | Fail | package.json adds lodash
+Files only loans.js, test, CHANGELOG | Fail | src/services/LoanService.js
+Old suite present | Fail | test/loans.test.js deleted
+Changelog is one behavior line | Fail | four process lines
+</code></pre>
+<p>Overall: <strong>fail</strong>. A single failed non-goal fails the turn. You do not average them into 70 percent and merge. This is not a test score at school. One forbidden dependency is enough, which you already practiced. The sheet makes the "enough" visible to someone who did not watch the session.</p>
+<h3>Evidence is a pointer</h3>
+<p>"Looks good" is not evidence. Evidence is:</p>
+<ul>
+<li>a test name and the runner summary you produced yourself, or</li>
+<li>a path and a quoted line in the diff, or</li>
+<li>a file that should have changed and did not.</li>
+</ul>
+<p>If you cannot point, the row stays fail or "not checked." Do not mark pass from the report.</p>
+<h3>Pass on tests, fail on spec</h3>
+<pre><code class="language-text">npm test: fail 0
+</code></pre>
+<p>and the only new test is <code>typeof count === "number"</code>.</p>
+<p>The test row can say "runner green." The spec row says fail, because the case-sensitive example has no assertion. Overall fail. U20 prepared you for this. Evaluation is where you write it down so the merge conversation has a document.</p>
+<h3>What you do with a failed sheet</h3>
+<p>You do not prompt "fix the failed rows" on the dirty tree if the failures include extra files or packages. You restore (U22), then retry with fences taken from the failed rows. The sheet is the tighten list.</p>
+<p>If every row passes, you accept and you keep the sheet with the change (in the ticket or the PR description). Future you should not need the transcript.</p>
+<h3>Evaluating the standing rules</h3>
+<p>Add two rows that are easy to forget because they are not in the feature spec:</p>
+<ul>
+<li><code>AGENTS.md</code> itself was not rewritten to include the ticket.</li>
+<li>No secret appeared in the diff.</li>
+</ul>
+<p>A generation that "helpfully" updates policy with "always use lodash now" fails evaluation even if the function is correct.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluation</td>
+<td>Pass/fail of this change against the spec, with evidence</td>
+<td>Not a model benchmark</td>
+</tr>
+<tr>
+<td>Criterion</td>
+<td>One row: a behavior, a non-goal, or a file rule</td>
+<td>Not a vibe</td>
+</tr>
+<tr>
+<td>Overall fail</td>
+<td>Any must-have row failed</td>
+<td>Not an average</td>
+</tr>
+<tr>
+<td>Not checked</td>
+<td>You did not look</td>
+<td>Not a pass</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Use the sheet in the teaching section as the worked example for the U17 count generation. Overall fail. Next action: restore, not "keep the service layer and add one more test."</p>
+<p>A passing sheet for a faithful count change would quote:</p>
+<ul>
+<li>test names for <code>1</code> and for <code>"asha"</code> → <code>0</code>,</li>
+<li><code>git diff --stat</code> showing only the three allowed files,</li>
+<li><code>package.json</code> absent from the stat,</li>
+<li>one changelog line,</li>
+<li><code>npm test</code> summary with the old tests still in the count (more than the baseline of 6, not fewer).</li>
+</ul>
+<h2>Common errors</h2>
+<h3>Grading the agent</h3>
+<p><strong>What you see:</strong> "7/10, the structure was elegant."</p>
+<p><strong>What it means:</strong> Elegance replaced a failed row.</p>
+<p><strong>What to do:</strong> The sheet has no elegance row unless the spec had a match-the-repo criterion. If it did, score that row pass/fail with a quoted class or a quoted plain function. Still no 7/10.</p>
+<h3>All passes, no pointers</h3>
+<p><strong>What you see:</strong> Every row says pass. The evidence column says "agent said so."</p>
+<p><strong>What it means:</strong> The report was copied into the sheet.</p>
+<p><strong>What to do:</strong> Mark those rows not checked, then look at the diff. Not checked is more honest than a borrowed pass.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is evaluation in this course?</li>
+<li>Can a green suite fail the evaluation?</li>
+<li>What do you do when a dependency row fails?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Rows</h3>
+<p>Turn the <code>hasActiveLoan</code> spec from U24 (or the assignment's behavior if you skipped ahead) into four criterion rows with the result left blank. You are practicing the shape.</p>
+<h3>P2 — Overall</h3>
+<p>Given one fail on "no HTTP" and four passes, what is the overall result? What is the next action?</p>
+<h3>P3 — Evidence</h3>
+<p>Rewrite "Pass — seems fine" for a changelog row into a pass or fail that quotes a line.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No benchmark dataset, no model comparison, no "evaluate the LLM."</li>
+<li>The capstone asks you to build a sheet for a change you specify yourself.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U29 — Capstone: one change end to end.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U28 Assignment — Score the change, not the agent</h1>
+<p>Submit <code>U28-YourName</code>.</p>
+<h2>The turn</h2>
+<p>Spec required:</p>
+<ul>
+<li><code>countForBorrower</code> in <code>src/loans.js</code></li>
+<li><code>"Asha"</code> → <code>1</code> after one loan, <code>"asha"</code> → <code>0</code></li>
+<li>files: <code>src/loans.js</code>, <code>test/loans.test.js</code>, <code>CHANGELOG.md</code> only</li>
+<li>no dependencies</li>
+<li>old tests kept</li>
+<li>one behavior changelog line</li>
+</ul>
+<p>What you observed:</p>
+<ul>
+<li><code>npm test</code> printed <code># fail 0</code>, <code># tests 1</code></li>
+<li>diff adds <code>src/services/LoanService.js</code> and a lodash dependency</li>
+<li>the only test checks <code>typeof n === "number"</code></li>
+<li><code>test/loans.test.js</code> is gone</li>
+<li>changelog says <code>- modernized loans</code></li>
+<li>the report says "All acceptance criteria met."</li>
+</ul>
+<h2>Files</h2>
+<h3>1. <code>evaluation.md</code></h3>
+<p>A sheet with one row per criterion above (at least six rows) plus the two standing rows from the README (policy file not turned into a ticket; no secrets). Columns: criterion, pass/fail/not checked, evidence. End with <code>Overall:</code> and the next action (restore or accept).</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Why is <code># tests 1</code> and <code># fail 0</code> not an overall pass?</li>
+<li>Why is "the structure is elegant" not a row unless the spec made it one?</li>
+<li>Which failed rows become tighten-lines on the retry prompt? List them.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U28 README.
+- [ ] Overall is fail.
+- [ ] Evidence quotes a file or the test summary, not the agent's report alone.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A teammate who did not see the session would refuse the merge after reading your sheet.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U28-YourName/
+  evaluation.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U28 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>At least six spec rows with pass/fail and evidence; case-folding, dependency, files, old tests, and changelog are fails</td>
+<td>8</td>
+<td>Yes</td>
+<td><code>evaluation.md</code></td>
+</tr>
+<tr>
+<td>Overall fail and next action is restore</td>
+<td>4</td>
+<td>Yes</td>
+<td>sheet</td>
+</tr>
+<tr>
+<td>Green single test explained as a weak oracle</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Elegance refused as an unscored row; tighten-lines come from failed rows</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2–Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Sheet marks changelog as pass because "there is a line": cap the sheet row at 5/8.</li>
+<li>Next action "prompt a fix in place": cap overall at 1/4.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows must-have. Standing-rule rows are included in the spirit of the sheet; if the six spec rows are strong and standing rows are missing, deduct 2 points from the sheet row rather than failing the whole unit only for that. Still require overall fail.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U27-workflow-debugging/index.html">U27 Workflow: debugging</a>
+    <a class="next" href="../U29-capstone-one-change-end-to-end/index.html">U29 Capstone: one change end to end</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

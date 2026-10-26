@@ -1,0 +1,10 @@
+{
+  "name": "shelf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny library-loan tracker used as the running example in the AI-in-the-SDLC course.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

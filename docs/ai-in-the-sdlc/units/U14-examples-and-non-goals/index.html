@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U14 — Examples and non-goals | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U14</div>
+    <h1>Examples and non-goals</h1>
+    <span class="phase-badge ph3">Phase 3 — Specifications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U14 — Examples and non-goals</h1>
+<p><strong>Phase 3 — Specifications</strong></p>
+<h2>Where you are</h2>
+<p>You can draft the six headings. This unit spends time on the two headings that do the most work when an agent is involved: <strong>examples</strong> and <strong>non-goals</strong>. Rules in prose still leave a crack. An example is a crack with a number in it. A non-goal is a crack you close on purpose.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write an example as input → output, including one edge case.</li>
+<li>Write non-goals aimed at real agent habits: new packages, new files, new routes, drive-by refactors.</li>
+<li>Tighten a spec whose happy path is clear and whose edges are open.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U13 — A spec shape agents can execute.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Agents imitate examples more reliably than they imitate adjectives. "Reject duplicates sensibly" becomes a thrown exception in one session and <code>{ error: "duplicate" }</code> in another. <code>borrow("b1","Asha")</code> twice returns <code>{ ok: false, error: "already-borrowed" }</code> is one behavior.</p>
+<p>Non-goals exist because agents optimize for a demo. A count function becomes an API. A date becomes <code>dayjs</code>. A one-line fix becomes a rename across the file. You have seen these habits, or you will. Naming them in the spec is cheaper than reverting them.</p>
+<h2>Plain-language teaching</h2>
+<h3>What an example is</h3>
+<p>An <strong>example</strong> is one concrete input and the exact result.</p>
+<pre><code class="language-text">reset loans
+borrow(&quot;b1&quot;, &quot;Asha&quot;) → { ok: true, loan: { bookId: &quot;b1&quot;, borrower: &quot;Asha&quot;, returned: false } }
+countForBorrower(&quot;Asha&quot;) → 1
+</code></pre>
+<p>Include the fields that matter. If the whole loan object is noisy, specify the fields you care about and say the others are unchanged:</p>
+<pre><code class="language-text">Second borrow(&quot;b1&quot;, &quot;Asha&quot;) → ok: false, error: &quot;already-borrowed&quot;
+The first loan stays active.
+</code></pre>
+<h3>How many examples</h3>
+<p>Three is a good minimum for a small shelf change:</p>
+<ol>
+<li>The new success or the new error.</li>
+<li>A neighbor case that must <strong>keep</strong> working (so the agent does not break <code>no-copies</code> while adding <code>already-borrowed</code>).</li>
+<li>An edge that a guess gets wrong (empty string, returned loan, second copy).</li>
+</ol>
+<p>Twenty examples means you are writing the test suite in prose. At that point, write the tests (U20) and let the spec point at them. The spec's job is the cases that define the behavior, not every assertion.</p>
+<h3>What a non-goal is</h3>
+<p>A <strong>non-goal</strong> is a change a helpful agent is likely to attempt, which you refuse in advance.</p>
+<p>Useful shelf non-goals:</p>
+<ul>
+<li>Do not add or change HTTP routes.</li>
+<li>Do not add npm dependencies, including date or utility libraries.</li>
+<li>Do not create new files.</li>
+<li>Do not rename <code>borrow</code>, <code>returnLoan</code>, or <code>activeLoans</code>.</li>
+<li>Do not change existing error strings.</li>
+<li>Do not reformat the file or convert functions to classes.</li>
+<li>Do not "improve" borrower matching with fuzzy search or case-folding.</li>
+</ul>
+<p>Useless non-goals:</p>
+<ul>
+<li>Do not write bugs.</li>
+<li>Do not do anything bad.</li>
+<li>Do not over-engineer.</li>
+</ul>
+<p>They name no file, no package, and no behavior. The agent cannot steer by them.</p>
+<h3>Case-folding is the kind of "help" you must refuse explicitly</h3>
+<p><code>borrow</code> stores a trimmed name and compares with <code>===</code>. A spec that says "count the borrower's loans" without an example might get:</p>
+<pre><code class="language-javascript">loan.borrower.toLowerCase() === borrower.toLowerCase()
+</code></pre>
+<p>That is a behavior change for every caller. If you want it, it is a spec of its own. If you do not, say: comparison stays strict, as in <code>returnLoan</code>.</p>
+<h3>Non-goals and standing rules overlap</h3>
+<p><code>AGENTS.md</code> already bans new dependencies. Repeating "no new dependencies" in the spec is still worth it when the task <strong>mentions a concept that attracts libraries</strong>. The word "overdue" attracts date libraries. The word "count" attracts lodash. The word "route" attracts a framework. The spec repeats the ban in the place where the temptation is introduced. This is not drift. Drift is two files that disagree. Agreement is allowed.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Example</td>
+<td>One input and the exact output</td>
+<td>Not a screenshot of a UI you do not have</td>
+</tr>
+<tr>
+<td>Edge</td>
+<td>A case a reasonable guess gets wrong</td>
+<td>Not an exotic stunt</td>
+</tr>
+<tr>
+<td>Neighbor case</td>
+<td>An old behavior that must survive</td>
+<td>Not the new feature</td>
+</tr>
+<tr>
+<td>Non-goal</td>
+<td>A likely extra you refuse by name</td>
+<td>Not a vague "don't be bad"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Loose behavior section:</strong></p>
+<pre><code class="language-markdown">## Behavior
+Users can see overdue loans. Handle dates properly.
+</code></pre>
+<p><strong>Tight version:</strong></p>
+<pre><code class="language-markdown">## Behavior
+Loans gain an optional field `due`.
+`borrow(bookId, borrower)` leaves `due` undefined. Existing callers stay valid.
+`borrow(bookId, borrower, today)` sets `due` to the calendar date 14 days after `today`.
+`today` is a string `YYYY-MM-DD`. No time zone math: add 14 to the day and roll the calendar using UTC dates only.
+`overdueLoans(today)` returns active loans whose `due` is a string strictly less than `today`.
+Loans with no `due` are not overdue.
+
+Examples:
+- borrow(&quot;b1&quot;, &quot;Asha&quot;, &quot;2026-01-01&quot;) → loan.due === &quot;2026-01-15&quot;
+- overdueLoans(&quot;2026-01-15&quot;) does not include that loan
+- overdueLoans(&quot;2026-01-16&quot;) includes it
+- borrow(&quot;b1&quot;, &quot;Ben&quot;) then overdueLoans(&quot;2026-12-01&quot;) does not include Ben's loan
+
+## Non-goals
+- No date library (no dayjs, date-fns, moment, luxon).
+- No HTTP route.
+- No clock reads (`Date.now`). The caller passes `today`.
+- No change to the no-copies rule.
+</code></pre>
+<p>The word "properly" is gone. UTC calendar addition is specified because "14 days" is otherwise a time-zone argument. You are allowed to look at that spec and decide the date rule is more than shelf needs. Then you cut the feature. You do not leave "properly" in its place.</p>
+<p>Notice <code>Date.now</code> is banned so tests stay repeatable. That is a non-goal aimed at a real habit: agents love "just use today's date."</p>
+<h2>Common errors</h2>
+<h3>Examples that use data shelf does not have</h3>
+<p><strong>What you see:</strong> <code>borrow("b9", "Asha")</code> expected to succeed. Book <code>b9</code> does not exist. The real result is <code>unknown-book</code>.</p>
+<p><strong>What it means:</strong> The example fights the code. The agent will either change the book list or fail the example.</p>
+<p><strong>What to do:</strong> Use <code>b1</code> and <code>b2</code> unless the spec also adds a book. State which.</p>
+<h3>Non-goals that forbid the goal</h3>
+<p><strong>What you see:</strong> Goal adds a test file. Non-goal says "do not edit anything under <code>test/</code>."</p>
+<p><strong>What it means:</strong> A contradiction, same disease as U11, now inside one spec.</p>
+<p><strong>What to do:</strong> Read goal and non-goals as a pair before you hand the spec to anyone.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Write one example for <code>already-borrowed</code> from memory.</li>
+<li>Name three non-goals that are about agent habits, not about manners.</li>
+<li>Why repeat "no date library" in an overdue spec when <code>AGENTS.md</code> already bans new packages?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Three examples</h3>
+<p>Write three examples for: "<code>activeLoans()</code> returns newest last" is <strong>not</strong> the task. The task is: <code>activeLoans</code> stays in insertion order; add a test that borrows Asha then Ben on <code>b1</code> and expects that order. Include the non-goal "do not sort."</p>
+<h3>P2 — Temptation list</h3>
+<p>The feature is "search books by title." List four likely agent extras, then turn each into a non-goal. Shelf's book list is two titles. Say whether search belongs in <code>books.js</code>.</p>
+<h3>P3 — Repair "properly"</h3>
+<p>Replace "validate the borrower properly" with two examples. Use the existing <code>borrower-required</code> behavior rather than inventing a new one, and set a non-goal that names are not checked against a directory.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No prompt yet.</li>
+<li>You are not implementing date math.</li>
+<li>Capstone due dates return in U29. You are only practicing the spec muscle.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U15 — From a rough note to a spec.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U14 Assignment — Close the cracks</h1>
+<p>Submit <code>U14-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>specs/count-for-borrower.md</code></h3>
+<p>Rewrite the loose note below into a spec with the six headings from U13. Put at least three examples in Behavior. Non-goals must name at least four refused extras that an agent might actually do. Use real shelf books and the real error strings where old behavior appears.</p>
+<p>Loose note:</p>
+<pre><code class="language-text">It would be nice if we could count someone's loans.
+Make it intuitive. Probably a helper is fine.
+Maybe show it on the API too if that's easy.
+Dates later.
+</code></pre>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>List the temptations you refused, and why each was likely (one sentence).</li>
+<li>Give one example you considered and rejected because it used a book or error string shelf does not have. Show the bad example and the replacement.</li>
+<li>Find any contradiction in your spec. If there is none, say how you checked.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U14 README.
+- [ ] Examples use b1 or b2 and existing error strings where they touch old behavior.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A count implementation that adds <code>GET /count</code> or lodash would violate your spec by name, not by vibes.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U14-YourName/
+  specs/count-for-borrower.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U14 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>At least three examples with concrete inputs and outputs, including a zero or a returned-loan edge</td>
+<td>6</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>At least four non-goals naming real temptations (HTTP, dependency, new file, rename, fuzzy match, dates, or similar)</td>
+<td>6</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>"Intuitive" and "if that's easy" do not survive as the behavior</td>
+<td>3</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Files and Done are present and consistent with the non-goals</td>
+<td>3</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Answers explain temptations and show one rejected bad example</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Examples: 4/6 if outputs are described in words ("it fails") without the error string or the number.</li>
+<li>Non-goals: "do not write bugs" does not count toward the four.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Answers are nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U13-a-spec-shape-agents-can-execute/index.html">U13 A spec shape agents can execute</a>
+    <a class="next" href="../U15-from-a-rough-note-to-a-spec/index.html">U15 From a rough note to a spec</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

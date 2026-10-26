@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U20 — Tests before you accept | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U20</div>
+    <h1>Tests before you accept</h1>
+    <span class="phase-badge ph5">Phase 5 — Making the code correct</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U20 — Tests before you accept</h1>
+<p><strong>Phase 5 — Making the code correct</strong></p>
+<h2>Where you are</h2>
+<p>You can ask for a fenced change. This phase answers the question the whole course has been circling: how you know the code is right. The first instrument is a test you trust, written or named <strong>before</strong> you accept the diff. The agent's summary is not an instrument.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Treat a test as the oracle for one behavior.</li>
+<li>Write a <code>node:test</code> case that would reject the U17 count fixture's case-folding.</li>
+<li>Explain why a green run of a weakened suite is not acceptance.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U19</strong>, and the shelf tests you have already seen.</li>
+<li>You already know how to run <code>npm test</code> in <code>course/examples/shelf</code>.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>, including one test run.</p>
+<h2>Why this exists</h2>
+<p>A diff can look like the spec and still be wrong on the edge you forgot to read. A test pins that edge. Agents are good at producing a test that matches the code they just wrote, including the bug. That is why the interesting tests are the ones decided in the spec first: they can fail the generation. If you let the agent invent both the code and the only assertion, you have one mind checking itself.</p>
+<p>You do not have to type every test by hand. You do have to know the assertion before you trust a green bar. The practical order is:</p>
+<ol>
+<li>Spec examples exist.</li>
+<li>Tests that encode those examples exist (you write them, or you review the ones the agent wrote against the spec before you look at the implementation).</li>
+<li><code>npm test</code> runs.</li>
+<li>You accept only if the tests that encode the spec passed, and the old tests still exist.</li>
+</ol>
+<h2>Plain-language teaching</h2>
+<h3>Oracle</h3>
+<p>An <strong>oracle</strong> is the check that says the behavior is right or wrong. For shelf, the oracle is <code>node:test</code> assertions plus the spec. If they disagree, stop and fix the spec or the test in the open. Do not "fix" the disagreement by editing the assertion to match a surprise implementation unless you have decided the spec was wrong.</p>
+<h3>A test that rejects case-folding</h3>
+<p>File: <code>test/loans.test.js</code>. Runner: <code>npm test</code> from the shelf root. This test assumes <code>countForBorrower</code> exists. It is the test you would add in the same turn as the function. Read it as the contract.</p>
+<pre><code class="language-javascript">test(&quot;countForBorrower is case-sensitive&quot;, () =&gt; {
+  resetLoans();
+  borrow(&quot;b1&quot;, &quot;Asha&quot;);
+  assert.equal(countForBorrower(&quot;Asha&quot;), 1);
+  assert.equal(countForBorrower(&quot;asha&quot;), 0);
+});
+</code></pre>
+<p>The U17 <code>LoanService.count</code> lowercases both sides, so <code>count("asha")</code> would be <code>1</code>. This assertion fails that invention. A test that only checks <code>typeof n === "number"</code> accepts it. The weakness is the oracle, not the test runner.</p>
+<p>You need the import:</p>
+<pre><code class="language-javascript">import { borrow, resetLoans, countForBorrower } from &quot;../src/loans.js&quot;;
+</code></pre>
+<p>Until the function exists, this test fails for a boring reason: <code>countForBorrower</code> is not exported. That failure is useful. It means the oracle is in place before the implementation. This course will not require you to practice full test-driven timing on every unit. It requires the assertion to be yours.</p>
+<h3>What "do not weaken" looks like</h3>
+<p>Weakening is any edit that makes a failure go away without the behavior becoming true.</p>
+<ul>
+<li>Deleting <code>test/loans.test.js</code>.</li>
+<li>Changing <code>error: "no-copies"</code> to <code>error: "NO_COPIES"</code> in the test because the code now returns that.</li>
+<li>Adding <code>.skip</code> or commenting out the assertion.</li>
+<li>Replacing a deep equality with <code>typeof x === "object"</code>.</li>
+</ul>
+<p>The stop rule in your prompts exists so the agent does not do this. Your review exists because the stop rule can be ignored. If the diff touches an old assertion, read it first.</p>
+<h3>Run the baseline</h3>
+<p>From <code>course/examples/shelf</code>:</p>
+<pre><code class="language-text">npm test
+</code></pre>
+<p><strong>Success</strong> includes a line like <code># fail 0</code> and six tests (the number in the example at the time this course was written). If a future edit to the example adds a test, the count in the file wins over this sentence.</p>
+<p><strong>Failure you might see:</strong></p>
+<pre><code class="language-text">'node' is not recognized
+</code></pre>
+<p>That is U01's install issue, not a shelf bug. Or:</p>
+<pre><code class="language-text">Error: Cannot find module '.../src/loans.js'
+</code></pre>
+<p>You started in the wrong folder (U04). <code>cd</code> to the directory that contains <code>package.json</code> and run again.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Oracle</td>
+<td>The check that decides right or wrong</td>
+<td>Not the agent's summary</td>
+</tr>
+<tr>
+<td>Weaken</td>
+<td>Change a test so a failure disappears without the behavior holding</td>
+<td>Not "refactor the test for clarity"</td>
+</tr>
+<tr>
+<td>Baseline suite</td>
+<td>The tests already in the repo before this turn</td>
+<td>Not yours to delete</td>
+</tr>
+<tr>
+<td>Green</td>
+<td>The runner reported zero failures</td>
+<td>Not "the feature is complete"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Spec example:</strong> second <code>borrow("b1","Asha")</code> returns <code>already-borrowed</code>.</p>
+<p><strong>Oracle, written before acceptance:</strong></p>
+<pre><code class="language-javascript">test(&quot;second active loan of the same book is already-borrowed&quot;, () =&gt; {
+  resetLoans();
+  assert.equal(borrow(&quot;b1&quot;, &quot;Asha&quot;).ok, true);
+  assert.deepEqual(borrow(&quot;b1&quot;, &quot;Asha&quot;), {
+    ok: false,
+    error: &quot;already-borrowed&quot;,
+  });
+});
+</code></pre>
+<p><strong>Generation claims success</strong> and shows this test instead:</p>
+<pre><code class="language-javascript">test(&quot;duplicate is handled&quot;, () =&gt; {
+  resetLoans();
+  const result = borrow(&quot;b1&quot;, &quot;Asha&quot;);
+  assert.equal(typeof result.ok, &quot;boolean&quot;);
+});
+</code></pre>
+<p>The suite is green. The oracle for <code>already-borrowed</code> was never installed. You reject the turn or you replace the test with the spec's assertion and run again. You do not thank the green bar.</p>
+<h2>Common errors</h2>
+<h3>Reviewing the implementation before the assertions</h3>
+<p><strong>What you see:</strong> You read a clever function, feel satisfied, then skim the tests.</p>
+<p><strong>What it means:</strong> The cleverness biased you. A weakened assertion slides past.</p>
+<p><strong>What to do:</strong> Read the new tests first, with the spec examples beside them. Then read the implementation. Then run <code>npm test</code> yourself. Do not trust a pasted summary of the run. U21 adds the diff. The order starts here.</p>
+<h3>Letting the agent "update tests to match"</h3>
+<p><strong>What you see:</strong> The prompt says the code is right and the tests are stale. The agent rewrites expectations.</p>
+<p><strong>What it means:</strong> Sometimes tests are stale. Often the code missed the spec. The phrase "update the tests" is how contracts die.</p>
+<p><strong>What to do:</strong> You decide which side is stale. If the spec still says <code>no-copies</code>, the test stays and the code changes.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is the oracle on shelf?</li>
+<li>Why does <code>typeof n === "number"</code> accept the U17 count?</li>
+<li>Name two ways a suite gets weakened.</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Write the assertion</h3>
+<p>Write a test body (the <code>test(...)</code> call is enough) that encodes: after Asha borrows <code>b2</code>, Ben's borrow of <code>b2</code> is <code>no-copies</code>. Use the real function names.</p>
+<h3>P2 — Spot the weaken</h3>
+<pre><code class="language-javascript">assert.equal(borrow(&quot;nope&quot;, &quot;Asha&quot;).ok, false);
+</code></pre>
+<p>The old test expected <code>error: "unknown-book"</code>. Is this a weaken? One paragraph.</p>
+<h3>P3 — Run</h3>
+<p>Run <code>npm test</code> in the shelf example. Paste the summary lines (<code>tests</code>, <code>pass</code>, <code>fail</code>). Predict them first in your notes.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No coverage percentages. A covered line can still assert the wrong thing.</li>
+<li>No new test framework. <code>node:test</code> and <code>node:assert/strict</code> only.</li>
+<li>Diff review technique is U21. You use tests first so the diff has something to be right about.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U21 — Review the diff.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U20 Assignment — Install an oracle</h1>
+<p>Submit <code>U20-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>test-notes.md</code></h3>
+<p>Write three <code>node:test</code> tests (full <code>test(...)</code> blocks, with imports listed once) that you would require before accepting code:</p>
+<ol>
+<li><code>countForBorrower("asha")</code> is <code>0</code> after <code>borrow("b1", "Asha")</code>, and <code>countForBorrower("Asha")</code> is <code>1</code>.</li>
+<li><code>already-borrowed</code> for a second active <code>b1</code> loan by Asha, while Ben may still borrow <code>b1</code>.</li>
+<li>One existing contract you refuse to weaken: blank borrower, or <code>no-copies</code> on <code>b2</code>. Quote the error string in the assertion.</li>
+</ol>
+<p>Use <code>resetLoans()</code> in each test. Do not import lodash or express.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Explain why a green <code>typeof === "number"</code> test is not an oracle for the count feature. 4–6 sentences.</li>
+<li><strong>Predict, then run.</strong> Predict pass and fail counts for unmodified shelf. Run <code>npm test</code> in <code>course/examples/shelf</code>. Paste the summary under <code>What actually happened</code>.</li>
+<li>An agent changes the expected error in test 3 from <code>no-copies</code> to <code>unavailable</code> and says the suite is now consistent. Is that acceptance? What do you restore?</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U20 README.
+- [ ] My tests name concrete error strings or numbers.
+- [ ] Question 2 has a prediction before the paste.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Someone could drop your tests into shelf, implement the two features, and know what "pass" means. The baseline run is documented.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U20-YourName/
+  test-notes.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U20 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Case-sensitive count test encodes both 1 and 0</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>test-notes.md</code></td>
+</tr>
+<tr>
+<td>already-borrowed test also shows Ben can borrow the second copy of <code>b1</code></td>
+<td>5</td>
+<td>Yes</td>
+<td><code>test-notes.md</code></td>
+</tr>
+<tr>
+<td>Existing contract asserted with the real error string, not only <code>ok: false</code></td>
+<td>4</td>
+<td>Yes</td>
+<td><code>test-notes.md</code></td>
+</tr>
+<tr>
+<td>Weak green test rejected in prose; baseline prediction and real summary (or a decoded blocker)</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code></td>
+</tr>
+<tr>
+<td><code>unavailable</code> change is a rejected weaken, with restore</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Ben's loan missing: score the already-borrowed row 3/5 if Asha's second borrow is exact.</li>
+<li>Tests that import a framework: cap the whole test file at 8/14 for the three test rows.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q3 is nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U19-prompt-patterns-that-stay-accurate/index.html">U19 Prompt patterns that stay accurate</a>
+    <a class="next" href="../U21-review-the-diff/index.html">U21 Review the diff</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

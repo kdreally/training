@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U27 — Workflow: debugging | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U27</div>
+    <h1>Workflow: debugging</h1>
+    <span class="phase-badge ph6">Phase 6 — Life-cycle workflows</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U27 — Workflow: debugging</h1>
+<p><strong>Phase 6 — Life-cycle workflows</strong></p>
+<h2>Where you are</h2>
+<p>A bug fix starts when you can name the failing claim. <strong>Debugging</strong> is what you do when a test fails and you do not yet know which line is wrong. Agents are eager to rewrite the file until the red text goes away. That destroys the evidence. This unit teaches an evidence loop: hypothesis, one check, stop.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Read a failure output and state what it proves.</li>
+<li>Write a prompt that asks for a hypothesis and a single experiment, and forbids a rewrite.</li>
+<li>Refuse a debugging turn that edits production code before the hypothesis is checked.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U26 — Workflow: bug fix.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–75 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Red test output is information. A rewrite replaces the information with a new program that may pass for a different reason. You then do not know whether the bug is gone or hidden. Debugging with an agent works when the agent is used as a reader of evidence, not as a janitor of the symptom.</p>
+<h2>Plain-language teaching</h2>
+<h3>What a failure proves</h3>
+<p>Here is output from a shelf-style run. Read it before you imagine a fix.</p>
+<pre><code class="language-text"># tests 7
+# fail 1
+# pass 6
+
+not ok 4 - returnLoan finds the loan by book id and borrower
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  false !== true
+
+  code: 'ERR_ASSERTION'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+</code></pre>
+<p>What it proves:</p>
+<ul>
+<li><code>returnLoan("b1", "Asha")</code> returned an object whose <code>ok</code> is <code>false</code>, after a borrow, in that test.</li>
+<li>Six other tests passed. <code>borrow</code> still records loans in those tests. The suite is not "all broken."</li>
+</ul>
+<p>What it does not prove:</p>
+<ul>
+<li>It does not prove the <code>find</code> comparison is swapped. That is a <strong>hypothesis</strong> you get by reading the function.</li>
+<li>It does not prove you need a new library.</li>
+<li>It does not prove the test is wrong.</li>
+</ul>
+<h3>Hypothesis, then one experiment</h3>
+<p>A hypothesis is a sentence you could be wrong about.</p>
+<pre><code class="language-text">Hypothesis: find compares item.bookId to borrower, so no loan matches.
+Experiment: log or temporarily inspect the two sides being compared,
+or read the find line and quote it. Do not change behavior yet.
+</code></pre>
+<p>The experiment can be you, reading the line. You do not need an agent for that. Use the agent when the file is long and you want it to <strong>find</strong> the line, not when you want it to <strong>invent</strong> a repair.</p>
+<p>If the quoted line shows the swap, you leave debugging and enter U26 with a fix prompt. The workflows are neighbors. Debugging ends when the hypothesis is confirmed or killed.</p>
+<h3>A debug prompt</h3>
+<pre><code class="language-text">npm test failed:
+returnLoan(&quot;b1&quot;,&quot;Asha&quot;) returned ok: false after borrow(&quot;b1&quot;,&quot;Asha&quot;).
+Six other tests passed.
+
+Do not edit files.
+Quote the comparison inside returnLoan and state one hypothesis
+for why ok is false.
+Stop. Do not propose a refactor. Do not add logs that you commit.
+</code></pre>
+<p>"Do not edit files" is the fence. A debug turn that edits is a fix turn you did not authorize.</p>
+<p>If your tool cannot answer without "editing," ask it to print the quote in the reply only. Then you revert if it touched the tree anyway (U22).</p>
+<h3>Thrash</h3>
+<p><strong>Thrash</strong> is a series of edits that each chase the latest error: change the test, change the function, add a package, skip the test. The suite may end green. The hypothesis was never stated. Thrash is the debugging version of the U17 fixture.</p>
+<p>The ceiling is the same as U22. One experiment. If it was wrong, write a new hypothesis. Two failed experiments, then you read the code yourself line by line. A third rewrite is not a plan.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Failure output</td>
+<td>What the runner printed when an assertion failed</td>
+<td>Not a verdict on you</td>
+</tr>
+<tr>
+<td>Hypothesis</td>
+<td>A claim about the cause that might be false</td>
+<td>Not a fix</td>
+</tr>
+<tr>
+<td>Experiment</td>
+<td>One check that supports or kills the hypothesis</td>
+<td>Not a redesign</td>
+</tr>
+<tr>
+<td>Thrash</td>
+<td>Repeated edits that chase the symptom</td>
+<td>Feels like persistence</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Output above. You open <code>returnLoan</code> and see:</p>
+<pre><code class="language-javascript">(item) =&gt; item.bookId === borrower &amp;&amp; item.borrower === bookId
+</code></pre>
+<p>Hypothesis confirmed by reading. You do not ask the agent to "make tests pass" until you switch to the U26 prompt, which names the swap. If you had prompted "fix the failure" with no hypothesis, a likely generation is <code>assert.equal(returnLoan("b1", "Asha").ok, false)</code>, which makes the test agree with the bug. That is thrash's smallest form. The debug prompt's "do not edit" exists so you see the quote first.</p>
+<h2>Common errors</h2>
+<h3>Pasting the stack and saying "fix"</h3>
+<p><strong>What you see:</strong> The entire output goes into a prompt with the word fix. The diff rewrites <code>loans.js</code>.</p>
+<p><strong>What it means:</strong> Debugging was skipped. A fix was requested without a cause.</p>
+<p><strong>What to do:</strong> Ask for a quote and a hypothesis. Edit nothing until the quote matches the hypothesis.</p>
+<h3>Adding logs and committing them</h3>
+<p><strong>What you see:</strong> <code>console.log(item, bookId, borrower)</code> remains in the accepted diff.</p>
+<p><strong>What it means:</strong> The experiment became production code.</p>
+<p><strong>What to do:</strong> The experiment lives in the transcript or is reverted. The fix diff does not include the log. U21's leftover step catches it.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What does the sample failure prove about <code>ok</code>?</li>
+<li>What must a debug prompt forbid?</li>
+<li>When do you switch from this unit's workflow to U26?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Prove</h3>
+<p>Rewrite the sample output's lesson in two bullets: proves / does not prove.</p>
+<h3>P2 — Prompt</h3>
+<p>Write a five-line debug prompt for: <code>borrow("b1"," ")</code> returned <code>ok: true</code> and a test expected <code>borrower-required</code>. You have not opened the file. Forbid edits.</p>
+<h3>P3 — Thrash diary</h3>
+<p>List three edits that would count as thrash for P2. One sentence on the alternative.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No production incident process, pagers, or log platforms.</li>
+<li>You are not asked to attach a debugger UI.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U28 — Workflow: evaluation.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U27 Assignment — Evidence before edits</h1>
+<p>Submit <code>U27-YourName</code>.</p>
+<h2>The output</h2>
+<pre><code class="language-text">not ok 2 - blank borrower is rejected
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal.
+  + actual - expected
+
+  + { ok: true, loan: { bookId: 'b1', borrower: '', returned: false } }
+  - { ok: false, error: 'borrower-required' }
+</code></pre>
+<p>The test called <code>borrow("b1", "   ")</code>. Six other tests passed. You have not been shown the function body.</p>
+<h2>Files</h2>
+<h3>1. <code>prompts/debug-blank.txt</code></h3>
+<p>A debug prompt. It must include what the failure proves, a request for one hypothesis and a quoted condition, and a ban on editing files, adding packages, and rewriting the test.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>What the output proves, and two things it does not prove.</li>
+<li>You then read this line in <code>borrow</code>:</li>
+</ol>
+<pre><code class="language-javascript">if (!borrower || borrower.trim() === &quot;&quot;) {
+  return { ok: true, loan: { bookId, borrower: borrower.trim(), returned: false } };
+}
+</code></pre>
+<p>Is the hypothesis "the blank check returns success" confirmed? What workflow do you switch to, and what is the smallest fix? Do not redesign validation.</p>
+<ol start="3">
+<li>Give an example of thrash for this bug (two or three edits). Say what you do instead after a second wrong hypothesis.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U27 README.
+- [ ] My debug prompt forbids file edits.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Nobody following your prompt could honestly reply with a 200-line rewrite as the first action.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U27-YourName/
+  prompts/debug-blank.txt
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U27 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prompt states the observed <code>ok: true</code> / blank borrower fact and asks for a hypothesis plus a quote</td>
+<td>5</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>Prompt forbids edits, new packages, and changing the expected error</td>
+<td>5</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>Proves vs does-not-prove distinguishes evidence from the cause</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>After the quote, switches to a bug fix; smallest change returns <code>{ ok: false, error: "borrower-required" }</code></td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Thrash example is concrete; second failure stops the rewrite loop</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Prompt that asks for a hypothesis but allows "small edits if you are sure": cap the forbid row at 2/5.</li>
+<li>Smallest fix that also trims differently or adds a library: 2/4 on Q2.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q3 is nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U26-workflow-bug-fix/index.html">U26 Workflow: bug fix</a>
+    <a class="next" href="../U28-workflow-evaluation/index.html">U28 Workflow: evaluation</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

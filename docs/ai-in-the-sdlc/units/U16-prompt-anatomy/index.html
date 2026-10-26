@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U16 — Prompt anatomy | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U16</div>
+    <h1>Prompt anatomy</h1>
+    <span class="phase-badge ph4">Phase 4 — Prompts</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U16 — Prompt anatomy</h1>
+<p><strong>Phase 4 — Prompts</strong></p>
+<h2>Where you are</h2>
+<p>You can write a spec. A <strong>prompt</strong> is the short message that starts one turn. It points at the spec, repeats the fences that are easy to miss, and says how to stop. It is not a second copy of the spec, and it is not a pep talk.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Name the parts of a prompt: target, fences, verify, stop.</li>
+<li>Write a prompt that implements a spec without restating every example.</li>
+<li>Spot a prompt that smuggles in a new decision the spec did not make.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05</strong> (a turn), <strong>U13</strong> (spec shape).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>The spec is the contract. The prompt is the hand-off. If the hand-off restates the contract in different words, the agent follows whichever paragraph it attends to. If the hand-off says only "do the spec," some tools do that well, and some wander. A small, stable anatomy keeps the hand-off shorter than the spec and still hard to misunderstand.</p>
+<h2>Plain-language teaching</h2>
+<h3>The four parts</h3>
+<pre><code class="language-text">1. Target    — which spec, or which single behavior if the spec is tiny
+2. Fences    — files that may change, files that must not, dependency ban
+3. Verify    — the command to run (npm test)
+4. Stop       — what to do if a test fails or the spec conflicts with the repo
+</code></pre>
+<p>That is the whole prompt. Motivation ("this is important to Sam") does not help the diff. Apologies ("sorry for the bother") do not help the diff. A novel about the library's history does not help the diff.</p>
+<h3>A prompt that matches the count spec</h3>
+<p>Assume <code>specs/count-for-borrower.md</code> is the spec from U13/U14, and <code>AGENTS.md</code> is loaded.</p>
+<pre><code class="language-text">Implement specs/count-for-borrower.md.
+
+Fences:
+- You may edit only src/loans.js, test/loans.test.js, and CHANGELOG.md.
+- Do not edit src/server.js, src/books.js, or package.json.
+- Do not add files. Do not add dependencies.
+
+Verify:
+- Run npm test.
+- Paste the pass/fail summary.
+
+Stop:
+- If a test fails, stop. Do not delete or edit the failing assertion to force a pass.
+- If the spec conflicts with the code, stop and describe the conflict.
+- One changelog line for the behavior, only if tests pass.
+</code></pre>
+<p>The examples stay in the spec. The prompt does not invent a new one ("also treat empty string as zero") on the way. That would be a second contract.</p>
+<h3>What you repeat, and why</h3>
+<p>You repeat the file list even though the spec has it. Models drop a section. A fence in the last thing you typed is cheap insurance. You do <strong>not</strong> repeat by rephrasing. Copy the file names. Rephrasing "do not edit the server" into "feel free to touch HTTP if needed for completeness" is a contradiction you just wrote.</p>
+<p>You usually do not repeat <code>AGENTS.md</code> line by line. You may add one reminder when the task word is a known trap: "overdue" → "no date library, even though the task mentions dates." U18 is about those fences in depth. The anatomy reserves a place for them.</p>
+<h3>One turn, one spec</h3>
+<p>A prompt that says "implement <code>specs/a.md</code> and <code>specs/b.md</code>" is two turns. If both land in one diff, a failure in B makes you revert A as well, or keep a mixed tree. U05 already argued this. The anatomy enforces it: one target.</p>
+<h3>The prompt is not where new product decisions go</h3>
+<p>If you discover a missing decision while writing the prompt, put it in the spec first, then point at the spec. The prompt is a bad notebook. It scrolls away. The spec remains for evaluation.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prompt</td>
+<td>The message that starts one turn</td>
+<td>Not the spec</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>The spec or the single behavior to implement</td>
+<td>Not a list of hopes</td>
+</tr>
+<tr>
+<td>Fence</td>
+<td>Files and bans for this turn</td>
+<td>Not a personality request ("be careful")</td>
+</tr>
+<tr>
+<td>Verify</td>
+<td>The command whose output is evidence</td>
+<td>Not "make sure it works"</td>
+</tr>
+<tr>
+<td>Stop rule</td>
+<td>When to halt instead of pushing through</td>
+<td>Not "give up easily"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Spec says:</strong> error string <code>already-borrowed</code>. No HTTP.</p>
+<p><strong>Prompt, wrong:</strong></p>
+<pre><code class="language-text">Implement specs/already-borrowed.md.
+Use a nice REST endpoint POST /already-borrowed and a clear message
+&quot;You already borrowed this&quot; for the UI. Be thorough and improve names.
+</code></pre>
+<p>New decisions snuck in: a route, a different error string, permission to rename. The spec was overruled by the prompt. The agent cannot be "wrong" if it follows you.</p>
+<p><strong>Prompt, right:</strong> the four parts, target <code>specs/already-borrowed.md</code>, files <code>src/loans.js</code>, <code>test/loans.test.js</code>, <code>CHANGELOG.md</code>, verify <code>npm test</code>, stop on failure. No new error string.</p>
+<h2>Common errors</h2>
+<h3>The prompt that is longer than the spec</h3>
+<p><strong>What you see:</strong> The spec is ten lines and the prompt is a page, with new edge cases.</p>
+<p><strong>What it means:</strong> The prompt became the spec, and the spec is now stale. Evaluation against the spec will fight evaluation against the prompt.</p>
+<p><strong>What to do:</strong> Move the new cases into the spec. Shrink the prompt back to target, fences, verify, stop.</p>
+<h3>No stop rule</h3>
+<p><strong>What you see:</strong> The agent "fixes" a failing test by changing the expected <code>no-copies</code> to <code>already-borrowed</code>.</p>
+<p><strong>What it means:</strong> A green summary was easier than a report of failure.</p>
+<p><strong>What to do:</strong> The stop rule says the assertion is not the thing to edit. U20 and U26 come back to this. Put the sentence in the prompt now so the habit starts.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Name the four parts of a prompt.</li>
+<li>Why is rephrasing a fence dangerous?</li>
+<li>Where do you write a decision you discover while prompting?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Label</h3>
+<p>Label each sentence target, fence, verify, stop, or delete (because it does not belong):</p>
+<ol>
+<li>"Implement specs/return-all.md."</li>
+<li>"Sam will be happy if this is fast."</li>
+<li>"Run npm test."</li>
+<li>"Do not edit package.json."</li>
+<li>"If tests fail, stop and report."</li>
+<li>"Use lodash if the loop looks ugly."</li>
+</ol>
+<h3>P2 — Write</h3>
+<p>Write a four-part prompt for <code>specs/count-for-borrower.md</code>. Keep it under 20 lines.</p>
+<h3>P3 — Smuggle hunt</h3>
+<pre><code class="language-text">Implement the count spec. Also capitalize borrower names so the UI looks better.
+</code></pre>
+<p>What decision was smuggled? Which file would it touch? What should the prompt say instead?</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>The gallery of bad generations is U17.</li>
+<li>You do not run an agent. You write the message you would send.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U17 — What ambiguous prompts produce.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U16 Assignment — Write the hand-off</h1>
+<p>Submit <code>U16-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>prompts/already-borrowed.txt</code></h3>
+<p>Write a prompt that implements a spec at <code>specs/already-borrowed.md</code> (your U13 spec, or the behavior described in U13 if you do not have it in front of you). Use the four parts. Do not restate every example. Do not introduce HTTP, a new error string, or a dependency.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Map each paragraph of your prompt to target, fence, verify, or stop.</li>
+<li>Rewrite this bad prompt into your four-part shape. Put the rewrite in the answer, and list the smuggled decisions you removed.</li>
+</ol>
+<pre><code class="language-text">Can you just add the already-borrowed thing quickly? Make it RESTful,
+use a normal status code library if needed, rename borrow to checkout
+because that's cleaner, and don't bother with tests unless you have time.
+Thanks, this is urgent for Sam.
+</code></pre>
+<ol start="3">
+<li>Where should "rename <code>borrow</code> to <code>checkout</code>" go if the team actually wants it later? One paragraph.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U16 README.
+- [ ] My prompt is shorter than a full spec would be.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A teammate can tell what will be implemented, what must not change, how it will be checked, and when the agent must stop.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U16-YourName/
+  prompts/already-borrowed.txt
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U16 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prompt has target, fences, verify, and stop</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>prompts/already-borrowed.txt</code></td>
+</tr>
+<tr>
+<td>Fences name allowed files and forbid <code>package.json</code> or new dependencies; tests are required, not optional</td>
+<td>5</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>No smuggled route, rename, or new error wording</td>
+<td>3</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>Bad prompt's smuggled decisions are listed and absent from the rewrite</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Rename is described as a future spec, not a prompt aside</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Four parts: 1.5 points each, round to a whole number. "Be careful" does not count as a fence.</li>
+<li>Q2: 2/4 if they rewrite politely but keep "no tests unless you have time."</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q3 is nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U15-from-a-rough-note-to-a-spec/index.html">U15 From a rough note to a spec</a>
+    <a class="next" href="../U17-what-ambiguous-prompts-produce/index.html">U17 What ambiguous prompts produce</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

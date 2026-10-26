@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U08 — Standing rules vs today's task | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U08</div>
+    <h1>Standing rules vs today's task</h1>
+    <span class="phase-badge ph2">Phase 2 — Standing instructions</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U08 — Standing rules vs today's task</h1>
+<p><strong>Phase 2 — Standing instructions</strong></p>
+<h2>Where you are</h2>
+<p>You know the file's name and the difference between prose and wiring. The most common way to ruin <code>AGENTS.md</code> is to store today's ticket in it. This unit trains the sort: lasting constraint, or task that expires.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Sort a mixed list into <code>AGENTS.md</code> versus a spec or prompt.</li>
+<li>Rewrite a vague lasting rule so it could be checked on a diff.</li>
+<li>Explain the damage caused by a finished task left in the standing file.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U07 — The instruction file.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>40–60 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>A standing file full of old tasks is worse than a short one. The agent tries to satisfy all of them on every turn. It re-implements a feature that already shipped, "fixes" a bug that is gone, and still misses the limit you actually cared about, because that limit was one bullet among forty. The kindness you can do the next turn is a boring file.</p>
+<h2>Plain-language teaching</h2>
+<h3>The question to ask of every sentence</h3>
+<blockquote>
+<p>Will this still be true, and still be wanted, on the next task after this one ships?</p>
+</blockquote>
+<ul>
+<li><strong>Yes</strong> → candidate for <code>AGENTS.md</code>.</li>
+<li><strong>No</strong> → spec or prompt. Delete or archive it when the task is done.</li>
+<li><strong>Yes, but nobody could apply it to a diff</strong> → rewrite it until someone could, or leave it out. U09 is the full treatment of "checkable." This unit only gets you to notice the mush.</li>
+</ul>
+<h3>Worked sorts</h3>
+<table>
+<thead>
+<tr>
+<th>Sentence</th>
+<th>Home</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Do not add npm dependencies.</td>
+<td>Standing</td>
+<td>True on every shelf task</td>
+</tr>
+<tr>
+<td>Add <code>countForBorrower</code> this afternoon.</td>
+<td>Task</td>
+<td>False as soon as it exists</td>
+</tr>
+<tr>
+<td>Keep using <code>{ ok: false, error }</code> for failures.</td>
+<td>Standing</td>
+<td>Project style</td>
+</tr>
+<tr>
+<td>Error text for the new case is <code>already-borrowed</code>.</td>
+<td>Task</td>
+<td>Specific to one behavior</td>
+</tr>
+<tr>
+<td>Tests live in <code>test/</code> and use <code>node:test</code>.</td>
+<td>Standing</td>
+<td>Where checks go</td>
+</tr>
+<tr>
+<td>Make sure the demo data includes Sam.</td>
+<td>Task</td>
+<td>Fixture for one story</td>
+</tr>
+<tr>
+<td>Do not connect to a database server.</td>
+<td>Standing</td>
+<td>True even when a task says "persist this" — the agent must stop and ask, not open a connection</td>
+</tr>
+<tr>
+<td>Write clean code.</td>
+<td>Nowhere</td>
+<td>Cannot be checked. Rewrite or drop</td>
+</tr>
+</tbody>
+</table>
+<h3>"Stop and ask" is allowed in standing rules</h3>
+<p>Some lasting rules describe a <strong>refusal</strong>, not a behavior the agent can finish alone. "If the task needs a new dependency, stop and report why. Do not install it." That remains true after every task. It belongs in the file. The particular dependency a ticket wanted belongs in the ticket's outcome, as a human decision, not as a quiet install.</p>
+<h3>Finished tasks left behind</h3>
+<p>Suppose <code>AGENTS.md</code> still says "Implement <code>countForBorrower</code>." Next week you ask for a changelog typo fix. The agent "helpfully" rewrites <code>countForBorrower</code> to use a class, because the standing order is still to implement it and the current function looks too plain. Your typo prompt did not ask for that. The old task did.</p>
+<p>The repair is to delete the finished task from <code>AGENTS.md</code> in the same change that accepts the feature. Policy edits are diffs too. Review them.</p>
+<h3>A place for the task</h3>
+<p>This course uses a spec file per change, introduced in U12, for example <code>specs/count-for-borrower.md</code>. You do not need that structure today. You only need to <strong>refuse</strong> to put the task in <code>AGENTS.md</code>. A scratch file, the ticket, or the prompt are all better homes than the standing file.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lasting</td>
+<td>Still wanted after this task ships</td>
+<td>Not "important"</td>
+</tr>
+<tr>
+<td>Task</td>
+<td>Expires when the behavior exists</td>
+<td>Not rude to keep it out of AGENTS.md</td>
+</tr>
+<tr>
+<td>Mush</td>
+<td>A rule no one could apply to a diff</td>
+<td>Often sounds inspiring</td>
+</tr>
+<tr>
+<td>Archive</td>
+<td>Move a finished spec out of the active path</td>
+<td>Not "delete the Git history"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Someone dumps this into a new <code>AGENTS.md</code>:</p>
+<pre><code class="language-markdown"># Notes for the AI
+
+- Be really careful.
+- Add overdue loans using moment.js.
+- Shelf is a loan tracker with code in src/loans.js.
+- GET /loans should return counts too, Sam asked.
+- Never touch production.
+- Fix the bug where b2 allows two loans.
+</code></pre>
+<p>Rewrite the dump. Standing file after the sort:</p>
+<pre><code class="language-markdown"># Shelf — standing instructions
+
+Shelf is an in-memory loan tracker. Loan logic is in `src/loans.js`.
+Tests are `npm test` using node:test. There are no npm dependencies.
+
+## Constraints
+
+- Do not add dependencies. If a task seems to need one, stop and ask.
+- Do not connect to a database or a network service. There is no production environment in this repo. Do not invent one.
+- Change only files the current task names.
+</code></pre>
+<p>Moved to a task note (not standing):</p>
+<pre><code class="language-markdown"># Tasks, not policy
+
+- Overdue loans: needs a spec. Do not assume moment.js.
+- GET /loans counts: separate spec. Sam's request is not a standing order.
+- Bug: b2 and two loans — write a failing test first, then fix. (See U26.)
+</code></pre>
+<p>"Be really careful" was dropped. "Never touch production" was rewritten into something shelf can obey: there is no production connection to open.</p>
+<p>Notice <code>moment.js</code> did not survive. A library name inside a standing file becomes a permanent dependency grant. That is the opposite of shelf's policy.</p>
+<h2>Common errors</h2>
+<h3>Keeping a "current focus" section in <code>AGENTS.md</code></h3>
+<p><strong>What you see:</strong> A heading <code>## Current focus</code> with the sprint's three tickets. It feels tidy.</p>
+<p><strong>What it means:</strong> Those tickets will still be in focus in the file after they ship, unless someone remembers to edit the file. People forget. The agent does not.</p>
+<p><strong>What to do:</strong> Current focus lives in the issue tracker or in <code>specs/</code> files you archive. U15 shows the spec. The standing file stays boring.</p>
+<h3>Rewriting every task as a permanent law</h3>
+<p><strong>What you see:</strong> "Always include Sam in sample data." Six months later every example is about Sam, including tests where Sam makes no sense.</p>
+<p><strong>What it means:</strong> A fixture escaped into policy.</p>
+<p><strong>What to do:</strong> Ask the lasting-question. Sample names are not policy. The error-object shape is.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What question do you ask before a sentence enters <code>AGENTS.md</code>?</li>
+<li>Where should "error string is <code>already-borrowed</code>" live?</li>
+<li>What goes wrong if a finished feature stays as an order in the standing file?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Sort</h3>
+<p>Sort: standing, task, or drop.</p>
+<ol>
+<li>Do not delete tests to obtain a green run.</li>
+<li>Borrower names in examples should be Asha and Ben this week.</li>
+<li>Use async/await everywhere, even if the file is synchronous today.</li>
+<li>Append one line to <code>CHANGELOG.md</code> when an accepted change alters behavior.</li>
+<li>The due date of a loan is 14 days after <code>today</code> for the capstone.</li>
+</ol>
+<h3>P2 — Rewrite</h3>
+<p>Rewrite item 3 as either a checkable standing rule or a decision to drop it. Shelf's <code>loans.js</code> is synchronous. A rule that fights the file will make the agent "modernize" the file during unrelated tasks.</p>
+<h3>P3 — Cleanup</h3>
+<p>Write the three-line task note you would keep <strong>out</strong> of <code>AGENTS.md</code> for: "Sam wants <code>GET /loans</code> to include a count." Include "needs a spec" in it.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>Not the full constraint catalog (next unit).</li>
+<li>Not a complete shelf <code>AGENTS.md</code> submission yet (U10). You will sort and rewrite, which is the skill this unit exists to build.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U09 — Constraints worth writing.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U08 Assignment — Keep the standing file boring</h1>
+<p>Submit <code>U08-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>AGENTS.md</code></h3>
+<p>This is a <strong>draft standing file only</strong>, built by sorting the dump below. Do not add the tasks. Do not add mush. It is all right if the file is short. A later unit asks for the full shelf policy; this file is graded on the sort.</p>
+<p>Dump:</p>
+<pre><code class="language-text">Be smart and clean.
+Add countForBorrower now.
+Shelf loan logic is src/loans.js. Tests: npm test. No dependencies today.
+Use lodash for all array work from now on.
+Do not connect to any database server.
+Sam's book b2 is overdue — hardcode that.
+Match the existing { ok, error } result objects.
+Only edit files the task names.
+Write a poem in the README.
+When behavior changes and we accept it, add one CHANGELOG line under Unreleased.
+</code></pre>
+<h3>2. <code>tasks.md</code></h3>
+<p>Every dumped line that is a real task, rewritten as a task, with a note that it needs a spec before an agent runs. Lines that are mush go here too, under a heading <code>Dropped</code>, with one sentence each on why.</p>
+<h3>3. <code>answers.md</code></h3>
+<ol>
+<li>State the lasting-question in your own words.</li>
+<li>Explain why "use lodash for all array work" must not become standing policy on shelf, even though it is phrased as a lasting rule.</li>
+<li>Explain what damage a finished "Add <code>countForBorrower</code> now" line causes on a later, unrelated turn.</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U08 README.
+- [ ] AGENTS.md contains no ticket and no poem.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p><code>AGENTS.md</code> could be left in the repo after the tasks ship, without causing those tasks to run again.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U08-YourName/
+  AGENTS.md
+  tasks.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U08 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AGENTS.md</code> includes project facts, no database, file fence, result style, changelog rule</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>AGENTS.md</code></td>
+</tr>
+<tr>
+<td><code>AGENTS.md</code> excludes lodash mandate, Sam fixture, countForBorrower order, poem, "be smart"</td>
+<td>5</td>
+<td>Yes</td>
+<td><code>AGENTS.md</code></td>
+</tr>
+<tr>
+<td>Tasks and dropped mush are in <code>tasks.md</code> with reasons for the drops</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>tasks.md</code></td>
+</tr>
+<tr>
+<td>Lasting-question is accurate</td>
+<td>2</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Lodash and stale-task harms explained concretely</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2–Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Standing file: award 4/6 if one lasting rule is missing and nothing harmful was included.</li>
+<li>If lodash appears as "do not add lodash," that is acceptable and counts as excluding the mandate.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows are must-have. A miss caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U07-the-instruction-file/index.html">U07 The instruction file</a>
+    <a class="next" href="../U09-constraints-worth-writing/index.html">U09 Constraints worth writing</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

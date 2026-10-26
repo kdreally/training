@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U24 — Workflow: new feature | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U24</div>
+    <h1>Workflow: new feature</h1>
+    <span class="phase-badge ph6">Phase 6 — Life-cycle workflows</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U24 — Workflow: new feature</h1>
+<p><strong>Phase 6 — Life-cycle workflows</strong></p>
+<h2>Where you are</h2>
+<p>You have the pieces: standing rules, spec, prompt, tests, diff review, restore. This unit puts them in order for a <strong>new feature</strong>, a behavior shelf does not have yet. Nothing here is a new theory. The new skill is not skipping a step because the feature feels small.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>List the feature workflow in order and say what each step produces.</li>
+<li>Produce a minimal packet for one shelf feature: spec, prompt, and the assertions you will accept.</li>
+<li>Name the step where a new HTTP route would have to be introduced on purpose, if at all.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U19</strong> through <strong>U23</strong>. Standing instructions from U10 are assumed to exist in the project.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>70–100 minutes</strong>. You are writing a packet, not running an agent.</p>
+<h2>Why this exists</h2>
+<p>Features fail in agents when the happy idea goes straight into a prompt. The workflow is the slow version that is faster by the end of the day: decide, fence, oracle, then ask. A feature is the easiest workflow to over-scope, because there is no existing code that "is" the feature, so the agent feels free to invent the shape. Your spec is that shape.</p>
+<h2>Plain-language teaching</h2>
+<h3>The order</h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>You produce</th>
+<th>Done when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Behavior</td>
+<td>A sentence a test can pin</td>
+<td>One input → one output exists</td>
+</tr>
+<tr>
+<td>2. Spec</td>
+<td><code>specs/&lt;name&gt;.md</code> with six headings, examples, non-goals</td>
+<td>A reviewer could reject an extra route from the text</td>
+</tr>
+<tr>
+<td>3. Oracle</td>
+<td>Tests written or quoted before acceptance</td>
+<td>Assertions match the examples</td>
+</tr>
+<tr>
+<td>4. Prompt</td>
+<td>Four parts plus the U19 patterns</td>
+<td>One behavior, neighbor cited, magnets fenced</td>
+</tr>
+<tr>
+<td>5. Turn</td>
+<td>Agent runs in the shelf root, or you implement by hand</td>
+<td>Tree was clean before the turn</td>
+</tr>
+<tr>
+<td>6. Review</td>
+<td>U21 order, you run <code>npm test</code></td>
+<td>Decision: accept or restore</td>
+</tr>
+<tr>
+<td>7. Changelog</td>
+<td>One line, only if you accepted</td>
+<td>Describes behavior</td>
+</tr>
+</tbody>
+</table>
+<p>Step 5 may be you, typing the function, if you have no agent. The packet is the same. The course grades the packet.</p>
+<h3>Feature for this unit</h3>
+<p><code>countForBorrower</code>, as specified in earlier units. It is new. It does not change <code>borrow</code>. It does not add a route. If a stakeholder later wants the count on <code>GET /loans</code>, that is a second feature with its own spec, because the files and the risks differ (<code>server.js</code> is now in the allow list).</p>
+<h3>What you do not do</h3>
+<ul>
+<li>Do not put the feature title into <code>AGENTS.md</code>.</li>
+<li>Do not accept a class, a package, or a deleted test "so the feature can land."</li>
+<li>Do not combine this feature with overdue dates "while we are in the file."</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Feature</td>
+<td>A behavior the product does not have yet</td>
+<td>Not "any agent session"</td>
+</tr>
+<tr>
+<td>Packet</td>
+<td>Spec + prompt + oracle notes</td>
+<td>Not a zip of the whole repo</td>
+</tr>
+<tr>
+<td>Second feature</td>
+<td>A follow-up with its own files and examples</td>
+<td>Not a section in the first prompt</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A complete packet is short. Abbreviated spec:</p>
+<pre><code class="language-markdown"># Spec: count-for-borrower
+## Goal
+Return how many active loans a borrower has.
+## Non-goals
+No HTTP. No new package. No case-folding. No new file.
+## Behavior
+countForBorrower(&quot;Asha&quot;) === 1 after borrow(&quot;b1&quot;,&quot;Asha&quot;).
+countForBorrower(&quot;asha&quot;) === 0.
+After return, the count is 0.
+## Files
+src/loans.js, test/loans.test.js, CHANGELOG.md only.
+## Tests
+Case-sensitive example above. Old suite still passes.
+## Done
+npm test fail 0. Diff stat matches Files.
+</code></pre>
+<p>Prompt: U19's <code>count.txt</code> shape. Oracle: the test in U20. Review: restore if <code>package.json</code> or <code>server.js</code> appears.</p>
+<p>Changelog if accepted:</p>
+<pre><code class="language-markdown">- countForBorrower returns the number of active loans for an exact borrower name.
+</code></pre>
+<p>That is the whole workflow. The assignment asks you to do it for a different feature so you are not only copying.</p>
+<h2>Common errors</h2>
+<h3>Route as a free extra</h3>
+<p><strong>What you see:</strong> The feature ships with <code>GET /count</code> because "a feature needs an API."</p>
+<p><strong>What it means:</strong> Step 2's non-goals were empty, or step 6 ignored the file list.</p>
+<p><strong>What to do:</strong> Restore. If the route is actually wanted, write <code>specs/count-route.md</code> after the function is accepted. Allow <code>src/server.js</code>. Fence Express out. Keep <code>GET /loans</code> as it is.</p>
+<h3>Skipping the oracle because you will "test manually"</h3>
+<p><strong>What you see:</strong> You call the function once in a REPL, see <code>1</code>, and accept.</p>
+<p><strong>What it means:</strong> The case-folding bug and the regression in <code>no-copies</code> were never checked.</p>
+<p><strong>What to do:</strong> Put the examples in <code>node:test</code>. Manual checks are extra, not the oracle.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>List the seven steps in order.</li>
+<li>Why is a count on <code>GET /loans</code> a second feature?</li>
+<li>When do you write the changelog line?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Order</h3>
+<p>A teammate wants to prompt first and spec later "if the diff looks wrong." Write four sentences on which steps that swaps, and what invention that allows.</p>
+<h3>P2 — Split</h3>
+<p>"Add counts and also return all loans for a borrower." Name the two specs. One sentence each on files.</p>
+<h3>P3 — Changelog</h3>
+<p>Write the one line for <code>countForBorrower</code>. Write a process line you would reject.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not implement the feature in shelf's example tree.</li>
+<li>Change requests, bugs, debugging, and evaluation have their own units. They reuse this order with different emphasis.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U25 — Workflow: change request.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U24 Assignment — A feature packet</h1>
+<p>Submit <code>U24-YourName</code>.</p>
+<h2>The feature</h2>
+<p>Add <code>hasActiveLoan(bookId, borrower)</code> to shelf.</p>
+<ul>
+<li>It returns <code>true</code> when that borrower has an active loan of that book, otherwise <code>false</code>.</li>
+<li>It does not create a loan and does not change <code>borrow</code>.</li>
+<li>Comparison is <code>===</code> on both fields.</li>
+<li>No HTTP, no new files, no dependencies.</li>
+</ul>
+<h2>Files</h2>
+<h3>1. <code>specs/has-active-loan.md</code></h3>
+<p>The six headings, at least three examples (true, false when returned, false when a different borrower holds the book).</p>
+<h3>2. <code>prompts/has-active-loan.txt</code></h3>
+<p>One behavior. Neighbor cited. Magnet or new-file fence. Verify and stop.</p>
+<h3>3. <code>oracle.md</code></h3>
+<p>The <code>node:test</code> blocks you will require before acceptance. Include one assertion that an existing error (<code>no-copies</code> or <code>borrower-required</code>) still holds, so the feature turn cannot wreck <code>borrow</code>.</p>
+<h3>4. <code>answers.md</code></h3>
+<ol>
+<li>Walk the seven workflow steps for this feature in your own words. One or two sentences each.</li>
+<li>A generation adds <code>GET /has-active-loan</code>. Which step failed, and do you restore or extend the prompt in place?</li>
+</ol>
+<h3>5. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U24 README.
+- [ ] The prompt does not also add a route.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>The packet is enough for a human implementer or an agent turn, and the route extra is a restore.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U24-YourName/
+  specs/has-active-loan.md
+  prompts/has-active-loan.txt
+  oracle.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U24 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spec has examples for true, returned-loan false, and other-borrower false; non-goals exclude HTTP and packages</td>
+<td>6</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Prompt is one behavior, fenced, with verify and stop</td>
+<td>5</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>Oracle includes the new function and one old error string</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>oracle.md</code></td>
+</tr>
+<tr>
+<td>Seven steps named in order</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code></td>
+</tr>
+<tr>
+<td>Route extra is a restore, tied to a step</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Spec: 4/6 if one of the three examples is missing but non-goals are real.</li>
+<li>Prompt that also allows <code>server.js</code>: cap the prompt row at 2/5.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q2 is nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U23-match-the-repo/index.html">U23 Match the repo</a>
+    <a class="next" href="../U25-workflow-change-request/index.html">U25 Workflow: change request</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U15 — From a rough note to a spec | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U15</div>
+    <h1>From a rough note to a spec</h1>
+    <span class="phase-badge ph3">Phase 3 — Specifications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U15 — From a rough note to a spec</h1>
+<p><strong>Phase 3 — Specifications</strong></p>
+<h2>Where you are</h2>
+<p>You can write a spec when the goal is already clear. Real requests arrive as a paragraph from a teammate, a ticket, or a hallway conversation. This unit is the translation step: rough note → questions → spec. The agent is the wrong first reader of the rough note. You are the first reader.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Mark decisions in a rough note as decided, undecided, or dangerous.</li>
+<li>Write a short question list for the undecided items that block implementation.</li>
+<li>Produce a spec that chooses a default where the course gives you authority, and that leaves a question where a wrong guess would change product behavior.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U14 — Examples and non-goals.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>60–90 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Feeding a stakeholder paragraph straight to an agent feels efficient. It moves the undecided product choices into a diff, where they are expensive to undo and easy to miss. A five-line question list is the slower path for ten minutes and the faster path for the rest of the week.</p>
+<p>Some gaps are yours to close. "Which file?" on shelf is not a stakeholder question. You know the map. Asking a product owner which JavaScript file to edit wastes them and stalls you. Ask humans about behavior they own. Decide technical placement yourself and write it in the spec.</p>
+<h2>Plain-language teaching</h2>
+<h3>Three marks</h3>
+<p>Read each claim in the note and mark it:</p>
+<table>
+<thead>
+<tr>
+<th>Mark</th>
+<th>Meaning</th>
+<th>What you do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Decided</td>
+<td>The note states a behavior you can turn into an example</td>
+<td>Put the example in the spec</td>
+</tr>
+<tr>
+<td>Undecided</td>
+<td>Two honest readings exist, and they change what a test would assert</td>
+<td>Ask, or pick a default and label it as a default</td>
+</tr>
+<tr>
+<td>Dangerous</td>
+<td>A reading would break standing rules (database, new package, secret, force-push)</td>
+<td>Refuse that reading in non-goals, even if the note sounds excited</td>
+</tr>
+</tbody>
+</table>
+<h3>What is worth a question</h3>
+<p>Ask when the answer changes an example's expected value and you are not the owner of that choice.</p>
+<ul>
+<li>"Overdue on the due date, or the day after?" changes the test.</li>
+<li>"Do returned books still show as overdue?" changes the test.</li>
+<li>"Which file holds the function?" does not. You decide.</li>
+</ul>
+<h3>Defaults you may choose on shelf</h3>
+<p>Label them in the spec as <code>Default (you may overturn):</code>.</p>
+<ul>
+<li>No HTTP unless the note clearly asks for an API.</li>
+<li>No new dependency.</li>
+<li>Strict string match on names.</li>
+<li>Caller passes <code>today</code>; the code does not read the clock.</li>
+<li>Existing error strings stay.</li>
+</ul>
+<p>A default is still a decision. It is written down so a reviewer can overturn it without reverse-engineering the code.</p>
+<h3>A rough note</h3>
+<pre><code class="language-text">hey can we do overdue stuff? sam was annoyed that the shelf
+keeps showing books people already should have returned.
+maybe email them? or at least a list. due date could be
+two weeks, use whatever date lib is standard.
+also the api should be modern. thanks!!
+</code></pre>
+<p>Marks:</p>
+<ul>
+<li>"a list" of overdue loans → decided that a list exists, undecided what it returns and to whom.</li>
+<li>"books people already should have returned" → undecided whether the due date itself is included.</li>
+<li>"maybe email" → dangerous if it means network, and undecided as a feature. Default: no email. Non-goal.</li>
+<li>"whatever date lib is standard" → dangerous. Standing rules ban surprise packages. Non-goal: no date library. You do not need permission to refuse this.</li>
+<li>"api should be modern" → dangerous mush. Default: no HTTP change until a spec names a route. Question only if the sender truly needs an endpoint this change.</li>
+<li>"two weeks" → decided as 14 days, undecided from which date. Shelf has no checkout date stored. Question: the caller passes <code>today</code>, or we refuse due dates until borrow stores one?</li>
+</ul>
+<p>You can write the spec with defaults and a question section at the top. Do not pretend a question is answered.</p>
+<h3>Question section</h3>
+<p>Put unresolved items first, so nobody implements past them.</p>
+<pre><code class="language-markdown">## Open questions
+
+1. Is a loan overdue on its due date, or only after that date?
+   Blocked examples: overdueLoans(&quot;2026-01-15&quot;) for a loan due that day.
+2. Does &quot;a list&quot; need a new HTTP route in this change?
+   Default if unanswered: no HTTP. Function only.
+
+## Defaults chosen so drafting can continue
+
+- No email, no network.
+- No date library.
+- 14 days, caller supplies today as YYYY-MM-DD.
+</code></pre>
+<p>If question 1 is unanswered, the Done section says: do not implement yet. A spec with a blocking question is a successful spec. An implementation that guesses the due-date boundary is not.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rough note</td>
+<td>The human request, unstructured</td>
+<td>Not a spec</td>
+</tr>
+<tr>
+<td>Blocking question</td>
+<td>An unknown that changes an expected test result</td>
+<td>Not a technical preference</td>
+</tr>
+<tr>
+<td>Default</td>
+<td>A choice you document so work can continue</td>
+<td>Not a silent guess inside code</td>
+</tr>
+<tr>
+<td>Dangerous reading</td>
+<td>An interpretation that breaks standing policy</td>
+<td>Not "a feature I dislike"</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Note:</strong> "Let Asha return everything she has out, one call. Keep it simple. Probably hit the database so it sticks."</p>
+<p><strong>Marks:</strong></p>
+<ul>
+<li>One call returns all of one borrower's active loans → decided as a goal, undecided on the name and the return shape.</li>
+<li>"Keep it simple" → mush. Drop.</li>
+<li>"Hit the database" → dangerous. Non-goal. Shelf has no database. You do not ask whether to add Postgres. You refuse and, if persistence is truly required, that is a different project with a human design, not an agent guess.</li>
+</ul>
+<p><strong>Questions worth asking:</strong></p>
+<ol>
+<li>Should the function return the loans it closed, or only a count?</li>
+<li>If she has nothing out, is that success with an empty list, or an error?</li>
+</ol>
+<p><strong>Not a question:</strong> which database driver to import.</p>
+<p><strong>Spec fragment after you choose defaults (and label them):</strong></p>
+<pre><code class="language-markdown">## Open questions
+None. Defaults below were chosen by the implementer because the note did not say.
+
+## Defaults chosen
+- Name: returnAll(borrower)
+- Returns { ok: true, loans } with the loans that were active and are now returned.
+- Zero active loans → { ok: true, loans: [] }, not an error.
+- No database. In-memory, same as returnLoan.
+- No HTTP.
+
+## Behavior
+Examples:
+- borrow b1 Asha, borrow b2 Asha, returnAll(&quot;Asha&quot;)
+  → ok true, two loans, both returned, activeLoans() is []
+- returnAll(&quot;Ben&quot;) with nothing out → ok true, loans: []
+- Asha's loans of b1 do not return Ben's loan of b1
+</code></pre>
+<p>The note said "everything she has out." Ben's loan surviving is the neighbor case. Write it or the agent may clear the array.</p>
+<h2>Common errors</h2>
+<h3>Asking the stakeholder which file to edit</h3>
+<p><strong>What you see:</strong> A blocked ticket: "please specify the path."</p>
+<p><strong>What it means:</strong> A technical placement was treated as a product question.</p>
+<p><strong>What to do:</strong> Choose <code>src/loans.js</code> and write it under Files.</p>
+<h3>Implementing with the question still open</h3>
+<p><strong>What you see:</strong> The spec says "open: inclusive or exclusive due date" and the prompt says "implement the spec."</p>
+<p><strong>What it means:</strong> The agent will pick inclusive or exclusive and your tests will canonize the guess.</p>
+<p><strong>What to do:</strong> The prompt for that spec is "do not implement. The due-date question is blocking." Or you close the question yourself, label the default, and then implement. Both are honest. Guessing inside the code is not.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What makes a question blocking?</li>
+<li>Why is "which date library?" not a question you ask the stakeholder on shelf?</li>
+<li>Where do defaults sit so a reviewer can see them?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Mark</h3>
+<p>Mark decided, undecided, or dangerous:</p>
+<pre><code class="language-text">Add POST /loans that borrows a book.
+Body should be JSON.
+Use express, our server is old-fashioned.
+Password for staging is in the wiki, grab it if tests need the real db.
+</code></pre>
+<h3>P2 — Questions only</h3>
+<p>Write at most three blocking questions for the P1 note. Write at least two non-questions you refuse to ask.</p>
+<h3>P3 — Default</h3>
+<p>Write a four-line default block that keeps shelf's <code>node:http</code> server and refuses express and the staging database. You do not need the full spec.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not implement the note.</li>
+<li>You do not send the questions to a real stakeholder. You write them as part of the spec packet.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U16 — Prompt anatomy.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U15 Assignment — Translate a rough note</h1>
+<p>Submit <code>U15-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>specs/return-all.md</code></h3>
+<p>Translate this note:</p>
+<pre><code class="language-text">people keep returning books one at a time which is silly.
+add a way to return all books for a borrower in one go.
+should obviously talk to the database so we don't lose it on restart.
+make the API RESTful and modern while you're there.
+if they have no books, I guess error? or not. you decide.
+use a solid library if the loop is annoying.
+</code></pre>
+<p>Include:</p>
+<ul>
+<li>an <code>Open questions</code> section (use it, or write <code>None</code> and justify in answers),</li>
+<li>a <code>Defaults chosen</code> section,</li>
+<li>the six spec headings from U13 (they may sit under the questions),</li>
+<li>examples using <code>b1</code> and <code>b2</code>,</li>
+<li>non-goals for the database, the "modern API," and the library.</li>
+</ul>
+<p>You may decide the empty-borrower case yourself. Label it as a default.</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>List each dangerous reading and the non-goal that kills it.</li>
+<li>Name one thing you refused to ask a stakeholder, and why it was yours to decide.</li>
+<li>Say whether your spec is ready to implement today, or blocked. If it is ready, say who closed the last question.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U15 README.
+- [ ] The spec does not instruct the agent to connect to a database.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A reviewer can see your defaults without reading your mind, and can see that Postgres, express, and a utility library are refused.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U15-YourName/
+  specs/return-all.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U15 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dangerous readings (database, wholesale "modern" API, extra library) are non-goals</td>
+<td>6</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Empty-loan case is an explicit default with an example</td>
+<td>4</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>At least one neighbor example (another borrower's loan survives)</td>
+<td>3</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Open questions and defaults are visible; ready-or-blocked is stated</td>
+<td>4</td>
+<td>Yes</td>
+<td>spec + <code>answers.md</code></td>
+</tr>
+<tr>
+<td>Files stay on the shelf map (<code>src/loans.js</code>, tests, changelog) unless an HTTP change is explicitly scoped to one route</td>
+<td>3</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>If they add a single HTTP route, award files points only when the route, method, body, and status are fully exampled <strong>and</strong> express is still forbidden. A vague "make it RESTful" scores 0 on that row.</li>
+<li>Neighbor example missing: they can still pass the unit if everything else is strong, but that row is 0. Must-have miss caps at 15/20.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows are must-have.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U14-examples-and-non-goals/index.html">U14 Examples and non-goals</a>
+    <a class="next" href="../U16-prompt-anatomy/index.html">U16 Prompt anatomy</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

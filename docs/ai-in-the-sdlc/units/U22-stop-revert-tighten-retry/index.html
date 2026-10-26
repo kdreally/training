@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U22 — Stop, revert, tighten, retry | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U22</div>
+    <h1>Stop, revert, tighten, retry</h1>
+    <span class="phase-badge ph5">Phase 5 — Making the code correct</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U22 — Stop, revert, tighten, retry</h1>
+<p><strong>Phase 5 — Making the code correct</strong></p>
+<h2>Where you are</h2>
+<p>You can reject a diff. This unit is what you do in the next ten minutes so the rejection does not turn into a pile of follow-up prompts. The loop is <strong>stop, revert, tighten, retry</strong>. People skip revert because it feels like losing work. The work was unfaithful. Keeping it costs more than rewriting a small function.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Stop a turn instead of negotiating with it.</li>
+<li>Name the Git restore you already trust, aimed at the files the turn touched.</li>
+<li>Tighten the prompt using evidence from the bad diff, then retry from a clean tree.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U21 — Review the diff.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>A bad turn is informative. It shows which magnet fired. If you leave the bad files in place and say "now remove lodash but keep the nice parts," the next turn is built on a dirty tree (U05) and on a neighbor that is the invention (U19). Revert is how the information survives and the code does not.</p>
+<h2>Plain-language teaching</h2>
+<h3>The loop</h3>
+<pre><code class="language-text">1. Stop. Do not send &quot;looks good, just also…&quot;
+2. Revert the turn's files so git status is clean (or matches what you had before the turn).
+3. Tighten. Add one fence per invention you actually saw.
+4. Retry once from the clean tree.
+5. Review again. If it fails the same way, stop for the day and change the spec. Do not cycle five times.
+</code></pre>
+<p>Two retries is a reasonable ceiling for one behavior. After that you are negotiating with a pattern, and the spec or the fence is still open.</p>
+<h3>Revert</h3>
+<p>You already know how to throw away uncommitted edits. Use that. From the project root, for paths you have confirmed are the turn's files and not your own uncommitted work:</p>
+<pre><code class="language-text">git restore src/loans.js test/loans.test.js package.json CHANGELOG.md
+</code></pre>
+<p><strong>What it does:</strong> puts those files back to the last commit. <strong>Success:</strong> <code>git status</code> no longer lists them. <strong>Failure:</strong> <code>pathspec did not match</code> means the path is wrong or the file is untracked.</p>
+<p>Untracked new files (<code>src/services/LoanService.js</code>) are not removed by <code>git restore</code>. They were never committed. Delete those files yourself after you have looked at the names and confirmed they are the turn's leftovers. <code>git clean</code> can delete untracked files across the whole tree; this course will not make it a habit, because a wide clean removes work you forgot was untracked. Delete the specific unwanted paths.</p>
+<p>If <code>package.json</code> was yours before the turn, you are in the dirty-tree problem from U05. You cannot restore it blindly. That is another reason the tree starts clean.</p>
+<h3>Tighten from evidence</h3>
+<p>The bad diff is a list of fences you now know you need. Do not add a paragraph of scolding.</p>
+<table>
+<thead>
+<tr>
+<th>What you saw</th>
+<th>Line you add</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lodash</td>
+<td>"Do not import lodash. Use <code>.filter</code> like <code>activeLoans</code>."</td>
+</tr>
+<tr>
+<td><code>src/services/</code></td>
+<td>"No new files. No classes."</td>
+</tr>
+<tr>
+<td>Case-folding</td>
+<td>Repeat the <code>"asha"</code> → <code>0</code> example</td>
+</tr>
+<tr>
+<td>Deleted tests</td>
+<td>"Do not delete or edit existing tests. Add new tests only."</td>
+</tr>
+<tr>
+<td>Express</td>
+<td>"Do not edit <code>src/server.js</code>. Do not import express."</td>
+</tr>
+</tbody>
+</table>
+<p>One line per invention. Then retry.</p>
+<h3>When not to retry</h3>
+<ul>
+<li>The spec's example was wrong. Fix the spec. Do not prompt the code into matching a bad example.</li>
+<li>The tool is editing outside the project root (U04). Fix the folder before any retry.</li>
+<li>A secret appeared in the transcript. Stop. Rotate the secret if it is real. Do not continue the session as if it is fine.</li>
+</ul>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stop</td>
+<td>No more prompts in this dirty tree</td>
+<td>Not closing the laptop on the whole task</td>
+</tr>
+<tr>
+<td>Revert / restore</td>
+<td>Put the turn's files back</td>
+<td>Not <code>git push --force</code>, not a history rewrite</td>
+</tr>
+<tr>
+<td>Tighten</td>
+<td>Add a fence aimed at an invention you just saw</td>
+<td>Not "be more careful"</td>
+</tr>
+<tr>
+<td>Retry ceiling</td>
+<td>Two tries, then fix the spec</td>
+<td>Not infinite patience</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Bad turn:</strong> the U21 diff (lodash, <code>==</code>, no tests, <code>console.log</code>).</p>
+<p><strong>Stop.</strong> You do not say "remove the console.log."</p>
+<p><strong>Revert:</strong></p>
+<pre><code class="language-text">git restore package.json src/loans.js CHANGELOG.md
+git status
+</code></pre>
+<p><code>git status</code> is clean. There was no new untracked file in that particular diff. If <code>node_modules</code> appeared because an install ran, do not commit it. Shelf's project should ignore it or you delete that folder. Do not add lodash back.</p>
+<p><strong>Tighten.</strong> Add to the prompt:</p>
+<pre><code class="language-text">Do not import lodash. Use .filter and ===.
+Do not rewrite activeLoans.
+Do not add console.log.
+Add a test: countForBorrower(&quot;asha&quot;) === 0 after borrow(&quot;b1&quot;,&quot;Asha&quot;).
+Do not edit package.json.
+</code></pre>
+<p><strong>Retry</strong> once. Review with U21's order. If <code>package.json</code> changes again, stop. The standing file and the prompt both failed. Do not install lodash to silence the import. Look at whether the session is even loading <code>AGENTS.md</code> (U07). That is a tooling fact to check, not a reason to accept lodash.</p>
+<h2>Common errors</h2>
+<h3>The sculpt</h3>
+<p><strong>What you see:</strong> Six prompts: remove lodash, remove the log, put tests back, fix <code>==</code>, restore <code>activeLoans</code>, update the changelog.</p>
+<p><strong>What it means:</strong> You rebuilt the revert by hand and probably missed a hunk.</p>
+<p><strong>What to do:</strong> One restore, one tighter prompt.</p>
+<h3>Tightening with anger instead of fences</h3>
+<p><strong>What you see:</strong> "You ALWAYS do this, NEVER be stupid, last chance."</p>
+<p><strong>What it means:</strong> No new file list, no new example. The next diff can repeat the invention.</p>
+<p><strong>What to do:</strong> One calm line per invention. The emotion is understandable. It is not a fence.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What are the four words of the loop?</li>
+<li>Why doesn't <code>git restore</code> remove a brand-new untracked file?</li>
+<li>What do you do after two failed retries?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Map the loop</h3>
+<p>Write the five steps for the U17 fixture, including one delete of an untracked path (<code>src/services/LoanService.js</code>) and one restore of <code>src/server.js</code>.</p>
+<h3>P2 — Tighten</h3>
+<p>From the U17 fixture, write four tighten-lines. No insults.</p>
+<h3>P3 — Ceiling</h3>
+<p>Describe, in four sentences, a second failure that should send you back to the spec instead of a third prompt. Use the overdue due-date boundary as the example: the agent keeps treating the due date as already overdue.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No force-push, no <code>git reset --hard</code> as a recommendation. <code>git restore</code> on named paths is enough.</li>
+<li>Matching house style in more detail is U23.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U23 — Match the repo.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U22 Assignment — Recover a turn</h1>
+<p>Submit <code>U22-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>recovery.md</code></h3>
+<p>You received the U17 fixture's generation (Express, lodash, date-fns, <code>src/services/LoanService.js</code>, deleted <code>test/loans.test.js</code>, rewritten server). Write:</p>
+<ol>
+<li><strong>Stop.</strong> The exact next message you will <em>not</em> send, and the one-sentence reason. (Quote a bad follow-up you refuse.)</li>
+<li><strong>Revert.</strong> Commands or manual deletes, path by path, that return shelf to the baseline. Include an untracked file and a modified tracked file.</li>
+<li><strong>Tighten.</strong> Five fence lines derived from that fixture.</li>
+<li><strong>Retry ceiling.</strong> What you will do if the second try deletes tests again.</li>
+</ol>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Why is sculpting with six small prompts more dangerous than a restore?</li>
+<li>A password appeared in the agent transcript during the bad turn. What changes in the loop?</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U22 README.
+- [ ] My tighten lines name files, packages, or assertions.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Someone could follow <code>recovery.md</code> and get a clean tree plus a stricter prompt, without keeping Express "for now."</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U22-YourName/
+  recovery.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U22 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Refuses a sculpting follow-up</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>recovery.md</code> stop</td>
+</tr>
+<tr>
+<td>Revert covers <code>server.js</code> and deleting <code>src/services/LoanService.js</code>; does not recommend a blind <code>git clean</code> or force-push</td>
+<td>6</td>
+<td>Yes</td>
+<td>revert</td>
+</tr>
+<tr>
+<td>Five tighten lines map to real inventions</td>
+<td>5</td>
+<td>Yes</td>
+<td>tighten</td>
+</tr>
+<tr>
+<td>Second test-deletion ends the retries and returns to spec or standing rules</td>
+<td>3</td>
+<td>Yes</td>
+<td>ceiling</td>
+</tr>
+<tr>
+<td>Sculpt danger and secret handling</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Revert: 3/6 if they restore tracked files and forget the new untracked service file.</li>
+<li>Tighten: 1 point per concrete line, cap 5. "Be careful" scores 0.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Answers are nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U21-review-the-diff/index.html">U21 Review the diff</a>
+    <a class="next" href="../U23-match-the-repo/index.html">U23 Match the repo</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

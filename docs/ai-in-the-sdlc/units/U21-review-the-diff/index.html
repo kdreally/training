@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U21 — Review the diff | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U21</div>
+    <h1>Review the diff</h1>
+    <span class="phase-badge ph5">Phase 5 — Making the code correct</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U21 — Review the diff</h1>
+<p><strong>Phase 5 — Making the code correct</strong></p>
+<h2>Where you are</h2>
+<p>Tests tell you about behavior you remembered to assert. The <strong>diff</strong> tells you what else changed: a new import, a touched file, a rewritten comment, a deleted line in an old test. This unit is a review method you can apply to an agent diff the same way you apply it to a teammate's branch. The agent is not owed a gentler review.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Review a diff in a fixed order: files, tests, dependencies, behavior, leftovers.</li>
+<li>Accept or reject with a reason tied to a line, not a mood.</li>
+<li>Use <code>git diff</code> and <code>git diff --stat</code> as the source of truth, not the agent's file list.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U20 — Tests before you accept.</strong></li>
+<li>You already use Git. This unit does not reteach commits.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–75 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Agent reports list the files they remember editing. The working tree lists the files that changed. Those sets diverge often enough that "I read the summary" is not a review. A short order keeps you from blessing a green suite that also added <code>date-fns</code>.</p>
+<h2>Plain-language teaching</h2>
+<h3>The review order</h3>
+<p>Do it in this order every time. Skipping to "does the function look smart?" is how leftovers survive.</p>
+<ol>
+<li><strong>Stat.</strong> <code>git diff --stat</code>. How many files? Any file outside the allow list? Any unexpected new file?</li>
+<li><strong>Dependencies.</strong> Does <code>package.json</code> or a lockfile appear? Any import that is not <code>./</code>, <code>../</code>, or <code>node:</code>?</li>
+<li><strong>Tests.</strong> Read test changes before implementation. Were old assertions edited? Were tests deleted?</li>
+<li><strong>Behavior.</strong> Does the implementation match the spec examples you just saw asserted?</li>
+<li><strong>Leftovers.</strong> <code>console.log</code>, commented-out code, new folders, changelog diary, drive-by format.</li>
+</ol>
+<p>Then decide: accept, or restore. "Accept with a follow-up prompt in the same dirty tree" is not a third option. U22 handles repair. Review ends in a decision.</p>
+<h3>Commands</h3>
+<p>From the project root, after the turn:</p>
+<pre><code class="language-text">git diff --stat
+git diff
+</code></pre>
+<p><strong>What they do:</strong> <code>--stat</code> is the file list with line counts. Without <code>--stat</code>, you get the full line-by-line diff.</p>
+<p><strong>Success:</strong> you can name every file. <strong>Failure:</strong> <code>not a git repository</code> means you are outside the repo or the example was never committed. The shelf example in this course may be read without a personal commit. For the assignment, a printed diff is provided so you are not blocked on Git history. On your own projects, review the Git diff, not a copy the agent pasted. Pasted diffs can omit files.</p>
+<h3>A diff to practice on</h3>
+<p><strong>Prompt claimed:</strong> add <code>countForBorrower</code> only. Allow list: <code>src/loans.js</code>, <code>test/loans.test.js</code>, <code>CHANGELOG.md</code>.</p>
+<pre><code class="language-diff">--- a/package.json
++++ b/package.json
+@@
+-  &quot;scripts&quot;: {
+-    &quot;test&quot;: &quot;node --test&quot;
+-  }
++  &quot;scripts&quot;: {
++    &quot;test&quot;: &quot;node --test&quot;
++  },
++  &quot;dependencies&quot;: {
++    &quot;lodash&quot;: &quot;^4.17.21&quot;
++  }
+
+--- a/src/loans.js
++++ b/src/loans.js
+@@
++import _ from &quot;lodash&quot;;
++
+ export function activeLoans() {
+-  return loans.filter((loan) =&gt; loan.returned === false);
++  return _.filter(loans, (loan) =&gt; loan.returned === false);
+ }
++
++export function countForBorrower(borrower) {
++  console.log(&quot;counting&quot;, borrower);
++  return _.filter(activeLoans(), (loan) =&gt; loan.borrower == borrower).length;
++}
+
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@
+ ## Unreleased
++- read loans.js and improved filters
+</code></pre>
+<p>No test file in the diff. The report said "tests pass."</p>
+<h3>Decision</h3>
+<p>Reject. Reasons you can cite:</p>
+<ul>
+<li><code>package.json</code> was not on the allow list. Lodash arrived.</li>
+<li><code>activeLoans</code> was rewritten. That is a drive-by. <code>==</code> instead of <code>===</code> also coerces types.</li>
+<li><code>console.log</code> is a leftover.</li>
+<li>No test for the new function. The oracle is missing.</li>
+<li>Changelog describes process, not behavior.</li>
+</ul>
+<p>You do not need a sixth reason. One forbidden file is enough to restore the whole turn.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stat</td>
+<td>The short "which files" diff</td>
+<td>Not a statistics course</td>
+</tr>
+<tr>
+<td>Leftover</td>
+<td>Debug print, unused import, diary changelog</td>
+<td>Not a feature</td>
+</tr>
+<tr>
+<td>Drive-by</td>
+<td>Edit outside the behavior, often a rewrite of a neighbor</td>
+<td>Described as cleanup</td>
+</tr>
+<tr>
+<td>Decision</td>
+<td>Accept or restore</td>
+<td>Not "we'll tidy it later" in the same turn</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>The diff above is the example. Walk the order:</p>
+<ol>
+<li>Stat would show <code>package.json</code>, <code>src/loans.js</code>, <code>CHANGELOG.md</code>. Three files. One is forbidden. Stop is already justified. You still finish the list so your notes teach the next person.</li>
+<li>Dependency: lodash.</li>
+<li>Tests: absent.</li>
+<li>Behavior: <code>==</code> and lodash, and a log. Not the neighbor style.</li>
+<li>Leftovers: <code>console.log</code>, changelog wording.</li>
+</ol>
+<p>Decision: restore all three files. Do not keep the function "and remove lodash in a follow-up" inside this dirty tree. The function uses lodash. A partial keep is how the import returns.</p>
+<h2>Common errors</h2>
+<h3>Reviewing only the new function</h3>
+<p><strong>What you see:</strong> The function's last line looks right, so you approve. You never opened <code>package.json</code>.</p>
+<p><strong>What it means:</strong> Step 1 was skipped.</p>
+<p><strong>What to do:</strong> Start at <code>--stat</code> every time, including small turns. Especially small turns. Forbidden files hide in "small" turns because you feel safe.</p>
+<h3>Accepting a pasted diff</h3>
+<p><strong>What you see:</strong> The agent says "here is the full diff" and omits <code>package.json</code>.</p>
+<p><strong>What it means:</strong> The narrator edited the evidence.</p>
+<p><strong>What to do:</strong> On a real repo, <code>git diff</code> yourself. In this lesson, treat missing tests as missing, not as "probably fine."</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What are the five review steps, in order?</li>
+<li>Why is a missing test file a finding even if the function looks correct?</li>
+<li>What is the decision if one forbidden file changed and the function is perfect?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Order</h3>
+<p>List what you would open first, second, and third for the worked diff. One line each.</p>
+<h3>P2 — One finding is enough</h3>
+<p>Write the restore note you would send a teammate, citing only the <code>package.json</code> hunk. Four sentences maximum.</p>
+<h3>P3 — A clean one</h3>
+<p>Describe a stat line that would pass step 1 for the count feature. Invent plausible line counts. Then name one thing you would still check in the test hunk before accepting.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You are not required to produce a Git commit.</li>
+<li>Repair strategy after the reject is U22.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U22 — Stop, revert, tighten, retry.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U21 Assignment — Decide from the diff</h1>
+<p>Submit <code>U21-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>review.md</code></h3>
+<p>Review the worked diff in the U21 README. Use the five-step order as headings. Under each heading, write what you found. End with <code>Decision: restore</code> or <code>Decision: accept</code>, and three citations (file plus what is wrong or right).</p>
+<h3>2. <code>answers.md</code></h3>
+<ol>
+<li>Why is a partial keep ("leave the function, delete the import later") unsafe here?</li>
+<li><strong>Predict.</strong> If this diff were applied and you ran <code>npm test</code> without installing, what class of failure would you expect? You do not have to apply the diff. Say what is missing for the import to resolve, and whether a green run would be possible after <code>npm install</code>. Would that green run change your decision?</li>
+<li>Write the <code>git</code> commands you would use on a real repo to see the stat and the full diff. One sentence on why you do not review only the agent's pasted summary.</li>
+</ol>
+<h3>3. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U21 README, including the diff.
+- [ ] My decision cites a file.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>A teammate can follow your five headings and reach the same decision.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U21-YourName/
+  review.md
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U21 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Five steps present; decision is restore</td>
+<td>6</td>
+<td>Yes</td>
+<td><code>review.md</code></td>
+</tr>
+<tr>
+<td>Citations include <code>package.json</code> and the missing tests</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>review.md</code></td>
+</tr>
+<tr>
+<td>Drive-by on <code>activeLoans</code> or <code>==</code> or <code>console.log</code> mentioned</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>review.md</code></td>
+</tr>
+<tr>
+<td>Partial keep rejected with a concrete reason</td>
+<td>4</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Install would not rehabilitate the diff; commands named</td>
+<td>3</td>
+<td>No</td>
+<td><code>answers.md</code> Q2–Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Decision accept: the five-step row scores at most 2/6, because the lesson's diff is a restore. The unit is revise-and-resubmit if they accept.</li>
+<li>Citations: 2/4 if only lodash is named and tests are never mentioned.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q2–Q3 are nice-to-have. An accept decision fails the must-have decision row and caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U20-tests-before-you-accept/index.html">U20 Tests before you accept</a>
+    <a class="next" href="../U22-stop-revert-tighten-retry/index.html">U22 Stop, revert, tighten, retry</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

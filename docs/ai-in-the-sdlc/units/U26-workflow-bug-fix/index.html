@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U26 — Workflow: bug fix | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U26</div>
+    <h1>Workflow: bug fix</h1>
+    <span class="phase-badge ph6">Phase 6 — Life-cycle workflows</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U26 — Workflow: bug fix</h1>
+<p><strong>Phase 6 — Life-cycle workflows</strong></p>
+<h2>Where you are</h2>
+<p>A change request chooses a new correct result. A <strong>bug fix</strong> restores a result the project already claimed. The claim might be a test, a spec, or a sentence in the README. The agent habit to fight is the rewrite: a two-line fix becomes a new service. This unit's extra rule is <strong>smallest change that makes a failing test pass</strong>.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Write a failing test that reproduces a bug before asking for a fix.</li>
+<li>Prompt for the smallest edit, with a fence that forbids a redesign.</li>
+<li>Reject a "fix" that passes the new test by weakening an old one.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U25</strong>, <strong>U20</strong> (oracles), <strong>U22</strong> (restore).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>50–80 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Bugs are where agents look most helpful and do the most extra. The failure is local. A local repair is what you want. "While I was here I modernized loans" is a second, unreviewed change request glued to the fix. Reviewers miss the glue when the red test turns green.</p>
+<h2>Plain-language teaching</h2>
+<h3>Reproduce first</h3>
+<p>A bug report without a failing test is a story. Stories are ambiguous, and you know what ambiguity produces. The workflow:</p>
+<ol>
+<li>Read the claim the code already makes (existing test or spec).</li>
+<li>Write a test that fails on today's code and would pass on the claimed behavior.</li>
+<li>Run it. See the failure. That output is the evidence.</li>
+<li>Prompt: make this test pass. Do not edit the assertion. Smallest change. No new files. No new dependencies.</li>
+<li>Review. The new test passes. The old tests still pass. The diff is small.</li>
+<li>Changelog: one line naming the bug, only if you accept.</li>
+</ol>
+<p>If you cannot write a failing test, you do not understand the bug yet. Do not delegate that confusion to the agent. It will pick a definition and "fix" that.</p>
+<h3>A bug in a snippet</h3>
+<p>Shelf's real <code>returnLoan</code> compares <code>bookId</code> and <code>borrower</code> correctly. The following <strong>broken snippet</strong> is the lesson's bug. It is not in <code>course/examples/shelf</code> unless you paste it yourself. Do not paste it into the shared example.</p>
+<pre><code class="language-javascript">export function returnLoan(bookId, borrower) {
+  const loan = activeLoans().find(
+    (item) =&gt; item.bookId === borrower &amp;&amp; item.borrower === bookId,
+  );
+  if (!loan) {
+    return { ok: false, error: &quot;no-active-loan&quot; };
+  }
+  loan.returned = true;
+  return { ok: true, loan };
+}
+</code></pre>
+<p>The arguments are swapped in the comparison. <code>returnLoan("b1", "Asha")</code> looks for a loan whose book id is <code>"Asha"</code>. It returns <code>no-active-loan</code> even after <code>borrow("b1", "Asha")</code>.</p>
+<p><strong>Reproduction:</strong></p>
+<pre><code class="language-javascript">test(&quot;returnLoan finds the loan by book id and borrower&quot;, () =&gt; {
+  resetLoans();
+  borrow(&quot;b1&quot;, &quot;Asha&quot;);
+  assert.equal(returnLoan(&quot;b1&quot;, &quot;Asha&quot;).ok, true);
+  assert.deepEqual(activeLoans(), []);
+});
+</code></pre>
+<p>On the broken snippet, this fails. On the real shelf file, it passes. The oracle is the assertion <code>ok: true</code>, not a rewrite of the finder into a class.</p>
+<h3>Smallest change</h3>
+<p>The smallest fix is to swap the comparison back:</p>
+<pre><code class="language-javascript">(item) =&gt; item.bookId === bookId &amp;&amp; item.borrower === borrower
+</code></pre>
+<p>A generation that introduces a <code>Map</code>, a class, or a fuzzy matcher to "prevent this class of bug" is a change request pretending to be a fix. Restore it unless a human opened that design on purpose.</p>
+<h3>Prompt</h3>
+<pre><code class="language-text">The test &quot;returnLoan finds the loan by book id and borrower&quot; fails
+because the find comparison swaps bookId and borrower.
+
+Make that test pass.
+Allowed files: src/loans.js only, plus the test file if the test is not already there.
+Do not edit the expected values.
+Do not create files. Do not add dependencies. Do not rename returnLoan.
+Do not change borrow.
+Run npm test. If a different test fails, stop and report it. Do not edit that test.
+</code></pre>
+<p>The prompt names the cause once you know it. If you do not know the cause yet, you are in U27 (debugging), not in a fix prompt. Do not guess a cause in the prompt. A wrong guessed cause sends the agent to edit the wrong line with confidence.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bug</td>
+<td>Behavior contradicts a claim the project already made</td>
+<td>Not "I wish it did something new"</td>
+</tr>
+<tr>
+<td>Reproduction</td>
+<td>A test that fails before the fix and passes after</td>
+<td>Not a screenshot alone</td>
+</tr>
+<tr>
+<td>Smallest change</td>
+<td>The edit that fixes the reproduction and nothing else</td>
+<td>Not the most impressive edit</td>
+</tr>
+<tr>
+<td>Claim</td>
+<td>The existing test, spec, or documented result</td>
+<td>Not a new product idea</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Broken comparison above. Reproduction test. Prompt. Diff you would accept: two identifiers swapped, nothing else. Diff you would restore: <code>returnLoan</code> replaced by an ORM call. There is no database. The standing rules already say so. The bug fix does not suspend them.</p>
+<p>Changelog, if accepted:</p>
+<pre><code class="language-markdown">- returnLoan matches bookId and borrower in the correct order.
+</code></pre>
+<h2>Common errors</h2>
+<h3>Fixing the test</h3>
+<p><strong>What you see:</strong> The agent changes the test to <code>returnLoan("Asha", "b1")</code> so the swapped comparison "works."</p>
+<p><strong>What it means:</strong> The reproduction was edited to fit the bug. Callers still pass <code>(bookId, borrower)</code>.</p>
+<p><strong>What to do:</strong> Restore. The stop line in the prompt exists for this. The assertion stays.</p>
+<h3>Bundling a feature</h3>
+<p><strong>What you see:</strong> The fix diff also adds <code>already-borrowed</code>.</p>
+<p><strong>What it means:</strong> Two workflows, one turn.</p>
+<p><strong>What to do:</strong> Restore the feature part, or restore all if the hunks are tangled. Land the bug alone.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What has to fail before you ask for a fix?</li>
+<li>What is the smallest fix for the swapped comparison?</li>
+<li>Why is a guessed cause in the prompt risky?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Reproduction</h3>
+<p>Write the test from the README from memory. Include <code>resetLoans</code> and the final <code>activeLoans()</code> expectation.</p>
+<h3>P2 — Judge a diff</h3>
+<p>The diff adds <code>src/search.js</code> with a fuzzy finder and changes <code>returnLoan</code> to use it. The new test passes. Accept or restore? Two sentences.</p>
+<h3>P3 — Not a bug</h3>
+<p>"Add a count of loans" is filed as a bug. Say which workflow it belongs to, and why.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>You do not have to break your local shelf file. The snippet is enough.</li>
+<li>Debugging when you do not yet know the line is U27.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U27 — Workflow: debugging.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U26 Assignment — Reproduce, then the smallest fix</h1>
+<p>Submit <code>U26-YourName</code>.</p>
+<h2>The bug</h2>
+<p>In a branch someone swapped the fields inside <code>returnLoan</code>'s <code>find</code>, as in the U26 README snippet. Callers still use <code>returnLoan(bookId, borrower)</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>reproduction.test.js</code></h3>
+<p>A failing test (it would fail on the broken snippet) using <code>node:test</code> and <code>node:assert/strict</code>. Assert <code>ok: true</code> and an empty active list. Do not "fix" the call order to match the bug.</p>
+<h3>2. <code>prompts/fix-return.txt</code></h3>
+<p>A fix prompt: smallest change, allowed files, do not edit expected values, do not add files or dependencies, do not redesign, <code>npm test</code>, stop if another test fails.</p>
+<h3>3. <code>answers.md</code></h3>
+<ol>
+<li>Write the corrected comparison line only.</li>
+<li>Reject this fix in one paragraph: the agent changes the test to <code>returnLoan("Asha", "b1")</code> and says the suite is green.</li>
+<li>A ticket says "bug: users want overdue loans." Which workflow is it really, and what would you ask before any prompt?</li>
+</ol>
+<h3>4. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U26 README.
+- [ ] My reproduction would fail on the swapped comparison.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>The prompt cannot be satisfied by a new framework or by editing the assertion to swap arguments.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U26-YourName/
+  reproduction.test.js
+  prompts/fix-return.txt
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U26 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reproduction calls <code>returnLoan("b1", "Asha")</code> after borrowing that pair and expects <code>ok: true</code></td>
+<td>6</td>
+<td>Yes</td>
+<td>test</td>
+</tr>
+<tr>
+<td>Prompt demands the smallest change and forbids new files, dependencies, and assertion edits</td>
+<td>6</td>
+<td>Yes</td>
+<td>prompt</td>
+</tr>
+<tr>
+<td>Corrected line compares <code>bookId</code> to <code>bookId</code> and <code>borrower</code> to <code>borrower</code></td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q1</td>
+</tr>
+<tr>
+<td>Swapped test call is rejected as hiding the bug</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>answers.md</code> Q2</td>
+</tr>
+<tr>
+<td>Overdue ticket classified as a feature or change request, not a bug fix</td>
+<td>2</td>
+<td>No</td>
+<td><code>answers.md</code> Q3</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Test expects only <code>ok: true</code> and skips the active-list check: 5/6 is fair.</li>
+<li>Prompt says "smallest" but allows a helper file: cap the prompt row at 3/6.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>Q3 is nice-to-have. Missing must-have caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U25-workflow-change-request/index.html">U25 Workflow: change request</a>
+    <a class="next" href="../U27-workflow-debugging/index.html">U27 Workflow: debugging</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

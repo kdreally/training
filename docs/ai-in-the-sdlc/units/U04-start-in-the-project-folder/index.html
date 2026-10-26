@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U04 — Start in the project folder | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U04</div>
+    <h1>Start in the project folder</h1>
+    <span class="phase-badge ph1">Phase 1 — The agent in the project</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U04 — Start in the project folder</h1>
+<p><strong>Phase 1 — The agent in the project</strong></p>
+<h2>Where you are</h2>
+<p>You know what the agent can do. This unit is about <strong>where</strong> it does it. The current folder of the terminal is the project the agent will treat as home. Starting in the wrong folder is the first failure mode, and it feels like the agent "went rogue" when it only did what the folder allowed.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why a session must start inside the repository, not in your home directory and not in a parent folder that contains several projects.</li>
+<li>Predict what an agent will edit if it is started in the wrong directory.</li>
+<li>Use <code>pwd</code> (macOS/Linux) or <code>Get-Location</code> (Windows PowerShell) to prove the folder before any agent work.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U03</strong>. You already know how to <code>cd</code> in a terminal. This unit does not reteach navigation. It tells you why the folder is part of the safety story.</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>40–60 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>A local agent trusts the folder you give it. If that folder is <code>C:\Users\You</code>, the agent can read far more than shelf, and it may create <code>AGENTS.md</code> in a place no project expects. If that folder is <code>D:\green</code>, the agent sees many projects at once and may "helpfully" edit a sibling. If that folder is <code>course/examples/shelf</code>, it sees the loan tracker and little else. The folder is the first fence. You set it before you type a task.</p>
+<h2>Plain-language teaching</h2>
+<h3>Current directory</h3>
+<p>The <strong>current directory</strong> is the folder your terminal is "in." Programs you launch, including an agent, inherit it. They resolve relative paths from it. <code>src/loans.js</code> means "the file <code>loans.js</code> inside <code>src</code> inside the current directory," not "that file somewhere on the disk."</p>
+<h3>The right folder for this course</h3>
+<p>For shelf work, the right folder is the shelf project root: the directory that contains <code>package.json</code>, <code>src/</code>, and <code>test/</code>. Not <code>src/</code> itself (too narrow: the agent cannot see <code>package.json</code> as a sibling in the usual way, and test paths break). Not the course root (too wide: many units and two other courses if you are inside <code>training</code>).</p>
+<h3>Prove it before you start</h3>
+<p><strong>What the command does:</strong> prints the folder the shell is in.</p>
+<p>macOS or Linux, or Git Bash on Windows:</p>
+<pre><code class="language-text">pwd
+</code></pre>
+<p>Windows PowerShell:</p>
+<pre><code class="language-text">Get-Location
+</code></pre>
+<p><strong>Success:</strong> the path ends with the project root you meant. For the example, it ends with <code>shelf</code>.</p>
+<p><strong>Typical failure:</strong> the path ends with your user name, <code>training</code>, or <code>courses</code>. No error is printed. That silence is why this failure is easy to miss. The shell is happy. The agent will be happy. The edits land in the wrong tree.</p>
+<h3>What the wrong folder does to an agent</h3>
+<p>Imagine you meant to add a test in shelf, but the shell is in your home directory.</p>
+<ul>
+<li>A read of <code>src/loans.js</code> fails, or finds a different <code>src</code> from another experiment.</li>
+<li>The agent may <strong>create</strong> <code>src/loans.js</code> so the path exists. You now have a second project, born by accident.</li>
+<li><code>npm test</code> runs some other <code>package.json</code>, or reports that none exists.</li>
+<li>An <code>AGENTS.md</code> written "at the root" becomes a home-directory policy file. Later sessions pick it up and apply shelf's rules to unrelated work, or the reverse.</li>
+</ul>
+<p>None of that requires a bad prompt. The folder was the bug.</p>
+<h3>One project per session</h3>
+<p>If a task truly spans two repositories, do them as two sessions, with two diffs. A single session opened at a parent folder will mix the diffs and will apply one project's rules to the other. This course's assignments never require that.</p>
+<h3>Editor panels</h3>
+<p>If your agent lives in an editor sidebar, the "folder" is the folder you opened as the workspace, not whatever random terminal tab is sitting nearby. Check the workspace root the same way you check <code>pwd</code>. A terminal in <code>shelf</code> and an editor opened on <code>training</code> are two different homes.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current directory</td>
+<td>The folder the shell will resolve relative paths from</td>
+<td>Not "the folder I was thinking about"</td>
+</tr>
+<tr>
+<td>Project root</td>
+<td>The folder that holds <code>package.json</code> and the top of <code>src/</code></td>
+<td>Not <code>src/</code> itself, not your home folder</td>
+</tr>
+<tr>
+<td>Workspace</td>
+<td>The folder an editor has opened as the project</td>
+<td>Can disagree with the terminal's current directory</td>
+</tr>
+<tr>
+<td>Parent folder</td>
+<td>The folder one level up, often containing several projects</td>
+<td>A bad place to start an agent</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Intended home:</strong></p>
+<pre><code class="language-text">D:\green\training\courses\ai-in-the-sdlc\course\examples\shelf
+</code></pre>
+<p><strong>Check (PowerShell):</strong></p>
+<pre><code class="language-text">Get-Location
+</code></pre>
+<p><strong>Success output (your user path may differ; the ending is the point):</strong></p>
+<pre><code class="language-text">Path
+----
+D:\green\training\courses\ai-in-the-sdlc\course\examples\shelf
+</code></pre>
+<p><strong>Wrong, and silent:</strong></p>
+<pre><code class="language-text">D:\green\training
+</code></pre>
+<p>From there, <code>src\loans.js</code> does not exist. An agent told "fix <code>src/loans.js</code>" may search, may give up, or may create <code>D:\green\training\src\loans.js</code>. Predict that before you feel betrayed by the tool.</p>
+<p><strong>Also wrong:</strong> starting in <code>...\shelf\src</code>. Then <code>npm test</code> does not see the <code>package.json</code> in the parent, and a new file <code>test/loans.test.js</code> would be created at <code>src/test/</code>, which is not the suite.</p>
+<h2>Common errors</h2>
+<h3>"It edited a random project"</h3>
+<p><strong>What you see:</strong> A diff in a sibling folder you had forgotten was on disk.</p>
+<p><strong>What it means:</strong> The session started in a parent directory that contains both projects. The agent searched, found a similar filename, and edited it.</p>
+<p><strong>What to do:</strong> Close the session. From the project root, run <code>git status</code> in the sibling and in the intended project. Restore anything you did not want, using the Git workflow you already use (<code>git restore</code> or your editor's revert). Re-open the agent only after <code>pwd</code> / <code>Get-Location</code> shows the project root.</p>
+<h3>Two homes</h3>
+<p><strong>What you see:</strong> The terminal is in <code>shelf</code>. The editor workspace is <code>training</code>. The agent in the sidebar edits files outside shelf.</p>
+<p><strong>What it means:</strong> You checked one home and worked in the other.</p>
+<p><strong>What to do:</strong> Make them the same folder before the next prompt.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is the project root of shelf, in terms of which files sit directly inside it?</li>
+<li>Why does the wrong folder often produce no error at all?</li>
+<li>Why is starting inside <code>src/</code> also wrong?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Predict</h3>
+<p>You are in <code>course/examples</code> (the parent of <code>shelf</code>). The prompt is "add a line to <code>CHANGELOG.md</code>." Where will that file most likely be created or edited? State the path relative to <code>course/examples</code>.</p>
+<h3>P2 — Prove your shell</h3>
+<p>Open a terminal. Navigate to the shelf example. Run <code>pwd</code> or <code>Get-Location</code>. Paste the result into a note. Then run the same command from the parent folder and paste that too. Write one sentence on which one is a legal start.</p>
+<h3>P3 — Repair story</h3>
+<p>In four sentences, describe how you would notice and undo a <code>src/loans.js</code> that an agent created in your home directory. You do not have to perform the accident.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No agent launch command, because that command is product-specific and is not the skill.</li>
+<li>No standing-instructions file yet.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U05 — One turn: prompt, action, diff.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U04 Assignment — The folder is the first fence</h1>
+<p>Submit <code>U04-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Explain.</strong> In 5–8 sentences, explain why a local coding agent must be started in the project root. Include home directory, parent folder, and <code>src/</code> as three wrong starts, each with a distinct consequence.</li>
+<li><strong>Predict, then prove.</strong> Write, before you run a command, the path ending you expect for the shelf root on your machine. Then go there and run <code>pwd</code> or <code>Get-Location</code>. Paste the output under <code>What actually happened</code>. If you could not find the folder, paste the command you used and what you saw.</li>
+<li><strong>Diagnose.</strong> An agent transcript begins:</li>
+</ol>
+<pre><code class="language-text">Current directory: D:\work
+Read src/loans.js → error, not found
+Created src/loans.js
+Created package.json
+Command npm install express
+</code></pre>
+<p>The human meant to work in <code>D:\work\shelf</code>, which already has a <code>package.json</code> and no dependencies. Write a short diagnosis: what went wrong, which files are now suspect, and what you would do before any second prompt. Do not say "the AI broke."</p>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U04 README.
+- [ ] Question 2 has a prediction before the pasted output.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Q1 covers three wrong starts. Q3 names the suspect files and a next action that is not "prompt again from the same folder."</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U04-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U04 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three wrong starts, each with a distinct consequence</td>
+<td>7</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Project-root definition is accurate (package.json, src, test) somewhere in the answer</td>
+<td>2</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Prediction precedes real <code>pwd</code> / <code>Get-Location</code> output, or a honest failed search is documented</td>
+<td>5</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Diagnosis names the wrong directory, the created files, the unwanted install, and a stop/restore step</td>
+<td>5</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Filenames correct</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Q1: 4/7 if two of the three wrong starts are solid.</li>
+<li>Q3: 3/5 if they identify the directory but then recommend a follow-up prompt from <code>D:\work</code>.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows are must-have. A miss caps the grade at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U03-what-the-agent-can-see-and-do/index.html">U03 What the agent can see and do</a>
+    <a class="next" href="../U05-one-turn-prompt-action-diff/index.html">U05 One turn: prompt, action, diff</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

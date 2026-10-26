@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U29 — Capstone: one change end to end | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U29</div>
+    <h1>Capstone: one change end to end</h1>
+    <span class="phase-badge ph7">Phase 7 — Capstone</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U29 — Capstone: one change end to end</h1>
+<p><strong>Phase 7 — Capstone</strong></p>
+<h2>Where you are</h2>
+<p>This is the last unit. You will assemble the workflow for one real change to shelf: <strong>due dates and overdue loans</strong>. You will not be scored on a live model's cleverness. You will be scored on a packet a teammate could run, and on an evaluation sheet that would catch the usual inventions.</p>
+<p>The feeling that the packet is "a lot of writing for a small function" is normal. The writing is the work. The function is the small part.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Produce standing-rule reminders, a spec, two sequenced prompts, oracles, and an evaluation sheet for due dates.</li>
+<li>Split "store a due date" and "list overdue loans" into two turns.</li>
+<li>Predict a bad generation and show which rows would fail.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U10</strong> (standing file), <strong>U14</strong> (examples and non-goals), <strong>U19</strong> (prompt patterns), <strong>U24–U28</strong> (workflows).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>3–5 hours</strong>, split across a break. If you also run a local agent, add time, and still submit the packet if the agent misbehaves. A bad agent run with a good evaluation is a strong capstone. A good agent run with no packet is not.</p>
+<h2>Why this exists</h2>
+<p>Each earlier unit held one piece. Due dates pull on every piece at once: a magnet word ("date"), a change to an existing function (<code>borrow</code>), a new function, a keep list, tests, and a ban on libraries and clocks. If you can specify that without handing the agent a wish, you can run the workflow on your own repository next week. Replace the nouns. Keep the order.</p>
+<h2>Plain-language teaching</h2>
+<h3>The change</h3>
+<p>Shelf loans do not have due dates. After this change:</p>
+<ul>
+<li><code>borrow(bookId, borrower)</code> stays valid. The loan has no <code>due</code>. Existing tests pass without edits to their expectations.</li>
+<li><code>borrow(bookId, borrower, today)</code> stores <code>due</code> as the calendar date <strong>14 days after</strong> <code>today</code>.</li>
+<li><code>today</code> is <code>YYYY-MM-DD</code>. No time-of-day. No time zone. No <code>Date.now</code>.</li>
+<li><code>overdueLoans(today)</code> returns active loans whose <code>due</code> string is strictly less than <code>today</code>.</li>
+<li>A loan with no <code>due</code> is never overdue.</li>
+<li>A loan due <strong>on</strong> <code>today</code> is not overdue yet.</li>
+<li>Returned loans are not overdue.</li>
+<li>No HTTP change. No date library. No new source file.</li>
+</ul>
+<p>Date arithmetic without a library is a small function: parse the three numbers, add 14 days using <code>Date.UTC</code>, format back to <code>YYYY-MM-DD</code>. You may describe that in the spec as allowed implementation, or you may leave the algorithm to the implementer and keep only the examples. Examples are the contract:</p>
+<pre><code class="language-text">borrow(&quot;b1&quot;, &quot;Asha&quot;, &quot;2026-01-01&quot;) → loan.due === &quot;2026-01-15&quot;
+borrow(&quot;b1&quot;, &quot;Asha&quot;, &quot;2026-01-20&quot;) → loan.due === &quot;2026-02-03&quot;
+overdueLoans(&quot;2026-01-15&quot;) does not include the first loan
+overdueLoans(&quot;2026-01-16&quot;) includes it
+borrow(&quot;b1&quot;, &quot;Ben&quot;) without today → overdueLoans(&quot;2026-12-01&quot;) does not include Ben
+</code></pre>
+<p>Check the month rollover yourself before you freeze the example. 20 January 2026 plus 14 days is 3 February 2026. If you are unsure, compute it by hand and show the arithmetic in the spec. Do not ask an agent to invent the expected date and then test against its invention.</p>
+<h3>Two turns</h3>
+<table>
+<thead>
+<tr>
+<th>Turn</th>
+<th>Behavior</th>
+<th>Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Optional <code>today</code> on <code>borrow</code>, field <code>due</code>, existing two-argument calls unchanged</td>
+<td><code>src/loans.js</code>, <code>test/loans.test.js</code>, <code>CHANGELOG.md</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>overdueLoans(today)</code> only, after turn 1 is accepted</td>
+<td>same allow list</td>
+</tr>
+</tbody>
+</table>
+<p>One spec may describe both. Two prompts. Do not ask for the route, the email, or the microservice.</p>
+<h3>What the evaluation must catch</h3>
+<p>A generation that imports <code>date-fns</code>, reads <code>new Date()</code>, adds <code>GET /overdue</code>, or edits the <code>no-copies</code> expectation fails the sheet even if a new test is green.</p>
+<h3>Optional live run</h3>
+<p>If you have a local coding agent, start it in a <strong>copy</strong> of shelf, not in a folder full of unrelated work. Load your <code>AGENTS.md</code>. Send prompt 1 only. Review. Then prompt 2. Attach <code>git diff</code> and your real <code>npm test</code> summary under <code>optional/</code>. If you skip this, you lose no must-have points.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capstone</td>
+<td>The combined packet</td>
+<td>Not a new theory unit</td>
+</tr>
+<tr>
+<td>Sequenced prompts</td>
+<td>Turn 2 waits for turn 1 to be accepted</td>
+<td>Not two wishes in one message</td>
+</tr>
+<tr>
+<td>Hand arithmetic</td>
+<td>You compute an expected date yourself</td>
+<td>Not a library requirement</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>A fragment of prompt 1, not the whole packet:</p>
+<pre><code class="language-text">Implement only the due-date part of specs/due-dates.md.
+Do not add overdueLoans in this turn.
+
+Allowed: src/loans.js, test/loans.test.js, CHANGELOG.md. No other files.
+Neighbor: borrow in src/loans.js. Keep the two-argument form working.
+Example: borrow(&quot;b1&quot;,&quot;Asha&quot;,&quot;2026-01-01&quot;) stores due &quot;2026-01-15&quot;.
+borrow(&quot;b1&quot;,&quot;Asha&quot;) still returns ok true and does not set due.
+
+No date-fns, dayjs, moment, or luxon. Do not call Date.now or new Date()
+for &quot;today&quot;. You may use Date.UTC to add days.
+Do not edit src/server.js. Do not change no-copies.
+
+Verify: npm test
+Stop: if an existing test fails, stop. Do not edit its expected error.
+</code></pre>
+<p>Prompt 2 exists only on paper until prompt 1 would be accepted. Writing it now is correct. Sending it on a dirty failed turn is not.</p>
+<h2>Common errors</h2>
+<h3>One prompt for dates, API, and email</h3>
+<p><strong>What you see:</strong> The capstone spec's goal paragraph includes "notify the borrower."</p>
+<p><strong>What it means:</strong> Scope returned to the rough note from U15.</p>
+<p><strong>What to do:</strong> Non-goal the network. Two behaviors maximum: store <code>due</code>, list overdue.</p>
+<h3>Expected dates you did not compute</h3>
+<p><strong>What you see:</strong> <code>due</code> is <code>"2026-01-14"</code> because 14 days was added to the day number without checking.</p>
+<p><strong>What it means:</strong> The oracle is wrong, so a correct function would fail it or a buggy one would pass.</p>
+<p><strong>What to do:</strong> Show the arithmetic beside the example. January 1 plus 14 days lands on January 15, not January 14. "Plus 14" from the 1st is the 15th if you count the way calendars count: the due date is fourteen days later, so the 15th.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why are there two prompts?</li>
+<li>What is overdue on the due date itself, in this capstone?</li>
+<li>What evidence would fail a <code>date-fns</code> import?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Arithmetic</h3>
+<p>Compute 2026-12-25 plus 14 days. Write the steps. Use that date only if you also put it in the spec; otherwise the January examples are enough.</p>
+<h3>P2 — Keep</h3>
+<p>Write three keep lines: two-argument <code>borrow</code>, <code>no-copies</code> on <code>b2</code>, <code>GET /loans</code> unchanged.</p>
+<h3>P3 — Sheet skeleton</h3>
+<p>Write five evaluation rows with the evidence column filled by what you <strong>would</strong> open (<code>git diff --stat</code>, a test name), not by a pretend pass.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>No production database, no email, no framework migration.</li>
+<li>No requirement to buy or install a particular agent.</li>
+<li>No next unit. Take the packet shape to your own repository, and change the map in <code>AGENTS.md</code> so it describes that repository rather than shelf.</li>
+</ul>
+<h2>Next unit</h2>
+<p>None. This is the end of the course. The next step is a real change in a real repo, with the same packet, at a size you can review in one sitting.</p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U29 Assignment — Due dates, as a packet</h1>
+<p>Submit <code>U29-YourName</code>.</p>
+<p>You are specifying shelf due dates as described in the U29 README. You do not have to modify <code>course/examples/shelf</code> in the course repo.</p>
+<h2>Files</h2>
+<h3>1. <code>AGENTS.md</code></h3>
+<p>The standing file you would load. It must match shelf (paths, no dependencies, no database, tests, changelog, stop on conflict). It must not contain the due-date task as a standing order.</p>
+<h3>2. <code>specs/due-dates.md</code></h3>
+<p>Six headings, plus a short "Turn plan" that sequences two turns. Examples must include:</p>
+<ul>
+<li><code>2026-01-01</code> → due <code>2026-01-15</code>, with your arithmetic in one line,</li>
+<li>a loan with no <code>due</code> is not overdue,</li>
+<li>due date equal to <code>today</code> is not overdue,</li>
+<li>the next day is overdue,</li>
+<li>one keep: <code>no-copies</code> or two-argument <code>borrow</code> still succeeds.</li>
+</ul>
+<p>Non-goals must name date libraries, the clock, HTTP, and email or any network.</p>
+<h3>3. <code>prompts/turn-1.txt</code> and <code>prompts/turn-2.txt</code></h3>
+<p>Turn 1 does not implement <code>overdueLoans</code>. Turn 2 does not change the due-date rule and does not add a route. Both have fences, a neighbor or an example, <code>npm test</code>, and a stop rule.</p>
+<h3>4. <code>oracle.md</code></h3>
+<p>Tests for turn 1 and turn 2, written out as <code>node:test</code> blocks, plus one existing-contract assertion you will not weaken.</p>
+<h3>5. <code>evaluation.md</code></h3>
+<p>Rows for the examples and non-goals. Evidence column says where you will look. Do not mark pass unless you actually ran an agent and checked. If you did not run one, the result column is <code>not run</code> and the overall line says the packet is ready to run, not that the feature passed.</p>
+<h3>6. <code>predicted-failure.md</code></h3>
+<p>Describe a plausible bad generation (at least four inventions: a date library, a clock, a new route or file, and a weakened or missing keep). Map each to the evaluation row that would fail.</p>
+<h3>7. <code>answers.md</code></h3>
+<p>In your own words: why the rules file, the spec, the two prompts, the tests, and the sheet are five different artifacts. One paragraph each.</p>
+<h3>8. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I computed 2026-01-01 plus 14 days myself.
+- [ ] Turn 2 is a separate prompt.
+- [ ] I did not mark the feature passed without running it.
+- [ ] I read the rubric.
+</code></pre>
+<h3>Optional <code>optional/</code></h3>
+<p>If you ran a local agent on a copy of shelf: <code>diff.txt</code> and <code>test-output.txt</code>, and a filled evaluation with real pass/fail. This can add credit. It cannot replace files 1–7.</p>
+<h2>Definition of done</h2>
+<p>A teammate could execute the packet without asking you what overdue means, and could reject <code>date-fns</code> without asking you whether you like that library.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U29-YourName/
+  AGENTS.md
+  specs/due-dates.md
+  prompts/turn-1.txt
+  prompts/turn-2.txt
+  oracle.md
+  evaluation.md
+  predicted-failure.md
+  answers.md
+  checklist.md
+  optional/          (only if you ran an agent)
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U29 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AGENTS.md</code> is shelf policy and does not store the due-date ticket</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>AGENTS.md</code></td>
+</tr>
+<tr>
+<td>Spec examples cover 2026-01-15, not-overdue without due, not overdue on the due date, overdue the next day, and one keep; arithmetic is shown</td>
+<td>5</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Non-goals name date libraries, clock, and HTTP or network</td>
+<td>2</td>
+<td>Yes</td>
+<td>spec</td>
+</tr>
+<tr>
+<td>Two prompts are sequenced and fenced; turn 1 does not include overdue listing</td>
+<td>4</td>
+<td>Yes</td>
+<td>prompts</td>
+</tr>
+<tr>
+<td>Oracle tests match the examples and protect one old contract</td>
+<td>3</td>
+<td>Yes</td>
+<td><code>oracle.md</code></td>
+</tr>
+<tr>
+<td>Evaluation rows exist and are not fake passes; predicted failure maps four inventions to rows</td>
+<td>3</td>
+<td>Yes</td>
+<td>evaluation + predicted-failure</td>
+</tr>
+</tbody>
+</table>
+<h3>Nice-to-have</h3>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optional agent run: real diff and test output, sheet matches the diff, inventions were restored or correctly failed</td>
+<td>+2 bonus, cap the total at 20</td>
+<td><code>optional/</code></td>
+</tr>
+</tbody>
+</table>
+<p>Bonus cannot lift a missing must-have above 15 if a must-have row scored 0. Record the bonus beside the score.</p>
+<h3>Partial credit</h3>
+<ul>
+<li>Due date off by one (January 14) with honest arithmetic showing the off-by-one reasoning: 3/5 on the spec row, and a note to fix the oracle before they use it. Silent wrong date with no arithmetic: 1/5.</li>
+<li>Single combined prompt: cap the prompt row at 1/4.</li>
+<li>Evaluation pre-filled with Pass and no optional run: cap that row at 0. The checklist forbids it.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>The optional run is the only nice-to-have. Any must-have that scores 0 caps the grade at 15/20 before bonus.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U28-workflow-evaluation/index.html">U28 Workflow: evaluation</a>
+    
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

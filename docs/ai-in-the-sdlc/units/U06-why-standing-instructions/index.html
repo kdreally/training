@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U06 — Why standing instructions exist | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U06</div>
+    <h1>Why standing instructions exist</h1>
+    <span class="phase-badge ph2">Phase 2 — Standing instructions</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U06 — Why standing instructions exist</h1>
+<p><strong>Phase 2 — Standing instructions</strong></p>
+<h2>Where you are</h2>
+<p>You can run a clean turn in the right folder. Each turn so far has carried its own limits inside the prompt ("do not change any other behavior"). That works once. It fails as a project policy, because the next session starts blank. This unit explains <strong>standing instructions</strong>: rules loaded every turn, whether or not you remember to type them.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Explain why repeating rules in chat memory is not project policy.</li>
+<li>Give two examples of rules that belong on every shelf turn, and one example of a sentence that must not.</li>
+<li>Describe what happens when a project has no standing instructions and the prompt is brief.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U05 — One turn.</strong></li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>40–60 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>Projects have rules that outlive a ticket. Shelf must not grow a database connection "just for this feature." Shelf must not gain a random npm package. The changelog should record accepted behavior changes. You can type those sentences into every prompt. You will forget on the tired afternoon, and the agent will fill the silence with a plausible package.</p>
+<p>A file that the tool reads at the start of every session survives that afternoon. The rules are in the repo, so your teammates get them too, and so code review can discuss a rule change the same way it discusses code.</p>
+<p>Without the file, the alternative is folklore: a Slack message, a memory in one person's account, a paragraph you paste when you remember. Folklore does not show up in <code>git diff</code> when it changes, and it does not load when someone else opens the project.</p>
+<h2>Plain-language teaching</h2>
+<h3>Smallest definition</h3>
+<p><strong>Standing instructions</strong> are written rules that a coding agent is given at the start of every turn in this project, before it reads today's prompt. They say how to behave here. They do not say what to build today.</p>
+<h3>What they are not</h3>
+<ul>
+<li>They are <strong>not</strong> a chat transcript. A transcript belongs to one person and one product account. The repo belongs to the team.</li>
+<li>They are <strong>not</strong> today's spec. "Add <code>countForBorrower</code>" expires when the function exists. "Do not add dependencies" does not expire.</li>
+<li>They are <strong>not</strong> a style sermon. "Be elegant" cannot be checked in a diff. U09 separates checkable rules from wishes.</li>
+<li>They are <strong>not</strong> a guarantee. Models miss instructions. The file raises the odds and gives you a document to point at when a diff violates policy. Your review (U21) is still the gate.</li>
+</ul>
+<h3>Why "the AI will remember" fails</h3>
+<p>Account memory, if a product even has it, is tied to a login. It is invisible to a teammate. It is not versioned. It mixes projects: a rule you set while hacking a script ("you may install packages") leaks into shelf. It cannot be code-reviewed. When it is wrong, you cannot <code>git revert</code> it.</p>
+<p>Standing instructions in the repository have the opposite properties. They are shared, versioned, project-scoped, and reviewable.</p>
+<h3>A brief prompt plus a loaded file</h3>
+<p>You still write a prompt for today's task. The file carries the stable limits so the prompt can stay short and specific. Example of a stable limit:</p>
+<pre><code class="language-text">Do not add npm dependencies. Shelf uses the Node.js standard library only.
+</code></pre>
+<p>Example of a sentence that must stay out of the standing file:</p>
+<pre><code class="language-text">Implement countForBorrower before Friday.
+</code></pre>
+<p>That sentence is a task. Left in the file, it will be re-attempted next month, after the function exists, and the agent will "improve" it again.</p>
+<h3>What a missing file costs</h3>
+<p>Prompt: "Add a way to list overdue loans."</p>
+<p>No standing instructions. No spec. The agent invents a due date, imports a date library, adds a route the server did not have, and writes a paragraph of advice into the README. Each invention was a guess that filled a silence. Some guesses are charming. <code>npm install</code> is not charming when your deployment policy forbids new packages without review.</p>
+<p>You are allowed to feel annoyed at that output. The fix starts with a file, not with a sharper insult in the next prompt.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standing instructions</td>
+<td>Rules loaded every turn, stored in the project</td>
+<td>Not the prompt, not chat memory</td>
+</tr>
+<tr>
+<td>Policy</td>
+<td>A rule the team intends to keep</td>
+<td>Not a one-off task</td>
+</tr>
+<tr>
+<td>Folklore</td>
+<td>Rules that live in people's heads or old chats</td>
+<td>Feels faster until someone else starts a session</td>
+</tr>
+<tr>
+<td>Load</td>
+<td>The tool reads the file into the turn before your prompt</td>
+<td>Not the same as you pasting it</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p>Two sessions, same prompt: "Add <code>countForBorrower(borrower)</code> to the loan logic. Add a test."</p>
+<p><strong>Session A, no standing file.</strong></p>
+<p>Resulting extra lines in <code>package.json</code>:</p>
+<pre><code class="language-json">&quot;dependencies&quot;: {
+  &quot;lodash&quot;: &quot;^4.17.21&quot;
+}
+</code></pre>
+<p>And in <code>src/loans.js</code>:</p>
+<pre><code class="language-javascript">import _ from &quot;lodash&quot;;
+
+export function countForBorrower(borrower) {
+  return _.filter(activeLoans(), (loan) =&gt; loan.borrower === borrower).length;
+}
+</code></pre>
+<p>The function works. The project now depends on lodash for one filter. A reviewer has to notice.</p>
+<p><strong>Session B, standing file contains</strong> "Do not add npm dependencies. Use the JavaScript already used in this file."</p>
+<p>A better result is the filter written with <code>.filter</code>, which is how <code>activeLoans</code> is already written. The standing sentence did not name <code>countForBorrower</code>. It only closed a bad guess. You still read the diff.</p>
+<p>Session B can still go wrong. The file is a rail, not a proof. It is a rail you can point at: "this diff violates <code>AGENTS.md</code>."</p>
+<h2>Common errors</h2>
+<h3>Pasting the company handbook into every chat</h3>
+<p><strong>What you see:</strong> A 40-page paste, then a vague implementation, because the task was drowned.</p>
+<p><strong>What it means:</strong> Policy was dumped, not stored, and it was not trimmed to rules an agent can follow on a coding turn.</p>
+<p><strong>What to do:</strong> Put the short, checkable coding rules in the project file. Leave HR policy, brand voice, and the roadmap out. U11 shows what "too long" does.</p>
+<h3>Putting today's bug in the standing file "so it does not forget"</h3>
+<p><strong>What you see:</strong> Next week the agent re-opens a fixed bug and "fixes" it differently.</p>
+<p><strong>What it means:</strong> A task was stored as policy.</p>
+<p><strong>What to do:</strong> Tasks live in the spec and the prompt. When the task is done, those can be archived or deleted. The standing file stays.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>Why is chat memory a poor home for "do not add dependencies"?</li>
+<li>Write one shelf rule that should load every turn, and one sentence that should not.</li>
+<li>Does a standing file remove the need to read the diff?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Sort</h3>
+<p>Mark each line <code>standing</code> or <code>not standing</code>:</p>
+<ol>
+<li>Do not connect to a database.</li>
+<li>Asha's loan is stuck; clear it.</li>
+<li>Tests use <code>node:test</code>.</li>
+<li>Please make the code clean.</li>
+<li>Append an accepted behavior change to <code>CHANGELOG.md</code>.</li>
+</ol>
+<p>For line 4, add one sentence on why it fails even though it sounds like policy.</p>
+<h3>P2 — Cost of silence</h3>
+<p>In five sentences, describe a shelf diff that a one-line prompt "support overdue books" could produce if no rules are loaded. Name at least one new file and one new package. You are inventing a plausible failure, not running a tool.</p>
+<h3>P3 — Shared</h3>
+<p>A teammate uses a different coding agent than you do. In three sentences, why does putting the rules in the repo help them more than your personal chat memory does?</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>The filename and the section structure are U07 and U10.</li>
+<li>The full catalog of good constraints is U09.</li>
+<li>You are not graded on a live session.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U07 — The instruction file.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U06 Assignment — Policy has to live somewhere</h1>
+<p>Submit <code>U06-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li><strong>Why a file.</strong> Explain, in your own words, why standing instructions belong in the repository. Cover teammates, version history, and project scope. 5–8 sentences.</li>
+<li><strong>Sort.</strong> Label each item <code>standing</code> or <code>task</code>. One sentence why.<br />
+   - Do not read <code>.env</code> files or print secrets.<br />
+   - Change <code>GET /loans</code> to include a count for Friday's demo.<br />
+   - Do not run <code>git push --force</code>.<br />
+   - Prefer the error-object style already used in <code>borrow</code>.<br />
+   - Book <code>b2</code> should be overdue for borrower Sam in the fixture data.</li>
+<li><strong>Silence.</strong> Give a concrete shelf example of a short prompt plus no standing rules. Name the prompt, then name two guesses the agent might make that you would reject. Explain what a standing rule would have said to block one of them.</li>
+<li><strong>Not a guarantee.</strong> In 3–5 sentences, explain what the file does not do. Include the human review.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U06 README.
+- [ ] I did not write a full AGENTS.md yet.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Q2 has five labels. Q3 names a prompt, two guesses, and one blocking rule.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U06-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U06 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repo file justified with sharing, history, and per-project scope</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Five items sorted correctly</td>
+<td>5</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Silence example has a prompt, two concrete bad guesses, and one rule that blocks one guess</td>
+<td>5</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>States that the file can be ignored and the diff still needs a human</td>
+<td>3</td>
+<td>Yes</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Filenames</td>
+<td>1</td>
+<td>Yes</td>
+<td>folder</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Q2 key: standing, task, standing, standing, task. 1 point each. Item 4 is standing because it describes a lasting style constraint; accept <code>task</code> only if they argue it is too vague to be standing and would rewrite it. Award the point for that argument.</li>
+<li>Q1: 4/6 if one of the three properties is missing.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows must-have. A miss caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U05-one-turn-prompt-action-diff/index.html">U05 One turn: prompt, action, diff</a>
+    <a class="next" href="../U07-the-instruction-file/index.html">U07 The instruction file</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>U12 — What a spec is for | AI in the Software Development Life Cycle</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="logo" href="../../../index.html">training</a>
+  <nav>
+    <a href="../../../index.html">Courses</a>
+  </nav>
+</header>
+<main class="page">
+  <a class="back-link" href="../../index.html">AI in the Software Development Life Cycle — all units</a>
+
+  <div class="unit-header">
+    <div class="uid-badge">U12</div>
+    <h1>What a spec is for</h1>
+    <span class="phase-badge ph3">Phase 3 — Specifications</span>
+  </div>
+
+  <nav class="section-nav">
+    <a href="#lesson">Lesson</a>
+    <a href="#assignment">Assignment</a>
+    <a href="#rubric">Rubric</a>
+  </nav>
+
+  <section id="lesson" class="content-section">
+    <h2 class="section-heading">Lesson</h2>
+    <div class="md"><h1>U12 — What a spec is for</h1>
+<p><strong>Phase 3 — Specifications</strong></p>
+<h2>Where you are</h2>
+<p>Standing instructions exist so every turn shares the same limits. They do not say what to build today. This unit introduces the <strong>spec</strong>: a short document, written before the prompt, that says what done means for one change. People skip it and put the whole idea in the prompt. The agent then invents the parts you had not decided.</p>
+<h2>What you will be able to do</h2>
+<ul>
+<li>Define a spec, and separate it from <code>AGENTS.md</code>, from a prompt, and from the code.</li>
+<li>Say what goes wrong when the only description of the change is a one-line prompt.</li>
+<li>Point at a shelf behavior and say whether it is specified or merely hoped for.</li>
+</ul>
+<h2>What you need already</h2>
+<ul>
+<li><strong>U10</strong> or <strong>U11</strong> (you know what standing instructions hold).</li>
+</ul>
+<h2>Time and energy</h2>
+<p>About <strong>45–70 minutes</strong>.</p>
+<h2>Why this exists</h2>
+<p>"Add overdue loans" is a wish. An agent will satisfy a wish by choosing a definition: a library, a date format, a route, a meaning of overdue. Those choices are product decisions. If they appear first in a diff, you are reviewing someone else's product, not your own. A spec is where <strong>you</strong> make the decisions, in a file small enough to read, before any edit.</p>
+<p>You would still want a spec if you were typing the code yourself. The agent raises the cost of skipping it, because it types faster than it asks.</p>
+<h2>Plain-language teaching</h2>
+<h3>Smallest definition</h3>
+<p>A <strong>spec</strong> is a written description of one change: the behavior you want, the behavior you do not want, and how you will know the change is done. It is written in ordinary language plus examples. It is not the implementation.</p>
+<p>This course stores specs at <code>specs/&lt;short-name&gt;.md</code> inside the project, one change per file. The folder does not exist in shelf yet. Creating it is part of doing a change, not part of standing policy. Some teams use an issue tracker instead. The home can vary. The timing cannot: the spec exists before the implementation prompt.</p>
+<h3>What it is not</h3>
+<ul>
+<li><strong>Not <code>AGENTS.md</code>.</strong> Policy is lasting. A spec expires or gets archived when the change ships.</li>
+<li><strong>Not the prompt.</strong> The prompt tells the agent to implement <em>this</em> spec and names the fences for the turn. The spec holds the decisions. If you only have a prompt, you have nowhere stable to point during review: "you asked for this in paragraph three" is a weak contract. "The spec's example says <code>1</code>" is a contract.</li>
+<li><strong>Not the code.</strong> The code is one way to satisfy the spec. Another way that also satisfies the examples can be acceptable. A way that fails an example is not, even if it looks elegant.</li>
+<li><strong>Not a 20-page design book.</strong> If the spec is longer than the change, it will not be read. U13 gives a shape that stays short. This unit only fixes the job of the document.</li>
+</ul>
+<h3>Decisions a spec must already have made</h3>
+<p>For shelf, a behavior change usually decides:</p>
+<ul>
+<li>the function or route name,</li>
+<li>the inputs and outputs, including the error strings,</li>
+<li>what existing behavior stays,</li>
+<li>which files may change,</li>
+<li>which tests prove it.</li>
+</ul>
+<p>If any of those is "the agent will know," it is unspecified. The agent will know <em>something</em>. It will not necessarily know what you wanted.</p>
+<h3>A wish, then a spec</h3>
+<p>Wish, as a prompt with no spec:</p>
+<pre><code class="language-text">Add a way to count a borrower's active loans.
+</code></pre>
+<p>Unspecified, and therefore free for the agent to invent: the function name, whether returned loans count, whether the comparison trims spaces, whether the count is an HTTP field, whether lodash is used, whether a new file is created.</p>
+<p>The same wish as decisions:</p>
+<pre><code class="language-text">Name: countForBorrower(borrower)
+Counts active loans only (returned === false).
+borrower must match the trimmed name already stored by borrow.
+countForBorrower(&quot;Asha&quot;) is 0 when Asha has no active loan.
+After borrow(&quot;b1&quot;, &quot;Asha&quot;), countForBorrower(&quot;Asha&quot;) is 1.
+Does not add an HTTP route.
+Does not add a dependency.
+Files: src/loans.js, test/loans.test.js, CHANGELOG.md.
+</code></pre>
+<p>Those decisions were not hard. They were unmade. Writing them down is the work.</p>
+<h3>Who the spec is for</h3>
+<p>You, so you notice you had not decided. The agent, so it stops guessing. The reviewer, so they can evaluate without re-deriving your intent from a diff. U28 is that evaluation. It is impossible to do fairly without a spec.</p>
+<h2>Vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain meaning</th>
+<th>Common confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spec</td>
+<td>Decisions about one change, written before implementation</td>
+<td>Not the code, not the standing policy</td>
+</tr>
+<tr>
+<td>Wish</td>
+<td>A one-liner that leaves the decisions unmade</td>
+<td>Feels like a spec because it is a sentence</td>
+</tr>
+<tr>
+<td>Archive</td>
+<td>Move a shipped spec out of the active list</td>
+<td>Not a Git erase</td>
+</tr>
+<tr>
+<td>Contract</td>
+<td>Examples you can test against</td>
+<td>Not a legal document</td>
+</tr>
+</tbody>
+</table>
+<h2>Worked example</h2>
+<p><strong>Existing behavior, already true in shelf, restated so you can feel a spec:</strong></p>
+<p><code>borrow("b2", "Asha")</code> then <code>borrow("b2", "Ben")</code> returns <code>{ ok: false, error: "no-copies" }</code> because <code>b2</code> has one copy.</p>
+<p>That sentence is specified by the current tests. You can point at <code>test/loans.test.js</code>. An agent that "improves" <code>borrow</code> and changes that error string has broken a contract even if you never wrote a new spec. Existing tests are specs that already shipped. U20 will lean on that. For a new behavior, there is no test yet, so the spec has to create the contract before the code does.</p>
+<h2>Common errors</h2>
+<h3>Spec after the code, to "document what it did"</h3>
+<p><strong>What you see:</strong> A markdown file that describes whatever the agent invented, written afterward so the ticket looks complete.</p>
+<p><strong>What it means:</strong> The spec cannot fail the diff, because it was copied from the diff. Review becomes theatre.</p>
+<p><strong>What to do:</strong> Write the examples first. If implementation teaches you that an example was wrong, change the spec in a separate, visible edit and say why. Do not silently match the spec to the code.</p>
+<h3>A spec that says "see AGENTS.md"</h3>
+<p><strong>What you see:</strong> The spec is one line, and policy is asked to carry the behavior.</p>
+<p><strong>What it means:</strong> <code>AGENTS.md</code> would have to change every task, which is the failure mode in U08.</p>
+<p><strong>What to do:</strong> Policy stays. The spec holds today's names, examples, and files.</p>
+<h2>Checkpoints</h2>
+<ol>
+<li>What is a spec, in one sentence?</li>
+<li>Name two decisions the wish "add overdue loans" leaves open.</li>
+<li>Why is a spec written after the code a weak review tool?</li>
+</ol>
+<h2>Practice exercises</h2>
+<h3>P1 — Label the document</h3>
+<p>Label each artifact <code>policy</code>, <code>spec</code>, <code>prompt</code>, or <code>code</code>:</p>
+<ol>
+<li>"Do not add npm dependencies."</li>
+<li>"<code>countForBorrower("Asha")</code> is 1 after one active loan."</li>
+<li>"Implement <code>specs/count-for-borrower.md</code>. Touch only the files it names."</li>
+<li>The function body that uses <code>.filter</code>.</li>
+</ol>
+<h3>P2 — Open decisions</h3>
+<p>List four decisions still open in: "Let people return all of a borrower's books at once."</p>
+<h3>P3 — Already specified</h3>
+<p>Find the test in <code>test/loans.test.js</code> that specifies blank borrowers. Quote the error string. That string is a contract an agent must not "clarify" into a friendlier sentence unless a spec says so.</p>
+<h2>Assignment</h2>
+<p>The assignment is included on this page — <a href="#assignment">jump to Assignment</a>.</p>
+<h2>How you will be assessed</h2>
+<p>How you are scored is included on this page — <a href="#rubric">jump to Rubric</a>.</p>
+<h2>What is <em>not</em> in this unit</h2>
+<ul>
+<li>The full section template is U13.</li>
+<li>Examples and non-goals get a deeper pass in U14.</li>
+<li>You are not asked to implement the function.</li>
+</ul>
+<h2>Next unit</h2>
+<p><strong>U13 — A spec shape agents can execute.</strong></p></div>
+  </section>
+
+  <section id="assignment" class="content-section">
+    <h2 class="section-heading">Assignment</h2>
+    <div class="md"><h1>U12 Assignment — Tell a wish from a spec</h1>
+<p>Submit <code>U12-YourName</code>.</p>
+<h2>Files</h2>
+<h3>1. <code>answers.md</code></h3>
+<ol>
+<li>Define spec, standing instructions, prompt, and code. Two sentences each. Make the differences obvious.</li>
+<li>Take the wish "Add overdue loans." List at least five decisions it does not make. Be concrete (format of a date, file names, what "overdue" includes, HTTP or not, dependencies).</li>
+<li>Explain why writing the spec from the finished diff weakens evaluation. 4–6 sentences.</li>
+<li><strong>Predict, then look.</strong> Predict the error string <code>borrow("b1", "   ")</code> returns, before you open the test file. Then quote the assertion from <code>course/examples/shelf/test/loans.test.js</code> under <code>What the test says</code>. If your prediction differed, say what you assumed.</li>
+</ol>
+<h3>2. <code>checklist.md</code></h3>
+<pre><code class="language-markdown">- [ ] I read the U12 README.
+- [ ] Question 4's prediction is above the quote.
+- [ ] I read the rubric.
+</code></pre>
+<h2>Definition of done</h2>
+<p>Q2 has five open decisions. Q1 uses all four terms correctly.</p>
+<h2>Submission format</h2>
+<pre><code class="language-text">U12-YourName/
+  answers.md
+  checklist.md
+</code></pre></div>
+  </section>
+
+  <section id="rubric" class="content-section">
+    <h2 class="section-heading">Rubric</h2>
+    <div class="md"><h1>U12 Rubric</h1>
+<p>Visible to learners. Total <strong>20 points</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Points</th>
+<th>Must-have?</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Four definitions stay distinct</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>Five concrete open decisions for overdue loans</td>
+<td>6</td>
+<td>Yes</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Post-hoc spec explained as a weak contract</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Prediction precedes the quoted <code>borrower-required</code> assertion</td>
+<td>4</td>
+<td>Yes</td>
+<td>Q4</td>
+</tr>
+</tbody>
+</table>
+<h3>Partial credit</h3>
+<ul>
+<li>Q1: 4/6 if spec and prompt are still blurred.</li>
+<li>Q2: "the details" as one item does not count. Each decision needs a noun.</li>
+<li>Q4: 2/4 if the quote is right and the prediction is missing.</li>
+</ul>
+<h3>Must-have vs nice-to-have</h3>
+<p>All rows must-have. A miss caps at 15/20.</p></div>
+  </section>
+
+  <div class="unit-footer-nav">
+    <a class="prev" href="../U11-instruction-files-that-fail/index.html">U11 Instruction files that fail</a>
+    <a class="next" href="../U13-a-spec-shape-agents-can-execute/index.html">U13 A spec shape agents can execute</a>
+  </div>
+</main>
+<footer class="site-footer">
+  Static training materials — generated by build.py
+</footer>
+</body>
+</html>
